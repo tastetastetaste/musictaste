@@ -1,0 +1,40 @@
+import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ReleasesModule } from '../releases/releases.module';
+import { UsersModule } from '../users/users.module';
+import { EntriesController } from './entries.controller';
+import { EntriesService } from './entries.service';
+import { Rating } from '../../db/entities/rating.entity';
+import { ReleaseArtist } from '../../db/entities/release-artist.entity';
+import { ReleaseGenre } from '../../db/entities/release-genre.entity';
+import { ReleaseLabel } from '../../db/entities/release-label.entity';
+import { ReviewComment } from '../../db/entities/review-comment.entity';
+import { ReviewVote } from '../../db/entities/review-vote.entity';
+import { Review } from '../../db/entities/review.entity';
+import { TrackVote } from '../../db/entities/track-vote.entity';
+import { Track } from '../../db/entities/track.entity';
+import { UserReleaseTag } from '../../db/entities/user-release-tag.entity';
+import { UserRelease } from '../../db/entities/user-release.entity';
+
+@Module({
+  imports: [
+    TypeOrmModule.forFeature([
+      UserRelease,
+      Rating,
+      Review,
+      ReviewVote,
+      ReviewComment,
+      TrackVote,
+      ReleaseArtist,
+      ReleaseGenre,
+      ReleaseLabel,
+      UserReleaseTag,
+      Track,
+    ]),
+    ReleasesModule,
+    UsersModule,
+  ],
+  controllers: [EntriesController],
+  providers: [EntriesService],
+})
+export class EntriesModule {}

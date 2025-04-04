@@ -1,0 +1,29 @@
+{
+  "name": "shared",
+  "main": "./dist/cjs/index.js",
+  "private": true,
+  "dependencies": {
+    "axios": "^1.7.2",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.1",
+    "dayjs": "^1.11.11",
+    "reflect-metadata": "^0.2.0",
+    "tslib": "^2.6.3"
+  },
+  "scripts": {
+    "build:cjs": "tsc -p tsconfig.json",
+    "build:mjs": "tsc -p tsconfig.mjs.json",
+    "build": "pnpm run build:cjs && pnpm run build:mjs"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/mjs/index.js",
+      "require": "./dist/cjs/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "devDependencies": {
+    "@types/node": "^20.3.1",
+    "typescript": "^5.4.5"
+  }
+}

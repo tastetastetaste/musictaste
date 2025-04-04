@@ -1,0 +1,32 @@
+import styled from '@emotion/styled';
+
+export const Input = styled.input<{ error?: boolean }>`
+  outline: none;
+  border: 0;
+  border-radius: ${({ theme }) => theme.border_radius.base};
+  font: inherit;
+  padding: 6px 10px;
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  background-color: ${({ theme }) => theme.colors.complement};
+  color: ${({ theme }) => theme.colors.text};
+  &:hover,
+  &:focus {
+    outline: none;
+  }
+  &::placeholder {
+    color: ${({ theme }) => theme.colors.main};
+    opacity: 1;
+  }
+
+  &:focus-visible {
+    box-shadow: ${({ theme }) => `0 0 0 2px ${theme.colors.text}`};
+  }
+
+  ${({ error, theme }) =>
+    error &&
+    `
+    box-shadow: 0 0 0 2px ${theme.colors.text}};
+  `}
+`;

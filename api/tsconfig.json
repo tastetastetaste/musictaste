@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "declaration": true,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "ESNext",
+    "sourceMap": true,
+    "outDir": "dist",
+    "skipLibCheck": true,
+
+    "importHelpers": true,
+    "moduleResolution": "node",
+    "esModuleInterop": true
+  },
+  "include": ["src", "db"],
+  "exclude": ["node_modules", "dist"]
+}

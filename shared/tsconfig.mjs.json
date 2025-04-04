@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "allowJs": true,
+    "removeComments": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "outDir": "./dist/mjs",
+    "declaration": true,
+    "emitDecoratorMetadata": true,
+
+    "experimentalDecorators": true,
+    "strictPropertyInitialization": false,
+
+    "downlevelIteration": true,
+    "importHelpers": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitAny": false,
+    "noImplicitReturns": false,
+    "noUnusedLocals": false,
+    "pretty": true,
+    "strictFunctionTypes": false,
+    "stripInternal": true,
+    "useUnknownInCatchVariables": false
+  },
+  "include": ["."],
+  "exclude": ["dist", "node_modules", "**/*.spec.ts"]
+}

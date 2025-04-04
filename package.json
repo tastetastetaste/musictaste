@@ -1,0 +1,57 @@
+{
+  "name": "musictaste",
+  "description": "",
+  "scripts": {
+    "web": "pnpm --filter web",
+    "api": "pnpm --filter api",
+    "shared": "pnpm --filter shared",
+    "build": "pnpm shared build",
+    "release": "release-it",
+    "nest": "pnpm api exec nest",
+    "format": "prettier --write ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@release-it/conventional-changelog": "^8.0.1",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-prettier": "^5.0.0",
+    "prettier": "^3.0.0",
+    "release-it": "^17.6.0"
+  },
+  "release-it": {
+    "git": {
+      "commitMessage": "chore: release v${version}"
+    },
+    "github": {
+      "release": true
+    },
+    "npm": {
+      "publish": false
+    },
+    "plugins": {
+      "@release-it/conventional-changelog": {
+        "infile": "CHANGELOG.md",
+        "ignoreRecommendedBump": true,
+        "preset": {
+          "name": "conventionalcommits",
+          "types": [
+            {
+              "type": "feat",
+              "section": "Features"
+            },
+            {
+              "type": "impr",
+              "section": "Improvements"
+            },
+            {
+              "type": "fix",
+              "section": "Fixes"
+            }
+          ]
+        }
+      }
+    }
+  }
+}
