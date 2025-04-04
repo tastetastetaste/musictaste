@@ -17,7 +17,9 @@ export const ReleaseSearchLink = ({
   release: IReleaseSummary;
 }) => (
   <Group gap="sm">
-    <ReleaseImageLink release={release} size="xs" />
+    <div css={{ minWidth: '70px' }}>
+      <ReleaseImageLink release={release} size="xs" />
+    </div>
     <Link to={getReleasePathname(release.id)}>{release.title}</Link>
   </Group>
 );
