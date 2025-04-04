@@ -1,5 +1,6 @@
 import {
   IconBrandDiscord,
+  IconBrandGithub,
   IconBrandInstagram,
   IconBrandX,
   IconMenu2,
@@ -16,6 +17,7 @@ import { Typography } from '../../components/typography';
 import {
   CONTACT_EMAIL,
   DISCORD_SERVER_INVITE,
+  GITHUB_URL,
   IG_URL,
   KOFI_LINK,
   SITE_NAME,
@@ -78,6 +80,12 @@ const SidebarContent = ({
               onClick={() => window.open(IG_URL, '_blank')}
             >
               <IconBrandInstagram />
+            </IconButton>
+            <IconButton
+              title="GitHub"
+              onClick={() => window.open(GITHUB_URL, '_blank')}
+            >
+              <IconBrandGithub />
             </IconButton>
           </Group>
           <Button onClick={onOpenContactDialog}>Contact</Button>

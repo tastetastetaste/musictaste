@@ -10,3 +10,5 @@ export const TWITTER_USERNAME = '@taste2025';
 export const TWITTER_URL = 'https://x.com/taste2025';
 
 export const IG_URL = 'https://www.instagram.com/musictaste2025';
+
+export const GITHUB_URL = 'https://github.com/tastetastetaste/musictaste';
