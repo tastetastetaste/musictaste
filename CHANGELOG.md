@@ -1,5 +1,7 @@
 
 
+## 1.0.0 (2025-04-04)
+
 ## [0.3.3](https://github.com/yaser00z/musictaste/compare/0.3.2...0.3.3) (2025-04-02)
 
 
