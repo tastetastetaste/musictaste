@@ -330,27 +330,13 @@ export class ReleasesService {
       .createQueryBuilder('release')
       .select('release.id', 'id')
       .addSelect('COUNT(ur.id)', 'popularity')
-      .leftJoin(UserRelease, 'ur', 'release.id = ur.releaseId');
-
-    qb.where((q) => {
-      const subQuery = q
-        .subQuery()
-        .select('ur.releaseId', 'releaseId')
-        .where("ur.createdAt >= date_trunc('year', current_date)");
-
-      const sq = subQuery
-        .groupBy('ur.releaseId')
-        .from(UserRelease, 'ur')
-        .getQuery();
-
-      return 'release.id IN ' + sq;
-    });
-
-    qb.groupBy('release.id')
+      .leftJoin('release.entries', 'ur', 'release.id = ur.releaseId')
+      .where("ur.createdAt >= date_trunc('year', current_date)")
+      .groupBy('release.id')
       .orderBy('popularity', 'DESC')
       .addOrderBy('release.id', 'DESC')
-      .take(page * 48)
-      .skip((page - 1) * 48);
+      .limit(pageSize)
+      .offset((page - 1) * pageSize);
 
     const qb2 = qb.clone();
 
