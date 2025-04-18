@@ -4,16 +4,16 @@ Music Taste is a social music platform that lets you review, rate, and make list
 
 ## Features
 
-- Flexible 0.0–10 rating scale
-- Favorite/least favorite track selection
-- Reviews
-- Lists
-- Personal tags
-- Markdown support
-- Multiple themes
-- Follow other users
-- No ads or tracking
-- And much more
+- track, rate, review, and tag music releases
+- vote on best and worst tracks (by selecting favorites and least favorites)
+- make lists of music releases
+- vote and comment on reviews
+- like and comment on lists
+- follow users and see their activities on release pages
+- contribute music data (artists, labels, releases) and vote on genres
+- no ads or tracking
+- multiple themes
+- and much more.
 
 ## Contributing
 
