@@ -471,6 +471,7 @@ export class EntriesService {
         },
         { userId },
       )
+      .orderBy('ur.createdAt', 'DESC')
       .getMany();
 
     const users = await this.usersService.getUsersByIds(
