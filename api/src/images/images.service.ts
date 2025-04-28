@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { nanoid } from 'nanoid';
-import AWS from 'aws-sdk';
 import sharp from 'sharp';
 import axios from 'axios';
 import { ConfigService } from '@nestjs/config';
 import { IReleaseCover, IUserImage } from 'shared';
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 
 export type Upload = { buffer: Buffer; mimetype: string };
 
@@ -15,12 +15,14 @@ interface ResizedImage {
 
 @Injectable()
 export class ImagesService {
-  private s3: AWS.S3;
-
+  private s3: S3Client;
   constructor(private configService: ConfigService) {
-    this.s3 = new AWS.S3({
-      accessKeyId: this.configService.get('AWS_ACCESS_KEY_ID'),
-      secretAccessKey: this.configService.get('AWS_SECRET_ACCESS_KEY'),
+    this.s3 = new S3Client({
+      credentials: {
+        accessKeyId: this.configService.get('AWS_ACCESS_KEY_ID'),
+        secretAccessKey: this.configService.get('AWS_SECRET_ACCESS_KEY'),
+      },
+      region: this.configService.get('AWS_REGION'),
     });
   }
 
@@ -112,17 +114,17 @@ export class ImagesService {
     id: string,
   ) {
     for (const resizedImage of resizedImages) {
-      await this.s3
-        .putObject({
-          Bucket: this.configService.get('AWS_BUCKET_NAME'),
-          Key:
-            resizedImage.suffix === 'original'
-              ? `${container}/${id}.jpeg`
-              : `${container}/${resizedImage.suffix}/${id}.jpeg`,
-          Body: resizedImage.buffer,
-          ContentType: 'image/jpeg',
-        })
-        .promise();
+      const command = new PutObjectCommand({
+        Bucket: this.configService.get('AWS_BUCKET_NAME'),
+        Key:
+          resizedImage.suffix === 'original'
+            ? `${container}/${id}.jpeg`
+            : `${container}/${resizedImage.suffix}/${id}.jpeg`,
+        Body: resizedImage.buffer,
+        ContentType: 'image/jpeg',
+      });
+
+      await this.s3.send(command);
     }
   }
 
