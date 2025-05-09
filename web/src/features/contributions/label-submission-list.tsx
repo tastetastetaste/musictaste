@@ -6,6 +6,7 @@ import { Stack } from '../../components/flex/stack';
 import { Loading } from '../../components/loading';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
+import { SubmissionItemWrapper } from './submission-item';
 
 type Props = {
   open?: boolean;
@@ -15,13 +16,15 @@ type Props = {
 
 const SubmissionItem = ({ submission }: { submission: ILabelSubmission }) => {
   return (
-    <Stack key={submission.id}>
-      {submission.name && (
-        <div>
-          <span>name: {submission.name}</span>
-        </div>
-      )}
-    </Stack>
+    <SubmissionItemWrapper status={submission.submissionStatus}>
+      <Stack key={submission.id}>
+        {submission.name && (
+          <div>
+            <span>name: {submission.name}</span>
+          </div>
+        )}
+      </Stack>
+    </SubmissionItemWrapper>
   );
 };
 
@@ -59,7 +62,7 @@ export const LabelSubmissionsList: React.FC<Props> = ({
   return (
     <Fragment>
       {data?.pages.map((page) => (
-        <Stack key={page.currentPage} gap="lg">
+        <Stack key={page.currentPage}>
           {page.labels.map((submission) => (
             <SubmissionItem submission={submission} />
           ))}
