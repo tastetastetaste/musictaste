@@ -21,6 +21,11 @@ export enum ReleaseType {
   Reissue = 15,
 }
 
+export enum LabelStatus {
+  DELETED = 0,
+  ACTIVE = 20,
+}
+
 export enum SubmissionStatus {
   AUTO_APPROVED = 1, // for adding music data (open, applied)
   OPEN = 2, // for edits (open, unapplied)
