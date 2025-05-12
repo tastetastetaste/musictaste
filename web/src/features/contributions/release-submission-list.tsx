@@ -1,16 +1,14 @@
 import { Fragment } from 'react';
-import { useInfiniteQuery, useMutation } from 'react-query';
-import { IReleaseSubmission, SubmissionStatus, VoteType } from 'shared';
-import { Button } from '../../components/button';
+import { useInfiniteQuery } from 'react-query';
+import { IReleaseSubmission } from 'shared';
 import { FetchMore } from '../../components/fetch-more';
 import { Group } from '../../components/flex/group';
 import { Stack } from '../../components/flex/stack';
 import { Loading } from '../../components/loading';
 import { api } from '../../utils/api';
-import { useAuth } from '../account/useAuth';
 import { millisecondsToTimeString } from './release-tracks-fields';
 import { cacheKeys } from '../../utils/cache-keys';
-import { SubmissionItemWrapper } from './submission-item';
+import { SubmissionActions, SubmissionItemWrapper } from './submission-item';
 
 type Props = {
   open?: boolean;
@@ -18,122 +16,81 @@ type Props = {
   releaseId?: string;
 };
 
-const SubmissionActions = ({ id }: { id: string }) => {
-  const {
-    mutateAsync: updateStatus,
-    data,
-    isLoading,
-  } = useMutation(api.releaseSubmissionVote);
-
-  return (
-    <Group gap={10}>
-      {data ? (
-        <span>Ok</span>
-      ) : (
-        <Fragment>
-          <Button
-            variant="main"
-            disabled={isLoading}
-            onClick={() =>
-              updateStatus({ submissionId: id, vote: VoteType.UP })
-            }
-          >
-            Yes
-          </Button>
-          <Button
-            variant="main"
-            disabled={isLoading}
-            onClick={() =>
-              updateStatus({ submissionId: id, vote: VoteType.DOWN })
-            }
-          >
-            No
-          </Button>
-        </Fragment>
-      )}
-      {isLoading && <span>loading..</span>}
-    </Group>
-  );
-};
-
 const SubmissionItem = ({ submission }: { submission: IReleaseSubmission }) => {
-  const { canVoteOnSubmissions } = useAuth();
-
   return (
     <SubmissionItemWrapper status={submission.submissionStatus}>
-      <Stack key={submission.id}>
-        {submission.title && (
-          <div>
-            <span>title: {submission.title}</span>
-          </div>
-        )}
+      {submission.title && (
+        <div>
+          <span>title: {submission.title}</span>
+        </div>
+      )}
 
-        {submission.artists && (
-          <div>
-            <span>
-              artists: {submission.artists.map((a) => a?.name).join(', ')}
-            </span>
-          </div>
-        )}
-        {submission.type && (
-          <div>
-            <span>type: {submission.type}</span>
-          </div>
-        )}
-        {submission.date && (
-          <div>
-            <span>date: {submission.date}</span>
-          </div>
-        )}
-        {submission.labels && (
-          <div>
-            <span>
-              label: {submission.labels.map((l) => l?.name).join(', ')}
-            </span>
-          </div>
-        )}
+      {submission.artists && (
+        <div>
+          <span>
+            artists: {submission.artists.map((a) => a?.name).join(', ')}
+          </span>
+        </div>
+      )}
+      {submission.type && (
+        <div>
+          <span>type: {submission.type}</span>
+        </div>
+      )}
+      {submission.date && (
+        <div>
+          <span>date: {submission.date}</span>
+        </div>
+      )}
+      {submission.labels && (
+        <div>
+          <span>label: {submission.labels.map((l) => l?.name).join(', ')}</span>
+        </div>
+      )}
 
-        {submission.languages && (
-          <div>
-            <span>
-              language: {submission.languages.map((l) => l?.name).join(', ')}
-            </span>
-          </div>
-        )}
+      {submission.languages && (
+        <div>
+          <span>
+            language: {submission.languages.map((l) => l?.name).join(', ')}
+          </span>
+        </div>
+      )}
 
-        {submission.tracks && (
+      {submission.tracks && (
+        <div>
           <div>
+            <span>tracks:</span>
+          </div>
+
+          {submission.tracks.map((t) => (
             <div>
-              <span>tracks:</span>
+              <span>{`${t.track} | ${t.title} | ${millisecondsToTimeString(t.durationMs)}`}</span>
             </div>
+          ))}
+        </div>
+      )}
 
-            {submission.tracks.map((t) => (
-              <div>
-                <span>{`${t.track} | ${t.title} | ${millisecondsToTimeString(t.durationMs)}`}</span>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {submission.imageUrl && (
-          <Group gap={10}>
-            <span>image:</span>
-            <img
-              width={75}
-              height={75}
-              style={{
-                width: 75,
-                height: 75,
-                borderRadius: '50%',
-              }}
-              src={submission.imageUrl}
-              alt=""
-            />
-          </Group>
-        )}
-        {submission.submissionStatus === SubmissionStatus.OPEN &&
-          canVoteOnSubmissions && <SubmissionActions id={submission.id} />}
-      </Stack>
+      {submission.imageUrl && (
+        <Group gap={10}>
+          <span>image:</span>
+          <img
+            width={75}
+            height={75}
+            style={{
+              width: 75,
+              height: 75,
+              borderRadius: '50%',
+            }}
+            src={submission.imageUrl}
+            alt=""
+          />
+        </Group>
+      )}
+      <SubmissionActions
+        id={submission.id}
+        status={submission.submissionStatus}
+        voteFn={api.releaseSubmissionVote}
+      />
     </SubmissionItemWrapper>
   );
 };

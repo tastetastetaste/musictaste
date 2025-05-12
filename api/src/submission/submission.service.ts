@@ -37,6 +37,7 @@ import { ImagesService } from '../images/images.service';
 import { LabelsService } from '../labels/labels.service';
 import { ReleasesService } from '../releases/releases.service';
 import { UsersService } from '../users/users.service';
+import { LabelSubmissionVote } from '../../db/entities/label-submission-vote.entity';
 
 @Injectable()
 export class SubmissionService {
@@ -59,6 +60,8 @@ export class SubmissionService {
     private artistSubmissionRepository: Repository<ArtistSubmission>,
     @InjectRepository(ReleaseSubmissionVote)
     private releaseSubmissionVoteRepository: Repository<ReleaseSubmissionVote>,
+    @InjectRepository(LabelSubmissionVote)
+    private labelSubmissionVoteRepository: Repository<LabelSubmissionVote>,
     private releasesService: ReleasesService,
     private imagesService: ImagesService,
     private usersService: UsersService,
@@ -146,6 +149,17 @@ export class SubmissionService {
       const label = await this.labelsService.createLabel(submission.changes);
 
       return label;
+    } else {
+      return false;
+    }
+  }
+
+  private async revokeLabelSubmission(submission: LabelSubmission) {
+    if (
+      submission.submissionType === SubmissionType.CREATE &&
+      submission.labelId
+    ) {
+      return await this.labelsService.softDelete({ id: submission.labelId });
     } else {
       return false;
     }
@@ -365,6 +379,77 @@ export class SubmissionService {
         : SubmissionStatus.DISAPPROVED;
 
       await this.releaseSubmissionRepository.save(releaseSubmission);
+    }
+
+    return { message: 'Voted successfully' };
+  }
+
+  async labelSubmissionVote(
+    submissionId: string,
+    vote: VoteType,
+    user: CurrentUserPayload,
+  ) {
+    const labelSubmission = await this.labelSubmissionRepository.findOne({
+      where: {
+        id: submissionId,
+      },
+    });
+
+    if (
+      !labelSubmission ||
+      labelSubmission.submissionStatus === SubmissionStatus.APPROVED ||
+      labelSubmission.submissionStatus === SubmissionStatus.DISAPPROVED
+    )
+      throw new BadRequestException();
+
+    const newVote = new LabelSubmissionVote();
+    newVote.type = vote;
+    newVote.userId = user.id;
+    newVote.labelSubmissionId = labelSubmission.id;
+
+    await this.labelSubmissionVoteRepository.save(newVote);
+
+    let closeSubmission = false;
+    let approveSubmission = false;
+
+    if (user.contributorStatus >= ContributorStatus.EDITOR) {
+      closeSubmission = true;
+      approveSubmission = vote === VoteType.UP;
+    } else if (
+      user.contributorStatus >= ContributorStatus.TRUSTED_CONTRIBUTOR
+    ) {
+      const submissionVotes = await this.labelSubmissionVoteRepository
+        .createQueryBuilder('v')
+        .addSelect('COUNT(v.id)', 'totalVotes')
+        .addSelect('SUM(v.vote)', 'netVotes')
+        .where('v.labelSubmissionId = :id', { id: submissionId })
+        .getRawOne();
+
+      closeSubmission = Number(submissionVotes.totalVotes) >= 3;
+      approveSubmission = Number(submissionVotes.netVotes) > 0;
+    } else {
+      throw new BadRequestException();
+    }
+
+    if (closeSubmission) {
+      if (
+        approveSubmission &&
+        labelSubmission.submissionStatus === SubmissionStatus.OPEN
+      ) {
+        await this.applyLabelSubmission(labelSubmission);
+      } else if (
+        !approveSubmission &&
+        labelSubmission.submissionStatus === SubmissionStatus.AUTO_APPROVED &&
+        labelSubmission.submissionType === SubmissionType.CREATE
+      ) {
+        await this.revokeLabelSubmission(labelSubmission);
+      }
+
+      labelSubmission.submissionStatus = approveSubmission
+        ? SubmissionStatus.APPROVED
+        : SubmissionStatus.DISAPPROVED;
+
+      await this.labelSubmissionRepository.save(labelSubmission);
     }
 
     return { message: 'Voted successfully' };

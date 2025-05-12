@@ -1,11 +1,65 @@
 import { useTheme } from '@emotion/react';
-import { SubmissionStatus } from 'shared';
+import { IconArrowBigDown, IconArrowBigUp } from '@tabler/icons-react';
+import { Fragment } from 'react';
+import { useMutation } from 'react-query';
+import { SubmissionStatus, VoteType } from 'shared';
+import { Group } from '../../components/flex/group';
+import { Stack } from '../../components/flex/stack';
+import { IconButton } from '../../components/icon-button';
+import { useAuth } from '../account/useAuth';
+interface SubmissionActionsProps {
+  id: string;
+  status: SubmissionStatus;
+  voteFn: (params: { submissionId: string; vote: VoteType }) => Promise<any>;
+}
+
+export const SubmissionActions = ({
+  id,
+  status,
+  voteFn,
+}: SubmissionActionsProps) => {
+  const { canVoteOnSubmissions } = useAuth();
+  const { mutateAsync: vote, data, isLoading } = useMutation(voteFn);
+
+  if (
+    !canVoteOnSubmissions ||
+    status === SubmissionStatus.APPROVED ||
+    status === SubmissionStatus.DISAPPROVED
+  )
+    return <></>;
+
+  return (
+    <Group gap={10}>
+      {data ? (
+        <span>Ok</span>
+      ) : (
+        <Fragment>
+          <IconButton
+            title="Vote Up"
+            onClick={() => vote({ submissionId: id, vote: VoteType.UP })}
+            disabled={isLoading}
+          >
+            <IconArrowBigUp />
+          </IconButton>
+          <IconButton
+            title="Vote Down"
+            onClick={() => vote({ submissionId: id, vote: VoteType.DOWN })}
+            disabled={isLoading}
+          >
+            <IconArrowBigDown />
+          </IconButton>
+        </Fragment>
+      )}
+      {isLoading && <span>loading..</span>}
+    </Group>
+  );
+};
 
 export const SubmissionItemWrapper = ({
   children,
   status,
 }: {
-  children: React.ReactElement;
+  children: React.ReactElement | React.ReactElement[];
   status: any;
 }) => {
   const { colors } = useTheme();
@@ -25,7 +79,9 @@ export const SubmissionItemWrapper = ({
         marginBottom: '6px',
       }}
     >
-      <div css={{ flex: '1 1 0' }}>{children}</div>
+      <div css={{ flex: '1 1 0' }}>
+        <Stack>{children}</Stack>
+      </div>
       <div
         css={(theme) => ({
           flex: '0 0 100px',

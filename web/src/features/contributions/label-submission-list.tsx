@@ -6,7 +6,7 @@ import { Stack } from '../../components/flex/stack';
 import { Loading } from '../../components/loading';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
-import { SubmissionItemWrapper } from './submission-item';
+import { SubmissionActions, SubmissionItemWrapper } from './submission-item';
 
 type Props = {
   open?: boolean;
@@ -17,13 +17,16 @@ type Props = {
 const SubmissionItem = ({ submission }: { submission: ILabelSubmission }) => {
   return (
     <SubmissionItemWrapper status={submission.submissionStatus}>
-      <Stack key={submission.id}>
-        {submission.name && (
-          <div>
-            <span>name: {submission.name}</span>
-          </div>
-        )}
-      </Stack>
+      {submission.name && (
+        <div>
+          <span>name: {submission.name}</span>
+        </div>
+      )}
+      <SubmissionActions
+        id={submission.id}
+        status={submission.submissionStatus}
+        voteFn={api.labelSubmissionVote}
+      />
     </SubmissionItemWrapper>
   );
 };

@@ -14,6 +14,7 @@ import { ReleasesModule } from '../releases/releases.module';
 import { UsersModule } from '../users/users.module';
 import { SubmissionService } from './submission.service';
 import { SubmissionsController } from './submissions.controller';
+import { LabelSubmissionVote } from '../../db/entities/label-submission-vote.entity';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { SubmissionsController } from './submissions.controller';
       LabelSubmission,
       ArtistSubmission,
       ReleaseSubmissionVote,
+      LabelSubmissionVote,
     ]),
     ReleasesModule,
     ImagesModule,

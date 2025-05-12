@@ -20,7 +20,7 @@ import {
   FindArtistSubmissionsDto,
   FindLabelSubmissionsDto,
   FindReleaseSubmissionsDto,
-  ReleaseSubmissionVoteDto,
+  SubmissionVoteDto,
   UpdateReleaseDto,
 } from 'shared';
 import { AuthenticatedGuard } from '../auth/Authenticated.guard';
@@ -97,13 +97,30 @@ export class SubmissionsController {
   @UseGuards(AuthenticatedGuard)
   releaseSubmissionVote(
     @Param('submissionId') submissionId: string,
-    @Body() body: ReleaseSubmissionVoteDto,
+    @Body() body: SubmissionVoteDto,
     @CurUser() user: CurrentUserPayload,
   ) {
     if (user.contributorStatus < ContributorStatus.TRUSTED_CONTRIBUTOR)
       throw new UnauthorizedException();
 
     return this.submissionsService.releaseSubmissionVote(
+      submissionId,
+      body.vote,
+      user,
+    );
+  }
+
+  @Patch('labels/vote/:submissionId')
+  @UseGuards(AuthenticatedGuard)
+  labelSubmissionVote(
+    @Param('submissionId') submissionId: string,
+    @Body() body: SubmissionVoteDto,
+    @CurUser() user: CurrentUserPayload,
+  ) {
+    if (user.contributorStatus < ContributorStatus.TRUSTED_CONTRIBUTOR)
+      throw new UnauthorizedException();
+
+    return this.submissionsService.labelSubmissionVote(
       submissionId,
       body.vote,
       user,

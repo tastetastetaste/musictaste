@@ -352,7 +352,7 @@ export class FindLabelSubmissionsDto {
   page: number;
 }
 
-export class ReleaseSubmissionVoteDto {
+export class SubmissionVoteDto {
   @Type(() => Number)
   @IsEnum(VoteType)
   vote: VoteType;
