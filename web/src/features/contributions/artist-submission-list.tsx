@@ -7,6 +7,8 @@ import { Loading } from '../../components/loading';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
 import { SubmissionItemWrapper } from './submission-item';
+import { getArtistPathname } from '../../utils/get-pathname';
+import { Link } from '../../components/links/link';
 
 type Props = {
   open?: boolean;
@@ -21,6 +23,11 @@ const SubmissionItem = ({ submission }: { submission: IArtistSubmission }) => {
         {submission.name && (
           <div>
             <span>name: {submission.name}</span>
+          </div>
+        )}
+        {submission.artistId && (
+          <div>
+            <Link to={getArtistPathname(submission.artistId)}>link</Link>
           </div>
         )}
       </Stack>

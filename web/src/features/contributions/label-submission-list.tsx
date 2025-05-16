@@ -7,6 +7,8 @@ import { Loading } from '../../components/loading';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
 import { SubmissionActions, SubmissionItemWrapper } from './submission-item';
+import { Link } from '../../components/links/link';
+import { getLabelPathname } from '../../utils/get-pathname';
 
 type Props = {
   open?: boolean;
@@ -20,6 +22,11 @@ const SubmissionItem = ({ submission }: { submission: ILabelSubmission }) => {
       {submission.name && (
         <div>
           <span>name: {submission.name}</span>
+        </div>
+      )}
+      {submission.labelId && (
+        <div>
+          <Link to={getLabelPathname(submission.labelId)}>link</Link>
         </div>
       )}
       <SubmissionActions

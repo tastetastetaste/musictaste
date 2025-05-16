@@ -9,6 +9,8 @@ import { api } from '../../utils/api';
 import { millisecondsToTimeString } from './release-tracks-fields';
 import { cacheKeys } from '../../utils/cache-keys';
 import { SubmissionActions, SubmissionItemWrapper } from './submission-item';
+import { getReleasePathname } from '../../utils/get-pathname';
+import { Link } from '../../components/links/link';
 
 type Props = {
   open?: boolean;
@@ -85,6 +87,11 @@ const SubmissionItem = ({ submission }: { submission: IReleaseSubmission }) => {
             alt=""
           />
         </Group>
+      )}
+      {submission.releaseId && (
+        <div>
+          <Link to={getReleasePathname(submission.releaseId)}>link</Link>
+        </div>
       )}
       <SubmissionActions
         id={submission.id}
