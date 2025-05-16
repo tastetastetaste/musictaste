@@ -1,4 +1,5 @@
 import {
+  ArtistStatus,
   CreateArtistDto,
   IArtistResponse,
   SubmissionStatus,
@@ -11,6 +12,7 @@ import { ReleasesService } from '../releases/releases.service';
 import { SubmissionService } from '../submission/submission.service';
 import { ArtistSubmission } from '../../db/entities/artist-submission.entity';
 import { Artist } from '../../db/entities/artist.entity';
+import { ReleaseArtist } from '../../db/entities/release-artist.entity';
 
 @Injectable()
 export class ArtistsService {
@@ -18,6 +20,8 @@ export class ArtistsService {
     @InjectRepository(Artist) private artistsRepository: Repository<Artist>,
     @InjectRepository(ArtistSubmission)
     private artistSubmissionRepository: Repository<ArtistSubmission>,
+    @InjectRepository(ReleaseArtist)
+    private releaseArtistRepository: Repository<ReleaseArtist>,
     private releasesService: ReleasesService,
     private submissionService: SubmissionService,
   ) {}
@@ -57,5 +61,17 @@ export class ArtistsService {
       artist: newArtist,
       message: `"${name}" has been added successfully`,
     };
+  }
+
+  async softDelete({ id }: { id: string }): Promise<boolean> {
+    try {
+      await Promise.all([
+        this.artistsRepository.update({ id }, { status: ArtistStatus.DELETED }),
+        this.releaseArtistRepository.delete({ artistId: id }),
+      ]);
+      return true;
+    } catch (err) {
+      return false;
+    }
   }
 }

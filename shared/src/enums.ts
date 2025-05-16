@@ -21,6 +21,11 @@ export enum ReleaseType {
   Reissue = 15,
 }
 
+export enum ArtistStatus {
+  DELETED = 0,
+  ACTIVE = 20,
+}
+
 export enum LabelStatus {
   DELETED = 0,
   ACTIVE = 20,

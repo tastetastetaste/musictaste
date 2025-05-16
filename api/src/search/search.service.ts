@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ISearchResponse, LabelStatus } from 'shared';
+import { ArtistStatus, ISearchResponse, LabelStatus } from 'shared';
 import { Repository } from 'typeorm';
 import { Artist } from '../../db/entities/artist.entity';
 import { Genre } from '../../db/entities/genre.entity';
@@ -51,6 +51,9 @@ export class SearchService {
             .select(['a.id', 'a.name'])
             .where('a.name ilike :name', {
               name: `${q}%`,
+            })
+            .andWhere('a.status != :status', {
+              status: ArtistStatus.DELETED,
             })
             .take(take)
             .skip(skip)
