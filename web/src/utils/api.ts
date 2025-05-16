@@ -18,6 +18,7 @@ import {
   IEntriesResponse,
   IEntry,
   IEntryResonse,
+  ILabelResponse,
   ILanguage,
   IListCommentsResponse,
   IListItemsResponse,
@@ -57,6 +58,12 @@ const client = axios.create({
 // ----------------
 const getArtist = (id: string) =>
   client.get<IArtistResponse>('artists/' + id).then((res) => res.data);
+
+// ----------------
+//     LABEL
+// ----------------
+const getLabel = (id: string) =>
+  client.get<ILabelResponse>('labels/' + id).then((res) => res.data);
 
 // ----------------
 //     LANGUAGE
@@ -567,6 +574,7 @@ const report = (report: CreateReportDto) =>
 
 export const api = {
   getArtist,
+  getLabel,
   createArtist,
   createLabel,
   getLanguages,

@@ -83,6 +83,11 @@ export interface ILabel {
   name: string;
 }
 
+export interface ILabelResponse {
+  label: ILabel;
+  releases: IRelease[];
+}
+
 export interface ILanguage {
   id: string;
   name: string;

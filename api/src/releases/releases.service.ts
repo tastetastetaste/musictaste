@@ -200,6 +200,18 @@ export class ReleasesService {
     return result;
   }
 
+  async getReleasesByLabel(labelId: string) {
+    const res = await this.releaseLabelRepository.find({
+      where: { labelId },
+    });
+
+    const result = this.getReleasesByIdsWithStats(
+      res.map((ra) => ra.releaseId),
+    );
+
+    return result;
+  }
+
   async getContributors(id: string) {
     const releaseSubmissions = await this.releasesSubmissions.find({
       where: { releaseId: id },

@@ -124,6 +124,7 @@ const ListPage = lazy(() => import('./features/lists/list-page'));
 const PrivacyPolicyPage = lazy(() => import('./legal/privacy'));
 const TermsAndConditionsPage = lazy(() => import('./legal/terms'));
 const ArtistPage = lazy(() => import('./features/artists/artist-page'));
+const LabelPage = lazy(() => import('./features/labels/label-page'));
 const ResetPasswordPage = lazy(
   () => import('./features/account/reset-password-page'),
 );
@@ -595,6 +596,14 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<Fallback />}>
             <ArtistPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'label/:id',
+        element: (
+          <Suspense fallback={<Fallback />}>
+            <LabelPage />
           </Suspense>
         ),
       },

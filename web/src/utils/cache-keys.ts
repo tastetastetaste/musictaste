@@ -112,6 +112,9 @@ const labelSubmissionsKey = (filters: {
 // ARTIST
 const artistKey = (id: string) => ['artist', id];
 
+// LABELS
+const labelKey = (id: string) => ['label', id];
+
 // LANGUAGES
 const languagesKey = () => ['languages'];
 
@@ -183,6 +186,7 @@ const searchKey = (filters: {
 
 export const cacheKeys = {
   artistKey,
+  labelKey,
   entryKey,
   myReleaseEntryKey,
   entriesKey,
