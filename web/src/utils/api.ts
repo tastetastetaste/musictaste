@@ -471,6 +471,17 @@ const labelSubmissionVote = ({
     .patch('submissions/labels/vote/' + submissionId, { vote })
     .then((res) => res.data);
 
+const artistSubmissionVote = ({
+  submissionId,
+  vote,
+}: {
+  submissionId: string;
+  vote: VoteType;
+}) =>
+  client
+    .patch('submissions/artists/vote/' + submissionId, { vote })
+    .then((res) => res.data);
+
 // ----------------
 //     GENRES
 // ----------------
@@ -638,6 +649,7 @@ export const api = {
   getLabelSubmissions,
   releaseSubmissionVote,
   labelSubmissionVote,
+  artistSubmissionVote,
   trackVote,
   removeTrackVote,
   getReleaseGenres,

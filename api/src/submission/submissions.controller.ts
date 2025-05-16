@@ -127,6 +127,23 @@ export class SubmissionsController {
     );
   }
 
+  @Patch('artists/vote/:submissionId')
+  @UseGuards(AuthenticatedGuard)
+  artistSubmissionVote(
+    @Param('submissionId') submissionId: string,
+    @Body() body: SubmissionVoteDto,
+    @CurUser() user: CurrentUserPayload,
+  ) {
+    if (user.contributorStatus < ContributorStatus.TRUSTED_CONTRIBUTOR)
+      throw new UnauthorizedException();
+
+    return this.submissionsService.artistSubmissionVote(
+      submissionId,
+      body.vote,
+      user,
+    );
+  }
+
   @Get('releases')
   @UseGuards(AuthenticatedGuard)
   getReleaseSubmissions(@Query() query: FindReleaseSubmissionsDto) {

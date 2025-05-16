@@ -13,7 +13,6 @@ import {
   FindArtistSubmissionsDto,
   FindLabelSubmissionsDto,
   FindReleaseSubmissionsDto,
-  IArtistSubmission,
   IArtistSubmissionsResponse,
   ILabelSubmissionsResponse,
   IReleaseSubmissionsResponse,
@@ -38,6 +37,8 @@ import { LabelsService } from '../labels/labels.service';
 import { ReleasesService } from '../releases/releases.service';
 import { UsersService } from '../users/users.service';
 import { LabelSubmissionVote } from '../../db/entities/label-submission-vote.entity';
+import { ArtistSubmissionVote } from '../../db/entities/artist-submission-vote.entity';
+import { ArtistsService } from '../artists/artists.service';
 
 @Injectable()
 export class SubmissionService {
@@ -62,10 +63,13 @@ export class SubmissionService {
     private releaseSubmissionVoteRepository: Repository<ReleaseSubmissionVote>,
     @InjectRepository(LabelSubmissionVote)
     private labelSubmissionVoteRepository: Repository<LabelSubmissionVote>,
+    @InjectRepository(ArtistSubmissionVote)
+    private artistSubmissionVoteRepository: Repository<ArtistSubmissionVote>,
     private releasesService: ReleasesService,
     private imagesService: ImagesService,
     private usersService: UsersService,
     private labelsService: LabelsService,
+    private artistsService: ArtistsService,
   ) {}
 
   // --- ARTISTS
@@ -160,6 +164,17 @@ export class SubmissionService {
       submission.labelId
     ) {
       return await this.labelsService.softDelete({ id: submission.labelId });
+    } else {
+      return false;
+    }
+  }
+
+  private async revokeArtistSubmission(submission: ArtistSubmission) {
+    if (
+      submission.submissionType === SubmissionType.CREATE &&
+      submission.artistId
+    ) {
+      return await this.artistsService.softDelete({ id: submission.artistId });
     } else {
       return false;
     }
@@ -450,6 +465,77 @@ export class SubmissionService {
         : SubmissionStatus.DISAPPROVED;
 
       await this.labelSubmissionRepository.save(labelSubmission);
+    }
+
+    return { message: 'Voted successfully' };
+  }
+
+  async artistSubmissionVote(
+    submissionId: string,
+    vote: VoteType,
+    user: CurrentUserPayload,
+  ) {
+    const artistSubmission = await this.artistSubmissionRepository.findOne({
+      where: {
+        id: submissionId,
+      },
+    });
+
+    if (
+      !artistSubmission ||
+      artistSubmission.submissionStatus === SubmissionStatus.APPROVED ||
+      artistSubmission.submissionStatus === SubmissionStatus.DISAPPROVED
+    )
+      throw new BadRequestException();
+
+    const newVote = new ArtistSubmissionVote();
+    newVote.type = vote;
+    newVote.userId = user.id;
+    newVote.artistSubmissionId = artistSubmission.id;
+
+    await this.artistSubmissionVoteRepository.save(newVote);
+
+    let closeSubmission = false;
+    let approveSubmission = false;
+
+    if (user.contributorStatus >= ContributorStatus.EDITOR) {
+      closeSubmission = true;
+      approveSubmission = vote === VoteType.UP;
+    } else if (
+      user.contributorStatus >= ContributorStatus.TRUSTED_CONTRIBUTOR
+    ) {
+      const submissionVotes = await this.artistSubmissionVoteRepository
+        .createQueryBuilder('v')
+        .addSelect('COUNT(v.id)', 'totalVotes')
+        .addSelect('SUM(v.vote)', 'netVotes')
+        .where('v.artistSubmissionId = :id', { id: submissionId })
+        .getRawOne();
+
+      closeSubmission = Number(submissionVotes.totalVotes) >= 3;
+      approveSubmission = Number(submissionVotes.netVotes) > 0;
+    } else {
+      throw new BadRequestException();
+    }
+
+    if (closeSubmission) {
+      if (
+        approveSubmission &&
+        artistSubmission.submissionStatus === SubmissionStatus.OPEN
+      ) {
+        await this.applyArtistSubmission(artistSubmission);
+      } else if (
+        !approveSubmission &&
+        artistSubmission.submissionStatus === SubmissionStatus.AUTO_APPROVED &&
+        artistSubmission.submissionType === SubmissionType.CREATE
+      ) {
+        await this.revokeArtistSubmission(artistSubmission);
+      }
+
+      artistSubmission.submissionStatus = approveSubmission
+        ? SubmissionStatus.APPROVED
+        : SubmissionStatus.DISAPPROVED;
+
+      await this.artistSubmissionRepository.save(artistSubmission);
     }
 
     return { message: 'Voted successfully' };

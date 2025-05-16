@@ -6,7 +6,7 @@ import { Stack } from '../../components/flex/stack';
 import { Loading } from '../../components/loading';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
-import { SubmissionItemWrapper } from './submission-item';
+import { SubmissionActions, SubmissionItemWrapper } from './submission-item';
 import { getArtistPathname } from '../../utils/get-pathname';
 import { Link } from '../../components/links/link';
 
@@ -19,18 +19,21 @@ type Props = {
 const SubmissionItem = ({ submission }: { submission: IArtistSubmission }) => {
   return (
     <SubmissionItemWrapper status={submission.submissionStatus}>
-      <Stack key={submission.id}>
-        {submission.name && (
-          <div>
-            <span>name: {submission.name}</span>
-          </div>
-        )}
-        {submission.artistId && (
-          <div>
-            <Link to={getArtistPathname(submission.artistId)}>link</Link>
-          </div>
-        )}
-      </Stack>
+      {submission.name && (
+        <div>
+          <span>name: {submission.name}</span>
+        </div>
+      )}
+      {submission.artistId && (
+        <div>
+          <Link to={getArtistPathname(submission.artistId)}>link</Link>
+        </div>
+      )}
+      <SubmissionActions
+        id={submission.id}
+        status={submission.submissionStatus}
+        voteFn={api.artistSubmissionVote}
+      />
     </SubmissionItemWrapper>
   );
 };

@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ReleasesModule } from '../releases/releases.module';
-import { SubmissionModule } from '../submission/submission.module';
 import { ArtistsController } from './artists.controller';
 import { ArtistsService } from './artists.service';
 import { ArtistSubmission } from '../../db/entities/artist-submission.entity';
@@ -12,9 +11,9 @@ import { ReleaseArtist } from '../../db/entities/release-artist.entity';
   imports: [
     TypeOrmModule.forFeature([Artist, ArtistSubmission, ReleaseArtist]),
     ReleasesModule,
-    SubmissionModule,
   ],
   controllers: [ArtistsController],
   providers: [ArtistsService],
+  exports: [ArtistsService],
 })
 export class ArtistsModule {}

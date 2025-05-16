@@ -9,7 +9,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ReleasesService } from '../releases/releases.service';
-import { SubmissionService } from '../submission/submission.service';
 import { ArtistSubmission } from '../../db/entities/artist-submission.entity';
 import { Artist } from '../../db/entities/artist.entity';
 import { ReleaseArtist } from '../../db/entities/release-artist.entity';
@@ -23,7 +22,6 @@ export class ArtistsService {
     @InjectRepository(ReleaseArtist)
     private releaseArtistRepository: Repository<ReleaseArtist>,
     private releasesService: ReleasesService,
-    private submissionService: SubmissionService,
   ) {}
 
   async findOneWithReleases(id: string): Promise<IArtistResponse> {
