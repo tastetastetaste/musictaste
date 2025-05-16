@@ -75,6 +75,9 @@ const SearchPage = lazy(() => import('./features/search/search-page'));
 const SearchArtistPage = lazy(
   () => import('./features/search/search-artist-page'),
 );
+const SearchLabelPage = lazy(
+  () => import('./features/search/search-label-page'),
+);
 const SearchReleasePage = lazy(
   () => import('./features/search/search-release-page'),
 );
@@ -374,6 +377,14 @@ const router = createBrowserRouter([
             element: (
               <Suspense fallback={<Fallback />}>
                 <SearchArtistPage />
+              </Suspense>
+            ),
+          },
+          {
+            path: 'label',
+            element: (
+              <Suspense fallback={<Fallback />}>
+                <SearchLabelPage />
               </Suspense>
             ),
           },
