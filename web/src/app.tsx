@@ -137,8 +137,8 @@ const ForgotPasswordPage = lazy(
 const ConfirmEmailPage = lazy(
   () => import('./features/account/confirm-email-page'),
 );
-
 const SearchUserPage = lazy(() => import('./features/search/search-user-page'));
+const ContributingPage = lazy(() => import('./docs/contributing'));
 
 const QueryProvider = ({ children }: { children: any }) => {
   const { snackbar } = useSnackbar();
@@ -643,6 +643,14 @@ const router = createBrowserRouter([
             ],
           },
         ],
+      },
+      {
+        path: 'contributing',
+        element: (
+          <Suspense fallback={<Fallback />}>
+            <ContributingPage />
+          </Suspense>
+        ),
       },
     ],
   },

@@ -26,6 +26,7 @@ import { SelectArtist } from './select-artist';
 import { SelectLabel } from './select-label';
 import { SelectLanguage } from './select-language';
 import { ReleaseTypeOptions } from './shared';
+import { Group } from '../../components/flex/group';
 
 export interface CreateReleaseFormValues extends CreateReleaseDto {
   mbid: string;
@@ -101,7 +102,12 @@ const AddReleasePage = () => {
       <Container>
         <form onSubmit={handleSubmit((data) => createRelease(data))}>
           <Stack gap="sm">
-            <Typography size="title-lg">Add Release</Typography>
+            <Group justify="apart" align="center" wrap>
+              <Typography size="title-lg">Add Release</Typography>
+              <Link to="/contributing">
+                Need help? Read the Contributing Guide.
+              </Link>
+            </Group>
             <Input
               placeholder="MusicBrainz release id/url"
               {...register('mbid')}

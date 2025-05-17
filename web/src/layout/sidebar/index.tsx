@@ -31,6 +31,7 @@ const links = [
   { to: '/releases/new', label: 'Releases', exact: false },
   { to: '/reviews/new', label: 'Reviews', exact: false },
   { to: '/lists/new', label: 'Lists', exact: false },
+  { to: '/contributing', label: 'Contributing', exact: true },
 ];
 
 const SidebarContent = ({

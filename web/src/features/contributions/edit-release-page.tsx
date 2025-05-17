@@ -29,6 +29,8 @@ import { SelectLanguage } from './select-language';
 import { Textarea } from '../../components/inputs/textarea';
 import { FormInputError } from '../../components/inputs/form-input-error';
 import { cacheKeys } from '../../utils/cache-keys';
+import { Link } from '../../components/links/link';
+import { Group } from '../../components/flex/group';
 
 export interface EditReleaseFormValues extends UpdateReleaseDto {
   mbid: string;
@@ -179,7 +181,12 @@ const EditReleasePage = () => {
           })}
         >
           <Stack gap="sm">
-            <Typography size="title-lg">Edit Release</Typography>
+            <Group justify="apart" align="center" wrap>
+              <Typography size="title-lg">Edit Release</Typography>
+              <Link to="/contributing">
+                Need help? Read the Contributing Guide.
+              </Link>
+            </Group>
             <Input
               placeholder="MusicBrainz Release Group Id"
               {...register('mbid')}

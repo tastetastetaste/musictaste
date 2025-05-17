@@ -80,8 +80,12 @@ const MarkdownContainer = styled.div`
     margin: 1em 0;
   }
 
+  > div > ol {
+    margin: 1em 0;
+  }
+
   ul {
-    list-style-type: circle;
+    list-style-type: initial;
   }
 
   li {
