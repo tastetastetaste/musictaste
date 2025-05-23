@@ -16,6 +16,7 @@ import {
   IArtistSubmissionsResponse,
   ILabelSubmissionsResponse,
   IReleaseSubmissionsResponse,
+  ProcessPendingDeletionDto,
   ReleaseType,
   SubmissionStatus,
   SubmissionType,
@@ -381,22 +382,52 @@ export class SubmissionService {
         releaseSubmission.submissionStatus === SubmissionStatus.OPEN
       ) {
         await this.applyReleaseSubmission(releaseSubmission);
-      } else if (
-        !approveSubmission &&
-        releaseSubmission.submissionStatus === SubmissionStatus.AUTO_APPROVED &&
-        releaseSubmission.submissionType === SubmissionType.CREATE
-      ) {
-        // TODO: revert create release
       }
 
       releaseSubmission.submissionStatus = approveSubmission
         ? SubmissionStatus.APPROVED
-        : SubmissionStatus.DISAPPROVED;
+        : releaseSubmission.submissionStatus ===
+              SubmissionStatus.AUTO_APPROVED &&
+            releaseSubmission.submissionType === SubmissionType.CREATE
+          ? SubmissionStatus.PENDING_ENTITY_DELETION
+          : SubmissionStatus.DISAPPROVED;
 
       await this.releaseSubmissionRepository.save(releaseSubmission);
     }
 
     return { message: 'Voted successfully' };
+  }
+
+  async processPendingDeletion({
+    releaseSubmissionIds,
+  }: ProcessPendingDeletionDto) {
+    const results = [];
+
+    if (releaseSubmissionIds && releaseSubmissionIds.length > 0) {
+      const rSubmissions = await this.releaseSubmissionRepository.find({
+        where: { id: In(releaseSubmissionIds) },
+      });
+
+      for (let i = 0; i < rSubmissions.length; i++) {
+        const rs = rSubmissions[i];
+
+        try {
+          await this.releasesService.deleteRelease(rs.releaseId);
+          await this.releaseSubmissionRepository.update(
+            { id: rs.id },
+            { submissionStatus: SubmissionStatus.DISAPPROVED },
+          );
+          results.push({ id: rs.id, status: 'deleted' });
+        } catch (err) {
+          results.push({ id: rs.id, status: 'error', error: err.message });
+        }
+      }
+    }
+
+    return {
+      message: 'Process completed',
+      results,
+    };
   }
 
   async labelSubmissionVote(

@@ -41,6 +41,7 @@ import {
   IUserRatingBucket,
   IUserReleaseDate,
   IUserTag,
+  ProcessPendingDeletionDto,
   SearchType,
   UpdateReleaseDto,
   VoteType,
@@ -451,6 +452,11 @@ const getLabelSubmissions = ({
     )
     .then((res) => res.data);
 
+const processPendingDeletion = (data: ProcessPendingDeletionDto) =>
+  client
+    .post('submissions/process-pending-deletion', data)
+    .then((res) => res.data);
+
 const releaseSubmissionVote = ({
   submissionId,
   vote,
@@ -649,6 +655,7 @@ export const api = {
   getReleaseSubmissions,
   getArtistSubmissions,
   getLabelSubmissions,
+  processPendingDeletion,
   releaseSubmissionVote,
   labelSubmissionVote,
   artistSubmissionVote,

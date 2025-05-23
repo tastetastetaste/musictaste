@@ -142,6 +142,10 @@ const LabelSubmissionsList = lazy(
   () => import('./features/contributions/label-submission-list'),
 );
 
+const PendingDeletionsPage = lazy(
+  () => import('./features/contributions/pending-deletions-page'),
+);
+
 const QueryProvider = ({ children }: { children: any }) => {
   const { snackbar } = useSnackbar();
 
@@ -535,6 +539,14 @@ const router = createBrowserRouter([
         ),
       },
       {
+        path: 'contributions/pending-deletions',
+        element: (
+          <Suspense fallback={<Fallback />}>
+            <PendingDeletionsPage />
+          </Suspense>
+        ),
+      },
+      {
         path: 'contributions',
         element: (
           <Suspense fallback={<Fallback />}>
@@ -682,8 +694,8 @@ const router = createBrowserRouter([
             <ContributingPage />
           </Suspense>
         ),
-  },
-  {
+      },
+      {
         path: '*',
         element: <NotFoundPage />,
       },

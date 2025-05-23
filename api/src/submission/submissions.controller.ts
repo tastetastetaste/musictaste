@@ -20,6 +20,7 @@ import {
   FindArtistSubmissionsDto,
   FindLabelSubmissionsDto,
   FindReleaseSubmissionsDto,
+  ProcessPendingDeletionDto,
   SubmissionVoteDto,
   UpdateReleaseDto,
 } from 'shared';
@@ -142,6 +143,18 @@ export class SubmissionsController {
       body.vote,
       user,
     );
+  }
+
+  @Post('process-pending-deletion')
+  @UseGuards(AuthenticatedGuard)
+  processPendingDeletion(
+    @Body() body: ProcessPendingDeletionDto,
+    @CurUser() user: CurrentUserPayload,
+  ) {
+    if (user.contributorStatus !== ContributorStatus.ADMIN)
+      throw new UnauthorizedException();
+
+    return this.submissionsService.processPendingDeletion(body);
   }
 
   @Get('releases')

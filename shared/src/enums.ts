@@ -36,6 +36,7 @@ export enum SubmissionStatus {
   OPEN = 2, // for edits (open, unapplied)
   APPROVED = 3, // closed, applied
   DISAPPROVED = 4, // closed, unapplied
+  PENDING_ENTITY_DELETION = 5, // An AUTO_APPROVED CREATE submission has been disapproved and the linked entity is now pending hard deletion.
 }
 
 export enum SubmissionType {

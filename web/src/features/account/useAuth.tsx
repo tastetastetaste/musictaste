@@ -7,6 +7,7 @@ import { cacheKeys } from '../../utils/cache-keys';
 
 interface IUseAuth {
   isLoggedIn: boolean;
+  isAdmin: boolean;
   canVoteOnSubmissions: boolean;
   isLoading: boolean;
   me?: ICurrentUserResponse['user'] | null;
@@ -14,6 +15,7 @@ interface IUseAuth {
 
 const useAuthContext = createContext<IUseAuth>({
   isLoggedIn: false,
+  isAdmin: false,
   canVoteOnSubmissions: false,
   isLoading: true,
   me: null,
@@ -48,6 +50,7 @@ export const UseAuthProvider: React.FC<{
     <useAuthContext.Provider
       value={{
         isLoggedIn: !!user,
+        isAdmin: user?.contributorStatus === ContributorStatus.ADMIN,
         canVoteOnSubmissions:
           user?.contributorStatus >= ContributorStatus.TRUSTED_CONTRIBUTOR,
         isLoading,

@@ -66,6 +66,8 @@ Each music data contribution goes through an approval process and is assigned on
 	- The contribution has been reviewed and approved, and the data has been added to the database.
 - **DISAPPROVED**
 	- The contribution has been reviewed and rejected, and the data has not been added to the database.
+- **PENDING ENTITY DELETION**
+  - AUTO APPROVED contribution has been disapproved and the linked data is now pending hard deletion.
 
 ## Contributor roles
 

@@ -354,6 +354,18 @@ export class FindLabelSubmissionsDto {
   page: number;
 }
 
+export class ProcessPendingDeletionDto {
+  @IsOptional()
+  @IsString({ each: true })
+  releaseSubmissionIds?: string[];
+  @IsOptional()
+  @IsString({ each: true })
+  labelSubmissionIds?: string[];
+  @IsOptional()
+  @IsString({ each: true })
+  artistSubmissionIds?: string[];
+}
+
 export class SubmissionVoteDto {
   @Type(() => Number)
   @IsEnum(VoteType)

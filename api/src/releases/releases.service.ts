@@ -623,6 +623,10 @@ export class ReleasesService {
     return release;
   }
 
+  async deleteRelease(id: string) {
+    return await this.releasesRepository.delete(id);
+  }
+
   private async updateTracks(releaseId: string, newTracks: any[]) {
     const oldTracks = await this.tracksRepository
       .createQueryBuilder('t')
