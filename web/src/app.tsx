@@ -19,6 +19,7 @@ import { UseAuthProvider } from './features/account/useAuth';
 import { SnackbarProvider, useSnackbar } from './hooks/useSnackbar';
 import { SOMETHING_WENT_WRONG } from './static/feedback';
 import { ThemeProvider } from './theme/useTheme';
+import NotFoundPage from './layout/not-found-page';
 
 const UserPageWrapper = lazy(
   () => import('./features/users/user-page-wrapper'),
@@ -197,6 +198,14 @@ const RootErrorPage = () => {
 };
 
 const router = createBrowserRouter([
+  {
+    path: 'account/confirm/:token',
+    element: (
+      <Suspense fallback={<Fallback />}>
+        <ConfirmEmailPage />
+      </Suspense>
+    ),
+  },
   {
     path: '/',
     element: (
@@ -673,16 +682,12 @@ const router = createBrowserRouter([
             <ContributingPage />
           </Suspense>
         ),
-      },
-    ],
   },
   {
-    path: 'account/confirm/:token',
-    element: (
-      <Suspense fallback={<Fallback />}>
-        <ConfirmEmailPage />
-      </Suspense>
-    ),
+        path: '*',
+        element: <NotFoundPage />,
+      },
+    ],
   },
 ]);
 
