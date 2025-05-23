@@ -1,5 +1,4 @@
 import {
-  ArtistStatus,
   CreateArtistDto,
   IArtistResponse,
   SubmissionStatus,
@@ -61,15 +60,7 @@ export class ArtistsService {
     };
   }
 
-  async softDelete({ id }: { id: string }): Promise<boolean> {
-    try {
-      await Promise.all([
-        this.artistsRepository.update({ id }, { status: ArtistStatus.DELETED }),
-        this.releaseArtistRepository.delete({ artistId: id }),
-      ]);
-      return true;
-    } catch (err) {
-      return false;
-    }
+  async deleteArtist(id: string) {
+    return await this.artistsRepository.delete(id);
   }
 }

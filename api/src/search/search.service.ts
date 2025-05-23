@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ArtistStatus, ISearchResponse, LabelStatus } from 'shared';
+import { ISearchResponse } from 'shared';
 import { Repository } from 'typeorm';
 import { Artist } from '../../db/entities/artist.entity';
 import { Genre } from '../../db/entities/genre.entity';
@@ -52,9 +52,6 @@ export class SearchService {
             .where('a.name ilike :name', {
               name: `${q}%`,
             })
-            .andWhere('a.status != :status', {
-              status: ArtistStatus.DELETED,
-            })
             .take(take)
             .skip(skip)
             .getManyAndCount()
@@ -65,9 +62,6 @@ export class SearchService {
             .select(['label.id', 'label.name'])
             .where('label.name ilike :name', {
               name: `${q}%`,
-            })
-            .andWhere('label.status != :status', {
-              status: LabelStatus.DELETED,
             })
             .take(take)
             .skip(skip)

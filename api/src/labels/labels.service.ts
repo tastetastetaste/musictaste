@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateLabelDto, ILabelResponse, LabelStatus } from 'shared';
+import { CreateLabelDto, ILabelResponse } from 'shared';
 import { Repository } from 'typeorm';
 import { Label } from '../../db/entities/label.entity';
 import { ReleaseLabel } from '../../db/entities/release-label.entity';
@@ -34,15 +34,7 @@ export class LabelsService {
     return this.labelRepository.save(label);
   }
 
-  async softDelete({ id }: { id: string }): Promise<boolean> {
-    try {
-      await Promise.all([
-        this.labelRepository.update({ id }, { status: LabelStatus.DELETED }),
-        this.releaseLabelRepository.delete({ labelId: id }),
-      ]);
-      return true;
-    } catch (err) {
-      return false;
-    }
+  async deleteLabel(id: string) {
+    return await this.labelRepository.delete(id);
   }
 }

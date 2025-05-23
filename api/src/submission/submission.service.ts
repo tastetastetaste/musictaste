@@ -159,28 +159,6 @@ export class SubmissionService {
     }
   }
 
-  private async revokeLabelSubmission(submission: LabelSubmission) {
-    if (
-      submission.submissionType === SubmissionType.CREATE &&
-      submission.labelId
-    ) {
-      return await this.labelsService.softDelete({ id: submission.labelId });
-    } else {
-      return false;
-    }
-  }
-
-  private async revokeArtistSubmission(submission: ArtistSubmission) {
-    if (
-      submission.submissionType === SubmissionType.CREATE &&
-      submission.artistId
-    ) {
-      return await this.artistsService.softDelete({ id: submission.artistId });
-    } else {
-      return false;
-    }
-  }
-
   // --- RELEASES
 
   async createReleaseSubmission(
@@ -400,6 +378,8 @@ export class SubmissionService {
 
   async processPendingDeletion({
     releaseSubmissionIds,
+    artistSubmissionIds,
+    labelSubmissionIds,
   }: ProcessPendingDeletionDto) {
     const results = [];
 
@@ -420,6 +400,52 @@ export class SubmissionService {
           results.push({ id: rs.id, status: 'deleted' });
         } catch (err) {
           results.push({ id: rs.id, status: 'error', error: err.message });
+        }
+      }
+    }
+
+    if (artistSubmissionIds && artistSubmissionIds.length > 0) {
+      const aSubmission = await this.artistSubmissionRepository.find({
+        where: {
+          id: In(artistSubmissionIds),
+        },
+      });
+
+      for (let i = 0; i < aSubmission.length; i++) {
+        const as = aSubmission[i];
+
+        try {
+          await this.artistsService.deleteArtist(as.artistId);
+          await this.artistSubmissionRepository.update(
+            { id: as.id },
+            { submissionStatus: SubmissionStatus.DISAPPROVED },
+          );
+          results.push({ id: as.id, status: 'deleted' });
+        } catch (err) {
+          results.push({ id: as.id, status: 'error', error: err.message });
+        }
+      }
+    }
+
+    if (labelSubmissionIds && labelSubmissionIds.length > 0) {
+      const aSubmission = await this.labelSubmissionRepository.find({
+        where: {
+          id: In(labelSubmissionIds),
+        },
+      });
+
+      for (let i = 0; i < aSubmission.length; i++) {
+        const as = aSubmission[i];
+
+        try {
+          await this.labelsService.deleteLabel(as.labelId);
+          await this.labelSubmissionRepository.update(
+            { id: as.id },
+            { submissionStatus: SubmissionStatus.DISAPPROVED },
+          );
+          results.push({ id: as.id, status: 'deleted' });
+        } catch (err) {
+          results.push({ id: as.id, status: 'error', error: err.message });
         }
       }
     }
@@ -483,17 +509,14 @@ export class SubmissionService {
         labelSubmission.submissionStatus === SubmissionStatus.OPEN
       ) {
         await this.applyLabelSubmission(labelSubmission);
-      } else if (
-        !approveSubmission &&
-        labelSubmission.submissionStatus === SubmissionStatus.AUTO_APPROVED &&
-        labelSubmission.submissionType === SubmissionType.CREATE
-      ) {
-        await this.revokeLabelSubmission(labelSubmission);
       }
 
       labelSubmission.submissionStatus = approveSubmission
         ? SubmissionStatus.APPROVED
-        : SubmissionStatus.DISAPPROVED;
+        : labelSubmission.submissionStatus === SubmissionStatus.AUTO_APPROVED &&
+            labelSubmission.submissionType === SubmissionType.CREATE
+          ? SubmissionStatus.PENDING_ENTITY_DELETION
+          : SubmissionStatus.DISAPPROVED;
 
       await this.labelSubmissionRepository.save(labelSubmission);
     }
@@ -554,17 +577,15 @@ export class SubmissionService {
         artistSubmission.submissionStatus === SubmissionStatus.OPEN
       ) {
         await this.applyArtistSubmission(artistSubmission);
-      } else if (
-        !approveSubmission &&
-        artistSubmission.submissionStatus === SubmissionStatus.AUTO_APPROVED &&
-        artistSubmission.submissionType === SubmissionType.CREATE
-      ) {
-        await this.revokeArtistSubmission(artistSubmission);
       }
 
       artistSubmission.submissionStatus = approveSubmission
         ? SubmissionStatus.APPROVED
-        : SubmissionStatus.DISAPPROVED;
+        : artistSubmission.submissionStatus ===
+              SubmissionStatus.AUTO_APPROVED &&
+            artistSubmission.submissionType === SubmissionType.CREATE
+          ? SubmissionStatus.PENDING_ENTITY_DELETION
+          : SubmissionStatus.DISAPPROVED;
 
       await this.artistSubmissionRepository.save(artistSubmission);
     }

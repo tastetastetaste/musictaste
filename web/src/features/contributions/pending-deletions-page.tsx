@@ -106,7 +106,7 @@ const PendingDeletionsPage = () => {
             disabled={isDeleting || !labelsData?.labels.length}
             onClick={() =>
               mutateAsync({
-                releaseSubmissionIds: labelsData.labels.map((s) => s.id),
+                labelSubmissionIds: labelsData.labels.map((s) => s.id),
               })
             }
           >
