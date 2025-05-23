@@ -23,8 +23,10 @@ export const SubmissionActions = ({
 
   if (
     !canVoteOnSubmissions ||
-    status === SubmissionStatus.APPROVED ||
-    status === SubmissionStatus.DISAPPROVED
+    !(
+      status === SubmissionStatus.OPEN ||
+      status === SubmissionStatus.AUTO_APPROVED
+    )
   )
     return <></>;
 

@@ -40,7 +40,7 @@ const UserMenu = () => {
           icon: IconSettings,
         },
         {
-          to: '/r/add',
+          to: '/contributions/releases/new',
           label: 'Add Release',
           icon: IconCirclePlus,
         },

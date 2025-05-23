@@ -225,7 +225,7 @@ export const ReleasePageContainer: React.FC<{
       menu={[
         {
           label: 'Edit',
-          to: '/r/edit/' + release.id,
+          to: '/contributions/releases/' + release.id,
         },
         {
           label: 'Report',

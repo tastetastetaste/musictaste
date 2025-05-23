@@ -10,6 +10,7 @@ import {
   FindLabelSubmissionsDto,
   FindReleaseSubmissionsDto,
   IArtistResponse,
+  IArtistSubmissionsResponse,
   IAutofillRelease,
   ICreateArtistResponse,
   ICreateLabelResponse,
@@ -19,6 +20,7 @@ import {
   IEntry,
   IEntryResonse,
   ILabelResponse,
+  ILabelSubmissionsResponse,
   ILanguage,
   IListCommentsResponse,
   IListItemsResponse,
@@ -46,7 +48,7 @@ import {
 
 const client = axios.create({
   baseURL:
-    // @ts-ignore
+    // @ts-expect-error ...
     import.meta.env.PROD
       ? 'https://api.musictaste.xyz'
       : 'http://localhost:4000/',
@@ -411,39 +413,39 @@ const updateRelease = ({ id, data }: { id: string; data: UpdateReleaseDto }) =>
 
 const getReleaseSubmissions = ({
   page,
-  open,
+  status,
   releaseId,
   userId,
 }: FindReleaseSubmissionsDto) =>
   client
     .get<IReleaseSubmissionsResponse>(
-      `submissions/releases?page=${page}${open ? '&open=true' : ''}${
+      `submissions/releases?page=${page}${status ? '&status=' + status : ''}${
         releaseId ? '&releaseId=' + releaseId : ''
       }${userId ? '&userId=' + userId : ''}`,
     )
     .then((res) => res.data);
 const getArtistSubmissions = ({
   page,
-  open,
+  status,
   artistId,
   userId,
 }: FindArtistSubmissionsDto) =>
   client
-    .get(
-      `submissions/artists?page=${page}${open ? '&open=true' : ''}${
+    .get<IArtistSubmissionsResponse>(
+      `submissions/artists?page=${page}${status ? '&status=' + status : ''}${
         artistId ? '&artistId=' + artistId : ''
       }${userId ? '&userId=' + userId : ''}`,
     )
     .then((res) => res.data);
 const getLabelSubmissions = ({
   page,
-  open,
+  status,
   labelId,
   userId,
 }: FindLabelSubmissionsDto) =>
   client
-    .get(
-      `submissions/labels?page=${page}${open ? '&open=true' : ''}${
+    .get<ILabelSubmissionsResponse>(
+      `submissions/labels?page=${page}${status ? '&status=' + status : ''}${
         labelId ? '&labelId=' + labelId : ''
       }${userId ? '&userId=' + userId : ''}`,
     )

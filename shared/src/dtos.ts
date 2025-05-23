@@ -16,8 +16,7 @@ import {
   ValidateNested,
   ValidationOptions,
 } from 'class-validator';
-import { EntriesSortByEnum, VoteType } from './enums';
-import { Transform } from 'class-transformer';
+import { EntriesSortByEnum, SubmissionStatus, VoteType } from './enums';
 import dayjs from 'dayjs';
 
 export function IsDayjsDateString(validationOptions?: ValidationOptions) {
@@ -315,8 +314,9 @@ export class FindReleaseSubmissionsDto {
   @IsString()
   releaseId?: string;
   @IsOptional()
-  @Type(() => Boolean)
-  open?: boolean;
+  @Type(() => Number)
+  @IsEnum(SubmissionStatus)
+  status?: number;
   @Type(() => Number)
   @IsInt()
   page: number;
@@ -330,8 +330,9 @@ export class FindArtistSubmissionsDto {
   @IsString()
   artistId?: string;
   @IsOptional()
-  @Type(() => Boolean)
-  open?: boolean;
+  @Type(() => Number)
+  @IsEnum(SubmissionStatus)
+  status?: number;
   @Type(() => Number)
   @IsInt()
   page: number;
@@ -345,8 +346,9 @@ export class FindLabelSubmissionsDto {
   @IsString()
   labelId?: string;
   @IsOptional()
-  @Type(() => Boolean)
-  open?: boolean;
+  @Type(() => Number)
+  @IsEnum(SubmissionStatus)
+  status?: number;
   @Type(() => Number)
   @IsInt()
   page: number;

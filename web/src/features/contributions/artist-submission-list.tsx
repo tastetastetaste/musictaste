@@ -1,6 +1,6 @@
 import { Fragment } from 'react';
 import { useInfiniteQuery } from 'react-query';
-import { IArtistSubmission } from 'shared';
+import { IArtistSubmission, SubmissionStatus } from 'shared';
 import { FetchMore } from '../../components/fetch-more';
 import { Stack } from '../../components/flex/stack';
 import { Loading } from '../../components/loading';
@@ -9,14 +9,19 @@ import { cacheKeys } from '../../utils/cache-keys';
 import { SubmissionActions, SubmissionItemWrapper } from './submission-item';
 import { getArtistPathname } from '../../utils/get-pathname';
 import { Link } from '../../components/links/link';
+import { useOutletContext } from 'react-router-dom';
 
-type Props = {
-  open?: boolean;
+class ArtistSubmissionListOutletContext {
+  status?: SubmissionStatus;
   userId?: string;
   artistId?: string;
-};
+}
 
-const SubmissionItem = ({ submission }: { submission: IArtistSubmission }) => {
+export const ArtistSubmissionItem = ({
+  submission,
+}: {
+  submission: IArtistSubmission;
+}) => {
   return (
     <SubmissionItemWrapper status={submission.submissionStatus}>
       {submission.name && (
@@ -38,22 +43,20 @@ const SubmissionItem = ({ submission }: { submission: IArtistSubmission }) => {
   );
 };
 
-export const ArtistSubmissionsList: React.FC<Props> = ({
-  open,
-  artistId,
-  userId,
-}) => {
+const ArtistSubmissionsList: React.FC = () => {
+  const { status, artistId, userId } =
+    useOutletContext<ArtistSubmissionListOutletContext>();
   const { data, isFetching, isFetchingNextPage, fetchNextPage, hasNextPage } =
     useInfiniteQuery(
       cacheKeys.artistSubmissionsKey({
-        open,
+        status,
         artistId,
         userId,
       }),
       async ({ pageParam = 1 }) =>
         api.getArtistSubmissions({
           page: pageParam,
-          open,
+          status,
           artistId,
           userId,
         }),
@@ -74,7 +77,7 @@ export const ArtistSubmissionsList: React.FC<Props> = ({
       {data?.pages.map((page) => (
         <Stack key={page.currentPage}>
           {page.artists.map((submission) => (
-            <SubmissionItem submission={submission} />
+            <ArtistSubmissionItem submission={submission} />
           ))}
         </Stack>
       ))}
@@ -84,3 +87,5 @@ export const ArtistSubmissionsList: React.FC<Props> = ({
     </Fragment>
   );
 };
+
+export default ArtistSubmissionsList;

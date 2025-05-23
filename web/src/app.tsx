@@ -24,7 +24,10 @@ const UserPageWrapper = lazy(
   () => import('./features/users/user-page-wrapper'),
 );
 const UserContributionsPageWrapper = lazy(
-  () => import('./features/users/user-contributions-page-wrapper'),
+  () => import('./features/contributions/user-contributions-page-wrapper'),
+);
+const ContributionsPageWrapper = lazy(
+  () => import('./features/contributions/contributions-page-wrapper'),
 );
 const SettingsPageWrapper = lazy(
   () => import('./features/settings/settings-page-wrapper'),
@@ -52,15 +55,6 @@ const UserFollowingPage = lazy(
 );
 const UserFollowersPage = lazy(
   () => import('./features/users/user-followers-page'),
-);
-const UserContributionsReleasesPage = lazy(
-  () => import('./features/users/user-contributions-releases-page'),
-);
-const UserContributionsArtistsPage = lazy(
-  () => import('./features/users/user-contributions-artists-page'),
-);
-const UserContributionsLabelsPage = lazy(
-  () => import('./features/users/user-contributions-labels-page'),
 );
 const SettingsProfilePage = lazy(
   () => import('./features/settings/settings-profile-page'),
@@ -115,9 +109,6 @@ const AddReleasePage = lazy(
 const EditReleasePage = lazy(
   () => import('./features/contributions/edit-release-page'),
 );
-const ReleasesSubmissions = lazy(
-  () => import('./features/contributions/releases-submissions-page'),
-);
 const NewListsPage = lazy(() => import('./features/lists/new-lists-page'));
 const PopularListsPage = lazy(
   () => import('./features/lists/popular-lists-page'),
@@ -139,6 +130,16 @@ const ConfirmEmailPage = lazy(
 );
 const SearchUserPage = lazy(() => import('./features/search/search-user-page'));
 const ContributingPage = lazy(() => import('./docs/contributing'));
+
+const ReleaseSubmissionsList = lazy(
+  () => import('./features/contributions/release-submission-list'),
+);
+const ArtistSubmissionsList = lazy(
+  () => import('./features/contributions/artist-submission-list'),
+);
+const LabelSubmissionsList = lazy(
+  () => import('./features/contributions/label-submission-list'),
+);
 
 const QueryProvider = ({ children }: { children: any }) => {
   const { snackbar } = useSnackbar();
@@ -241,7 +242,7 @@ const router = createBrowserRouter([
             path: 'releases',
             element: (
               <Suspense fallback={<Fallback />}>
-                <UserContributionsReleasesPage />
+                <ReleaseSubmissionsList />
               </Suspense>
             ),
           },
@@ -249,7 +250,7 @@ const router = createBrowserRouter([
             path: 'artists',
             element: (
               <Suspense fallback={<Fallback />}>
-                <UserContributionsArtistsPage />
+                <ArtistSubmissionsList />
               </Suspense>
             ),
           },
@@ -257,7 +258,7 @@ const router = createBrowserRouter([
             path: 'labels',
             element: (
               <Suspense fallback={<Fallback />}>
-                <UserContributionsLabelsPage />
+                <LabelSubmissionsList />
               </Suspense>
             ),
           },
@@ -509,29 +510,50 @@ const router = createBrowserRouter([
         ],
       },
       {
-        path: 'r',
+        path: 'contributions/releases/new',
+        element: (
+          <Suspense fallback={<Fallback />}>
+            <AddReleasePage />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'contributions/releases/:id',
+        element: (
+          <Suspense fallback={<Fallback />}>
+            <EditReleasePage />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'contributions',
+        element: (
+          <Suspense fallback={<Fallback />}>
+            <ContributionsPageWrapper />
+          </Suspense>
+        ),
         children: [
           {
-            path: 'add',
+            path: 'releases',
             element: (
               <Suspense fallback={<Fallback />}>
-                <AddReleasePage />
+                <ReleaseSubmissionsList />
               </Suspense>
             ),
           },
           {
-            path: 'edit/:id',
+            path: 'artists',
             element: (
               <Suspense fallback={<Fallback />}>
-                <EditReleasePage />
+                <ArtistSubmissionsList />
               </Suspense>
             ),
           },
           {
-            path: 'submissions',
+            path: 'labels',
             element: (
               <Suspense fallback={<Fallback />}>
-                <ReleasesSubmissions />
+                <LabelSubmissionsList />
               </Suspense>
             ),
           },

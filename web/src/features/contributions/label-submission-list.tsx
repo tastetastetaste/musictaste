@@ -1,6 +1,6 @@
 import { Fragment } from 'react';
 import { useInfiniteQuery } from 'react-query';
-import { ILabelSubmission } from 'shared';
+import { ILabelSubmission, SubmissionStatus } from 'shared';
 import { FetchMore } from '../../components/fetch-more';
 import { Stack } from '../../components/flex/stack';
 import { Loading } from '../../components/loading';
@@ -9,14 +9,19 @@ import { cacheKeys } from '../../utils/cache-keys';
 import { SubmissionActions, SubmissionItemWrapper } from './submission-item';
 import { Link } from '../../components/links/link';
 import { getLabelPathname } from '../../utils/get-pathname';
+import { useOutletContext } from 'react-router-dom';
 
-type Props = {
-  open?: boolean;
+class LabelSubmissionListOutletContext {
+  status?: SubmissionStatus;
   userId?: string;
   labelId?: string;
-};
+}
 
-const SubmissionItem = ({ submission }: { submission: ILabelSubmission }) => {
+export const LabelSubmissionItem = ({
+  submission,
+}: {
+  submission: ILabelSubmission;
+}) => {
   return (
     <SubmissionItemWrapper status={submission.submissionStatus}>
       {submission.name && (
@@ -38,22 +43,20 @@ const SubmissionItem = ({ submission }: { submission: ILabelSubmission }) => {
   );
 };
 
-export const LabelSubmissionsList: React.FC<Props> = ({
-  open,
-  labelId,
-  userId,
-}) => {
+const LabelSubmissionsList: React.FC = () => {
+  const { status, labelId, userId } =
+    useOutletContext<LabelSubmissionListOutletContext>();
   const { data, isFetching, isFetchingNextPage, fetchNextPage, hasNextPage } =
     useInfiniteQuery(
       cacheKeys.labelSubmissionsKey({
-        open,
+        status,
         labelId,
         userId,
       }),
       async ({ pageParam = 1 }) =>
         api.getLabelSubmissions({
           page: pageParam,
-          open,
+          status,
           labelId,
           userId,
         }),
@@ -74,7 +77,7 @@ export const LabelSubmissionsList: React.FC<Props> = ({
       {data?.pages.map((page) => (
         <Stack key={page.currentPage}>
           {page.labels.map((submission) => (
-            <SubmissionItem submission={submission} />
+            <LabelSubmissionItem submission={submission} />
           ))}
         </Stack>
       ))}
@@ -84,3 +87,5 @@ export const LabelSubmissionsList: React.FC<Props> = ({
     </Fragment>
   );
 };
+
+export default LabelSubmissionsList;

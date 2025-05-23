@@ -74,24 +74,24 @@ const topReleasesKey = (page?: number) => ['releases', 'top', page];
 
 const releaseSubmissionsKey = (filters: {
   page?: number;
-  open?: boolean;
+  status?: number;
   releaseId?: string;
   userId?: string;
 }) => [
   'releaseSubmissions',
-  filters.open,
+  filters.status,
   filters.releaseId,
   filters.userId,
   filters.page,
 ];
 const artistSubmissionsKey = (filters: {
   page?: number;
-  open?: boolean;
+  status?: number;
   artistId?: string;
   userId?: string;
 }) => [
   'artistSubmissions',
-  filters.open,
+  filters.status,
   filters.artistId,
   filters.userId,
   filters.page,
@@ -99,12 +99,12 @@ const artistSubmissionsKey = (filters: {
 
 const labelSubmissionsKey = (filters: {
   page?: number;
-  open?: boolean;
+  status?: number;
   labelId?: string;
   userId?: string;
 }) => [
   'labelSubmissions',
-  filters.open,
+  filters.status,
   filters.labelId,
   filters.userId,
   filters.page,

@@ -542,7 +542,7 @@ export class SubmissionService {
   }
 
   async getReleaseSubmissions({
-    open,
+    status,
     releaseId,
     userId,
     page,
@@ -550,7 +550,7 @@ export class SubmissionService {
     const pageSize = 24;
     const where: any = {};
 
-    if (open) where.submissionStatus = SubmissionStatus.OPEN;
+    if (status) where.submissionStatus = status;
     if (releaseId) where.releaseId = releaseId;
     if (userId) where.userId = userId;
 
@@ -590,8 +590,12 @@ export class SubmissionService {
           },
           ...rs
         }) => ({
-          artists: artistsIds?.map((id) => artists.find((a) => a.id === id)),
-          labels: labelsIds?.map((id) => labels.find((l) => l.id === id)),
+          artists: artistsIds
+            ?.filter(Boolean)
+            .map((id) => artists.find((a) => a.id === id)),
+          labels: labelsIds
+            ?.filter(Boolean)
+            .map((id) => labels.find((l) => l.id === id)),
           languages: languagesIds?.map((id) =>
             languages.find((l) => l.id === id),
           ),
@@ -612,14 +616,14 @@ export class SubmissionService {
 
   async getArtistSubmissions({
     page,
-    open,
+    status,
     artistId,
     userId,
   }: FindArtistSubmissionsDto): Promise<IArtistSubmissionsResponse> {
     const pageSize = 24;
     const where: any = {};
 
-    if (open) where.submissionStatus = SubmissionStatus.OPEN;
+    if (status) where.submissionStatus = status;
     if (artistId) where.artistId = artistId;
     if (userId) where.userId = userId;
 
@@ -653,14 +657,14 @@ export class SubmissionService {
 
   async getLabelSubmissions({
     page,
-    open,
+    status,
     labelId,
     userId,
   }: FindLabelSubmissionsDto): Promise<ILabelSubmissionsResponse> {
     const pageSize = 24;
     const where: any = {};
 
-    if (open) where.submissionStatus = SubmissionStatus.OPEN;
+    if (status) where.submissionStatus = status;
     if (labelId) where.labelId = labelId;
     if (userId) where.userId = userId;
 

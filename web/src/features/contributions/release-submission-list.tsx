@@ -1,6 +1,6 @@
 import { Fragment } from 'react';
 import { useInfiniteQuery } from 'react-query';
-import { IReleaseSubmission } from 'shared';
+import { IReleaseSubmission, SubmissionStatus } from 'shared';
 import { FetchMore } from '../../components/fetch-more';
 import { Group } from '../../components/flex/group';
 import { Stack } from '../../components/flex/stack';
@@ -11,14 +11,19 @@ import { cacheKeys } from '../../utils/cache-keys';
 import { SubmissionActions, SubmissionItemWrapper } from './submission-item';
 import { getReleasePathname } from '../../utils/get-pathname';
 import { Link } from '../../components/links/link';
+import { useOutletContext } from 'react-router-dom';
 
-type Props = {
-  open?: boolean;
+export class ReleaseSubmissionListOutletContext {
+  status?: SubmissionStatus;
   userId?: string;
   releaseId?: string;
-};
+}
 
-const SubmissionItem = ({ submission }: { submission: IReleaseSubmission }) => {
+export const ReleaseSubmissionItem = ({
+  submission,
+}: {
+  submission: IReleaseSubmission;
+}) => {
   return (
     <SubmissionItemWrapper status={submission.submissionStatus}>
       {submission.title && (
@@ -65,7 +70,7 @@ const SubmissionItem = ({ submission }: { submission: IReleaseSubmission }) => {
           </div>
 
           {submission.tracks.map((t) => (
-            <div>
+            <div key={t.title}>
               <span>{`${t.track} | ${t.title} | ${millisecondsToTimeString(t.durationMs)}`}</span>
             </div>
           ))}
@@ -102,38 +107,30 @@ const SubmissionItem = ({ submission }: { submission: IReleaseSubmission }) => {
   );
 };
 
-export const ReleaseSubmissionsList: React.FC<Props> = ({
-  open,
-  releaseId,
-  userId,
-}) => {
-  const {
-    status,
-    data,
-    isFetching,
-    isFetchingNextPage,
-    fetchNextPage,
-    hasNextPage,
-  } = useInfiniteQuery(
-    cacheKeys.releaseSubmissionsKey({
-      open,
-      releaseId,
-      userId,
-    }),
-    async ({ pageParam = 1 }) =>
-      api.getReleaseSubmissions({
-        page: pageParam,
-        open,
+const ReleaseSubmissionsList = () => {
+  const { userId, releaseId, status } =
+    useOutletContext<ReleaseSubmissionListOutletContext>();
+  const { data, isFetching, isFetchingNextPage, fetchNextPage, hasNextPage } =
+    useInfiniteQuery(
+      cacheKeys.releaseSubmissionsKey({
+        status,
         releaseId,
         userId,
       }),
-    {
-      getNextPageParam: (lastPage, pages) =>
-        pages.length < lastPage.totalPages
-          ? lastPage.currentPage + 1
-          : undefined,
-    },
-  );
+      async ({ pageParam = 1 }) =>
+        api.getReleaseSubmissions({
+          page: pageParam,
+          status,
+          releaseId,
+          userId,
+        }),
+      {
+        getNextPageParam: (lastPage, pages) =>
+          pages.length < lastPage.totalPages
+            ? lastPage.currentPage + 1
+            : undefined,
+      },
+    );
 
   if (isFetching && !isFetchingNextPage) {
     return <Loading />;
@@ -144,7 +141,7 @@ export const ReleaseSubmissionsList: React.FC<Props> = ({
       {data?.pages.map((page) => (
         <Stack key={page.currentPage}>
           {page.releases.map((submission) => (
-            <SubmissionItem submission={submission} />
+            <ReleaseSubmissionItem submission={submission} />
           ))}
         </Stack>
       ))}
@@ -154,3 +151,5 @@ export const ReleaseSubmissionsList: React.FC<Props> = ({
     </Fragment>
   );
 };
+
+export default ReleaseSubmissionsList;
