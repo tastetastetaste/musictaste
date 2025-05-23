@@ -1,5 +1,5 @@
 import { Transform, Type } from 'class-transformer';
-import { IsOptional, IsString } from 'class-validator';
+import { IsString } from 'class-validator';
 import { SubmissionStatus, SubmissionType } from 'shared';
 import {
   Column,
@@ -39,7 +39,9 @@ export class ArtistSubmission extends SharedBaseEntity {
   @Column('int')
   submissionStatus: SubmissionStatus;
 
-  @ManyToOne(() => Artist, (artist) => artist.artistSubmissions)
+  @ManyToOne(() => Artist, (artist) => artist.artistSubmissions, {
+    onDelete: 'SET NULL',
+  })
   @JoinColumn({ name: 'artistId' })
   artist: Artist;
 

@@ -70,7 +70,7 @@ export class ReleaseSubmission extends SharedBaseEntity {
   submissionStatus: SubmissionStatus;
 
   @ManyToOne(() => Release, (release) => release.releaseSubmissions, {
-    onDelete: 'CASCADE',
+    onDelete: 'SET NULL',
   })
   @JoinColumn({ name: 'releaseId' })
   release: Release;
