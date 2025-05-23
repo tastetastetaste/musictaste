@@ -162,6 +162,8 @@ export class ReleasesService {
       .where('release.id = :id', { id })
       .getOne();
 
+    if (!r) throw new NotFoundException();
+
     const {
       artistConnection,
       languageConnection,

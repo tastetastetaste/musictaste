@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateLabelDto, ILabelResponse } from 'shared';
 import { Repository } from 'typeorm';
@@ -18,6 +18,8 @@ export class LabelsService {
 
   async findOneWithReleases(id: string): Promise<ILabelResponse> {
     const label = await this.labelRepository.findOne({ where: { id } });
+
+    if (!label) throw new NotFoundException();
 
     const releases = await this.releasesService.getReleasesByLabel(label.id);
 

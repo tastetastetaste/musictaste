@@ -145,7 +145,7 @@ export const Review: React.FC<ReviewProps> = ({
           <div
             style={{
               minHeight: 235,
-              padding: '0 54px',
+              padding: !smallScreen && '0 54px',
             }}
           >
             <Markdown>{MDString}</Markdown>

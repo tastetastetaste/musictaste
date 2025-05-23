@@ -4,7 +4,7 @@ import {
   SubmissionStatus,
   SubmissionType,
 } from 'shared';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ReleasesService } from '../releases/releases.service';
@@ -25,6 +25,8 @@ export class ArtistsService {
 
   async findOneWithReleases(id: string): Promise<IArtistResponse> {
     const artist = await this.artistsRepository.findOne({ where: { id } });
+
+    if (!artist) throw new NotFoundException();
 
     const releases = await this.releasesService.getReleasesByArtist(artist.id);
 

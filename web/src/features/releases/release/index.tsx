@@ -50,7 +50,13 @@ export const Release: React.FC<IReleaseItemProps> = ({
   if (size === 'sm' || size === 'xs') {
     return (
       <Group gap="sm">
-        <ReleaseImageLink release={release} size="xs" />
+        <div
+          css={{
+            width: '100px',
+          }}
+        >
+          <ReleaseImageLink release={release} size="xs" />
+        </div>
         <FlexChild grow>
           <Stack>
             <ArtistsLinks

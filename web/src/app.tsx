@@ -153,6 +153,11 @@ const QueryProvider = ({ children }: { children: any }) => {
     defaultOptions: {
       queries: {
         staleTime: 1000 * 60 * 30,
+        retry: (failureCount, error) => {
+          // @ts-expect-error ...
+          if (error?.response?.status === 404) return false;
+          return failureCount < 3;
+        },
       },
       mutations: {
         onError: (error: any) => {

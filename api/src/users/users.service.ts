@@ -4,6 +4,7 @@ import {
   forwardRef,
   Inject,
   Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
@@ -98,6 +99,8 @@ export class UsersService {
         username,
       },
     });
+
+    if (!user) throw new NotFoundException();
 
     return {
       ...user,

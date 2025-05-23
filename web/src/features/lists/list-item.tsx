@@ -16,7 +16,6 @@ import {
 } from '../../utils/get-pathname';
 import { ReleaseActions } from '../releases/release-actions/release-actions';
 
-const imageSize = 200;
 interface IListItemProps {
   item: Pick<IListItem, 'id' | 'release' | 'note'>;
   index: number;
@@ -44,8 +43,8 @@ export const ListItem: React.FC<IListItemProps> = ({
           {ranked && <Typography size="title-lg">{index + 1}</Typography>}
           <div
             css={{
-              height: smScreen ? 'auto' : imageSize,
-              width: smScreen ? 'auto' : imageSize,
+              height: smScreen ? '100px' : '200px',
+              width: smScreen ? '100px' : '200px',
             }}
           >
             <ReleaseImageLink release={release} size={smScreen ? 'xs' : 'md'} />

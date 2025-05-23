@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   Injectable,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -211,7 +212,7 @@ export class EntriesService {
     const ur = await urQB.getOne();
 
     if (!ur) {
-      return null;
+      throw new NotFoundException();
     }
 
     const [[release], user, reviews] = await Promise.all([
