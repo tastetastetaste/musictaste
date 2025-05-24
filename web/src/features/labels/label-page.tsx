@@ -11,6 +11,8 @@ import { Grid } from '../../components/flex/grid';
 import { RELEASE_GRID_PADDING } from '../releases/releases-virtual-grid';
 import { Release } from '../releases/release';
 import { Feedback } from '../../components/feedback';
+import { useState } from 'react';
+import { ReportDialog } from '../reports/report-dialog';
 
 const Releases: React.FC<{ releases: ILabelResponse['releases'] }> = ({
   releases,
@@ -41,6 +43,8 @@ const Releases: React.FC<{ releases: ILabelResponse['releases'] }> = ({
 const LabelPage = () => {
   const { id } = useParams();
 
+  const [openReport, setOpenReport] = useState(false);
+
   const { data, isLoading } = useQuery(
     cacheKeys.labelKey(id),
     () => api.getLabel(id!),
@@ -52,7 +56,15 @@ const LabelPage = () => {
   const label = data && data.label;
 
   return (
-    <AppPageWrapper title={label ? label.name : ''}>
+    <AppPageWrapper
+      title={label ? label.name : ''}
+      menu={[
+        {
+          label: 'Report',
+          action: () => setOpenReport(true),
+        },
+      ]}
+    >
       {isLoading ? <Loading /> : <div></div>}
 
       {label ? (
@@ -74,6 +86,12 @@ const LabelPage = () => {
       ) : (
         <div></div>
       )}
+      <ReportDialog
+        id={(data && data.label && data.label.id) || ''}
+        type="label"
+        isOpen={openReport}
+        onClose={() => setOpenReport(false)}
+      />
     </AppPageWrapper>
   );
 };

@@ -10,12 +10,14 @@ import { FormInputError } from '../../components/inputs/form-input-error';
 import { CreateReportDto } from 'shared';
 import { classValidatorResolver } from '@hookform/resolvers/class-validator';
 
+type ReportType = 'release' | 'artist' | 'label' | 'user' | 'review' | 'list';
+
 const ReportForm = ({
   type,
   id,
   onClose,
 }: {
-  type: 'release' | 'artist' | 'user' | 'review' | 'list';
+  type: ReportType;
   id: string;
   onClose: () => void;
 }) => {
@@ -76,7 +78,7 @@ export const ReportDialog = ({
 }: {
   isOpen: boolean;
   onClose: () => void;
-  type: 'release' | 'artist' | 'user' | 'review' | 'list';
+  type: ReportType;
   id: string;
 }) => {
   return (
