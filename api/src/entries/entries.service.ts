@@ -212,7 +212,7 @@ export class EntriesService {
     const ur = await urQB.getOne();
 
     if (!ur) {
-      throw new NotFoundException();
+      return null;
     }
 
     const [[release], user, reviews] = await Promise.all([
