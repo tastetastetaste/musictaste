@@ -117,19 +117,21 @@ const Lists: React.FC<{ username: string; userId: string }> = ({
     api.getUserLists(userId, 1),
   );
 
-  const lists = data && data.lists.length !== 0 && data?.lists.slice(0, 6);
+  const lists = data?.lists?.slice(0, 6) || [];
 
   return (
     <Fragment>
-      <Link size="title-lg" to={`/${username}/lists`}>
-        Recent Lists
-      </Link>
-      {lists && (
-        <Grid cols={[1, 2, 3]} gap={LIST_GRID_PADDING}>
-          {lists.map((list) => (
-            <List key={list.id} list={list} withoutUser />
-          ))}
-        </Grid>
+      {lists.length > 0 && (
+        <Fragment>
+          <Link size="title-lg" to={`/${username}/lists`}>
+            Recent Lists
+          </Link>
+          <Grid cols={[1, 2, 3]} gap={LIST_GRID_PADDING}>
+            {lists.map((list) => (
+              <List key={list.id} list={list} withoutUser />
+            ))}
+          </Grid>
+        </Fragment>
       )}
     </Fragment>
   );
