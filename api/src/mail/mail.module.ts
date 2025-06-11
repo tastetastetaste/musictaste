@@ -20,7 +20,12 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
             },
           },
           defaults: {
-            from: '"Music Taste" ' + configService.get('EMAIL_USER'),
+            from: '"MusicTaste" ' + configService.get('EMAIL_USER'),
+            headers: {
+              'X-Priority': '1',
+              Precedence: 'transactional',
+              'List-Unsubscribe': `<mailto:${configService.get('EMAIL_USER')}>`,
+            },
           },
         };
       },

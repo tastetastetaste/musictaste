@@ -23,27 +23,21 @@ export class MailService {
 
     return await this.mailerService.sendMail({
       to: email,
-      subject: 'Confirmation Email',
-      text: `
-          Welcome To Music Taste!
-          Hi ${name},
-          Welcome To Music Taste!
-          In order to confirm your registration please follow this link, or copy and paste the URL into your browser:
-          ${url}
-          If you received this email by mistake, just delete it.
-          Music Taste
-          `,
-      html: `
-          <div>
-            <h2>Welcome To Music Taste!</h2>
-            <strong>Hi ${name},</strong>
-            <p>Welcome To Music Taste!</p>
-            <p>In order to confirm your registration please follow this link, or copy and paste the URL into your browser:</p>
-            <a href="${url}">${url}</a>
-            <p>If you received this email by mistake, just delete it.</p>
-            <strong>Music Taste</stron>
-            </div>
-            `,
+      subject: 'Confirm your MusicTaste account',
+      text: `Welcome To MusicTaste!
+Hi ${name},
+In order to confirm your registration please follow this link, or copy and paste the URL into your browser:
+${url}
+If you received this email by mistake, you can safely ignore it.
+MusicTaste`,
+      html: `<div>
+<h2>Welcome To MusicTaste!</h2>
+<strong>Hi ${name},</strong>
+<p>In order to confirm your registration please follow this link, or copy and paste the URL into your browser:</p>
+<a href="${url}">${url}</a>
+<p>If you received this email by mistake, you can safely ignore it.</p>
+<strong>MusicTaste</strong>
+</div>`,
     });
   }
 
@@ -58,26 +52,21 @@ export class MailService {
 
     return await this.mailerService.sendMail({
       to: email,
-      subject: 'Reset your password on Music Taste',
-      text: `
-          We got your request to change your password!
-          Hi ${name},
-          Welcome To Music Taste!
-          In order to reset your password please follow this link, or copy and paste the URL into your browser:
-          ${url}
-          If you do not want to reset your password, you can ignore this email.
-          Music Taste
-          `,
-      html: `
-          <div>
-            <h2>We got your request to change your password!</h2>
-            <strong>Hi ${name},</strong>
-            <p>In order to reset your password please follow this link, or copy and paste the URL into your browser:</p>
-            <a href="${url}">${url}</a>
-            <p>If you do not want to reset your password, you can ignore this email.</p>
-            <strong>Music Taste</stron>
-            </div>
-            `,
+      subject: 'Reset your password on MusicTaste',
+      text: `We got your request to change your password!
+Hi ${name},
+In order to reset your password please follow this link, or copy and paste the URL into your browser:
+${url}
+If you do not want to reset your password, you can ignore this email.
+MusicTaste`,
+      html: `<div>
+<h2>We got your request to change your password!</h2>
+<strong>Hi ${name},</strong>
+<p>In order to reset your password please follow this link, or copy and paste the URL into your browser:</p>
+<a href="${url}">${url}</a>
+<p>If you do not want to reset your password, you can ignore this email.</p>
+<strong>MusicTaste</strong>
+</div>`,
     });
   }
 
@@ -93,10 +82,7 @@ export class MailService {
       to: email,
       subject: `Report (${report.type}: ${report.id})`,
       text: report.reason,
-      html: `
-          <div>
-            <p style="white-space: pre;">${report.reason}</p>
-          </div>
+      html: `<div><p style="white-space: pre;">${report.reason}</p></div>
           `,
     });
   }
