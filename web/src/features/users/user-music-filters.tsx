@@ -1,24 +1,64 @@
-import {
-  IconCalendarMonth,
-  IconDisc,
-  IconHash,
-  IconMusic,
-  IconStar,
-  IconTags,
-} from '@tabler/icons-react';
+import { useTheme } from '@emotion/react';
+import { IconFilter, IconSortAscending } from '@tabler/icons-react';
 import { Fragment, useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
 import { useSearchParams } from 'react-router-dom';
-import { Button } from '../../components/button';
-import { Group } from '../../components/flex/group';
+import { EntriesSortByEnum } from 'shared';
+import { Dropdown } from '../../components/dropdown';
 import { Stack } from '../../components/flex/stack';
-import { IconButton } from '../../components/icon-button';
-import { Popover } from '../../components/popover';
+import { Typography } from '../../components/typography';
 import { api } from '../../utils/api';
-import { useRatingColor } from '../ratings/useRatingColor';
 import { cacheKeys } from '../../utils/cache-keys';
+import { useRatingColor } from '../ratings/useRatingColor';
+import { useSortBy } from './user-music-page';
 
 type Option = { label: string; value: string; count: number };
+
+const FilterButton: React.FC<{
+  selected: boolean;
+  onClick: () => void;
+  disabled?: boolean;
+  children: React.ReactNode;
+  customCss?: any;
+}> = ({ selected, onClick, disabled, children, customCss }) => {
+  const theme = useTheme();
+  return (
+    <button
+      css={[
+        {
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          width: '100%',
+          padding: '8px 12px',
+          border: 'none',
+          backgroundColor: selected
+            ? theme.colors.text
+            : theme.colors.complement,
+          borderRadius: theme.border_radius.base,
+          color: selected ? theme.colors.base : theme.colors.text,
+          cursor: 'pointer',
+          '&:hover': {
+            backgroundColor: theme.colors.text,
+            color: theme.colors.base,
+          },
+          '&:active': {
+            backgroundColor: theme.colors.main,
+            color: theme.colors.base,
+          },
+          '&:disabled': {
+            opacity: 0.5,
+          },
+        },
+        customCss,
+      ]}
+      onClick={onClick}
+      disabled={disabled}
+    >
+      {children}
+    </button>
+  );
+};
 
 const Filter: React.FC<{
   name: string;
@@ -26,12 +66,11 @@ const Filter: React.FC<{
 }> = ({ name, options }) => {
   const [query, setQuery] = useSearchParams();
   return (
-    <Stack gap="sm" align="start">
+    <Stack gap="sm" align="stretch">
       {options?.map((o) => (
-        <Button
-          variant="text"
-          // active={query.get(name) === o.value}
+        <FilterButton
           key={o.value}
+          selected={query.get(name) === o.value}
           onClick={() =>
             setQuery(
               { [name]: o.value },
@@ -39,8 +78,13 @@ const Filter: React.FC<{
             )
           }
         >
-          {o.label} ({o.count})
-        </Button>
+          <Typography whiteSpace="nowrap" color="inherit">
+            {o.label}
+          </Typography>
+          <Typography whiteSpace="nowrap" color="inherit">
+            {o.count}
+          </Typography>
+        </FilterButton>
       ))}
     </Stack>
   );
@@ -51,42 +95,69 @@ const FilterByRating: React.FC<{
   buckets?: RatingBucket[];
   allRatingsCount: number;
 }> = ({ name, buckets, allRatingsCount }) => {
-  const width100p = 230;
-  const widthForOneRating = width100p / allRatingsCount;
-
   const [query, setQuery] = useSearchParams();
-
+  const selected = query.get(name);
   const getColor = useRatingColor();
 
   return (
-    <div>
-      {buckets?.map((bucket) => (
-        <Group gap={10} key={bucket.bucket}>
-          <div
-            style={{
-              width: widthForOneRating * bucket.count,
-              height: '26px',
-              backgroundColor:
-                bucket.bucket === -1
-                  ? '#7e7e7e'
-                  : getColor((bucket.bucket - 1) * 10),
-            }}
-          />
-          <Button
-            // active={query.get(name) === bucket.bucket.toString()}
-            variant="text"
+    <Stack gap="sm" align="stretch">
+      {buckets?.map((bucket) => {
+        const percent = allRatingsCount
+          ? (bucket.count / allRatingsCount) * 100
+          : 0;
+        return (
+          <FilterButton
+            key={bucket.bucket}
+            selected={selected === bucket.bucket.toString()}
             onClick={() =>
               setQuery(
                 { [name]: bucket.bucket.toString() },
                 { replace: true, preventScrollReset: true },
               )
             }
+            customCss={{
+              padding: 0,
+              overflow: 'hidden',
+              alignItems: 'center',
+            }}
           >
-            {bucket.label} ({bucket.count})
-          </Button>
-        </Group>
-      ))}
-    </div>
+            {/* Color bar */}
+            <div
+              css={{
+                width: 8,
+                height: 32,
+                backgroundColor:
+                  bucket.bucket === -1
+                    ? '#7e7e7e'
+                    : getColor((bucket.bucket - 1) * 10),
+                opacity: percent > 0 ? 1 : 0.2,
+                marginRight: 12,
+                borderTopLeftRadius: 4,
+                borderBottomLeftRadius: 4,
+                flexShrink: 0,
+              }}
+            />
+            {/* Label and count */}
+            <div
+              css={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                width: '100%',
+                padding: '8px 12px',
+              }}
+            >
+              <Typography whiteSpace="nowrap" color="inherit">
+                {bucket.label}
+              </Typography>
+              <Typography whiteSpace="nowrap" color="inherit">
+                {bucket.count}
+              </Typography>
+            </div>
+          </FilterButton>
+        );
+      })}
+    </Stack>
   );
 };
 
@@ -94,43 +165,55 @@ const FilterByDate: React.FC<{
   decades?: Decade[] | null;
 }> = ({ decades }) => {
   const [query, setQuery] = useSearchParams();
+  const selectedDecade = query.get('decade');
+  const selectedYear = query.get('year');
+
   return (
-    <div>
+    <Stack gap="sm" align="stretch">
       {decades?.map(({ decade, count, years }) => (
         <Fragment key={decade}>
-          <div>
-            <Button
-              // active={query.get('decade') === decade.toString()}
-              variant="text"
+          <FilterButton
+            selected={selectedDecade === decade.toString() && !selectedYear}
+            onClick={() =>
+              setQuery(
+                { decade: decade.toString() },
+                { preventScrollReset: true, replace: true },
+              )
+            }
+          >
+            <Typography whiteSpace="nowrap" color="inherit">
+              {decade + '0s'}
+            </Typography>
+            <Typography whiteSpace="nowrap" color="inherit">
+              {count}
+            </Typography>
+          </FilterButton>
+          {years.map(({ year, count }) => (
+            <FilterButton
+              key={year}
+              selected={selectedYear === year.toString()}
               onClick={() =>
                 setQuery(
-                  { decade: decade.toString() },
+                  { year: year.toString() },
                   { preventScrollReset: true, replace: true },
                 )
               }
+              customCss={{
+                width: 'calc(100% - 20px)',
+                marginLeft: 20,
+              }}
             >
-              {decade + '0s'} ({count})
-            </Button>
-          </div>
-          {years.map(({ year, count }) => (
-            <div key={year} style={{ marginLeft: 10 }}>
-              <Button
-                // active={query.get('year') === year.toString()}
-                variant="text"
-                onClick={() =>
-                  setQuery(
-                    { year: year.toString() },
-                    { preventScrollReset: true, replace: true },
-                  )
-                }
-              >
-                {year} ({count})
-              </Button>
-            </div>
+              <Typography whiteSpace="nowrap" color="inherit">
+                {year}
+              </Typography>
+              <Typography whiteSpace="nowrap" color="inherit">
+                {count}
+              </Typography>
+            </FilterButton>
           ))}
         </Fragment>
       ))}
-    </div>
+    </Stack>
   );
 };
 
@@ -280,14 +363,23 @@ const MusicByTag = ({ userId }: { userId: string }) => {
   );
 };
 
-const MusicFilterSections = [
-  { label: 'ratings', component: MusicByRating, icon: IconStar },
-  { label: 'date', component: MusicByReleaseDate, icon: IconCalendarMonth },
-  { label: 'tags', component: MusicByTag, icon: IconTags },
-  { label: 'genres', component: MusicByGenre, icon: IconHash },
-  { label: 'artists', component: MusicByArtist, icon: IconMusic },
-  { label: 'labels', component: MusicByLabel, icon: IconDisc },
+const FILTER_TYPES = [
+  { label: 'Rating', value: 'rating' },
+  { label: 'Genre', value: 'genre' },
+  { label: 'Tag', value: 'tag' },
+  { label: 'Artist', value: 'artist' },
+  { label: 'Label', value: 'label' },
+  { label: 'Date', value: 'date' },
 ];
+
+const FilterComponentMap = {
+  rating: MusicByRating,
+  genre: MusicByGenre,
+  tag: MusicByTag,
+  artist: MusicByArtist,
+  label: MusicByLabel,
+  date: MusicByReleaseDate,
+};
 
 const UserMusicFilters = ({
   userId,
@@ -296,48 +388,89 @@ const UserMusicFilters = ({
   userId: string;
   ratingsCount: number;
 }) => {
+  const { sortBy, handleChange } = useSortBy();
+  const [filterType, setFilterType] = useState('rating');
+  const FilterComponent = FilterComponentMap[filterType];
   const [query, setQuery] = useSearchParams();
-  const [openPopover, setOpenPopover] = useState(null);
 
-  const handleOpen = (label) => {
-    setOpenPopover(label);
-  };
-
-  const handleClose = () => {
-    setOpenPopover(null);
-  };
   return (
-    <Group gap="md" wrap>
-      {query.toString() && (
-        <Button
-          variant="text"
-          onClick={() =>
-            setQuery([], { replace: true, preventScrollReset: true })
-          }
-        >
-          (clear)
-        </Button>
-      )}
-      {MusicFilterSections.map(
-        ({ label, component: Component, icon: Icon }) => (
-          <Popover
-            key={label}
-            content={<Component userId={userId} ratingsCount={ratingsCount} />}
-            open={openPopover === label}
-            onClose={handleClose}
+    <aside
+      css={{
+        width: 280,
+        maxWidth: '100%',
+        minHeight: '100vh',
+        maxHeight: '100vh',
+        overflowY: 'auto',
+        padding: '4px',
+        position: 'sticky',
+        top: 0,
+        right: 0,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '8px',
+      }}
+    >
+      <Stack gap="md">
+        {(query.toString() || sortBy !== EntriesSortByEnum.ReleaseDate) && (
+          <button
+            onClick={() => {
+              setQuery([], { replace: true, preventScrollReset: true });
+              handleChange({ value: EntriesSortByEnum.ReleaseDate });
+            }}
+            css={(theme) => ({
+              padding: '8px 12px',
+              border: 'none',
+              borderRadius: theme.border_radius.base,
+              backgroundColor: theme.colors.complement,
+              color: theme.colors.text,
+              cursor: 'pointer',
+              fontWeight: 500,
+              '&:hover': {
+                backgroundColor: theme.colors.text,
+                color: theme.colors.base,
+              },
+              '&:active': {
+                backgroundColor: theme.colors.main,
+                color: theme.colors.base,
+              },
+            })}
           >
-            <IconButton
-              title={label}
-              onClick={() =>
-                openPopover === label ? handleClose() : handleOpen(label)
-              }
-            >
-              <Icon />
-            </IconButton>
-          </Popover>
-        ),
-      )}
-    </Group>
+            Reset
+          </button>
+        )}
+        <Dropdown
+          onChange={handleChange as any}
+          name="sb"
+          options={[
+            { label: 'Release Date', value: EntriesSortByEnum.ReleaseDate },
+            { label: 'Date Added', value: EntriesSortByEnum.EntryDate },
+            { label: 'Date Rated', value: EntriesSortByEnum.RatingDate },
+            {
+              label: 'Highest Rating',
+              value: EntriesSortByEnum.RatingHighToLow,
+            },
+            {
+              label: 'Lowest Rating',
+              value: EntriesSortByEnum.RatingLowToHigh,
+            },
+          ]}
+          defaultValue={sortBy}
+          icon={<IconSortAscending size={20} />}
+        />
+        <Dropdown
+          onChange={({ value }) => setFilterType(value)}
+          name="filterType"
+          options={FILTER_TYPES}
+          defaultValue={filterType}
+          icon={<IconFilter size={20} />}
+        />
+      </Stack>
+      <div>
+        {FilterComponent && (
+          <FilterComponent userId={userId} ratingsCount={ratingsCount} />
+        )}
+      </div>
+    </aside>
   );
 };
 

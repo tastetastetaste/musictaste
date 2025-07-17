@@ -1,9 +1,11 @@
-import { useState } from 'react';
-import { useEffect } from 'react';
-import ReactSelect, { ActionMeta, StylesConfig } from 'react-select';
+import { Theme, useTheme } from '@emotion/react';
+import { useEffect, useState } from 'react';
+import ReactSelect, {
+  ActionMeta,
+  StylesConfig,
+  components,
+} from 'react-select';
 import { Group } from '../flex/group';
-import { useTheme } from '@emotion/react';
-import { Theme } from '@emotion/react';
 import { Typography } from '../typography';
 
 const customStyles: (theme: Theme) => StylesConfig = (theme) => ({
@@ -64,6 +66,12 @@ const customStyles: (theme: Theme) => StylesConfig = (theme) => ({
       color: theme.colors.text,
     },
   }),
+  valueContainer: (provided) => ({
+    ...provided,
+    display: 'flex',
+    alignItems: 'center',
+    gap: 6,
+  }),
 });
 
 export interface DropdownProps {
@@ -72,7 +80,8 @@ export interface DropdownProps {
   defaultValue?: string;
   onChange: (selected: { value: string; label: string }) => void;
   placeholder?: string | null;
-  label?: string;
+  label?: any;
+  icon?: React.ReactNode;
 }
 
 export function Dropdown({
@@ -82,6 +91,7 @@ export function Dropdown({
   onChange,
   placeholder,
   label,
+  icon,
 }: DropdownProps) {
   const [value, setValue] = useState<{ value: string; label: string }>();
 
@@ -98,8 +108,28 @@ export function Dropdown({
     setValue(selected);
   };
 
+  const ValueContainer = (props: any) => (
+    <components.ValueContainer {...props}>
+      {icon && (
+        <span
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            background: theme.colors.complement,
+            borderRadius: '50%',
+            padding: 2,
+            marginRight: 6,
+          }}
+        >
+          {icon}
+        </span>
+      )}
+      {props.children}
+    </components.ValueContainer>
+  );
+
   return (
-    <Group gap="md">
+    <Group gap="md" align="center">
       {label && <Typography whiteSpace="nowrap">{label}</Typography>}
       <ReactSelect
         name={name || 'filter'}
@@ -109,6 +139,7 @@ export function Dropdown({
         onChange={onSelectChange}
         isSearchable={false}
         styles={customStyles(theme)}
+        components={icon ? { ValueContainer } : undefined}
       />
     </Group>
   );

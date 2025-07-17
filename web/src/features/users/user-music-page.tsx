@@ -1,29 +1,32 @@
-import { EntriesSortByEnum } from 'shared';
-import { api } from '../../utils/api';
-import { useEffect } from 'react';
+import { IconAdjustmentsHorizontal } from '@tabler/icons-react';
+import { useEffect, useState } from 'react';
 import { useInfiniteQuery } from 'react-query';
 import { useOutletContext, useSearchParams } from 'react-router-dom';
+import { EntriesSortByEnum } from 'shared';
+import { Button } from '../../components/button';
+import { Feedback } from '../../components/feedback';
 import { Group } from '../../components/flex/group';
 import { Stack } from '../../components/flex/stack';
-import { Dropdown } from '../../components/dropdown';
-import { Feedback } from '../../components/feedback';
 import { Loading } from '../../components/loading';
+import { useLocalStorage } from '../../hooks/useLocalStorage';
+import { useMediaQuery } from '../../hooks/useMediaQuery';
+import { Sidebar } from '../../layout/sidebar/sidebar';
+import { api } from '../../utils/api';
+import { cacheKeys } from '../../utils/cache-keys';
 import UserMusicFilters from './user-music-filters';
 import { UserMusicVirtualGrid } from './user-music-virtual-grid';
-import { useLocalStorage } from '../../hooks/useLocalStorage';
 import { UserPageOutletContext } from './user-page-wrapper';
-import { cacheKeys } from '../../utils/cache-keys';
 
-const useSortBy = () => {
+export const useSortBy = () => {
   const [sortBy, setSortBy] = useLocalStorage<EntriesSortByEnum>(
     'umsbf',
-    EntriesSortByEnum.EntryDate,
+    EntriesSortByEnum.ReleaseDate,
   );
   const [query, setQuery] = useSearchParams();
 
   useEffect(() => {
     if (!Object.values(EntriesSortByEnum).includes(sortBy)) {
-      setSortBy(EntriesSortByEnum.EntryDate);
+      setSortBy(EntriesSortByEnum.ReleaseDate);
     }
   }, [sortBy, setSortBy]);
 
@@ -106,33 +109,38 @@ const Ratings = ({
 const UserMusicPage = () => {
   const { user, stats, isUserMyself } =
     useOutletContext<UserPageOutletContext>();
-  const { handleChange, sortBy } = useSortBy();
+
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  const isMobile = useMediaQuery({ down: 'md' });
 
   return (
     <Stack gap="md">
-      <Group justify="apart" align="center">
-        <Dropdown
-          onChange={handleChange as any}
-          name="sb"
-          options={[
-            { label: 'Date Added', value: EntriesSortByEnum.EntryDate },
-            { label: 'Date Rated', value: EntriesSortByEnum.RatingDate },
-            {
-              label: 'Highest Rating',
-              value: EntriesSortByEnum.RatingHighToLow,
-            },
-            {
-              label: 'Lowest Rating',
-              value: EntriesSortByEnum.RatingLowToHigh,
-            },
-            { label: 'Release Date', value: EntriesSortByEnum.ReleaseDate },
-          ]}
-          defaultValue={sortBy}
-          label="Sort By"
-        />
-        <UserMusicFilters userId={user.id} ratingsCount={stats.ratingsCount} />
+      <Group justify="end">
+        {isMobile && (
+          <Button onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
+            <IconAdjustmentsHorizontal />
+          </Button>
+        )}
       </Group>
-      <Ratings userId={user.id} isUserMyself={isUserMyself} />
+      <Sidebar
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
+        position="right"
+      >
+        <UserMusicFilters userId={user.id} ratingsCount={stats.ratingsCount} />
+      </Sidebar>
+      <Group align="start" gap="lg">
+        <div style={{ flex: 1 }}>
+          <Ratings userId={user.id} isUserMyself={isUserMyself} />
+        </div>
+        {!isMobile && (
+          <UserMusicFilters
+            userId={user.id}
+            ratingsCount={stats.ratingsCount}
+          />
+        )}
+      </Group>
     </Stack>
   );
 };

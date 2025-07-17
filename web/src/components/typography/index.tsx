@@ -2,7 +2,7 @@ import styled from '@emotion/styled';
 
 interface TypographyProps {
   size?: 'title-xl' | 'title-lg' | 'title' | 'body' | 'small';
-  color?: 'main' | 'sub' | 'error' | 'bg';
+  color?: 'main' | 'sub' | 'error' | 'bg' | 'inherit';
   whiteSpace?: 'normal' | 'pre-wrap' | 'nowrap';
   ellipsis?: boolean;
 }
@@ -25,6 +25,8 @@ export const Typography = styled.span<TypographyProps>`
         ? theme.colors.text_sub
         : color === 'bg'
           ? theme.colors.base
+          : color === 'inherit'
+            ? 'inherit'
           : theme.colors.text};
   font-weight: ${({ theme, size }) =>
     size === 'title-xl'

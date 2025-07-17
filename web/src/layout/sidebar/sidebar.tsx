@@ -19,7 +19,7 @@ const Overlay = styled.div`
   z-index: 2000;
 `;
 
-const SidabarBox = styled.div`
+const SidabarBox = styled.div<{ position: 'left' | 'right' }>`
   background: ${({ theme }) => theme.colors.base};
   border-top-left-radius: ${({ theme }) => theme.border_radius.base};
   border-bottom-left-radius: ${({ theme }) => theme.border_radius.base};
@@ -29,7 +29,7 @@ const SidabarBox = styled.div`
   padding: 30px 40px 0px;
   z-index: 2001;
   top: 0;
-  left: 0;
+  ${({ position }) => (position === 'left' ? 'left: 0;' : 'right: 0;')};
   position: fixed;
   overflow-y: auto;
 `;
@@ -38,12 +38,14 @@ export interface SidebarProps {
   isOpen: boolean;
   onClose: any;
   children: JSX.Element;
+  position?: 'left' | 'right';
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
   children,
   isOpen,
   onClose,
+  position = 'left',
 }) => {
   const ref = useRef<any>();
 
@@ -53,7 +55,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   return ReactDOM.createPortal(
     <Overlay>
-      <SidabarBox ref={ref}>
+      <SidabarBox ref={ref} position={position}>
         <Group justify="end">
           <IconButton title="close" onClick={onClose}>
             <IconX />
