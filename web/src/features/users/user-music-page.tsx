@@ -1,5 +1,5 @@
 import { IconAdjustmentsHorizontal } from '@tabler/icons-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useInfiniteQuery } from 'react-query';
 import { useOutletContext, useSearchParams } from 'react-router-dom';
 import { EntriesSortByEnum } from 'shared';
@@ -8,7 +8,6 @@ import { Feedback } from '../../components/feedback';
 import { Group } from '../../components/flex/group';
 import { Stack } from '../../components/flex/stack';
 import { Loading } from '../../components/loading';
-import { useLocalStorage } from '../../hooks/useLocalStorage';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
 import { Sidebar } from '../../layout/sidebar/sidebar';
 import { api } from '../../utils/api';
@@ -18,28 +17,24 @@ import { UserMusicVirtualGrid } from './user-music-virtual-grid';
 import { UserPageOutletContext } from './user-page-wrapper';
 
 export const useSortBy = () => {
-  const [sortBy, setSortBy] = useLocalStorage<EntriesSortByEnum>(
-    'umsbf',
-    EntriesSortByEnum.ReleaseDate,
-  );
   const [query, setQuery] = useSearchParams();
+  const sortByParam = query.get('sb');
+  const sortBy = Object.values(EntriesSortByEnum).includes(
+    sortByParam as EntriesSortByEnum,
+  )
+    ? (sortByParam as EntriesSortByEnum)
+    : EntriesSortByEnum.ReleaseDate;
 
-  useEffect(() => {
-    if (!Object.values(EntriesSortByEnum).includes(sortBy)) {
-      setSortBy(EntriesSortByEnum.ReleaseDate);
-    }
-  }, [sortBy, setSortBy]);
-
-  const handleChange = ({ value }: { value: EntriesSortByEnum }) =>
-    setSortBy(value);
-
-  const clearFilters = () =>
-    setQuery([], { replace: true, preventScrollReset: true });
+  const handleChange = ({ value }: { value: EntriesSortByEnum }) => {
+    setQuery(
+      { ...Object.fromEntries(query.entries()), sb: value },
+      { replace: true, preventScrollReset: true },
+    );
+  };
 
   return {
     sortBy,
     handleChange,
-    clearFilters,
   };
 };
 
@@ -60,6 +55,7 @@ const Ratings = ({
     'genre',
     'artist',
     'label',
+    'type',
   ].reduce(
     (acc, param) => ({ ...acc, [param]: query.get(param) || undefined }),
     {},

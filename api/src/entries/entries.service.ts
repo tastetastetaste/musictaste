@@ -235,7 +235,10 @@ export class EntriesService {
     };
   }
   async find(
-    {
+    params: FindEntriesDto,
+    currentUserId?: string,
+  ): Promise<IEntriesResponse> {
+    const {
       releaseId,
       userId,
       withReview,
@@ -247,11 +250,11 @@ export class EntriesService {
       artist,
       label,
       tag,
+      type,
       page,
       pageSize,
-    }: FindEntriesDto,
-    currentUserId?: string,
-  ): Promise<IEntriesResponse> {
+    } = params;
+
     const urQB = this.userReleaseRepository
       .createQueryBuilder('ur')
       .leftJoinAndSelect('ur.rating', 'rating');
@@ -260,6 +263,29 @@ export class EntriesService {
       urQB.where('ur.userId = :userId', { userId });
     } else if (releaseId) {
       urQB.where('ur.releaseId = :releaseId', { releaseId });
+    }
+
+    if (
+      year ||
+      decade ||
+      sortBy === EntriesSortByEnum.ReleaseDate ||
+      type !== undefined
+    ) {
+      urQB.leftJoin('ur.release', 'release');
+    }
+
+    if (year) {
+      urQB.andWhere(`EXTRACT(YEAR FROM release.date) = :year`, { year });
+    }
+
+    if (decade) {
+      urQB.andWhere(`EXTRACT(DECADE FROM release.date) = :decade`, {
+        decade,
+      });
+    }
+
+    if (type !== undefined) {
+      urQB.andWhere('release.type = :type', { type });
     }
 
     if (
@@ -273,20 +299,6 @@ export class EntriesService {
 
       if (!userId && !releaseId)
         urQB.where("review.createdAt >= current_date - interval '30 day'");
-    }
-
-    // --- user filters
-
-    if (year || decade || sortBy === EntriesSortByEnum.ReleaseDate) {
-      urQB.leftJoin('ur.release', 'release');
-    }
-
-    if (year) {
-      urQB.andWhere(`EXTRACT(YEAR FROM release.date) = ${year}`);
-    }
-
-    if (decade) {
-      urQB.andWhere(`EXTRACT(DECADE FROM release.date) = ${decade}`);
     }
 
     if (genre) {

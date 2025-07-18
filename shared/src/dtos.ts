@@ -16,7 +16,7 @@ import {
   ValidateNested,
   ValidationOptions,
 } from 'class-validator';
-import { EntriesSortByEnum, SubmissionStatus, VoteType } from './enums';
+import { EntriesSortByEnum, SubmissionStatus, VoteType, ReleaseType } from './enums';
 import dayjs from 'dayjs';
 
 export function IsDayjsDateString(validationOptions?: ValidationOptions) {
@@ -275,6 +275,11 @@ export class FindEntriesDto {
   artist?: string;
   label?: string;
   tag?: string;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsEnum(ReleaseType)
+  type?: number;
 
   @Type(() => Number)
   @IsInt()

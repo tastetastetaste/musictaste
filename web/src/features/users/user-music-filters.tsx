@@ -1,9 +1,9 @@
 import { useTheme } from '@emotion/react';
-import { IconFilter, IconSortAscending } from '@tabler/icons-react';
+import { IconDisc, IconFilter, IconSortDescending } from '@tabler/icons-react';
 import { Fragment, useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
 import { useSearchParams } from 'react-router-dom';
-import { EntriesSortByEnum } from 'shared';
+import { EntriesSortByEnum, ReleaseType } from 'shared';
 import { Dropdown } from '../../components/dropdown';
 import { Stack } from '../../components/flex/stack';
 import { Typography } from '../../components/typography';
@@ -73,7 +73,7 @@ const Filter: React.FC<{
           selected={query.get(name) === o.value}
           onClick={() =>
             setQuery(
-              { [name]: o.value },
+              { ...Object.fromEntries(query.entries()), [name]: o.value },
               { replace: true, preventScrollReset: true },
             )
           }
@@ -111,7 +111,10 @@ const FilterByRating: React.FC<{
             selected={selected === bucket.bucket.toString()}
             onClick={() =>
               setQuery(
-                { [name]: bucket.bucket.toString() },
+                {
+                  ...Object.fromEntries(query.entries()),
+                  [name]: bucket.bucket.toString(),
+                },
                 { replace: true, preventScrollReset: true },
               )
             }
@@ -176,7 +179,11 @@ const FilterByDate: React.FC<{
             selected={selectedDecade === decade.toString() && !selectedYear}
             onClick={() =>
               setQuery(
-                { decade: decade.toString() },
+                (() => {
+                  const params = { ...Object.fromEntries(query.entries()) };
+                  delete params.year;
+                  return { ...params, decade: decade.toString() };
+                })(),
                 { preventScrollReset: true, replace: true },
               )
             }
@@ -194,7 +201,11 @@ const FilterByDate: React.FC<{
               selected={selectedYear === year.toString()}
               onClick={() =>
                 setQuery(
-                  { year: year.toString() },
+                  (() => {
+                    const params = { ...Object.fromEntries(query.entries()) };
+                    delete params.decade;
+                    return { ...params, year: year.toString() };
+                  })(),
                   { preventScrollReset: true, replace: true },
                 )
               }
@@ -363,6 +374,30 @@ const MusicByTag = ({ userId }: { userId: string }) => {
   );
 };
 
+const SORT_BY_OPTIONS = [
+  { label: 'Release Date', value: EntriesSortByEnum.ReleaseDate },
+  { label: 'Date Added', value: EntriesSortByEnum.EntryDate },
+  { label: 'Date Rated', value: EntriesSortByEnum.RatingDate },
+  {
+    label: 'Highest Rating',
+    value: EntriesSortByEnum.RatingHighToLow,
+  },
+  {
+    label: 'Lowest Rating',
+    value: EntriesSortByEnum.RatingLowToHigh,
+  },
+];
+
+const RELEASE_TYPE_OPTIONS = [
+  { label: 'All Types', value: undefined },
+  ...Object.entries(ReleaseType)
+    .filter(([key, value]) => typeof value === 'number')
+    .map(([key, value]) => ({
+      label: key,
+      value: value.toString(),
+    })),
+];
+
 const FILTER_TYPES = [
   { label: 'Rating', value: 'rating' },
   { label: 'Genre', value: 'genre' },
@@ -411,11 +446,10 @@ const UserMusicFilters = ({
       }}
     >
       <Stack gap="md">
-        {(query.toString() || sortBy !== EntriesSortByEnum.ReleaseDate) && (
+        {query.toString() && (
           <button
             onClick={() => {
               setQuery([], { replace: true, preventScrollReset: true });
-              handleChange({ value: EntriesSortByEnum.ReleaseDate });
             }}
             css={(theme) => ({
               padding: '8px 12px',
@@ -439,23 +473,31 @@ const UserMusicFilters = ({
           </button>
         )}
         <Dropdown
-          onChange={handleChange as any}
+          options={RELEASE_TYPE_OPTIONS}
+          onChange={({ value }) => {
+            setQuery(
+              value === undefined
+                ? (() => {
+                    const params = { ...Object.fromEntries(query.entries()) };
+                    delete params.type;
+                    return params;
+                  })()
+                : { ...Object.fromEntries(query.entries()), type: value },
+              { replace: true, preventScrollReset: true },
+            );
+          }}
+          name="type"
+          defaultValue={query.get('type') || undefined}
+          icon={<IconDisc size={20} />}
+        />
+        <Dropdown
+          onChange={({ value }) =>
+            handleChange({ value: value as EntriesSortByEnum })
+          }
           name="sb"
-          options={[
-            { label: 'Release Date', value: EntriesSortByEnum.ReleaseDate },
-            { label: 'Date Added', value: EntriesSortByEnum.EntryDate },
-            { label: 'Date Rated', value: EntriesSortByEnum.RatingDate },
-            {
-              label: 'Highest Rating',
-              value: EntriesSortByEnum.RatingHighToLow,
-            },
-            {
-              label: 'Lowest Rating',
-              value: EntriesSortByEnum.RatingLowToHigh,
-            },
-          ]}
+          options={SORT_BY_OPTIONS}
           defaultValue={sortBy}
-          icon={<IconSortAscending size={20} />}
+          icon={<IconSortDescending size={20} />}
         />
         <Dropdown
           onChange={({ value }) => setFilterType(value)}

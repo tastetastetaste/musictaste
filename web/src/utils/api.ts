@@ -126,6 +126,7 @@ const getEntries = ({
   artist,
   label,
   tag,
+  type,
 
   page,
   pageSize,
@@ -143,6 +144,7 @@ const getEntries = ({
   artist?: string;
   label?: string;
   tag?: string;
+  type?: string;
 
   page: number;
   pageSize: number;
@@ -157,7 +159,9 @@ const getEntries = ({
         decade ? '&decade=' + decade : ''
       }${bucket ? '&bucket=' + bucket : ''}${genre ? '&genre=' + genre : ''}${
         artist ? '&artist=' + artist : ''
-      }${label ? '&label=' + label : ''}${tag ? '&tag=' + tag : ''}`,
+      }${label ? '&label=' + label : ''}${tag ? '&tag=' + tag : ''}${
+        type ? '&type=' + type : ''
+      }`,
     )
     .then((res) => res.data);
 };

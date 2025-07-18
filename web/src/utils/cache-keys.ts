@@ -14,6 +14,7 @@ const entriesKey = (filters: {
   artist?: string;
   label?: string;
   tag?: string;
+  type?: string;
   page?: number;
   pageSize?: number;
 }) => [
@@ -35,6 +36,7 @@ const entriesKey = (filters: {
         filters.artist,
         filters.label,
         filters.tag,
+        filters.type,
         filters.page,
         filters.pageSize,
       ]
