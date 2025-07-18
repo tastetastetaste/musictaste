@@ -1,4 +1,26 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, createContext, useContext } from 'react';
+
+const ScreenSizeContext = createContext<number>(0);
+
+export const useScreenSize = () => useContext(ScreenSizeContext);
+
+export const ScreenSizeProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
+  const [screenSize, setScreenSize] = useState<number>(window.innerWidth);
+
+  useEffect(() => {
+    const handleResize = () => setScreenSize(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return (
+    <ScreenSizeContext.Provider value={screenSize}>
+      {children}
+    </ScreenSizeContext.Provider>
+  );
+};
 
 export type BreakPointKeyT = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
@@ -17,31 +39,9 @@ export const useMediaQuery = ({
   up?: BreakPointKeyT;
   down?: BreakPointKeyT;
 }) => {
-  const query = up
-    ? `(min-width: ${breakpoints[up]}px)`
-    : down
-      ? `(max-width: ${breakpoints[down]}px)`
-      : '';
+  const screenSize = useScreenSize();
 
-  const [matches, setMatches] = useState<boolean>(false);
-
-  useEffect(() => {
-    const matchMedia = window.matchMedia(query);
-
-    // Triggered at the first client-side load and if query changes
-    const listener = () => setMatches(!!matchMedia.matches);
-
-    listener();
-
-    // Listen matchMedia
-    matchMedia.addEventListener('change', listener);
-
-    return () => {
-      matchMedia.removeEventListener('change', listener);
-    };
-  }, [query]);
-
-  return matches;
+  return up ? screenSize >= breakpoints[up] : screenSize < breakpoints[down];
 };
 
 export const mediaQueryMinWidth = Object.keys(breakpoints)

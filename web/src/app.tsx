@@ -20,6 +20,7 @@ import { SnackbarProvider, useSnackbar } from './hooks/useSnackbar';
 import { SOMETHING_WENT_WRONG } from './static/feedback';
 import { ThemeProvider } from './theme/useTheme';
 import NotFoundPage from './layout/not-found-page';
+import { ScreenSizeProvider } from './hooks/useMediaQuery';
 
 const UserPageWrapper = lazy(
   () => import('./features/users/user-page-wrapper'),
@@ -711,14 +712,16 @@ const router = createBrowserRouter([
 export function App() {
   return (
     <Fragment>
-      <ThemeProvider>
-        <SnackbarProvider>
-          <QueryProvider>
-            <RouterProvider router={router} />
-            <ReactQueryDevtools />
-          </QueryProvider>
-        </SnackbarProvider>
-      </ThemeProvider>
+      <ScreenSizeProvider>
+        <ThemeProvider>
+          <SnackbarProvider>
+            <QueryProvider>
+              <RouterProvider router={router} />
+              <ReactQueryDevtools />
+            </QueryProvider>
+          </SnackbarProvider>
+        </ThemeProvider>
+      </ScreenSizeProvider>
     </Fragment>
   );
 }
