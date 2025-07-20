@@ -57,7 +57,7 @@ const ListLike = ({
   return (
     <IconButton
       title="Like"
-      num={likesCount}
+      num={Number(likesCount) || 0}
       onClick={() => (likedByMe ? removeListLike(id) : createListLike(id))}
       active={likedByMe}
     >
@@ -158,7 +158,7 @@ const ListBody = ({
           />
           <IconButton
             title="Comments"
-            num={list.commentsCount}
+            num={Number(list.commentsCount) || 0}
             onClick={() => setShowComments(!showComments)}
             active={showComments}
           >

@@ -187,14 +187,14 @@ export class ListsService {
     let likedByMe = false;
 
     if (currentUserId) {
-      const { likes } = await this.listsRepository
-        .createQueryBuilder('l')
-        .leftJoinAndSelect('l.likes', 'll', 'll.userId = :userId', {
+      const like = await this.listLikesRepository.findOne({
+        where: {
+          listId: id,
           userId: currentUserId,
-        })
-        .getOne();
+        },
+      });
 
-      likedByMe = !!likes[0];
+      likedByMe = !!like;
     }
 
     return {
