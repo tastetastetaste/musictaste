@@ -106,29 +106,33 @@ const ReleaseTracks: React.FC<{
                     {t.durationMs ? millisecondsToTimeString(t.durationMs) : ''}
                   </Typography>
                 </Group>
-                {isLoggedIn && (
+                {!isUnreleased && (
                   <Group justify="end" gap="sm">
-                    <IconButton
-                      title="Favorite"
-                      active={t.vote === VoteType.UP}
-                      onClick={() => clickFu(VoteType.UP, t)}
-                      disabled={createEntryLoading}
-                    >
-                      <FavIcon />
-                    </IconButton>
+                    {isLoggedIn && (
+                      <IconButton
+                        title="Favorite"
+                        active={t.vote === VoteType.UP}
+                        onClick={() => clickFu(VoteType.UP, t)}
+                        disabled={createEntryLoading}
+                      >
+                        <FavIcon />
+                      </IconButton>
+                    )}
                     <Typography whiteSpace="nowrap">
                       {Number(t.upvotes) - Number(t.downvotes) > 0
                         ? `+${Number(t.upvotes) - Number(t.downvotes)}`
                         : Number(t.upvotes) - Number(t.downvotes)}
                     </Typography>
-                    <IconButton
-                      title="Least Favorite"
-                      active={t.vote === VoteType.DOWN}
-                      onClick={() => clickFu(VoteType.DOWN, t)}
-                      disabled={createEntryLoading}
-                    >
-                      <LeastFavIcon />
-                    </IconButton>
+                    {isLoggedIn && (
+                      <IconButton
+                        title="Least Favorite"
+                        active={t.vote === VoteType.DOWN}
+                        onClick={() => clickFu(VoteType.DOWN, t)}
+                        disabled={createEntryLoading}
+                      >
+                        <LeastFavIcon />
+                      </IconButton>
+                    )}
                   </Group>
                 )}
               </StyledTrack>
