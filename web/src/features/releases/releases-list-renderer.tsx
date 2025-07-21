@@ -4,34 +4,19 @@ import { Feedback } from '../../components/feedback';
 import { Loading } from '../../components/loading';
 import { ReleasesVirtualGrid } from './releases-virtual-grid';
 import { cacheKeys } from '../../utils/cache-keys';
+import { FindReleasesType } from 'shared';
 
 export interface ReleasesListRendererProps {
-  releasesFor: 'new' | 'popular' | 'recently-added' | 'top';
+  type: FindReleasesType;
 }
 
-export function ReleasesListRenderer({
-  releasesFor,
-}: ReleasesListRendererProps) {
-  const cacheKey =
-    releasesFor === 'new'
-      ? cacheKeys.newReleasesKey()
-      : releasesFor === 'recently-added'
-        ? cacheKeys.recentlyAddedReleasesKey()
-        : releasesFor === 'top'
-          ? cacheKeys.topReleasesKey()
-          : cacheKeys.popularReleasesKey();
+export function ReleasesListRenderer({ type }: ReleasesListRendererProps) {
+  const cacheKey = cacheKeys.releasesKey(type);
 
   const { data, isFetching, isFetchingNextPage, fetchNextPage, hasNextPage } =
     useInfiniteQuery(
       cacheKey,
-      async ({ pageParam = 1 }) =>
-        releasesFor === 'new'
-          ? api.getNewReleases(pageParam)
-          : releasesFor === 'popular'
-            ? api.getPopularReleases(pageParam)
-            : releasesFor === 'recently-added'
-              ? api.getRecentlyAddedReleases(pageParam)
-              : api.getTopReleases(pageParam),
+      async ({ pageParam = 1 }) => api.getReleases(type as any, pageParam),
       {
         getNextPageParam: (lastPage, pages) => {
           return pages.length < lastPage.totalPages

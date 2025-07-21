@@ -1,4 +1,4 @@
-import { EntriesSortByEnum } from 'shared';
+import { EntriesSortByEnum, FindReleasesType } from 'shared';
 import { useQuery, useQueryClient } from 'react-query';
 import { Grid } from './components/flex/grid';
 import { Stack } from './components/flex/stack';
@@ -32,12 +32,13 @@ const HomePage = () => {
     }),
   );
 
-  const { data: newReleasesData } = useQuery(cacheKeys.newReleasesKey(1), () =>
-    api.getNewReleases(1),
+  const { data: newReleasesData } = useQuery(
+    cacheKeys.releasesKey(FindReleasesType.New, 1),
+    () => api.getReleases(FindReleasesType.New, 1),
   );
   const { data: recentlyAddedReleasesData } = useQuery(
-    cacheKeys.recentlyAddedReleasesKey(1),
-    () => api.getRecentlyAddedReleases(1),
+    cacheKeys.releasesKey(FindReleasesType.Recent, 1),
+    () => api.getReleases(FindReleasesType.Recent, 1),
   );
   const { data: listsData } = useQuery(cacheKeys.newListsKey(1), () =>
     api.getNewLists(1),

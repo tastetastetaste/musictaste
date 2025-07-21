@@ -96,6 +96,9 @@ const RecentlyAddedReleasesPage = lazy(
 const TopReleasesPage = lazy(
   () => import('./features/releases/top-releases-page'),
 );
+const UpcomingReleasesPage = lazy(
+  () => import('./features/releases/upcoming-releases-page'),
+);
 const ReleaseReviewsPage = lazy(
   () => import('./features/releases/release-reviews-page'),
 );
@@ -481,6 +484,14 @@ const router = createBrowserRouter([
             element: (
               <Suspense fallback={<Fallback />}>
                 <RecentlyAddedReleasesPage />
+              </Suspense>
+            ),
+          },
+          {
+            path: 'upcoming',
+            element: (
+              <Suspense fallback={<Fallback />}>
+                <UpcomingReleasesPage />
               </Suspense>
             ),
           },

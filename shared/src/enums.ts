@@ -56,3 +56,11 @@ export enum EntriesSortByEnum {
   EntryDate = 'EntryDate',
   ReleaseDate = 'ReleaseDate',
 }
+
+export enum FindReleasesType {
+  New = 'new',
+  Popular = 'popular',
+  Upcoming = 'upcoming',
+  Recent = 'recent',
+  Top = 'top',
+}

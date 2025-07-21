@@ -8,6 +8,7 @@ const ReleasesPageWrapper: React.FC<{
       title="Releases"
       navigation={[
         { to: `/releases/new`, label: 'New' },
+        { to: `/releases/upcoming`, label: 'Upcoming' },
         { to: `/releases/popular`, label: 'Popular' },
         { to: `/releases/top`, label: 'Top' },
         { to: `/releases/recently-added`, label: 'Recently added' },

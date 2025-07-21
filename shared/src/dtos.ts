@@ -4,6 +4,7 @@ import {
   IsArray,
   IsEmail,
   IsEnum,
+  IsIn,
   IsInt,
   IsNumber,
   IsOptional,
@@ -16,7 +17,13 @@ import {
   ValidateNested,
   ValidationOptions,
 } from 'class-validator';
-import { EntriesSortByEnum, SubmissionStatus, VoteType, ReleaseType } from './enums';
+import {
+  EntriesSortByEnum,
+  SubmissionStatus,
+  VoteType,
+  ReleaseType,
+  FindReleasesType,
+} from './enums';
 import dayjs from 'dayjs';
 
 export function IsDayjsDateString(validationOptions?: ValidationOptions) {
@@ -141,6 +148,15 @@ export class CreateLabelDto {
   @IsString()
   @MinLength(1)
   name: string;
+}
+
+export class FindReleasesDto {
+  @IsString()
+  @IsEnum(FindReleasesType)
+  type: FindReleasesType;
+  @Type(() => Number)
+  @IsInt()
+  page: number;
 }
 
 // --- USER

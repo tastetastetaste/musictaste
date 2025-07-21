@@ -1,10 +1,11 @@
 import ReleasesPageWrapper from './releases-page-wrapper';
 import ReleasesListRenderer from './releases-list-renderer';
+import { FindReleasesType } from 'shared';
 
 const RecentlyAddedReleasesPage = () => {
   return (
     <ReleasesPageWrapper>
-      <ReleasesListRenderer releasesFor="recently-added" />
+      <ReleasesListRenderer type={FindReleasesType.Recent} />
     </ReleasesPageWrapper>
   );
 };

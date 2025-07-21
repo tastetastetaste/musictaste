@@ -1,3 +1,5 @@
+import { FindReleasesType } from 'shared';
+
 // ENTRY
 const entryKey = (id: string) => ['entry', id];
 const myReleaseEntryKey = (releaseId: string) => ['user', 'me', releaseId];
@@ -63,14 +65,11 @@ const releaseInMyListsKey = (releaseId: string) => [
   'inMyLists',
 ];
 
-const newReleasesKey = (page?: number) => ['releases', 'new', page];
-const recentlyAddedReleasesKey = (page?: number) => [
+const releasesKey = (type: FindReleasesType, page?: number) => [
   'releases',
-  'recent',
+  type,
   page,
 ];
-const popularReleasesKey = (page?: number) => ['releases', 'popular', page];
-const topReleasesKey = (page?: number) => ['releases', 'top', page];
 
 // RELEASE SUBMISSIONS
 
@@ -203,10 +202,7 @@ export const cacheKeys = {
   popularListsKey,
   releaseKey,
   releaseFollowingEntriesKey,
-  newReleasesKey,
-  recentlyAddedReleasesKey,
-  popularReleasesKey,
-  topReleasesKey,
+  releasesKey,
   releaseInMyListsKey,
   releaseSubmissionsKey,
   artistSubmissionsKey,

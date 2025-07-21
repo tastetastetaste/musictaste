@@ -8,6 +8,7 @@ import {
   EntriesSortByEnum,
   FindArtistSubmissionsDto,
   FindLabelSubmissionsDto,
+  FindReleasesType,
   FindReleaseSubmissionsDto,
   IArtistResponse,
   IArtistSubmissionsResponse,
@@ -369,21 +370,10 @@ const getReleaseInMyLists = (releaseId: string) =>
 // ----------------
 const getRelease = (id: string) =>
   client.get<IReleaseResponse>('releases/' + id).then((res) => res.data);
-const getNewReleases = (page: number) =>
+
+const getReleases = (type: FindReleasesType, page: number) =>
   client
-    .get<IReleasesResponse>('releases/new?page=' + page)
-    .then((res) => res.data);
-const getRecentlyAddedReleases = (page: number) =>
-  client
-    .get<IReleasesResponse>('releases/recent?page=' + page)
-    .then((res) => res.data);
-const getPopularReleases = (page: number) =>
-  client
-    .get<IReleasesResponse>('releases/popular?page=' + page)
-    .then((res) => res.data);
-const getTopReleases = (page: number) =>
-  client
-    .get<IReleasesResponse>('releases/top?page=' + page)
+    .get<IReleasesResponse>(`releases?type=${type}&page=${page}`)
     .then((res) => res.data);
 
 // ----------------
@@ -650,10 +640,7 @@ export const api = {
   getPopularLists,
   getReleaseInMyLists,
   getRelease,
-  getNewReleases,
-  getRecentlyAddedReleases,
-  getPopularReleases,
-  getTopReleases,
+  getReleases,
   createRelease,
   updateRelease,
   getReleaseSubmissions,

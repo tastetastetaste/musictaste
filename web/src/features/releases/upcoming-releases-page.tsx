@@ -2,12 +2,12 @@ import { FindReleasesType } from 'shared';
 import ReleasesListRenderer from './releases-list-renderer';
 import ReleasesPageWrapper from './releases-page-wrapper';
 
-const NewReleasesPage = () => {
+const UpcomingReleasesPage = () => {
   return (
     <ReleasesPageWrapper>
-      <ReleasesListRenderer type={FindReleasesType.New} />
+      <ReleasesListRenderer type={FindReleasesType.Upcoming} />
     </ReleasesPageWrapper>
   );
 };
 
-export default NewReleasesPage;
+export default UpcomingReleasesPage;

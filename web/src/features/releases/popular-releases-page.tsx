@@ -1,10 +1,11 @@
 import ReleasesPageWrapper from './releases-page-wrapper';
 import ReleasesListRenderer from './releases-list-renderer';
+import { FindReleasesType } from 'shared';
 
 const PopularReleasesPage = () => {
   return (
     <ReleasesPageWrapper>
-      <ReleasesListRenderer releasesFor="popular" />
+      <ReleasesListRenderer type={FindReleasesType.Popular} />
     </ReleasesPageWrapper>
   );
 };
