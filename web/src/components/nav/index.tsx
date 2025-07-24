@@ -4,7 +4,7 @@ import { Group } from '../flex/group';
 
 const StyledNavLink = styled(NavLink)`
   text-decoration: none;
-  color: ${({ theme }) => theme.colors.main};
+  color: ${({ theme }) => theme.colors.primary};
   cursor: pointer;
 
   &:hover {
@@ -12,14 +12,14 @@ const StyledNavLink = styled(NavLink)`
   }
 
   &.active {
-    color: ${({ theme }) => theme.colors.accent};
+    color: ${({ theme }) => theme.colors.highlight};
   }
 `;
 
 const NavContainer = styled.div`
   padding: 10px;
   margin: 10px 0;
-  background: ${({ theme }) => theme.colors.complement};
+  background: ${({ theme }) => theme.colors.background_sub};
   border-radius: ${({ theme }) => theme.border_radius.base};
 `;
 

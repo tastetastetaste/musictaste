@@ -25,16 +25,16 @@ const StyledTagButton = styled.button<{ $active: boolean }>`
   padding: 6px;
   margin: 0;
   background-color: ${({ theme, $active }) =>
-    $active ? theme.colors.accent : theme.colors.main};
-  color: ${({ theme }) => theme.colors.base};
+    $active ? theme.colors.highlight : theme.colors.primary};
+  color: ${({ theme }) => theme.colors.background};
   &:hover {
     background-color: ${({ theme }) => theme.colors.text};
-    color: ${({ theme }) => theme.colors.base};
+    color: ${({ theme }) => theme.colors.background};
   }
   &:active {
     background-color: ${({ theme, $active }) =>
-      $active ? theme.colors.accent : theme.colors.main};
-    color: ${({ theme }) => theme.colors.base};
+      $active ? theme.colors.highlight : theme.colors.primary};
+    color: ${({ theme }) => theme.colors.background};
   }
 `;
 

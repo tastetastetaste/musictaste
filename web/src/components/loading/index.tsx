@@ -28,8 +28,8 @@ const Spinner = styled.div`
   height: 30px;
   background-color: none;
   border-radius: 50%;
-  border: 3px solid ${({ theme }) => theme.colors.complement};
-  border-top: 3px solid ${({ theme }) => theme.colors.main};
+  border: 3px solid ${({ theme }) => theme.colors.background_sub};
+  border-top: 3px solid ${({ theme }) => theme.colors.primary};
   animation: ${Spin} 1s linear 0s infinite;
 `;
 
@@ -39,8 +39,8 @@ const SpinnerSmall = styled.div`
   height: 20px;
   background-color: none;
   border-radius: 50%;
-  border: 3px solid ${({ theme }) => theme.colors.complement};
-  border-top: 3px solid ${({ theme }) => theme.colors.main};
+  border: 3px solid ${({ theme }) => theme.colors.background_sub};
+  border-top: 3px solid ${({ theme }) => theme.colors.primary};
   animation: ${Spin} 1s linear 0s infinite;
 `;
 

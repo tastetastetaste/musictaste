@@ -10,7 +10,7 @@ export const Link = styled(ReactRouterLink)<LinkProps>`
   cursor: pointer;
   overflow: hidden;
   text-decoration: none;
-  color: ${({ theme }) => theme.colors.main};
+  color: ${({ theme }) => theme.colors.primary};
 
   font-size: ${({ theme, size }) =>
     size === 'title-lg'
@@ -30,7 +30,7 @@ export const Link = styled(ReactRouterLink)<LinkProps>`
     color: ${({ theme }) => theme.colors.text};
   }
   &:active {
-    color: ${({ theme }) => theme.colors.main};
+    color: ${({ theme }) => theme.colors.primary};
   }
   white-space: ${({ whiteSpace }) => whiteSpace || 'normal'};
 `;

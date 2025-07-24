@@ -130,7 +130,7 @@ export const RatingPopoverContent: React.FC<{
                 ...props.style,
                 height: '20px',
                 width: '20px',
-                backgroundColor: theme.colors.accent,
+                backgroundColor: theme.colors.highlight,
                 border: '1px solid currentColor',
               }}
             />

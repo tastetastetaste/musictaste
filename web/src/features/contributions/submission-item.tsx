@@ -69,7 +69,7 @@ export const SubmissionItemWrapper = ({
     status === SubmissionStatus['DISAPPROVED']
       ? colors.error
       : status === SubmissionStatus['APPROVED']
-        ? colors.accent
+        ? colors.highlight
         : colors.text;
   return (
     <div

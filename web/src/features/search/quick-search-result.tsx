@@ -13,7 +13,7 @@ const StyledSearchResultContainer = styled.div`
 `;
 
 const StyledSearchResult = styled.div`
-  background: ${({ theme }) => theme.colors.complement};
+  background: ${({ theme }) => theme.colors.background_sub};
   width: 220px;
   height: 400px;
   z-index: 5;

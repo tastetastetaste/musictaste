@@ -105,7 +105,7 @@ export const UserGenresChart: React.FC<{ userId: string }> = ({ userId }) => {
   );
 
   const {
-    colors: { accent, main, complement },
+    colors: { highlight: accent, primary: main, background_sub: complement },
   } = useTheme();
 
   const numberOfGenres = 20;

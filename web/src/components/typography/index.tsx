@@ -24,10 +24,10 @@ export const Typography = styled.span<TypographyProps>`
       : color === 'sub'
         ? theme.colors.text_sub
         : color === 'bg'
-          ? theme.colors.base
+          ? theme.colors.background
           : color === 'inherit'
             ? 'inherit'
-          : theme.colors.text};
+            : theme.colors.text};
   font-weight: ${({ theme, size }) =>
     size === 'title-xl'
       ? theme.font.weight.bolder

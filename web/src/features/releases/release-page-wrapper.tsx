@@ -134,7 +134,7 @@ const ReleaseCover: React.FC<{
         borderRadius: border_radius.base,
         aspectRatio: '1/1',
         height: 'auto',
-        boxShadow: `${colors.base} 0px 2px 3px`,
+        boxShadow: `${colors.background} 0px 2px 3px`,
       }}
       alt={alt}
     />

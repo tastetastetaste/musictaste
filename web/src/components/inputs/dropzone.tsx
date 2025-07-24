@@ -4,8 +4,8 @@ import { useDropzone } from 'react-dropzone';
 const dropzoneStyles = (theme: Theme) => css`
   border-radius: ${theme.border_radius.base};
   padding: 20px;
-  background-color: ${theme.colors.complement};
-  color: ${theme.colors.main};
+  background-color: ${theme.colors.background_sub};
+  color: ${theme.colors.primary};
   text-align: center;
   cursor: pointer;
   outline: none;

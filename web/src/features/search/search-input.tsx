@@ -8,7 +8,7 @@ const SearchInputWrapper = styled.div`
   width: 100%;
   box-sizing: border-box;
   border-radius: ${({ theme }) => theme.border_radius.base};
-  background-color: ${({ theme }) => theme.colors.complement};
+  background-color: ${({ theme }) => theme.colors.background_sub};
   color: ${({ theme }) => theme.colors.text};
   padding: 6px 10px;
 
@@ -29,7 +29,7 @@ const StyledInput = styled.input`
   background: transparent;
   color: ${({ theme }) => theme.colors.text};
   &::placeholder {
-    color: ${({ theme }) => theme.colors.main};
+    color: ${({ theme }) => theme.colors.primary};
     opacity: 1;
   }
   &:focus-visible {
@@ -39,7 +39,7 @@ const StyledInput = styled.input`
 
 const SearchIcon = styled(IconSearch)`
   margin-right: 8px;
-  color: ${({ theme }) => theme.colors.main};
+  color: ${({ theme }) => theme.colors.primary};
 `;
 
 export const SearchInput = forwardRef<

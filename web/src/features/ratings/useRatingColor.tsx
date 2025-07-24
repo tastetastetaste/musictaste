@@ -12,7 +12,7 @@ export const useRatingColor = () => {
       }
 
       return Color(theme.colors.text)
-        .mix(Color(theme.colors.accent), rating / 100)
+        .mix(Color(theme.colors.highlight), rating / 100)
         .hex();
     },
     [theme],

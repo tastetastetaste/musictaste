@@ -34,17 +34,17 @@ const FilterButton: React.FC<{
           border: 'none',
           backgroundColor: selected
             ? theme.colors.text
-            : theme.colors.complement,
+            : theme.colors.background_sub,
           borderRadius: theme.border_radius.base,
-          color: selected ? theme.colors.base : theme.colors.text,
+          color: selected ? theme.colors.background : theme.colors.text,
           cursor: 'pointer',
           '&:hover': {
             backgroundColor: theme.colors.text,
-            color: theme.colors.base,
+            color: theme.colors.background,
           },
           '&:active': {
-            backgroundColor: theme.colors.main,
-            color: theme.colors.base,
+            backgroundColor: theme.colors.primary,
+            color: theme.colors.background,
           },
           '&:disabled': {
             opacity: 0.5,
@@ -455,17 +455,17 @@ const UserMusicFilters = ({
               padding: '8px 12px',
               border: 'none',
               borderRadius: theme.border_radius.base,
-              backgroundColor: theme.colors.complement,
+              backgroundColor: theme.colors.background_sub,
               color: theme.colors.text,
               cursor: 'pointer',
               fontWeight: 500,
               '&:hover': {
                 backgroundColor: theme.colors.text,
-                color: theme.colors.base,
+                color: theme.colors.background,
               },
               '&:active': {
-                backgroundColor: theme.colors.main,
-                color: theme.colors.base,
+                backgroundColor: theme.colors.primary,
+                color: theme.colors.background,
               },
             })}
           >

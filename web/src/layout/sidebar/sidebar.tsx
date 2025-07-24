@@ -20,7 +20,7 @@ const Overlay = styled.div`
 `;
 
 const SidabarBox = styled.div<{ position: 'left' | 'right' }>`
-  background: ${({ theme }) => theme.colors.base};
+  background: ${({ theme }) => theme.colors.background};
   border-top-left-radius: ${({ theme }) => theme.border_radius.base};
   border-bottom-left-radius: ${({ theme }) => theme.border_radius.base};
   width: clamp(200px, 320px, 100%);

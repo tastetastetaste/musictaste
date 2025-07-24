@@ -1,0 +1,118 @@
+import { Theme } from '@emotion/react';
+
+export const baseTheme: Omit<Theme, 'colors'> = {
+  border_radius: {
+    base: '4px',
+  },
+  font: {
+    family: {
+      base: "'PT Sans', sans-serif",
+      sub: "'PT Sans', sans-serif",
+    },
+    weight: {
+      normal: 400,
+      bold: 700,
+      bolder: 900,
+    },
+    size: {
+      title_xl: '50px',
+      title_lg: '24px',
+      title: '18px',
+      body: '14px',
+      small: '11px',
+    },
+  },
+};
+
+export const THEME_COLOR_PRESETS: Record<string, Theme['colors']> = {
+  light: {
+    background: '#f1f1f1',
+    background_sub: '#dddddd',
+    primary: '#000000',
+    highlight: '#05a081',
+    text: '#333333',
+    text_sub: '#33333380',
+    error: '#ff5f5f',
+  },
+  'light green': {
+    background: '#f5fffa',
+    background_sub: '#D6FFEB',
+    primary: '#3cb371',
+    highlight: '#20b2aa',
+    text: '#333333',
+    text_sub: '#33333380',
+    error: '#ff5f5f',
+  },
+  'light purple': {
+    background: '#f3e5f5',
+    background_sub: '#e1bee7',
+    primary: '#f48fb1',
+    highlight: '#ce93d8',
+    text: '#200025',
+    text_sub: '#20002580',
+    error: '#ff0000',
+  },
+  'light pink': {
+    background: '#fce4ec',
+    background_sub: '#f8bbd0',
+    primary: '#ff80ab',
+    highlight: '#f06292',
+    text: '#250013',
+    text_sub: '#25001380',
+    error: '#ff0000',
+  },
+  dark: {
+    background: '#303030',
+    background_sub: '#383838',
+    primary: '#696969',
+    highlight: '#ff8800',
+    text: '#d1ccc5',
+    text_sub: '#d1ccc580',
+    error: '#ff5f5f',
+  },
+  'dark green': {
+    background: '#212b2b',
+    background_sub: '#244d3f',
+    primary: '#3e7a65',
+    highlight: '#f2495b',
+    text: '#cdc6bc',
+    text_sub: '#cdc6bc80',
+    error: '#ff0000',
+  },
+  'dark red': {
+    background: '#250000',
+    background_sub: '#660000',
+    primary: '#b50505',
+    highlight: '#ff0000',
+    text: '#ffffff',
+    text_sub: '#ffffff80',
+    error: '#ff0000',
+  },
+  'dark blue': {
+    background: '#001425',
+    background_sub: '#003366',
+    primary: '#0560b5',
+    highlight: '#0080ff',
+    text: '#ffffff',
+    text_sub: '#ffffff80',
+    error: '#ff0000',
+  },
+  'dark pink': {
+    background: '#191919',
+    background_sub: '#1c1c1c',
+    primary: '#ffa6d6',
+    highlight: '#d40068',
+    text: '#ffffff',
+    text_sub: '#ffffff80',
+    error: '#FFD166',
+  },
+  'dark+': {
+    background: '#000000',
+    background_sub: '#111111',
+    primary: '#727272',
+    highlight: '#00ff00',
+    text: '#ffffff',
+    text_sub: '#ffffff80',
+    error: '#ff0000',
+  },
+};

@@ -15,9 +15,9 @@ const StyledSnackbarCard = styled.div`
 const StyledSnackbarContent = styled.div<{
   isError?: boolean;
 }>`
-  color: ${({ theme }) => theme.colors.base};
+  color: ${({ theme }) => theme.colors.background};
   background: ${({ isError, theme }) =>
-    isError ? theme.colors.error : theme.colors.accent};
+    isError ? theme.colors.error : theme.colors.highlight};
   border-radius: ${({ theme }) => theme.border_radius.base};
   padding: 12px 22px;
   font-size: 14px;

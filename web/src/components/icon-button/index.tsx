@@ -10,8 +10,8 @@ const Button = styled.button<{ $active?: boolean; $danger?: boolean }>`
     $danger
       ? theme.colors.error
       : $active
-        ? theme.colors.accent
-        : theme.colors.main};
+        ? theme.colors.highlight
+        : theme.colors.primary};
   cursor: pointer;
   &:hover {
     color: ${({ theme }) => theme.colors.text};
@@ -21,8 +21,8 @@ const Button = styled.button<{ $active?: boolean; $danger?: boolean }>`
       $danger
         ? theme.colors.error
         : $active
-          ? theme.colors.accent
-          : theme.colors.main};
+          ? theme.colors.highlight
+          : theme.colors.primary};
   }
   &:disabled {
     opacity: 0.5;
@@ -30,8 +30,8 @@ const Button = styled.button<{ $active?: boolean; $danger?: boolean }>`
       $danger
         ? theme.colors.error
         : $active
-          ? theme.colors.accent
-          : theme.colors.main};
+          ? theme.colors.highlight
+          : theme.colors.primary};
     cursor: not-allowed;
   }
 `;
@@ -44,16 +44,16 @@ const SolidButton = styled(Button)<{ $active?: boolean; $danger?: boolean }>`
     $danger
       ? theme.colors.error
       : $active
-        ? theme.colors.accent
-        : theme.colors.complement};
+        ? theme.colors.highlight
+        : theme.colors.background_sub};
   color: ${({ theme, $active }) =>
-    $active ? theme.colors.base : theme.colors.text};
+    $active ? theme.colors.background : theme.colors.text};
   svg {
     color: ${({ theme, $active }) =>
-      $active ? theme.colors.base : theme.colors.text};
+      $active ? theme.colors.background : theme.colors.text};
   }
   &:hover {
-    background-color: ${({ theme }) => theme.colors.main};
+    background-color: ${({ theme }) => theme.colors.primary};
     color: ${({ theme }) => theme.colors.text};
     svg {
       color: ${({ theme }) => theme.colors.text};
@@ -64,8 +64,8 @@ const SolidButton = styled(Button)<{ $active?: boolean; $danger?: boolean }>`
       $danger
         ? theme.colors.error
         : $active
-          ? theme.colors.accent
-          : theme.colors.complement};
+          ? theme.colors.highlight
+          : theme.colors.background_sub};
   }
 `;
 

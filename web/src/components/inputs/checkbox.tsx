@@ -30,7 +30,7 @@ const StyledCheckbox = styled.div<{ active: boolean }>`
   ${({ active, theme }) =>
     active &&
     `
-    background: ${theme.colors.accent};
+    background: ${theme.colors.highlight};
     svg {
       visibility: visible;
     }

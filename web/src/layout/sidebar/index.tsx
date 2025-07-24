@@ -23,7 +23,7 @@ import {
   SITE_NAME,
   TWITTER_URL,
 } from '../../static/site-info';
-import { themeOptions, useThemeSwitcher } from '../../theme/useTheme';
+// import { themeOptions, useThemeSwitcher } from '../../features/theme/useTheme';
 import { Sidebar } from './sidebar';
 
 const links = [
@@ -31,6 +31,7 @@ const links = [
   { to: '/releases/new', label: 'Releases', exact: false },
   { to: '/reviews/new', label: 'Reviews', exact: false },
   { to: '/lists/new', label: 'Lists', exact: false },
+  { to: '/theme', label: 'Theme', exact: true },
   { to: '/contributing', label: 'Contributing', exact: true },
 ];
 
@@ -43,8 +44,6 @@ const SidebarContent = ({
   onOpenSupportDialog: any;
   onOpenContactDialog: any;
 }) => {
-  const { selectedTheme, switchTheme } = useThemeSwitcher();
-
   return (
     <Fragment>
       <Stack justify="apart">
@@ -55,12 +54,6 @@ const SidebarContent = ({
             </Link>
           ))}
         </Stack>
-        <Dropdown
-          defaultValue={selectedTheme}
-          options={themeOptions.map((o) => ({ label: o, value: o }))}
-          onChange={(v) => switchTheme(v.value as any)}
-          placeholder="Theme"
-        />
 
         <Stack gap={10}>
           <Group gap="lg" align="center" justify="center">

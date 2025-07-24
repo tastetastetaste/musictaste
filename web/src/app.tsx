@@ -18,7 +18,7 @@ import { Loading as Fallback } from './components/loading';
 import { UseAuthProvider } from './features/account/useAuth';
 import { SnackbarProvider, useSnackbar } from './hooks/useSnackbar';
 import { SOMETHING_WENT_WRONG } from './static/feedback';
-import { ThemeProvider } from './theme/useTheme';
+import { ThemeProvider } from './features/theme/useTheme';
 import NotFoundPage from './layout/not-found-page';
 import { ScreenSizeProvider } from './hooks/useMediaQuery';
 
@@ -150,6 +150,8 @@ const PendingDeletionsPage = lazy(
   () => import('./features/contributions/pending-deletions-page'),
 );
 
+const ThemePage = lazy(() => import('./features/theme/theme-page'));
+
 const QueryProvider = ({ children }: { children: any }) => {
   const { snackbar } = useSnackbar();
 
@@ -233,6 +235,14 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<Fallback />}>
             <HomePage />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'theme',
+        element: (
+          <Suspense fallback={<Fallback />}>
+            <ThemePage />
           </Suspense>
         ),
       },

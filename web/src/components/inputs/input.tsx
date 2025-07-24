@@ -9,14 +9,14 @@ export const Input = styled.input<{ error?: boolean }>`
   display: block;
   width: 100%;
   box-sizing: border-box;
-  background-color: ${({ theme }) => theme.colors.complement};
+  background-color: ${({ theme }) => theme.colors.background_sub};
   color: ${({ theme }) => theme.colors.text};
   &:hover,
   &:focus {
     outline: none;
   }
   &::placeholder {
-    color: ${({ theme }) => theme.colors.main};
+    color: ${({ theme }) => theme.colors.primary};
     opacity: 1;
   }
 

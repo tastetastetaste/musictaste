@@ -94,7 +94,7 @@ const MarkdownContainer = styled.div`
 
   hr {
     height: 1px;
-    background-color: ${({ theme }) => theme.colors.main};
+    background-color: ${({ theme }) => theme.colors.primary};
   }
 `;
 
@@ -102,12 +102,12 @@ const MDLink = styled(Link)`
   text-decoration: underline;
   cursor: pointer;
   overflow: hidden;
-  color: ${({ theme }) => theme.colors.main};
+  color: ${({ theme }) => theme.colors.primary};
   &:hover {
     color: ${({ theme }) => theme.colors.text};
   }
   &:active {
-    color: ${({ theme }) => theme.colors.main};
+    color: ${({ theme }) => theme.colors.primary};
   }
 `;
 

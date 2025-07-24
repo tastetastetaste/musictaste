@@ -9,7 +9,7 @@ const Container = styled.div`
   justify-content: center;
   padding: 20px;
   margin: 8px 0;
-  background: ${({ theme }) => theme.colors.complement};
+  background: ${({ theme }) => theme.colors.background_sub};
   border-radius: ${({ theme }) => theme.border_radius.base};
   color: ${({ theme }) => theme.colors.text};
 `;

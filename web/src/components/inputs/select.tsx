@@ -11,7 +11,7 @@ const customStyles: (theme: Theme) => StylesConfig = (theme) => ({
     ...provided,
     border: 'none',
     borderRadius: theme.border_radius.base,
-    backgroundColor: theme.colors.complement,
+    backgroundColor: theme.colors.background_sub,
     color: theme.colors.text,
     boxShadow: state.isFocused ? `0 0 0 2px ${theme.colors.text}` : 'none',
     padding: 0,
@@ -26,13 +26,13 @@ const customStyles: (theme: Theme) => StylesConfig = (theme) => ({
     ...provided,
     backgroundColor: state.isFocused
       ? theme.colors.text
-      : theme.colors.complement,
-    color: state.isFocused ? theme.colors.complement : theme.colors.text,
+      : theme.colors.background_sub,
+    color: state.isFocused ? theme.colors.background_sub : theme.colors.text,
     padding: '6px 10px',
   }),
   placeholder: (provided) => ({
     ...provided,
-    color: theme.colors.main,
+    color: theme.colors.primary,
   }),
   input: (provided) => ({
     ...provided,
@@ -44,16 +44,16 @@ const customStyles: (theme: Theme) => StylesConfig = (theme) => ({
   }),
   multiValue: (provided) => ({
     ...provided,
-    color: theme.colors.main,
-    background: theme.colors.base,
+    color: theme.colors.primary,
+    background: theme.colors.background,
   }),
   multiValueLabel: (provided) => ({
     ...provided,
-    color: theme.colors.main,
+    color: theme.colors.primary,
   }),
   multiValueRemove: (provided, state) => ({
     ...provided,
-    background: state.isFocused ? theme.colors.error : theme.colors.base,
+    background: state.isFocused ? theme.colors.error : theme.colors.background,
     color: theme.colors.text,
     ':hover': {
       background: theme.colors.error,

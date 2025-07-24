@@ -6,7 +6,7 @@ const PopoverContainer = styled.div`
   max-height: 300px;
   overflow-y: auto;
   padding: 8px 8px;
-  background: ${({ theme }) => theme.colors.complement};
+  background: ${({ theme }) => theme.colors.background_sub};
   border-radius: ${({ theme }) => theme.border_radius.base};
 `;
 

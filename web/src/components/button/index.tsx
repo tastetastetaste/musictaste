@@ -20,27 +20,27 @@ const StyledButton = styled.button<{ danger?: boolean }>`
   padding: 6px;
   margin: 0;
   background-color: ${({ theme, danger }) =>
-    danger ? theme.colors.error : theme.colors.complement};
+    danger ? theme.colors.error : theme.colors.background_sub};
   color: ${({ theme, danger }) =>
-    danger ? theme.colors.base : theme.colors.text};
+    danger ? theme.colors.background : theme.colors.text};
   transition: background-color 0.1s ease-out;
 
   &:hover {
     background-color: ${({ theme }) => theme.colors.text};
-    color: ${({ theme }) => theme.colors.base};
+    color: ${({ theme }) => theme.colors.background};
   }
 
   &:active {
-    background-color: ${({ theme }) => theme.colors.main};
-    color: ${({ theme }) => theme.colors.base};
+    background-color: ${({ theme }) => theme.colors.primary};
+    color: ${({ theme }) => theme.colors.background};
   }
 
   &:disabled {
     opacity: 0.5;
     background-color: ${({ theme, danger }) =>
-      danger ? theme.colors.error : theme.colors.complement};
+      danger ? theme.colors.error : theme.colors.background_sub};
     color: ${({ theme, danger }) =>
-      danger ? theme.colors.base : theme.colors.text};
+      danger ? theme.colors.background : theme.colors.text};
     cursor: not-allowed;
   }
 
@@ -58,7 +58,7 @@ const StyledTextButton = styled.button<{ danger?: boolean }>`
   background: none;
   border: none;
   color: ${({ theme, danger }) =>
-    danger ? theme.colors.error : theme.colors.main};
+    danger ? theme.colors.error : theme.colors.primary};
   cursor: pointer;
 
   &:hover {
@@ -67,13 +67,13 @@ const StyledTextButton = styled.button<{ danger?: boolean }>`
 
   &:active {
     color: ${({ theme, danger }) =>
-      danger ? theme.colors.error : theme.colors.main};
+      danger ? theme.colors.error : theme.colors.primary};
   }
 
   &:disabled {
     opacity: 0.5;
     color: ${({ theme, danger }) =>
-      danger ? theme.colors.error : theme.colors.main};
+      danger ? theme.colors.error : theme.colors.primary};
     cursor: not-allowed;
   }
 

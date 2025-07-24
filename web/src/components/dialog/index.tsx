@@ -19,7 +19,7 @@ const Overlay = styled.div`
 `;
 
 const DialogBox = styled.div`
-  background: ${({ theme }) => theme.colors.base};
+  background: ${({ theme }) => theme.colors.background};
   border-radius: ${({ theme }) => theme.border_radius.base};
   padding: 20px;
   max-width: 500px;

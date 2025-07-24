@@ -14,7 +14,7 @@ const MenuItemContainer = styled.div`
 
   &:hover {
     background: ${({ theme }) => theme.colors.text};
-    color: ${({ theme }) => theme.colors.base};
+    color: ${({ theme }) => theme.colors.background};
   }
 
   a {

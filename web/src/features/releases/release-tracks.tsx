@@ -18,7 +18,7 @@ const StyledTrack = styled.div<{ alt: boolean }>`
   display: flex;
   width: 100%;
   background: ${({ theme, alt }) =>
-    alt ? theme.colors.complement : theme.colors.base};
+    alt ? theme.colors.background_sub : theme.colors.background};
   padding: 8px 16px;
   border-radius: ${({ theme }) => theme.border_radius.base};
   gap: 12px;
