@@ -1,4 +1,3 @@
-import { Transform, Type } from 'class-transformer';
 import { IsString } from 'class-validator';
 import { SubmissionStatus, SubmissionType } from 'shared';
 import {
@@ -10,9 +9,9 @@ import {
   OneToMany,
 } from 'typeorm';
 import { SharedBaseEntity } from '../shared/base-entity';
+import { LabelSubmissionVote } from './label-submission-vote.entity';
 import { Label } from './label.entity';
 import { User } from './user.entity';
-import { LabelSubmissionVote } from './label-submission-vote.entity';
 
 export class LabelChanges {
   @IsString()
@@ -28,10 +27,10 @@ export class LabelSubmission extends SharedBaseEntity {
   labelId: string;
 
   @Column('simple-json')
-  @Transform((value) => JSON.stringify(value), { toPlainOnly: true })
-  @Transform((value: any) => JSON.parse(value), { toClassOnly: true })
-  @Type(() => LabelChanges)
   changes: LabelChanges;
+
+  @Column('simple-json', { nullable: true })
+  original: LabelChanges;
 
   @Column('int')
   submissionType: SubmissionType;

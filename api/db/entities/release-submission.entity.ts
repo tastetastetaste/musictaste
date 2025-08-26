@@ -63,6 +63,9 @@ export class ReleaseSubmission extends SharedBaseEntity {
   @Column('simple-json')
   changes: ReleaseChanges;
 
+  @Column('simple-json', { nullable: true })
+  original: ReleaseChanges;
+
   @Column('int')
   submissionType: SubmissionType;
 

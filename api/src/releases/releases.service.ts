@@ -17,6 +17,7 @@ import {
   IReleaseWithStats,
   ReleaseType,
   FindReleasesDto,
+  ITrackWithVotes,
 } from 'shared';
 import { In, Repository } from 'typeorm';
 import { Artist } from '../../db/entities/artist.entity';
@@ -232,33 +233,38 @@ export class ReleasesService {
     return users;
   }
 
+  async getReleaseTracks(id: string): Promise<ITrackWithVotes[]> {
+    const tracks = await this.tracksRepository
+      .createQueryBuilder('track')
+      .addSelect('SUM(CASE WHEN vote.vote = 1 THEN 1 END)', 'upvotes')
+      .addSelect('SUM(CASE WHEN vote.vote = -1 THEN 1 END)', 'downvotes')
+      .leftJoin('track.votes', 'vote')
+      .where('track.releaseId = :releaseId', { releaseId: id })
+      .orderBy('track.order', 'ASC')
+      .groupBy('track.id')
+      .getRawMany();
+    return tracks.map((t) => ({
+      id: t.track_id,
+      track: t.track_track,
+      order: t.track_order,
+      title: t.track_title,
+      upvotes: t.upvotes || 0,
+      downvotes: t.downvotes || 0,
+      durationMs: t.track_durationMs,
+    }));
+  }
+
   async findOne(id: string): Promise<IReleaseResponse> {
     const release = await this.getReleaseFullInfo(id);
 
     const [contributors, tracks] = await Promise.all([
       this.getContributors(release.id),
-      this.tracksRepository
-        .createQueryBuilder('track')
-        .addSelect('SUM(CASE WHEN vote.vote = 1 THEN 1 END)', 'upvotes')
-        .addSelect('SUM(CASE WHEN vote.vote = -1 THEN 1 END)', 'downvotes')
-        .leftJoin('track.votes', 'vote')
-        .where('track.releaseId = :releaseId', { releaseId: release.id })
-        .orderBy('track.order', 'ASC')
-        .groupBy('track.id')
-        .getRawMany(),
+      this.getReleaseTracks(release.id),
     ]);
 
     return {
       release,
-      tracks: tracks.map((t) => ({
-        id: t.track_id,
-        track: t.track_track,
-        order: t.track_order,
-        title: t.track_title,
-        upvotes: t.upvotes || 0,
-        downvotes: t.downvotes || 0,
-        durationMs: t.track_durationMs,
-      })),
+      tracks,
       contributors,
     };
   }

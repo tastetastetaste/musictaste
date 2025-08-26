@@ -1,15 +1,14 @@
 import { Fragment } from 'react';
 import { useInfiniteQuery } from 'react-query';
+import { useOutletContext } from 'react-router-dom';
 import { ILabelSubmission, SubmissionStatus } from 'shared';
 import { FetchMore } from '../../components/fetch-more';
 import { Stack } from '../../components/flex/stack';
 import { Loading } from '../../components/loading';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
-import { SubmissionActions, SubmissionItemWrapper } from './submission-item';
-import { Link } from '../../components/links/link';
 import { getLabelPathname } from '../../utils/get-pathname';
-import { useOutletContext } from 'react-router-dom';
+import { SubmissionField, SubmissionItemWrapper } from './submission-item';
 
 class LabelSubmissionListOutletContext {
   status?: SubmissionStatus;
@@ -19,25 +18,28 @@ class LabelSubmissionListOutletContext {
 
 export const LabelSubmissionItem = ({
   submission,
+  hideUser,
 }: {
   submission: ILabelSubmission;
+  hideUser?: boolean;
 }) => {
+  const { original, changes } = submission;
+  const hasOriginal = !!original;
   return (
-    <SubmissionItemWrapper status={submission.submissionStatus}>
-      {submission.name && (
-        <div>
-          <span>name: {submission.name}</span>
-        </div>
-      )}
-      {submission.labelId && (
-        <div>
-          <Link to={getLabelPathname(submission.labelId)}>link</Link>
-        </div>
-      )}
-      <SubmissionActions
-        id={submission.id}
-        status={submission.submissionStatus}
-        voteFn={api.labelSubmissionVote}
+    <SubmissionItemWrapper
+      status={submission.submissionStatus}
+      link={submission.labelId && getLabelPathname(submission.labelId)}
+      id={submission.id}
+      voteFn={api.labelSubmissionVote}
+      user={submission.user}
+      hideUser={hideUser}
+    >
+      <SubmissionField
+        label="Name"
+        originalValue={original?.name}
+        changedValue={changes?.name}
+        showOriginal={hasOriginal}
+        renderValue={(v) => <span>{v}</span>}
       />
     </SubmissionItemWrapper>
   );
@@ -77,7 +79,7 @@ const LabelSubmissionsList: React.FC = () => {
       {data?.pages.map((page) => (
         <Stack key={page.currentPage}>
           {page.labels.map((submission) => (
-            <LabelSubmissionItem submission={submission} />
+            <LabelSubmissionItem submission={submission} hideUser={!!userId} />
           ))}
         </Stack>
       ))}

@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import dayjs from 'dayjs';
@@ -246,7 +247,15 @@ export class SubmissionService {
   ) {
     const release = await this.releasesRepository.findOne({
       where: { id: releaseId },
+      relations: {
+        artistConnection: true,
+        labelConnection: true,
+        languageConnection: true,
+        tracks: true,
+      },
     });
+
+    if (!release) throw new NotFoundException();
 
     const imageUrl: string = rest.image
       ? (await this.imagesService.storeUpload(rest.image, 'release')).path
@@ -283,16 +292,31 @@ export class SubmissionService {
       tracks: tracks,
     };
 
+    rs.original = {
+      title: release.title,
+      type: release.type,
+      date: release.date,
+      artistsIds: release.artistConnection.map((a) => a.artistId),
+      labelsIds: release.labelConnection.map((l) => l.labelId),
+      languagesIds: release.languageConnection.map((l) => l.languageId),
+      imagePath: release.imagePath,
+      tracks: release.tracks.map((t) => ({
+        track: t.track,
+        title: t.title,
+        durationMs: t.durationMs,
+      })),
+    };
+
     const newReleaseSubmission =
       await this.releaseSubmissionRepository.save(rs);
 
     if (newReleaseSubmission.submissionStatus === SubmissionStatus.APPROVED) {
       await this.applyReleaseSubmission(newReleaseSubmission);
 
-      return { message: 'Edited successfully' };
+      return { message: 'Your changes are live!' };
     }
 
-    return { message: 'Your edit request was submitted successfully' };
+    return { message: 'Submitted for review - thank you!' };
   }
 
   private async applyReleaseSubmission(submission: ReleaseSubmission) {
@@ -616,48 +640,81 @@ export class SubmissionService {
         skip: (page - 1) * pageSize,
       });
 
+    const allArtistIds = [
+      ...new Set(
+        rss.flatMap((rs) => [
+          ...(rs.changes.artistsIds || []),
+          ...(rs.original?.artistsIds || []),
+        ]),
+      ),
+    ];
+
+    const allLabelIds = [
+      ...new Set(
+        rss.flatMap((rs) => [
+          ...(rs.changes.labelsIds || []),
+          ...(rs.original?.labelsIds || []),
+        ]),
+      ),
+    ];
+
+    const allLanguageIds = [
+      ...new Set(
+        rss.flatMap((rs) => [
+          ...(rs.changes.languagesIds || []),
+          ...(rs.original?.languagesIds || []),
+        ]),
+      ),
+    ];
+
+    const uniqueUserIds = [...new Set(rss.map((rs) => rs.userId))];
+
     const [artists, labels, languages, users] = await Promise.all([
-      this.artistsRepository.find({
-        where: { id: In(rss.flatMap((rs) => rs.changes.artistsIds)) },
-      }),
-      this.labelsRepository.find({
-        where: { id: In(rss.flatMap((rs) => rs.changes.labelsIds)) },
-      }),
-      this.languagesRepository.find({
-        where: { id: In(rss.flatMap((rs) => rs.changes.languagesIds)) },
-      }),
-      this.usersService.getUsersByIds(rss.map((rs) => rs.userId)),
+      this.artistsRepository.find({ where: { id: In(allArtistIds) } }),
+      this.labelsRepository.find({ where: { id: In(allLabelIds) } }),
+      this.languagesRepository.find({ where: { id: In(allLanguageIds) } }),
+      this.usersService.getUsersByIds(uniqueUserIds),
     ]);
 
+    const resolveEntities = (ids: string[], source: any[]) =>
+      ids?.map((id) => source.find((e) => e.id === id)).filter(Boolean) || [];
+
     return {
-      releases: rss.map(
-        ({
-          changes: {
-            artistsIds,
-            labelsIds,
-            languagesIds,
-            imagePath,
-            type,
-            ...changes
-          },
-          ...rs
-        }) => ({
-          artists: artistsIds
-            ?.filter(Boolean)
-            .map((id) => artists.find((a) => a.id === id)),
-          labels: labelsIds
-            ?.filter(Boolean)
-            .map((id) => labels.find((l) => l.id === id)),
-          languages: languagesIds?.map((id) =>
-            languages.find((l) => l.id === id),
-          ),
-          user: users.find((u) => u.id === rs.userId),
-          imageUrl: this.imagesService.getImageUrl(imagePath),
-          type: ReleaseType[type],
-          ...changes,
+      releases: rss.map((rs) => {
+        const changes = {
+          ...rs.changes,
+          type: ReleaseType[rs.changes.type],
+          imageUrl: this.imagesService.getImageUrl(rs.changes.imagePath),
+          artists: resolveEntities(rs.changes.artistsIds, artists),
+          labels: resolveEntities(rs.changes.labelsIds, labels),
+          languages: resolveEntities(rs.changes.languagesIds, languages),
+          artistsIds: undefined,
+          labelsIds: undefined,
+          languagesIds: undefined,
+          imagePath: undefined,
+        };
+        const original = rs.original
+          ? {
+              ...rs.original,
+              type: ReleaseType[rs.original.type],
+              imageUrl: this.imagesService.getImageUrl(rs.original.imagePath),
+              artists: resolveEntities(rs.original.artistsIds, artists),
+              labels: resolveEntities(rs.original.labelsIds, labels),
+              languages: resolveEntities(rs.original.languagesIds, languages),
+              artistsIds: undefined,
+              labelsIds: undefined,
+              languagesIds: undefined,
+              imagePath: undefined,
+            }
+          : null;
+
+        return {
           ...rs,
-        }),
-      ),
+          user: users.find((u) => u.id === rs.userId),
+          changes,
+          original: original ? original : null,
+        };
+      }),
       totalItems,
       currentPage: page,
       currentItems: (page - 1) * pageSize + rss.length,
@@ -689,15 +746,14 @@ export class SubmissionService {
         skip: (page - 1) * pageSize,
       });
 
-    const users = await this.usersService.getUsersByIds(
-      rss.map((rs) => rs.userId),
-    );
+    const uniqueUserIds = [...new Set(rss.map((rs) => rs.userId))];
+
+    const users = await this.usersService.getUsersByIds(uniqueUserIds);
 
     return {
-      artists: rss.map(({ changes, ...rs }) => ({
-        user: users.find((u) => u.id === rs.userId),
-        ...changes,
+      artists: rss.map(({ ...rs }) => ({
         ...rs,
+        user: users.find((u) => u.id === rs.userId),
       })),
       totalItems,
       currentPage: page,
@@ -731,15 +787,14 @@ export class SubmissionService {
       },
     );
 
-    const users = await this.usersService.getUsersByIds(
-      rss.map((rs) => rs.userId),
-    );
+    const uniqueUserIds = [...new Set(rss.map((rs) => rs.userId))];
+
+    const users = await this.usersService.getUsersByIds(uniqueUserIds);
 
     return {
-      labels: rss.map(({ changes: { ...changes }, ...rs }) => ({
-        user: users.find((u) => u.id === rs.userId),
-        ...changes,
+      labels: rss.map(({ ...rs }) => ({
         ...rs,
+        user: users.find((u) => u.id === rs.userId),
       })),
       totalItems,
       currentPage: page,

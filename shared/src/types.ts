@@ -361,10 +361,7 @@ export interface ICreateLabelResponse {
   limitReached: boolean;
 }
 
-export interface IReleaseSubmission {
-  id: string;
-  userId: string;
-  releaseId: string;
+export interface IReleaseChanges {
   title: string;
   type: string;
   date: any;
@@ -373,24 +370,44 @@ export interface IReleaseSubmission {
   languages: ILanguage[];
   imageUrl: string;
   tracks: { track: string; title: string; durationMs?: number }[];
+}
+
+export interface IReleaseSubmission {
+  id: string;
+  userId: string;
+  releaseId: string;
+  changes: IReleaseChanges;
+  original?: IReleaseChanges;
   submissionType: any;
   submissionStatus: any;
   user: IUserSummary;
 }
+
+export interface IArtistChanges {
+  name: string;
+}
+
 export interface IArtistSubmission {
   id: string;
   userId: string;
   artistId: string;
-  name: string;
+  changes: IArtistChanges;
+  original?: IArtistChanges;
   submissionType: any;
   submissionStatus: any;
   user: IUserSummary;
 }
+
+export interface ILabelChanges {
+  name: string;
+}
+
 export interface ILabelSubmission {
   id: string;
   userId: string;
   labelId: string;
-  name: string;
+  changes: ILabelChanges;
+  original?: ILabelChanges;
   submissionType: any;
   submissionStatus: any;
   user: IUserSummary;

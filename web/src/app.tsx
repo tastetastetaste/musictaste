@@ -583,27 +583,78 @@ const router = createBrowserRouter([
         children: [
           {
             path: 'releases',
-            element: (
-              <Suspense fallback={<Fallback />}>
-                <ReleaseSubmissionsList />
-              </Suspense>
-            ),
+            children: [
+              {
+                index: true,
+                element: <Navigate to="/contributions/releases/open" replace />,
+              },
+              {
+                path: 'open',
+                element: (
+                  <Suspense fallback={<Fallback />}>
+                    <ReleaseSubmissionsList />
+                  </Suspense>
+                ),
+              },
+              {
+                path: 'auto-approved',
+                element: (
+                  <Suspense fallback={<Fallback />}>
+                    <ReleaseSubmissionsList />
+                  </Suspense>
+                ),
+              },
+            ],
           },
           {
             path: 'artists',
-            element: (
-              <Suspense fallback={<Fallback />}>
-                <ArtistSubmissionsList />
-              </Suspense>
-            ),
+            children: [
+              {
+                index: true,
+                element: <Navigate to="/contributions/artists/open" replace />,
+              },
+              {
+                path: 'open',
+                element: (
+                  <Suspense fallback={<Fallback />}>
+                    <ArtistSubmissionsList />
+                  </Suspense>
+                ),
+              },
+              {
+                path: 'auto-approved',
+                element: (
+                  <Suspense fallback={<Fallback />}>
+                    <ArtistSubmissionsList />
+                  </Suspense>
+                ),
+              },
+            ],
           },
           {
             path: 'labels',
-            element: (
-              <Suspense fallback={<Fallback />}>
-                <LabelSubmissionsList />
-              </Suspense>
-            ),
+            children: [
+              {
+                index: true,
+                element: <Navigate to="/contributions/labels/open" replace />,
+              },
+              {
+                path: 'open',
+                element: (
+                  <Suspense fallback={<Fallback />}>
+                    <LabelSubmissionsList />
+                  </Suspense>
+                ),
+              },
+              {
+                path: 'auto-approved',
+                element: (
+                  <Suspense fallback={<Fallback />}>
+                    <LabelSubmissionsList />
+                  </Suspense>
+                ),
+              },
+            ],
           },
         ],
       },

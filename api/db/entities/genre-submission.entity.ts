@@ -1,4 +1,3 @@
-import { Transform, Type } from 'class-transformer';
 import { IsString } from 'class-validator';
 import { SubmissionStatus, SubmissionType } from 'shared';
 import {
@@ -26,10 +25,10 @@ export class GenreSubmission extends SharedBaseEntity {
   genreId: string;
 
   @Column('text')
-  @Transform((value) => JSON.stringify(value), { toPlainOnly: true })
-  @Transform((value: any) => JSON.parse(value), { toClassOnly: true })
-  @Type(() => GenreChanges)
   changes: GenreChanges;
+
+  @Column('simple-json', { nullable: true })
+  original: GenreChanges;
 
   @Column('int')
   submissionType: SubmissionType;

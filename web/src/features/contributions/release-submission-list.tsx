@@ -1,111 +1,110 @@
 import { Fragment } from 'react';
 import { useInfiniteQuery } from 'react-query';
+import { useOutletContext } from 'react-router-dom';
 import { IReleaseSubmission, SubmissionStatus } from 'shared';
 import { FetchMore } from '../../components/fetch-more';
-import { Group } from '../../components/flex/group';
 import { Stack } from '../../components/flex/stack';
 import { Loading } from '../../components/loading';
 import { api } from '../../utils/api';
-import { millisecondsToTimeString } from './release-tracks-fields';
 import { cacheKeys } from '../../utils/cache-keys';
-import { SubmissionActions, SubmissionItemWrapper } from './submission-item';
 import { getReleasePathname } from '../../utils/get-pathname';
-import { Link } from '../../components/links/link';
-import { useOutletContext } from 'react-router-dom';
+import {
+  ImagePreview,
+  SubmissionField,
+  SubmissionItemWrapper,
+  TracksComparisonField,
+} from './submission-item';
+
+export const ReleaseSubmissionItem = ({
+  submission,
+  hideUser,
+}: {
+  submission: IReleaseSubmission;
+  hideUser?: boolean;
+}) => {
+  const { original, changes } = submission;
+  const hasOriginal = !!original;
+
+  return (
+    <SubmissionItemWrapper
+      status={submission.submissionStatus}
+      link={submission.releaseId && getReleasePathname(submission.releaseId)}
+      id={submission.id}
+      voteFn={api.releaseSubmissionVote}
+      user={submission.user}
+      hideUser={hideUser}
+    >
+      <SubmissionField
+        label="Title"
+        originalValue={original?.title}
+        changedValue={changes?.title}
+        showOriginal={hasOriginal}
+        renderValue={(v) => <span>{v}</span>}
+      />
+      <SubmissionField
+        label="Artists"
+        originalValue={original?.artists}
+        changedValue={changes?.artists}
+        showOriginal={hasOriginal}
+        renderValue={(value) => (
+          <span>{value.map((a) => a?.name).join(', ')}</span>
+        )}
+      />
+      <SubmissionField
+        label="Type"
+        originalValue={original?.type}
+        changedValue={changes?.type}
+        showOriginal={hasOriginal}
+        renderValue={(v) => <span>{v}</span>}
+      />
+      <SubmissionField
+        label="Date"
+        originalValue={original?.date}
+        changedValue={changes?.date}
+        showOriginal={hasOriginal}
+        renderValue={(v) => <span>{v}</span>}
+      />
+      <SubmissionField
+        label="Labels"
+        originalValue={original?.labels}
+        changedValue={changes?.labels}
+        showOriginal={hasOriginal}
+        renderValue={(value) => (
+          <span>{value.map((l) => l?.name).join(', ')}</span>
+        )}
+      />
+      <SubmissionField
+        label="Languages"
+        originalValue={original?.languages}
+        changedValue={changes?.languages}
+        showOriginal={hasOriginal}
+        renderValue={(value) => (
+          <span>{value.map((l) => l?.name).join(', ')}</span>
+        )}
+      />
+      <TracksComparisonField
+        originalTracks={original?.tracks || []}
+        changedTracks={changes?.tracks || []}
+        showOriginal={hasOriginal}
+      />
+      <SubmissionField
+        label="Image"
+        originalValue={original?.imageUrl}
+        changedValue={changes?.imageUrl}
+        showOriginal={hasOriginal}
+        renderValue={(value) =>
+          value ? <ImagePreview src={value} alt="cover" /> : null
+        }
+      />
+    </SubmissionItemWrapper>
+  );
+};
 
 export class ReleaseSubmissionListOutletContext {
   status?: SubmissionStatus;
   userId?: string;
   releaseId?: string;
 }
-
-export const ReleaseSubmissionItem = ({
-  submission,
-}: {
-  submission: IReleaseSubmission;
-}) => {
-  return (
-    <SubmissionItemWrapper status={submission.submissionStatus}>
-      {submission.title && (
-        <div>
-          <span>title: {submission.title}</span>
-        </div>
-      )}
-
-      {submission.artists && (
-        <div>
-          <span>
-            artists: {submission.artists.map((a) => a?.name).join(', ')}
-          </span>
-        </div>
-      )}
-      {submission.type && (
-        <div>
-          <span>type: {submission.type}</span>
-        </div>
-      )}
-      {submission.date && (
-        <div>
-          <span>date: {submission.date}</span>
-        </div>
-      )}
-      {submission.labels && (
-        <div>
-          <span>label: {submission.labels.map((l) => l?.name).join(', ')}</span>
-        </div>
-      )}
-
-      {submission.languages && (
-        <div>
-          <span>
-            language: {submission.languages.map((l) => l?.name).join(', ')}
-          </span>
-        </div>
-      )}
-
-      {submission.tracks && (
-        <div>
-          <div>
-            <span>tracks:</span>
-          </div>
-
-          {submission.tracks.map((t) => (
-            <div key={t.title}>
-              <span>{`${t.track} | ${t.title} | ${millisecondsToTimeString(t.durationMs)}`}</span>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {submission.imageUrl && (
-        <Group gap={10}>
-          <span>image:</span>
-          <img
-            width={75}
-            height={75}
-            style={{
-              width: 75,
-              height: 75,
-              borderRadius: '50%',
-            }}
-            src={submission.imageUrl}
-            alt=""
-          />
-        </Group>
-      )}
-      {submission.releaseId && (
-        <div>
-          <Link to={getReleasePathname(submission.releaseId)}>link</Link>
-        </div>
-      )}
-      <SubmissionActions
-        id={submission.id}
-        status={submission.submissionStatus}
-        voteFn={api.releaseSubmissionVote}
-      />
-    </SubmissionItemWrapper>
-  );
-};
 
 const ReleaseSubmissionsList = () => {
   const { userId, releaseId, status } =
@@ -141,7 +140,11 @@ const ReleaseSubmissionsList = () => {
       {data?.pages.map((page) => (
         <Stack key={page.currentPage}>
           {page.releases.map((submission) => (
-            <ReleaseSubmissionItem submission={submission} />
+            <ReleaseSubmissionItem
+              key={submission.id}
+              submission={submission}
+              hideUser={!!userId}
+            />
           ))}
         </Stack>
       ))}

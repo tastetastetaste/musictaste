@@ -1,15 +1,14 @@
 import { Fragment } from 'react';
 import { useInfiniteQuery } from 'react-query';
+import { useOutletContext } from 'react-router-dom';
 import { IArtistSubmission, SubmissionStatus } from 'shared';
 import { FetchMore } from '../../components/fetch-more';
 import { Stack } from '../../components/flex/stack';
 import { Loading } from '../../components/loading';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
-import { SubmissionActions, SubmissionItemWrapper } from './submission-item';
 import { getArtistPathname } from '../../utils/get-pathname';
-import { Link } from '../../components/links/link';
-import { useOutletContext } from 'react-router-dom';
+import { SubmissionField, SubmissionItemWrapper } from './submission-item';
 
 class ArtistSubmissionListOutletContext {
   status?: SubmissionStatus;
@@ -19,25 +18,28 @@ class ArtistSubmissionListOutletContext {
 
 export const ArtistSubmissionItem = ({
   submission,
+  hideUser,
 }: {
   submission: IArtistSubmission;
+  hideUser?: boolean;
 }) => {
+  const { original, changes } = submission;
+  const hasOriginal = !!original;
   return (
-    <SubmissionItemWrapper status={submission.submissionStatus}>
-      {submission.name && (
-        <div>
-          <span>name: {submission.name}</span>
-        </div>
-      )}
-      {submission.artistId && (
-        <div>
-          <Link to={getArtistPathname(submission.artistId)}>link</Link>
-        </div>
-      )}
-      <SubmissionActions
-        id={submission.id}
-        status={submission.submissionStatus}
-        voteFn={api.artistSubmissionVote}
+    <SubmissionItemWrapper
+      status={submission.submissionStatus}
+      link={submission.artistId && getArtistPathname(submission.artistId)}
+      id={submission.id}
+      voteFn={api.artistSubmissionVote}
+      user={submission.user}
+      hideUser={hideUser}
+    >
+      <SubmissionField
+        label="Name"
+        originalValue={original?.name}
+        changedValue={changes?.name}
+        showOriginal={hasOriginal}
+        renderValue={(v) => <span>{v}</span>}
       />
     </SubmissionItemWrapper>
   );
@@ -77,7 +79,7 @@ const ArtistSubmissionsList: React.FC = () => {
       {data?.pages.map((page) => (
         <Stack key={page.currentPage}>
           {page.artists.map((submission) => (
-            <ArtistSubmissionItem submission={submission} />
+            <ArtistSubmissionItem submission={submission} hideUser={!!userId} />
           ))}
         </Stack>
       ))}
