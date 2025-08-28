@@ -24,7 +24,10 @@ import { updateReviewAfterVote_2 } from '../reviews/update-review-after-vote';
 const BioSection = ({ bio }: { bio?: string | null }) =>
   bio ? <Markdown>{bio}</Markdown> : <div></div>;
 
-const RecentlyAddedReleases: React.FC<{ userId: string }> = ({ userId }) => {
+const RecentlyAddedReleases: React.FC<{ userId: string; username: string }> = ({
+  userId,
+  username,
+}) => {
   const { data, isLoading } = useQuery(
     cacheKeys.entriesKey({
       userId,
@@ -48,12 +51,26 @@ const RecentlyAddedReleases: React.FC<{ userId: string }> = ({ userId }) => {
   const releases = data?.entries.length !== 0 && data?.entries.slice(0, 10);
 
   return (
-    <Grid cols={[2, 5]} gap={RELEASE_GRID_PADDING}>
-      {releases &&
-        releases.map((ur) => (
-          <Release key={ur.id} release={ur.release!} entry={ur} size="lg" />
-        ))}
-    </Grid>
+    <Fragment>
+      {releases && (
+        <Fragment>
+          <Link
+            size="title-lg"
+            to={{
+              pathname: `/${username}/music`,
+              search: 'sb?dateAdded',
+            }}
+          >
+            Recently Added
+          </Link>
+          <Grid cols={[2, 5]} gap={RELEASE_GRID_PADDING}>
+            {releases.map((ur) => (
+              <Release key={ur.id} release={ur.release!} entry={ur} size="lg" />
+            ))}
+          </Grid>
+        </Fragment>
+      )}
+    </Fragment>
   );
 };
 
@@ -139,6 +156,16 @@ const Lists: React.FC<{ username: string; userId: string }> = ({
 
 const UserProfilePage = () => {
   const { user } = useOutletContext<UserPageOutletContext>();
+  const { data: ratingBuckets } = useQuery(
+    cacheKeys.userRatingBucketsKey(user.id),
+    () => api.getUserRatingBuckets(user.id),
+  );
+  const hasRatings = !!ratingBuckets && ratingBuckets.some((b) => b.count > 0);
+
+  const { data: genres } = useQuery(cacheKeys.userGenresKey(user.id), () =>
+    api.getUserGenres(user.id),
+  );
+  const hasGenres = !!genres && genres.length > 0;
 
   return (
     <Fragment>
@@ -150,28 +177,18 @@ const UserProfilePage = () => {
         <FlexChild grow shrink>
           <ResponsiveRow breakpoint="sm">
             <FlexChild grow shrink>
-              <Typography size="title-lg">Ratings</Typography>
+              {hasRatings && <Typography size="title-lg">Ratings</Typography>}
               <UserRatingsChart userId={user.id} />
             </FlexChild>
             <FlexChild grow shrink>
-              <Typography size="title-lg">Top Genres</Typography>
+              {hasGenres && <Typography size="title-lg">Top Genres</Typography>}
               <UserGenresChart userId={user.id} />
             </FlexChild>
           </ResponsiveRow>
         </FlexChild>
       </ResponsiveRow>
       <Stack gap="lg">
-        <Link
-          size="title-lg"
-          to={{
-            pathname: `/${user.username}/music`,
-            search: 'sb?dateAdded',
-          }}
-        >
-          Recently Added
-        </Link>
-
-        <RecentlyAddedReleases userId={user.id} />
+        <RecentlyAddedReleases userId={user.id} username={user.username} />
         <Reviews user={user} />
         <Lists username={user.username} userId={user.id} />
       </Stack>
