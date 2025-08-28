@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
 
 interface ButtonProps {
-  variant?: 'main' | 'text';
+  variant?: 'main' | 'text' | 'highlight';
   children?: React.ReactNode;
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
   type?: 'submit' | 'reset' | 'button';
@@ -9,7 +9,7 @@ interface ButtonProps {
   danger?: boolean;
 }
 
-const StyledButton = styled.button<{ danger?: boolean }>`
+const StyledButton = styled.button<{ danger?: boolean; variant?: string }>`
   display: flex;
   justify-content: center;
   align-items: center;
@@ -19,10 +19,16 @@ const StyledButton = styled.button<{ danger?: boolean }>`
   cursor: pointer;
   padding: 6px;
   margin: 0;
-  background-color: ${({ theme, danger }) =>
-    danger ? theme.colors.error : theme.colors.background_sub};
-  color: ${({ theme, danger }) =>
-    danger ? theme.colors.background : theme.colors.text};
+  background-color: ${({ theme, danger, variant }) =>
+    danger
+      ? theme.colors.error
+      : variant === 'highlight'
+        ? theme.colors.highlight
+        : theme.colors.background_sub};
+  color: ${({ theme, danger, variant }) =>
+    danger || variant === 'highlight'
+      ? theme.colors.background
+      : theme.colors.text};
   transition: background-color 0.1s ease-out;
 
   &:hover {
@@ -85,14 +91,13 @@ const StyledTextButton = styled.button<{ danger?: boolean }>`
 `;
 
 export const Button = ({
-  variant,
   children,
   type = 'button',
   ...props
 }: ButtonProps) => {
   const content = <span>{children}</span>;
 
-  if (variant === 'text') {
+  if (props.variant === 'text') {
     return (
       <StyledTextButton {...props} type={type}>
         {content}

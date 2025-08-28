@@ -1,21 +1,24 @@
-import { EntriesSortByEnum, FindReleasesType } from 'shared';
 import { useQuery, useQueryClient } from 'react-query';
-import { Grid } from './components/flex/grid';
-import { Stack } from './components/flex/stack';
-import { Link } from './components/links/link';
-import { List } from './features/lists/list';
-import { Release } from './features/releases/release';
-import { RELEASE_GRID_PADDING } from './features/releases/releases-virtual-grid';
-import { Review } from './features/reviews/review';
-import AppPageWrapper from './layout/app-page-wrapper';
-import { api } from './utils/api';
-import { Feedback } from './components/feedback';
-import { LIST_GRID_PADDING } from './features/lists/lists-list-renderer';
-import { cacheKeys } from './utils/cache-keys';
-import { updateReviewAfterVote_2 } from './features/reviews/update-review-after-vote';
+import { EntriesSortByEnum, FindReleasesType } from 'shared';
+import { Feedback } from '../components/feedback';
+import { Grid } from '../components/flex/grid';
+import { Stack } from '../components/flex/stack';
+import { Link } from '../components/links/link';
+import { useAuth } from '../features/account/useAuth';
+import FeaturesOverview from './features-overview';
+import { List } from '../features/lists/list';
+import { LIST_GRID_PADDING } from '../features/lists/lists-list-renderer';
+import { Release } from '../features/releases/release';
+import { RELEASE_GRID_PADDING } from '../features/releases/releases-virtual-grid';
+import { Review } from '../features/reviews/review';
+import { updateReviewAfterVote_2 } from '../features/reviews/update-review-after-vote';
+import AppPageWrapper from '../layout/app-page-wrapper';
+import { api } from '../utils/api';
+import { cacheKeys } from '../utils/cache-keys';
 
 const HomePage = () => {
   const queryClient = useQueryClient();
+
   const reviewsCacheKey = cacheKeys.entriesKey({
     page: 1,
     pageSize: 12,
@@ -44,6 +47,8 @@ const HomePage = () => {
     api.getNewLists(1),
   );
 
+  const { isLoggedIn, isLoading } = useAuth();
+
   const reviews = reviewsData?.entries;
 
   const newReleases = newReleasesData?.releases;
@@ -54,6 +59,8 @@ const HomePage = () => {
   return (
     <AppPageWrapper>
       <Stack gap="lg">
+        {!isLoading && !isLoggedIn && <FeaturesOverview />}
+
         <Link to="/releases/new" size="title-lg">
           New Releases
         </Link>
