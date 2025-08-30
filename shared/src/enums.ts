@@ -19,6 +19,7 @@ export enum ReleaseType {
   Unofficial = 13,
   Video = 14,
   Reissue = 15,
+  Other = 25,
 }
 
 export enum SubmissionStatus {

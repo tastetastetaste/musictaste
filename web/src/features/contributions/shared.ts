@@ -14,4 +14,5 @@ export const ReleaseTypeOptions = [
   { value: 'Unofficial', label: 'Unofficial' },
   { value: 'Video', label: 'Video' },
   { value: 'Reissue', label: 'Reissue' },
+  { value: 'Other', label: 'Other' },
 ];

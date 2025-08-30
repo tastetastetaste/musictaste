@@ -415,7 +415,7 @@ export class ReleasesService {
       .createQueryBuilder('ur')
       .select('ur.releaseId', 'releaseId')
       .addSelect(
-        'row_number() OVER (ORDER BY AVG(rating.rating) DESC)',
+        'row_number() OVER (ORDER BY AVG(rating.rating) DESC NULLS LAST)',
         'index',
       )
       .leftJoin('ur.release', 'release')
@@ -423,8 +423,9 @@ export class ReleasesService {
       .where(
         `EXTRACT(YEAR FROM release.date) = EXTRACT(YEAR FROM current_date)`,
       )
+      // .where('release.type = :releaseType', { releaseType: ReleaseType.LP })
       .groupBy('ur.releaseId')
-      // .having('COUNT(rating) >= 4')
+      // .having('COUNT(rating) >= 2')
       .take(1000)
       .skip(0)
       .getRawMany();
