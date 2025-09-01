@@ -10,6 +10,7 @@ import PageHeader from './page-header';
 import { NavigationLinkType } from '../../components/nav';
 import { MenuItemType } from '../../components/menu';
 import { CONTENT_MAX_WIDTH, CONTENT_PADDING } from './shared';
+import { useLocation } from 'react-router-dom';
 
 interface props {
   title?: string;
@@ -28,11 +29,18 @@ const AppPageWrapper: React.FC<props> = ({
   description,
   image,
 }) => {
+  const location = useLocation();
+  
   return (
     <Stack>
       <Helmet>
         <title>{`${title ? title + ' | ' + SITE_NAME : SITE_NAME}`}</title>
         <meta name="description" content={description} />
+        <link rel="canonical" href={`https://${SITE_DOMAIN}${location.pathname}`} />
+        
+        {/* Twitter Card data */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:site" content={TWITTER_USERNAME} />
         <meta name="twitter:title" content={title} />
         <meta name="twitter:description" content={description} />
         <meta
@@ -42,10 +50,12 @@ const AppPageWrapper: React.FC<props> = ({
           }
         />
         <meta property="twitter:image:alt" content={title} />
-        <meta name="twitter:site" content={TWITTER_USERNAME} />
+        
+        {/* Open Graph data */}
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
         <meta property="og:type" content="website" />
+        <meta property="og:url" content={`https://${SITE_DOMAIN}${location.pathname}`} />
         <meta
           property="og:image"
           content={

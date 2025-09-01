@@ -157,6 +157,10 @@ export class FindReleasesDto {
   @Type(() => Number)
   @IsInt()
   page: number;
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  pageSize?: number;
 }
 
 // --- USER

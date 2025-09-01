@@ -371,9 +371,9 @@ const getReleaseInMyLists = (releaseId: string) =>
 const getRelease = (id: string) =>
   client.get<IReleaseResponse>('releases/' + id).then((res) => res.data);
 
-const getReleases = (type: FindReleasesType, page: number) =>
+const getReleases = (type: FindReleasesType, page: number, pageSize?: number) =>
   client
-    .get<IReleasesResponse>(`releases?type=${type}&page=${page}`)
+    .get<IReleasesResponse>(`releases?type=${type}&page=${page}${pageSize ? `&pageSize=${pageSize}` : ''}`)
     .then((res) => res.data);
 
 // ----------------

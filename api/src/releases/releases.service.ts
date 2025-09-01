@@ -4,20 +4,17 @@ import {
   Injectable,
   InternalServerErrorException,
   NotFoundException,
-  BadRequestException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import dayjs from 'dayjs';
 import {
   IRelease,
   IReleaseFullInfo,
-  IReleaseResponse,
   IReleasesResponse,
   IReleaseStats,
   IReleaseWithStats,
-  ReleaseType,
-  FindReleasesDto,
   ITrackWithVotes,
+  ReleaseType,
 } from 'shared';
 import { In, Repository } from 'typeorm';
 import { Artist } from '../../db/entities/artist.entity';
@@ -254,33 +251,12 @@ export class ReleasesService {
     }));
   }
 
-  async findOne(id: string): Promise<IReleaseResponse> {
-    const release = await this.getReleaseFullInfo(id);
-
-    const [contributors, tracks] = await Promise.all([
-      this.getContributors(release.id),
-      this.getReleaseTracks(release.id),
-    ]);
-
-    return {
-      release,
-      tracks,
-      contributors,
-    };
-  }
-
-  async findNew(
-    findNewReleasesDto: FindReleasesDto,
-  ): Promise<IReleasesResponse> {
-    const page = findNewReleasesDto.page || 1;
-
+  async findNewReleases(page: number = 1, pageSize: number = 48) {
     const qb = this.releasesRepository
       .createQueryBuilder('release')
       .select('release.id', 'id')
       .where("release.date >= date_trunc('year', current_date)")
       .andWhere('release.date <= current_date');
-
-    const pageSize = 48;
 
     const qb2 = qb.clone();
 
@@ -298,19 +274,10 @@ export class ReleasesService {
     return {
       releases,
       totalItems,
-      currentPage: page,
-      currentItems: (page - 1) * pageSize + releases.length,
-      itemsPerPage: pageSize,
-      totalPages: Math.ceil(totalItems / pageSize),
     };
   }
 
-  async findUpcoming(
-    findUpcomingReleasesDto: FindReleasesDto,
-  ): Promise<IReleasesResponse> {
-    const page = findUpcomingReleasesDto.page || 1;
-    const pageSize = 48;
-
+  async findUpcomingReleases(page: number = 1, pageSize: number = 48) {
     const qb = this.releasesRepository
       .createQueryBuilder('release')
       .select('release.id', 'id')
@@ -332,18 +299,10 @@ export class ReleasesService {
     return {
       releases,
       totalItems,
-      currentPage: page,
-      currentItems: (page - 1) * pageSize + releases.length,
-      itemsPerPage: pageSize,
-      totalPages: Math.ceil(totalItems / pageSize),
     };
   }
 
-  async findRecentlyAdded(
-    findRecentlyAddedDto: FindReleasesDto,
-  ): Promise<IReleasesResponse> {
-    const page = findRecentlyAddedDto.page || 1;
-    const pageSize = 48;
+  async findRecentlyAddedReleases(page: number = 1, pageSize: number = 48) {
     const qb = this.releasesRepository
       .createQueryBuilder('release')
       .select('release.id', 'id')
@@ -359,24 +318,13 @@ export class ReleasesService {
 
     const releases = await this.getReleasesByIdsWithStats(res.map((r) => r.id));
 
-    const currentItems = (page - 1) * pageSize + releases.length;
-
     return {
       releases,
-      totalItems: totalItems > 2000 ? 2000 : totalItems,
-      currentPage: page,
-      currentItems,
-      itemsPerPage: pageSize,
-      totalPages: Math.ceil(totalItems / pageSize),
+      totalItems,
     };
   }
 
-  async findPopular(
-    findPopularDto: FindReleasesDto,
-    pageSize = 48,
-  ): Promise<IReleasesResponse> {
-    const page = findPopularDto.page || 1;
-
+  async findPopularReleases(page: number = 1, pageSize: number = 48) {
     const qb = this.releasesRepository
       .createQueryBuilder('release')
       .select('release.id', 'id')
@@ -400,17 +348,10 @@ export class ReleasesService {
     return {
       releases,
       totalItems,
-      currentPage: page,
-      currentItems: (page - 1) * pageSize + releases.length,
-      itemsPerPage: pageSize,
-      totalPages: Math.ceil(totalItems / pageSize),
     };
   }
 
-  async findTop(findChartDto: FindReleasesDto): Promise<IReleasesResponse> {
-    const page = findChartDto.page || 1;
-    const pageSize = 48;
-
+  async findTopReleases(page: number = 1, pageSize: number = 48) {
     const result = await this.userReleaseRepository
       .createQueryBuilder('ur')
       .select('ur.releaseId', 'releaseId')
@@ -423,15 +364,13 @@ export class ReleasesService {
       .where(
         `EXTRACT(YEAR FROM release.date) = EXTRACT(YEAR FROM current_date)`,
       )
-      // .where('release.type = :releaseType', { releaseType: ReleaseType.LP })
       .groupBy('ur.releaseId')
-      // .having('COUNT(rating) >= 2')
       .take(1000)
       .skip(0)
       .getRawMany();
 
     const ids = result
-      .slice((page - 1) * 48, page * 48)
+      .slice((page - 1) * pageSize, page * pageSize)
       .map((i) => i.releaseId);
 
     const releases = await this.getReleasesByIdsWithStats(ids);
@@ -439,28 +378,7 @@ export class ReleasesService {
     return {
       releases,
       totalItems: result.length,
-      currentPage: page,
-      currentItems: (page - 1) * pageSize + releases.length,
-      itemsPerPage: pageSize,
-      totalPages: Math.ceil(result.length / pageSize),
     };
-  }
-
-  async find(query: FindReleasesDto): Promise<IReleasesResponse> {
-    switch (query.type) {
-      case 'new':
-        return this.findNew(query);
-      case 'popular':
-        return this.findPopular(query);
-      case 'upcoming':
-        return this.findUpcoming(query);
-      case 'recent':
-        return this.findRecentlyAdded(query);
-      case 'top':
-        return this.findTop(query);
-      default:
-        throw new BadRequestException('Invalid type');
-    }
   }
 
   async createRelease({

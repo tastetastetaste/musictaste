@@ -300,11 +300,13 @@ export class SubmissionService {
       labelsIds: release.labelConnection.map((l) => l.labelId),
       languagesIds: release.languageConnection.map((l) => l.languageId),
       imagePath: release.imagePath,
-      tracks: release.tracks.map((t) => ({
-        track: t.track,
-        title: t.title,
-        durationMs: t.durationMs,
-      })),
+      tracks: release.tracks
+        .sort((a, b) => a.order - b.order)
+        .map((t) => ({
+          track: t.track,
+          title: t.title,
+          durationMs: t.durationMs,
+        })),
     };
 
     const newReleaseSubmission =

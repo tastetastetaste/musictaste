@@ -36,12 +36,12 @@ const HomePage = () => {
   );
 
   const { data: newReleasesData } = useQuery(
-    cacheKeys.releasesKey(FindReleasesType.New, 1),
-    () => api.getReleases(FindReleasesType.New, 1),
+    cacheKeys.releasesKey(FindReleasesType.New, 1, 12),
+    () => api.getReleases(FindReleasesType.New, 1, 12),
   );
   const { data: recentlyAddedReleasesData } = useQuery(
-    cacheKeys.releasesKey(FindReleasesType.Recent, 1),
-    () => api.getReleases(FindReleasesType.Recent, 1),
+    cacheKeys.releasesKey(FindReleasesType.Recent, 1, 12),
+    () => api.getReleases(FindReleasesType.Recent, 1, 12),
   );
   const { data: listsData } = useQuery(cacheKeys.newListsKey(1), () =>
     api.getNewLists(1),
@@ -66,10 +66,7 @@ const HomePage = () => {
         </Link>
         <Grid cols={[2, 6]} gap={RELEASE_GRID_PADDING}>
           {newReleases &&
-            (newReleases.length > 12
-              ? newReleases.slice(0, 12)
-              : newReleases
-            ).map((r) => <Release key={r.id} release={r} />)}
+            newReleases.map((r) => <Release key={r.id} release={r} />)}
         </Grid>
         <Stack gap="lg">
           <Link to="/reviews/top" size="title-lg">
@@ -79,22 +76,20 @@ const HomePage = () => {
             <Feedback message="No recent reviews" />
           )}
           {reviews &&
-            (reviews.length > 10 ? reviews.slice(0, 10) : reviews).map(
-              (entry) => (
-                <Review
-                  key={entry.id}
-                  entry={entry}
-                  updateAfterVote={(id, vote) =>
-                    updateReviewAfterVote_2({
-                      id,
-                      vote,
-                      cacheKey: reviewsCacheKey,
-                      queryClient,
-                    })
-                  }
-                />
-              ),
-            )}
+            reviews.map((entry) => (
+              <Review
+                key={entry.id}
+                entry={entry}
+                updateAfterVote={(id, vote) =>
+                  updateReviewAfterVote_2({
+                    id,
+                    vote,
+                    cacheKey: reviewsCacheKey,
+                    queryClient,
+                  })
+                }
+              />
+            ))}
         </Stack>
         <Stack gap="lg">
           <Link to="/lists/new" size="title-lg">
@@ -113,10 +108,9 @@ const HomePage = () => {
         </Link>
         <Grid cols={[2, 6]} gap={RELEASE_GRID_PADDING}>
           {recentlyAddedReleases &&
-            (recentlyAddedReleases.length > 12
-              ? recentlyAddedReleases.slice(0, 12)
-              : recentlyAddedReleases
-            ).map((r) => <Release key={r.id} release={r} />)}
+            recentlyAddedReleases.map((r) => (
+              <Release key={r.id} release={r} />
+            ))}
         </Grid>
       </Stack>
     </AppPageWrapper>

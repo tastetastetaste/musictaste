@@ -30,7 +30,7 @@ export function Comment({ comment: { user, body, createdAt } }: CommentProps) {
     <Container>
       <div
         css={{
-          padding: '10px',
+          padding: '0 10px',
         }}
       >
         <Group justify="apart">
@@ -40,7 +40,7 @@ export function Comment({ comment: { user, body, createdAt } }: CommentProps) {
           </Typography>
         </Group>
       </div>
-      <div css={{ margin: '10px 70px 30px' }}>
+      <div css={{ margin: '10px 64px 30px' }}>
         <Markdown>{body}</Markdown>
       </div>
     </Container>

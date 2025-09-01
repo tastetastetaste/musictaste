@@ -65,10 +65,11 @@ const releaseInMyListsKey = (releaseId: string) => [
   'inMyLists',
 ];
 
-const releasesKey = (type: FindReleasesType, page?: number) => [
+const releasesKey = (type: FindReleasesType, page?: number, pageSize?: number) => [
   'releases',
   type,
   page,
+  pageSize,
 ];
 
 // RELEASE SUBMISSIONS
