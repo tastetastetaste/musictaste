@@ -100,7 +100,14 @@ const AddReleasePage = () => {
   return (
     <AppPageWrapper title="Add Release">
       <Container>
-        <form onSubmit={handleSubmit((data) => createRelease(data))}>
+        <form
+          onSubmit={handleSubmit((data) => createRelease(data))}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+            }
+          }}
+        >
           <Stack gap="sm">
             <Group justify="apart" align="center" wrap>
               <Typography size="title-lg">Add Release</Typography>

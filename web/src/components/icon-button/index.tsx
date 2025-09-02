@@ -108,6 +108,7 @@ export const IconButton = forwardRef(
         $danger={danger}
         disabled={disabled}
         ref={ref as any}
+        type="button"
       >
         {children}
         {typeof num === 'number' && <Text $active={active}>{num}</Text>}

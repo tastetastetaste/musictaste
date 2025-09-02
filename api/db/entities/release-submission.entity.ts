@@ -14,7 +14,8 @@ import { SharedBaseEntity } from '../shared/base-entity';
 import { ReleaseType, SubmissionStatus, SubmissionType } from 'shared';
 import { ReleaseSubmissionVote } from './release-submission-vote.entity';
 
-class TrackChanges {
+export class TrackChanges {
+  id?: string;
   track: string;
   title: string;
   durationMs?: number;

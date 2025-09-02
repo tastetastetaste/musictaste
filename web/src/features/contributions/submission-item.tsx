@@ -34,13 +34,23 @@ const FieldLabel = styled.span`
   color: ${({ theme }) => theme.colors.text_sub};
 `;
 
-const TrackField = styled.div<{ changed?: boolean }>`
+const TrackField = styled.div<{
+  changed?: boolean;
+  deleted?: boolean;
+  added?: boolean;
+}>`
   display: flex;
   justify-content: space-between;
   padding: 6px;
   border-radius: ${({ theme }) => theme.border_radius.base};
-  border: ${(props) =>
-    props.changed ? `2px solid ${props.theme.colors.highlight}` : 'none'};
+  border: ${({ changed, deleted, added, theme }) =>
+    deleted
+      ? `2px solid ${theme.colors.error}`
+      : added
+        ? `2px solid ${theme.colors.highlight}`
+        : changed
+          ? `2px solid ${theme.colors.primary}`
+          : 'none'};
 `;
 
 export const ImagePreview = styled.img`
@@ -124,11 +134,13 @@ export const SubmissionField: React.FC<{
 
 export const TracksComparisonField: React.FC<{
   originalTracks?: Array<{
+    id?: string;
     track?: string;
     title?: string;
     durationMs?: number;
   }>;
   changedTracks?: Array<{
+    id?: string;
     track?: string;
     title?: string;
     durationMs?: number;
@@ -165,24 +177,35 @@ export const TracksComparisonField: React.FC<{
     );
   }
 
-  const maxLen = Math.max(originalTracks.length, changedTracks.length);
-
   return (
     <FieldContainer>
       <Field>
         <FieldLabel>Tracks:</FieldLabel>
-        {Array.from({ length: maxLen }).map((_, i) => {
-          const orig = originalTracks[i];
-          const changed = changedTracks[i];
-          const rowChanged = hasChanges(orig || {}, changed || {});
+        {originalTracks.map((originalTrack, i) => {
+          const changedTrack = originalTrack.id
+            ? changedTracks.find((t) => t.id === originalTrack.id)
+            : null;
+
+          const deleted = !changedTrack;
+
+          const changed =
+            changedTrack && hasChanges(originalTrack || {}, changedTrack || {});
 
           return (
-            <TrackField key={i} changed={rowChanged}>
+            <TrackField
+              key={originalTrack.id}
+              deleted={deleted}
+              changed={changed}
+            >
               <span>
-                {orig ? `${orig.track} | ${orig.title}` : EmptyPlaceholder}
+                {originalTrack
+                  ? `${originalTrack.id ? `${originalTrack.id} | ` : ''}${originalTrack.track} | ${originalTrack.title}`
+                  : EmptyPlaceholder}
               </span>
               <span>
-                {orig ? millisecondsToTimeString(orig.durationMs) : ''}
+                {originalTrack
+                  ? millisecondsToTimeString(originalTrack.durationMs)
+                  : ''}
               </span>
             </TrackField>
           );
@@ -191,20 +214,27 @@ export const TracksComparisonField: React.FC<{
 
       <Field>
         <FieldLabel>Tracks:</FieldLabel>
-        {Array.from({ length: maxLen }).map((_, i) => {
-          const orig = originalTracks[i];
-          const changed = changedTracks[i];
-          const rowChanged = hasChanges(orig || {}, changed || {});
+        {changedTracks.map((changedTrack, i) => {
+          const originalTrack = changedTrack.id
+            ? originalTracks.find((t) => t.id === changedTrack.id)
+            : null;
+
+          const added = !changedTrack.id || !originalTrack;
+
+          const changed =
+            originalTrack && hasChanges(originalTrack, changedTrack);
 
           return (
-            <TrackField key={i} changed={rowChanged}>
+            <TrackField key={i} changed={changed} added={added}>
               <span>
-                {changed
-                  ? `${changed.track} | ${changed.title}`
+                {changedTrack
+                  ? `${changedTrack.id ? `${changedTrack.id} | ` : ''}${changedTrack.track} | ${changedTrack.title}`
                   : EmptyPlaceholder}
               </span>
               <span>
-                {changed ? millisecondsToTimeString(changed.durationMs) : ''}
+                {changedTrack
+                  ? millisecondsToTimeString(changedTrack.durationMs)
+                  : ''}
               </span>
             </TrackField>
           );

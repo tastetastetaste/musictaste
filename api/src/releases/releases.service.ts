@@ -21,7 +21,10 @@ import { Artist } from '../../db/entities/artist.entity';
 import { ReleaseArtist } from '../../db/entities/release-artist.entity';
 import { ReleaseLabel } from '../../db/entities/release-label.entity';
 import { ReleaseLanguage } from '../../db/entities/release-language.entity';
-import { ReleaseSubmission } from '../../db/entities/release-submission.entity';
+import {
+  ReleaseSubmission,
+  TrackChanges,
+} from '../../db/entities/release-submission.entity';
 import { Release } from '../../db/entities/release.entity';
 import { Track } from '../../db/entities/track.entity';
 import { UserRelease } from '../../db/entities/user-release.entity';
@@ -602,61 +605,77 @@ export class ReleasesService {
     return await this.releasesRepository.delete(id);
   }
 
-  private async updateTracks(releaseId: string, newTracks: any[]) {
+  private async updateTracks(releaseId: string, newTracks: TrackChanges[]) {
     const oldTracks = await this.tracksRepository
       .createQueryBuilder('t')
       .where('t.releaseId = :releaseId', { releaseId })
       .orderBy('t.order', 'ASC')
       .getMany();
 
-    const tracksToAdd: any[] = [];
-    const tracksToRemove: Track[] = oldTracks.slice(newTracks.length);
+    const tracksToAdd: Partial<Track>[] = [];
+    const tracksToUpdate: Partial<Track>[] = [];
+    const tracksToRemove: Track[] = [];
 
-    newTracks.forEach(async (newTrack, i) => {
-      const oldTrack = oldTracks[i];
-      if (!oldTrack) {
-        // add new
-        tracksToAdd.push({ ...newTrack, order: i });
-      } else if (
-        oldTrack.track !== newTrack.track ||
-        oldTrack.title !== newTrack.title ||
-        oldTrack.durationMs !== newTrack.durationMs ||
-        oldTrack.order !== newTrack.order
-      ) {
-        // update
-        await this.tracksRepository.update(
-          { id: oldTrack.id },
-          {
-            track: newTrack.track,
-            title: newTrack.title,
-            durationMs: newTrack.durationMs,
-            order: newTrack.order,
-          },
-        );
+    const oldTrackMap = new Map(oldTracks.map((t) => [t.id, t]));
+
+    // Check for tracks to add or update
+    newTracks.forEach((newTrack, order) => {
+      if (newTrack.id) {
+        const existingTrack = oldTrackMap.get(newTrack.id);
+        if (existingTrack) {
+          if (
+            existingTrack.track !== newTrack.track ||
+            existingTrack.title !== newTrack.title ||
+            existingTrack.durationMs !== newTrack.durationMs ||
+            existingTrack.order !== order
+          ) {
+            tracksToUpdate.push({
+              id: existingTrack.id,
+              track: newTrack.track,
+              title: newTrack.title,
+              durationMs: newTrack.durationMs,
+              order,
+            });
+          }
+
+          // Remove from Map
+          oldTrackMap.delete(newTrack.id);
+        } else {
+          tracksToAdd.push({ ...newTrack, order, releaseId });
+        }
       } else {
-        // do nothing
-        return;
+        tracksToAdd.push({ ...newTrack, order, releaseId });
       }
     });
 
-    if (tracksToRemove.length !== 0)
-      await this.tracksRepository.remove(tracksToRemove);
+    // Remove remaining tracks
+    tracksToRemove.push(...oldTrackMap.values());
 
-    if (tracksToAdd.length !== 0)
+    if (tracksToRemove.length > 0) {
+      await this.tracksRepository.remove(tracksToRemove);
+    }
+
+    if (tracksToUpdate.length > 0) {
+      await Promise.all(
+        tracksToUpdate.map((track) =>
+          this.tracksRepository.update({ id: track.id }, track),
+        ),
+      );
+    }
+
+    if (tracksToAdd.length > 0) {
       await this.tracksRepository
         .createQueryBuilder()
         .insert()
         .into(Track)
         .values(
-          tracksToAdd.map((t, i) => ({
+          tracksToAdd.map((t) => ({
+            ...t,
             id: genId(),
-            releaseId,
-            track: t.track,
-            order: i,
-            title: t.title,
           })),
         )
         .execute();
+    }
   }
 
   private compareIds(newIds: string[], currentIds: string[]) {

@@ -123,6 +123,7 @@ const EditReleasePage = () => {
         tracks:
           tracks && tracks.length !== 0
             ? tracks.map((t) => ({
+                id: t.id,
                 title: t.title,
                 track: t.track,
                 durationMs: t.durationMs,
@@ -176,9 +177,13 @@ const EditReleasePage = () => {
       <Container>
         <form
           onSubmit={handleSubmit((data) => {
-            console.log(data);
             editRelease({ id: releaseId, data });
           })}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+            }
+          }}
         >
           <Stack gap="sm">
             <Group justify="apart" align="center" wrap>

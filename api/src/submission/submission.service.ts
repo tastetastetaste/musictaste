@@ -303,6 +303,7 @@ export class SubmissionService {
       tracks: release.tracks
         .sort((a, b) => a.order - b.order)
         .map((t) => ({
+          id: t.id,
           track: t.track,
           title: t.title,
           durationMs: t.durationMs,
