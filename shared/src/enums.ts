@@ -64,4 +64,5 @@ export enum FindReleasesType {
   Upcoming = 'upcoming',
   Recent = 'recent',
   Top = 'top',
+  TopOTY = 'top-oty',
 }

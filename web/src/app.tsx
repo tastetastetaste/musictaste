@@ -96,6 +96,9 @@ const RecentlyAddedReleasesPage = lazy(
 const TopReleasesPage = lazy(
   () => import('./features/releases/top-releases-page'),
 );
+const TopReleasesOtyPage = lazy(
+  () => import('./features/releases/top-releases-oty-page'),
+);
 const UpcomingReleasesPage = lazy(
   () => import('./features/releases/upcoming-releases-page'),
 );
@@ -510,6 +513,14 @@ const router = createBrowserRouter([
             element: (
               <Suspense fallback={<Fallback />}>
                 <TopReleasesPage />
+              </Suspense>
+            ),
+          },
+          {
+            path: 'top-oty',
+            element: (
+              <Suspense fallback={<Fallback />}>
+                <TopReleasesOtyPage />
               </Suspense>
             ),
           },

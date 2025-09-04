@@ -354,22 +354,54 @@ export class ReleasesService {
     };
   }
 
-  async findTopReleases(page: number = 1, pageSize: number = 48) {
+  async findTopReleasesOAT(page: number = 1, pageSize: number = 48) {
     const result = await this.userReleaseRepository
       .createQueryBuilder('ur')
       .select('ur.releaseId', 'releaseId')
-      .addSelect(
-        'row_number() OVER (ORDER BY AVG(rating.rating) DESC NULLS LAST)',
-        'index',
-      )
+      .addSelect('AVG(rating.rating)', 'averageRating')
       .leftJoin('ur.release', 'release')
       .leftJoin('ur.rating', 'rating')
-      .where(
-        `EXTRACT(YEAR FROM release.date) = EXTRACT(YEAR FROM current_date)`,
-      )
+      .where('release.type = :releaseType', { releaseType: ReleaseType.LP })
       .groupBy('ur.releaseId')
-      .take(1000)
-      .skip(0)
+      .having('COUNT(rating.id) >= 3')
+      .orderBy('AVG(rating.rating)', 'DESC', 'NULLS LAST')
+      .addOrderBy('ur.releaseId', 'DESC')
+      .limit(100)
+      .getRawMany();
+
+    const ids = result
+      .slice((page - 1) * pageSize, page * pageSize)
+      .map((i) => i.releaseId);
+
+    const releases = await this.getReleasesByIdsWithStats(ids);
+
+    return {
+      releases,
+      totalItems: result.length,
+    };
+  }
+
+  async findTopReleasesOTY(page: number = 1, pageSize: number = 48) {
+    const currentYear = new Date().getFullYear();
+    const startDate = new Date(currentYear, 0, 1);
+    const endDate = new Date(currentYear + 1, 0, 1);
+
+    const result = await this.userReleaseRepository
+      .createQueryBuilder('ur')
+      .select('ur.releaseId', 'releaseId')
+      .addSelect('AVG(rating.rating)', 'averageRating')
+      .leftJoin('ur.release', 'release')
+      .leftJoin('ur.rating', 'rating')
+      .where('release.date >= :startDate AND release.date < :endDate', {
+        startDate,
+        endDate,
+      })
+      .andWhere('release.type = :releaseType', { releaseType: ReleaseType.LP })
+      .groupBy('ur.releaseId')
+      // .having('COUNT(rating) >= 2')
+      .orderBy('AVG(rating.rating)', 'DESC', 'NULLS LAST')
+      .addOrderBy('ur.releaseId', 'DESC')
+      .limit(100)
       .getRawMany();
 
     const ids = result

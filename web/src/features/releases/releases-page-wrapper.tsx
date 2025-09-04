@@ -10,7 +10,8 @@ const ReleasesPageWrapper: React.FC<{
         { to: `/releases/new`, label: 'New' },
         { to: `/releases/upcoming`, label: 'Upcoming' },
         { to: `/releases/popular`, label: 'Popular' },
-        { to: `/releases/top`, label: 'Top' },
+        { to: `/releases/top`, label: 'Top OAT' },
+        { to: `/releases/top-oty`, label: 'Top OTY' },
         { to: `/releases/recently-added`, label: 'Recently added' },
       ]}
     >

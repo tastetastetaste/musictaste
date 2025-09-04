@@ -39,7 +39,10 @@ export class ReleasesController {
         );
         break;
       case 'top':
-        result = await this.releasesService.findTopReleases(page, pageSize);
+        result = await this.releasesService.findTopReleasesOAT(page, pageSize);
+        break;
+      case 'top-oty':
+        result = await this.releasesService.findTopReleasesOTY(page, pageSize);
         break;
       default:
         throw new BadRequestException('Invalid type');
