@@ -5,10 +5,10 @@ export const KOFI_LINK = 'https://ko-fi.com/musictaste';
 
 export const DISCORD_SERVER_INVITE = 'https://discord.gg/a5xUW97UB5';
 
-export const TWITTER_USERNAME = '@taste2025';
+export const TWITTER_USERNAME = '@musictastexyz';
 
-export const TWITTER_URL = 'https://x.com/taste2025';
+export const TWITTER_URL = 'https://x.com/musictastexyz';
 
-export const IG_URL = 'https://www.instagram.com/musictaste2025';
+export const IG_URL = 'https://www.instagram.com/musictastexyz';
 
 export const GITHUB_URL = 'https://github.com/tastetastetaste/musictaste';

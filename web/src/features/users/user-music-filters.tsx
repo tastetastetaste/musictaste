@@ -473,6 +473,15 @@ const UserMusicFilters = ({
           </button>
         )}
         <Dropdown
+          onChange={({ value }) =>
+            handleChange({ value: value as EntriesSortByEnum })
+          }
+          name="sb"
+          options={SORT_BY_OPTIONS}
+          defaultValue={sortBy}
+          icon={<IconSortDescending size={20} />}
+        />
+        <Dropdown
           options={RELEASE_TYPE_OPTIONS}
           onChange={({ value }) => {
             setQuery(
@@ -489,15 +498,6 @@ const UserMusicFilters = ({
           name="type"
           defaultValue={query.get('type') || undefined}
           icon={<IconDisc size={20} />}
-        />
-        <Dropdown
-          onChange={({ value }) =>
-            handleChange({ value: value as EntriesSortByEnum })
-          }
-          name="sb"
-          options={SORT_BY_OPTIONS}
-          defaultValue={sortBy}
-          icon={<IconSortDescending size={20} />}
         />
         <Dropdown
           onChange={({ value }) => setFilterType(value)}

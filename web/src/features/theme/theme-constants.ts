@@ -61,6 +61,15 @@ export const THEME_COLOR_PRESETS: Record<string, Theme['colors']> = {
     text_sub: '#25001380',
     error: '#ff0000',
   },
+  'blue gray': {
+    background: '#4a5b6e',
+    background_sub: '#425366',
+    primary: '#f8cdc6',
+    highlight: '#9ec1cc',
+    text: '#f5efee',
+    text_sub: '#f5efee',
+    error: '#c9465e',
+  },
   dark: {
     background: '#303030',
     background_sub: '#383838',
