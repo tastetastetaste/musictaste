@@ -398,7 +398,7 @@ export class ReleasesService {
       })
       .andWhere('release.type = :releaseType', { releaseType: ReleaseType.LP })
       .groupBy('ur.releaseId')
-      // .having('COUNT(rating) >= 2')
+      .having('COUNT(rating) >= 2')
       .orderBy('AVG(rating.rating)', 'DESC', 'NULLS LAST')
       .addOrderBy('ur.releaseId', 'DESC')
       .limit(100)
