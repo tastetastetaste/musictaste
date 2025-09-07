@@ -96,7 +96,7 @@ export class UsersService {
     const user = await this.usersRepository.findOne({
       select: ['id', 'name', 'username', 'bio', 'imagePath'],
       where: {
-        username,
+        username: username.toLowerCase(),
       },
     });
 
@@ -160,7 +160,7 @@ export class UsersService {
     id: string,
     updateUserProfileInput: UpdateUserProfileDto,
   ) {
-    updateUserProfileInput.username.toLowerCase();
+    updateUserProfileInput.username = updateUserProfileInput.username.toLowerCase();
     await this.usersRepository.update({ id }, updateUserProfileInput);
     return true;
   }
