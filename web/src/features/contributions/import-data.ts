@@ -2,6 +2,7 @@ import { api } from '../../utils/api';
 import { UseFormSetValue } from 'react-hook-form';
 import { EditReleaseFormValues } from './edit-release-page';
 import { CreateReleaseFormValues } from './add-release-page';
+import { millisecondsToTimeString } from './release-tracks-fields';
 
 function isValidHttpUrl(string: string) {
   let url;
@@ -35,6 +36,8 @@ export const importFromMusicBrainz = async (
 
   const data = await getDataFromMusicBrainz(values.mbid);
 
+  if (!data) return 'Release not found';
+
   !values.imageUrl &&
     !values.image &&
     data.imageUrl &&
@@ -48,13 +51,23 @@ export const importFromMusicBrainz = async (
     data.date &&
     setValue('date', data.date, { shouldDirty: true });
 
-  setValue('tracks', data.tracks, { shouldDirty: true });
+  if (!values.tracks || values.tracks?.length === 0) {
+    setValue('tracks', data.tracks, { shouldDirty: true });
+  }
 
   setValue('note', values.mbid);
 
-  return `artist:
-  - ${data.artists.map((a) => `${a.name}`).join('\n- ')}
-  label:
-  - ${data.labels.map((l) => `${l.name}`).join('\n- ')}
-  `;
+  return `Please manually check and update these fields as needed:
+
+artist:
+- ${data.artists.map((a) => `${a.name}`).join('\n- ')}
+
+label:
+- ${data.labels.map((l) => `${l.name}`).join('\n- ')}
+
+${
+  !values.tracks || values.tracks?.length === 0
+    ? ''
+    : `tracks:\n- ${data.tracks.map((t) => `${t.track} | ${t.title} | ${millisecondsToTimeString(t.durationMs)}`).join('\n- ')}`
+}`;
 };

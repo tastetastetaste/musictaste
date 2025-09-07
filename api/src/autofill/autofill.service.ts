@@ -41,7 +41,9 @@ export class AutofillService {
           setTimeout(() => rej('Request timed out'), 15000),
         ),
       ]);
-    } catch (err) {}
+    } catch (err) {
+      return null;
+    }
 
     const release = await this.musicBrainzApi.lookupRelease(mbid, [
       'recordings',
@@ -50,7 +52,7 @@ export class AutofillService {
     ]);
 
     if (!release) {
-      throw new BadRequestException();
+      return null;
     }
 
     const allTracks: (ITrack & { disk: number })[] = [];
@@ -77,7 +79,6 @@ export class AutofillService {
       type: release['primary-type'],
       date: dayjs(release.date).format('YYYY-MM-DD').toString(),
       tracks: allTracks.map((t) => ({
-        id: t.id,
         track: isMultiDisc ? `${t.disk}.${t.number}` : `${t.number}`,
         title: t.title,
         durationMs: t.length,

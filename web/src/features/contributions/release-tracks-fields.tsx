@@ -1,27 +1,13 @@
-import { forwardRef, Fragment, useEffect, useState } from 'react';
-import {
-  Controller,
-  ControllerRenderProps,
-  FieldValues,
-  useFieldArray,
-} from 'react-hook-form';
+import { IconGripHorizontal, IconMinus, IconPlus } from '@tabler/icons-react';
+import { forwardRef, Fragment, useState } from 'react';
+import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
+import { Controller, useFieldArray } from 'react-hook-form';
 import { Button } from '../../components/button';
-import { IconButton } from '../../components/icon-button';
 import { Group } from '../../components/flex/group';
-import { Input } from '../../components/inputs/input';
 import { Stack } from '../../components/flex/stack';
-import {
-  IconDragDrop,
-  IconGripHorizontal,
-  IconMinus,
-  IconPlus,
-} from '@tabler/icons-react';
-import {
-  DragDropContext,
-  Draggable,
-  Droppable,
-  DropResult,
-} from 'react-beautiful-dnd';
+import { IconButton } from '../../components/icon-button';
+import { Input } from '../../components/inputs/input';
+import { Typography } from '../../components/typography';
 
 export function millisecondsToTimeString(ms: string | number) {
   ms = Number(ms);
@@ -87,6 +73,7 @@ const ReleaseTracksFields = ({ control, register }: any) => {
   const { fields, append, remove, move } = useFieldArray({
     control,
     name: 'tracks',
+    keyName: '_id',
   });
 
   const onDragStart = () => {
@@ -141,8 +128,8 @@ const ReleaseTracksFields = ({ control, register }: any) => {
                   <Stack gap="sm">
                     {fields.map((item: any, index) => (
                       <Draggable
-                        key={item.id}
-                        draggableId={item.id}
+                        key={item._id}
+                        draggableId={item._id}
                         index={index}
                       >
                         {(draggableProvided) => (
@@ -150,7 +137,7 @@ const ReleaseTracksFields = ({ control, register }: any) => {
                             {...draggableProvided.draggableProps}
                             ref={draggableProvided.innerRef}
                           >
-                            <Group gap={4} key={item.id}>
+                            <Group gap={4}>
                               <IconButton
                                 title="Remove track"
                                 onClick={() => remove(index)}
@@ -158,6 +145,15 @@ const ReleaseTracksFields = ({ control, register }: any) => {
                               >
                                 <IconMinus />
                               </IconButton>
+                              <div style={{ width: '24px' }}>
+                                <Typography
+                                  size="small"
+                                  whiteSpace="nowrap"
+                                  color={item.id ? 'primary' : 'highlight'}
+                                >
+                                  {item.id ? 'Edit' : 'New'}
+                                </Typography>
+                              </div>
                               <div
                                 style={{
                                   flexGrow: 1,

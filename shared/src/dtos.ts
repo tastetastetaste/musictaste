@@ -59,6 +59,9 @@ function isValidHttpUrl(string: string) {
 
 class TrackDto {
   @IsString()
+  @IsOptional()
+  id?: string;
+  @IsString()
   @MinLength(1)
   track: string;
   @IsString()

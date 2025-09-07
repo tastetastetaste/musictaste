@@ -2,9 +2,8 @@ import styled from '@emotion/styled';
 
 interface TypographyProps {
   size?: 'title-xl' | 'title-lg' | 'title' | 'body' | 'small';
-  color?: 'main' | 'sub' | 'error' | 'bg' | 'inherit';
+  color?: 'main' | 'sub' | 'primary' | 'highlight' | 'error' | 'bg' | 'inherit';
   whiteSpace?: 'normal' | 'pre-wrap' | 'nowrap';
-  ellipsis?: boolean;
 }
 
 export const Typography = styled.span<TypographyProps>`
@@ -27,7 +26,11 @@ export const Typography = styled.span<TypographyProps>`
           ? theme.colors.background
           : color === 'inherit'
             ? 'inherit'
-            : theme.colors.text};
+            : color === 'primary'
+              ? theme.colors.primary
+              : color === 'highlight'
+                ? theme.colors.highlight
+                : theme.colors.text};
   font-weight: ${({ theme, size }) =>
     size === 'title-xl'
       ? theme.font.weight.bolder
@@ -38,4 +41,6 @@ export const Typography = styled.span<TypographyProps>`
   white-space: ${({ whiteSpace }) => whiteSpace || 'normal'};
   word-break: break-word;
   overflow-wrap: anywhere;
+  text-overflow: ellipsis;
+  overflow: hidden;
 `;
