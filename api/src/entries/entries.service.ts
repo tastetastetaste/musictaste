@@ -579,9 +579,30 @@ export class EntriesService {
       .addSelect('r.body', 'body')
       .addSelect('r.createdAt', 'createdAt')
       .addSelect('r.updatedAt', 'updatedAt')
-      .addSelect('COUNT(DISTINCT vote.id)', 'totalVotes')
-      .addSelect('SUM(vote.vote)', 'netVotes')
-      .addSelect('COUNT(DISTINCT comment.id)', 'commentsCount')
+      .addSelect(
+        (qb) =>
+          qb
+            .select('COUNT(*)')
+            .from(ReviewVote, 'v')
+            .where('v.reviewId = r.id'),
+        'totalVotes',
+      )
+      .addSelect(
+        (qb) =>
+          qb
+            .select('COALESCE(SUM(v.vote), 0)')
+            .from(ReviewVote, 'v')
+            .where('v.reviewId = r.id'),
+        'netVotes',
+      )
+      .addSelect(
+        (qb) =>
+          qb
+            .select('COUNT(*)')
+            .from(ReviewComment, 'c')
+            .where('c.reviewId = r.id'),
+        'commentsCount',
+      )
       .leftJoin('r.votes', 'vote')
       .leftJoin('r.comments', 'comment')
       .whereInIds(ids)
