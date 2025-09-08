@@ -65,12 +65,11 @@ const releaseInMyListsKey = (releaseId: string) => [
   'inMyLists',
 ];
 
-const releasesKey = (type: FindReleasesType, page?: number, pageSize?: number) => [
-  'releases',
-  type,
-  page,
-  pageSize,
-];
+const releasesKey = (
+  type: FindReleasesType,
+  page?: number,
+  pageSize?: number,
+) => ['releases', type, page, pageSize];
 
 // RELEASE SUBMISSIONS
 
@@ -111,6 +110,12 @@ const labelSubmissionsKey = (filters: {
   filters.userId,
   filters.page,
 ];
+
+const userContributionsStatsKey = (userId: string) => [
+  'userContributionsStats',
+  userId,
+];
+
 // ARTIST
 const artistKey = (id: string) => ['artist', id];
 
@@ -208,6 +213,7 @@ export const cacheKeys = {
   releaseSubmissionsKey,
   artistSubmissionsKey,
   labelSubmissionsKey,
+  userContributionsStatsKey,
   currentUserKey,
   userProfileKey,
   userFollowersKey,

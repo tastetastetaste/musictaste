@@ -23,6 +23,14 @@ const UserContributionsPageWrapper = () => {
     },
   );
 
+  const { data: stats, isLoading: isLoadingStats } = useQuery(
+    cacheKeys.userContributionsStatsKey(data?.user.id),
+    () => api.getUserContributionsStats(data?.user.id),
+    {
+      enabled: !!data?.user.id,
+    },
+  );
+
   if (isLoading || isLoading2 || !data) {
     return <Loading />;
   }
@@ -31,9 +39,14 @@ const UserContributionsPageWrapper = () => {
     <AppPageWrapper>
       <Stack gap={10}>
         <Typography>{`@${username}'s contributions`}</Typography>
+        <Typography>{`Added: ${stats?.addedReleases || '-'} releases, ${stats?.addedArtists || '-'} artists, ${stats?.addedLabels || '-'} labels`}</Typography>
+        <Typography>{`Edited: ${stats?.editedReleases || '-'} releases, ${stats?.editedArtists || '-'} artists, ${stats?.editedLabels || '-'} labels`}</Typography>
         <Navigation
           links={[
-            { label: 'releases', to: `/${username}/contributions/releases` },
+            {
+              label: 'releases',
+              to: `/${username}/contributions/releases`,
+            },
             {
               label: 'artists',
               to: `/${username}/contributions/artists`,

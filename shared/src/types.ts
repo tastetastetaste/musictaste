@@ -421,6 +421,16 @@ export interface IArtistSubmissionsResponse extends IPagination {
 export interface ILabelSubmissionsResponse extends IPagination {
   labels: ILabelSubmission[];
 }
+
+export interface IUserContributionsStatsResponse {
+  addedReleases: number;
+  addedArtists: number;
+  addedLabels: number;
+  editedReleases: number;
+  editedArtists: number;
+  editedLabels: number;
+}
+
 export interface IAutofillRelease {
   id: string;
   imageUrl: string;

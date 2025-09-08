@@ -174,4 +174,10 @@ export class SubmissionsController {
   getLabelSubmissions(@Query() query: FindLabelSubmissionsDto) {
     return this.submissionsService.getLabelSubmissions(query);
   }
+
+  @Get('user-contributions/:userId')
+  @UseGuards(AuthenticatedGuard)
+  getUserContributions(@Param('userId') userId: string) {
+    return this.submissionsService.getUserContributionsStats(userId);
+  }
 }

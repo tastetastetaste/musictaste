@@ -25,22 +25,22 @@ import {
   VoteType,
 } from 'shared';
 import { In, Repository } from 'typeorm';
+import { ArtistSubmissionVote } from '../../db/entities/artist-submission-vote.entity';
 import { ArtistSubmission } from '../../db/entities/artist-submission.entity';
 import { Artist } from '../../db/entities/artist.entity';
+import { LabelSubmissionVote } from '../../db/entities/label-submission-vote.entity';
 import { LabelSubmission } from '../../db/entities/label-submission.entity';
 import { Label } from '../../db/entities/label.entity';
 import { Language } from '../../db/entities/language.entity';
 import { ReleaseSubmissionVote } from '../../db/entities/release-submission-vote.entity';
 import { ReleaseSubmission } from '../../db/entities/release-submission.entity';
 import { Release } from '../../db/entities/release.entity';
+import { ArtistsService } from '../artists/artists.service';
 import { CurrentUserPayload } from '../auth/session.serializer';
 import { ImagesService } from '../images/images.service';
 import { LabelsService } from '../labels/labels.service';
 import { ReleasesService } from '../releases/releases.service';
 import { UsersService } from '../users/users.service';
-import { LabelSubmissionVote } from '../../db/entities/label-submission-vote.entity';
-import { ArtistSubmissionVote } from '../../db/entities/artist-submission-vote.entity';
-import { ArtistsService } from '../artists/artists.service';
 
 @Injectable()
 export class SubmissionService {
@@ -804,6 +804,87 @@ export class SubmissionService {
       currentItems: (page - 1) * pageSize + rss.length,
       itemsPerPage: pageSize,
       totalPages: Math.ceil(totalItems / pageSize),
+    };
+  }
+
+  async getUserContributionsStats(userId: string) {
+    const [
+      addedReleases,
+      addedArtists,
+      addedLabels,
+      editedReleases,
+      editedArtists,
+      editedLabels,
+    ] = await Promise.all([
+      this.releaseSubmissionRepository.count({
+        where: {
+          userId,
+          submissionType: SubmissionType.CREATE,
+          submissionStatus: In([
+            SubmissionStatus.APPROVED,
+            SubmissionStatus.AUTO_APPROVED,
+          ]),
+        },
+      }),
+      this.artistSubmissionRepository.count({
+        where: {
+          userId,
+          submissionType: SubmissionType.CREATE,
+          submissionStatus: In([
+            SubmissionStatus.APPROVED,
+            SubmissionStatus.AUTO_APPROVED,
+          ]),
+        },
+      }),
+      this.labelSubmissionRepository.count({
+        where: {
+          userId,
+          submissionType: SubmissionType.CREATE,
+          submissionStatus: In([
+            SubmissionStatus.APPROVED,
+            SubmissionStatus.AUTO_APPROVED,
+          ]),
+        },
+      }),
+      this.releaseSubmissionRepository.count({
+        where: {
+          userId,
+          submissionType: SubmissionType.UPDATE,
+          submissionStatus: In([
+            SubmissionStatus.APPROVED,
+            SubmissionStatus.AUTO_APPROVED,
+          ]),
+        },
+      }),
+      this.artistSubmissionRepository.count({
+        where: {
+          userId,
+          submissionType: SubmissionType.UPDATE,
+          submissionStatus: In([
+            SubmissionStatus.APPROVED,
+            SubmissionStatus.AUTO_APPROVED,
+          ]),
+        },
+      }),
+      this.labelSubmissionRepository.count({
+        where: {
+          userId,
+          submissionType: SubmissionType.UPDATE,
+          submissionStatus: In([
+            SubmissionStatus.APPROVED,
+            SubmissionStatus.AUTO_APPROVED,
+          ]),
+        },
+      }),
+    ]);
+
+    return {
+      addedReleases,
+      addedArtists,
+      addedLabels,
+      editedReleases,
+      editedArtists,
+      editedLabels,
     };
   }
 }

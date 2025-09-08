@@ -35,6 +35,7 @@ import {
   ISearchResponse,
   IUpdateReleaseResponse,
   IUserArtist,
+  IUserContributionsStatsResponse,
   IUserFollowsResponse,
   IUserGenre,
   IUserLabel,
@@ -373,7 +374,9 @@ const getRelease = (id: string) =>
 
 const getReleases = (type: FindReleasesType, page: number, pageSize?: number) =>
   client
-    .get<IReleasesResponse>(`releases?type=${type}&page=${page}${pageSize ? `&pageSize=${pageSize}` : ''}`)
+    .get<IReleasesResponse>(
+      `releases?type=${type}&page=${page}${pageSize ? `&pageSize=${pageSize}` : ''}`,
+    )
     .then((res) => res.data);
 
 // ----------------
@@ -484,6 +487,12 @@ const artistSubmissionVote = ({
     .patch('submissions/artists/vote/' + submissionId, { vote })
     .then((res) => res.data);
 
+const getUserContributionsStats = (userId: string) =>
+  client
+    .get<IUserContributionsStatsResponse>(
+      'submissions/user-contributions/' + userId,
+    )
+    .then((res) => res.data);
 // ----------------
 //     GENRES
 // ----------------
@@ -647,6 +656,7 @@ export const api = {
   getArtistSubmissions,
   getLabelSubmissions,
   processPendingDeletion,
+  getUserContributionsStats,
   releaseSubmissionVote,
   labelSubmissionVote,
   artistSubmissionVote,
