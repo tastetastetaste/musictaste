@@ -12,6 +12,8 @@ import { ImagesService } from '../images/images.service';
 import { ReleasesService } from '../releases/releases.service';
 import { UserFollowing } from '../../db/entities/user-following.entity';
 import { User } from '../../db/entities/user.entity';
+import { UserRelease } from '../../db/entities/user-release.entity';
+import { List } from '../../db/entities/list.entity';
 
 export type UserCountType =
   | 'entries'
@@ -36,22 +38,55 @@ export class UsersService {
     const result = await this.usersRepository
       .createQueryBuilder('u')
       .select('u.id', 'id')
-      .addSelect('COUNT(DISTINCT ur.id)', 'entriesCount')
-      .addSelect('COUNT(DISTINCT ur.ratingId)', 'ratingsCount')
-      .addSelect('COUNT(DISTINCT ur.reviewId)', 'reviewsCount')
-      .addSelect('COUNT(DISTINCT following.id)', 'followingCount')
-      .addSelect('COUNT(DISTINCT followers.id)', 'followersCount')
-      .addSelect('COUNT(DISTINCT lists.id)', 'listsCount')
-      .leftJoin('u.entries', 'ur')
-      .leftJoin('u.following', 'following', 'following.followerId = :id', {
-        id,
-      })
-      .leftJoin('u.followers', 'followers', 'followers.followingId = :id', {
-        id,
-      })
+      .addSelect(
+        (sq) =>
+          sq
+            .select('COUNT(ur.id)', 'count')
+            .from(UserRelease, 'ur')
+            .where('ur.userId = u.id'),
+        'entriesCount',
+      )
+      .addSelect(
+        (sq) =>
+          sq
+            .select('COUNT(DISTINCT ur.ratingId)', 'count')
+            .from(UserRelease, 'ur')
+            .where('ur.userId = u.id AND ur.ratingId IS NOT NULL'),
+        'ratingsCount',
+      )
+      .addSelect(
+        (sq) =>
+          sq
+            .select('COUNT(DISTINCT ur.reviewId)', 'count')
+            .from(UserRelease, 'ur')
+            .where('ur.userId = u.id AND ur.reviewId IS NOT NULL'),
+        'reviewsCount',
+      )
+      .addSelect(
+        (sq) =>
+          sq
+            .select('COUNT(following.id)', 'count')
+            .from(UserFollowing, 'following')
+            .where('following.followerId = u.id'),
+        'followingCount',
+      )
+      .addSelect(
+        (sq) =>
+          sq
+            .select('COUNT(followers.id)', 'count')
+            .from(UserFollowing, 'followers')
+            .where('followers.followingId = u.id'),
+        'followersCount',
+      )
+      .addSelect(
+        (sq) =>
+          sq
+            .select('COUNT(lists.id)', 'count')
+            .from(List, 'lists')
+            .where('lists.userId = u.id AND lists.published = true'),
+        'listsCount',
+      )
       .where('u.id = :id', { id })
-      .leftJoin('u.lists', 'lists', 'lists.published = true')
-      .groupBy('u.id')
       .getRawOne();
 
     return result;
@@ -160,7 +195,8 @@ export class UsersService {
     id: string,
     updateUserProfileInput: UpdateUserProfileDto,
   ) {
-    updateUserProfileInput.username = updateUserProfileInput.username.toLowerCase();
+    updateUserProfileInput.username =
+      updateUserProfileInput.username.toLowerCase();
     await this.usersRepository.update({ id }, updateUserProfileInput);
     return true;
   }
