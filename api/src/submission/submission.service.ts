@@ -80,6 +80,10 @@ export class SubmissionService {
     { name }: CreateArtistDto,
     user: CurrentUserPayload,
   ) {
+    if (user.contributorStatus === ContributorStatus.NOT_A_CONTRIBUTOR)
+      throw new BadRequestException(
+        "You can't submit contributions at this time",
+      );
     const artistSubmission = new ArtistSubmission();
     artistSubmission.changes = { name };
     artistSubmission.submissionType = SubmissionType.CREATE;
@@ -125,6 +129,10 @@ export class SubmissionService {
     { name }: CreateLabelDto,
     user: CurrentUserPayload,
   ) {
+    if (user.contributorStatus === ContributorStatus.NOT_A_CONTRIBUTOR)
+      throw new BadRequestException(
+        "You can't submit contributions at this time",
+      );
     const labelSubmission = new LabelSubmission();
     labelSubmission.changes = { name };
     labelSubmission.submissionType = SubmissionType.CREATE;
@@ -177,6 +185,11 @@ export class SubmissionService {
     user: CurrentUserPayload,
   ) {
     let imageUrl: string | null = null;
+
+    if (user.contributorStatus === ContributorStatus.NOT_A_CONTRIBUTOR)
+      throw new BadRequestException(
+        "You can't submit contributions at this time",
+      );
 
     try {
       if (rest.image) {
@@ -245,6 +258,10 @@ export class SubmissionService {
     }: UpdateReleaseDto,
     user: CurrentUserPayload,
   ) {
+    if (user.contributorStatus === ContributorStatus.NOT_A_CONTRIBUTOR)
+      throw new BadRequestException(
+        "You can't submit contributions at this time",
+      );
     const release = await this.releasesRepository.findOne({
       where: { id: releaseId },
       relations: {
@@ -256,6 +273,19 @@ export class SubmissionService {
     });
 
     if (!release) throw new NotFoundException();
+
+    const exist = await this.releaseSubmissionRepository.findOne({
+      where: {
+        releaseId,
+        submissionStatus: SubmissionStatus.OPEN,
+      },
+    });
+
+    if (exist) {
+      throw new BadRequestException(
+        'There is already an open edit submission for this release',
+      );
+    }
 
     const imageUrl: string = rest.image
       ? (await this.imagesService.storeUpload(rest.image, 'release')).path

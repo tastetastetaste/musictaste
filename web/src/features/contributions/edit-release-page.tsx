@@ -1,5 +1,5 @@
 import { classValidatorResolver } from '@hookform/resolvers/class-validator';
-import { UpdateReleaseDto } from 'shared';
+import { SubmissionStatus, UpdateReleaseDto } from 'shared';
 import { api } from '../../utils/api';
 import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -91,6 +91,26 @@ const EditReleasePage = () => {
       enabled: Boolean(releaseId),
     },
   );
+
+  const { data: openSubmissionData, isLoading: isOpenSubmissionLoading } =
+    useQuery(
+      cacheKeys.releaseSubmissionsKey({
+        releaseId,
+        page: 1,
+        status: SubmissionStatus.OPEN,
+      }),
+      () =>
+        api.getReleaseSubmissions({
+          page: 1,
+          releaseId: releaseId!,
+          status: SubmissionStatus.OPEN,
+        }),
+      {
+        enabled: !!releaseId,
+      },
+    );
+
+  const openSubmission = openSubmissionData?.releases?.[0] || null;
 
   useEffect(() => {
     if (releaseData) {
@@ -192,6 +212,11 @@ const EditReleasePage = () => {
                 Need help? Read the Contributing Guide.
               </Link>
             </Group>
+            {openSubmission && (
+              <Feedback
+                message={`There is already an open edit submission for this release. Please wait for it to be reviewed before submitting another edit.`}
+              />
+            )}
             <Input
               placeholder="MusicBrainz Release Group Id"
               {...register('mbid')}
@@ -304,7 +329,11 @@ const EditReleasePage = () => {
             <ReleaseTracksFields control={control} register={register} />
             <Textarea {...register('note')} placeholder="Note/source" />
             <FormInputError error={errors.note} />
-            <Button variant="main" type="submit" disabled={isLoading}>
+            <Button
+              variant="main"
+              type="submit"
+              disabled={isLoading || !!openSubmission}
+            >
               Submit
             </Button>
           </Stack>
