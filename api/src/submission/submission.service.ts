@@ -887,4 +887,91 @@ export class SubmissionService {
       editedLabels,
     };
   }
+
+  async discardMyArtistSubmission(submissionId: string, userId: string) {
+    const submission = await this.artistSubmissionRepository.findOne({
+      where: {
+        id: submissionId,
+      },
+    });
+    if (
+      !submission ||
+      submission.userId !== userId ||
+      dayjs().diff(submission.createdAt, 'hour') > 1
+    ) {
+      throw new BadRequestException();
+    }
+
+    if (
+      submission.submissionStatus === SubmissionStatus.AUTO_APPROVED &&
+      submission.submissionType === SubmissionType.CREATE
+    ) {
+      await this.artistsService.deleteArtist(submission.artistId);
+      await this.artistSubmissionRepository.delete(submissionId);
+    } else if (submission.submissionStatus === SubmissionStatus.OPEN) {
+      await this.artistSubmissionRepository.delete(submissionId);
+    }
+
+    return {
+      message: 'Deleted successfully!',
+    };
+  }
+
+  async discardMyLabelSubmission(submissionId: string, userId: string) {
+    const submission = await this.labelSubmissionRepository.findOne({
+      where: {
+        id: submissionId,
+      },
+    });
+    if (
+      !submission ||
+      submission.userId !== userId ||
+      dayjs().diff(submission.createdAt, 'hour') > 1
+    ) {
+      throw new BadRequestException();
+    }
+
+    if (
+      submission.submissionStatus === SubmissionStatus.AUTO_APPROVED &&
+      submission.submissionType === SubmissionType.CREATE
+    ) {
+      await this.labelsService.deleteLabel(submission.labelId);
+      await this.labelSubmissionRepository.delete(submissionId);
+    } else if (submission.submissionStatus === SubmissionStatus.OPEN) {
+      await this.labelSubmissionRepository.delete(submissionId);
+    }
+
+    return {
+      message: 'Deleted successfully!',
+    };
+  }
+
+  async discardMyReleaseSubmission(submissionId: string, userId: string) {
+    const submission = await this.releaseSubmissionRepository.findOne({
+      where: {
+        id: submissionId,
+      },
+    });
+    if (
+      !submission ||
+      submission.userId !== userId ||
+      dayjs().diff(submission.createdAt, 'hour') > 1
+    ) {
+      throw new BadRequestException();
+    }
+
+    if (
+      submission.submissionStatus === SubmissionStatus.AUTO_APPROVED &&
+      submission.submissionType === SubmissionType.CREATE
+    ) {
+      await this.releasesService.deleteRelease(submission.releaseId);
+      await this.releaseSubmissionRepository.delete(submissionId);
+    } else if (submission.submissionStatus === SubmissionStatus.OPEN) {
+      await this.releaseSubmissionRepository.delete(submissionId);
+    }
+
+    return {
+      message: 'Deleted successfully!',
+    };
+  }
 }

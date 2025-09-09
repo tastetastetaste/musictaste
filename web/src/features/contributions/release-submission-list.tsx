@@ -1,5 +1,5 @@
 import { Fragment } from 'react';
-import { useInfiniteQuery } from 'react-query';
+import { useInfiniteQuery, useMutation } from 'react-query';
 import { useOutletContext } from 'react-router-dom';
 import { IReleaseSubmission, SubmissionStatus } from 'shared';
 import { FetchMore } from '../../components/fetch-more';
@@ -9,6 +9,7 @@ import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
 import { getReleasePathname } from '../../utils/get-pathname';
 import {
+  DiscardSubmissionFn,
   ImagePreview,
   SubmissionField,
   SubmissionItemWrapper,
@@ -18,21 +19,22 @@ import {
 export const ReleaseSubmissionItem = ({
   submission,
   hideUser,
+  discardFn,
 }: {
   submission: IReleaseSubmission;
   hideUser?: boolean;
+  discardFn?: DiscardSubmissionFn;
 }) => {
   const { original, changes } = submission;
   const hasOriginal = !!original;
 
   return (
     <SubmissionItemWrapper
-      status={submission.submissionStatus}
       link={submission.releaseId && getReleasePathname(submission.releaseId)}
-      id={submission.id}
       voteFn={api.releaseSubmissionVote}
-      user={submission.user}
       hideUser={hideUser}
+      submission={submission}
+      discardFn={discardFn}
     >
       <SubmissionField
         label="Title"
@@ -109,6 +111,11 @@ export class ReleaseSubmissionListOutletContext {
 const ReleaseSubmissionsList = () => {
   const { userId, releaseId, status } =
     useOutletContext<ReleaseSubmissionListOutletContext>();
+
+  const { mutateAsync: discardFn } = useMutation(
+    api.discardMyReleaseSubmission,
+  );
+
   const { data, isFetching, isFetchingNextPage, fetchNextPage, hasNextPage } =
     useInfiniteQuery(
       cacheKeys.releaseSubmissionsKey({
@@ -144,6 +151,7 @@ const ReleaseSubmissionsList = () => {
               key={submission.id}
               submission={submission}
               hideUser={!!userId}
+              discardFn={discardFn}
             />
           ))}
         </Stack>

@@ -73,43 +73,52 @@ const releasesKey = (
 
 // RELEASE SUBMISSIONS
 
-const releaseSubmissionsKey = (filters: {
+const releaseSubmissionsKey = (filters?: {
   page?: number;
   status?: number;
   releaseId?: string;
   userId?: string;
-}) => [
-  'releaseSubmissions',
-  filters.status,
-  filters.releaseId,
-  filters.userId,
-  filters.page,
-];
-const artistSubmissionsKey = (filters: {
+}) =>
+  filters
+    ? [
+        'releaseSubmissions',
+        filters.status,
+        filters.releaseId,
+        filters.userId,
+        filters.page,
+      ]
+    : ['releaseSubmissions'];
+const artistSubmissionsKey = (filters?: {
   page?: number;
   status?: number;
   artistId?: string;
   userId?: string;
-}) => [
-  'artistSubmissions',
-  filters.status,
-  filters.artistId,
-  filters.userId,
-  filters.page,
-];
+}) =>
+  filters
+    ? [
+        'artistSubmissions',
+        filters.status,
+        filters.artistId,
+        filters.userId,
+        filters.page,
+      ]
+    : ['artistSubmissions'];
 
-const labelSubmissionsKey = (filters: {
+const labelSubmissionsKey = (filters?: {
   page?: number;
   status?: number;
   labelId?: string;
   userId?: string;
-}) => [
-  'labelSubmissions',
-  filters.status,
-  filters.labelId,
-  filters.userId,
-  filters.page,
-];
+}) =>
+  filters
+    ? [
+        'labelSubmissions',
+        filters.status,
+        filters.labelId,
+        filters.userId,
+        filters.page,
+      ]
+    : ['labelSubmissions'];
 
 const userContributionsStatsKey = (userId: string) => [
   'userContributionsStats',

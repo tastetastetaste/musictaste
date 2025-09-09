@@ -1,5 +1,5 @@
 import { Fragment } from 'react';
-import { useInfiniteQuery } from 'react-query';
+import { useInfiniteQuery, useMutation } from 'react-query';
 import { useOutletContext } from 'react-router-dom';
 import { IArtistSubmission, SubmissionStatus } from 'shared';
 import { FetchMore } from '../../components/fetch-more';
@@ -8,7 +8,11 @@ import { Loading } from '../../components/loading';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
 import { getArtistPathname } from '../../utils/get-pathname';
-import { SubmissionField, SubmissionItemWrapper } from './submission-item';
+import {
+  DiscardSubmissionFn,
+  SubmissionField,
+  SubmissionItemWrapper,
+} from './submission-item';
 
 class ArtistSubmissionListOutletContext {
   status?: SubmissionStatus;
@@ -19,20 +23,21 @@ class ArtistSubmissionListOutletContext {
 export const ArtistSubmissionItem = ({
   submission,
   hideUser,
+  discardFn,
 }: {
   submission: IArtistSubmission;
   hideUser?: boolean;
+  discardFn?: DiscardSubmissionFn;
 }) => {
   const { original, changes } = submission;
   const hasOriginal = !!original;
   return (
     <SubmissionItemWrapper
-      status={submission.submissionStatus}
       link={submission.artistId && getArtistPathname(submission.artistId)}
-      id={submission.id}
       voteFn={api.artistSubmissionVote}
-      user={submission.user}
       hideUser={hideUser}
+      discardFn={discardFn}
+      submission={submission}
     >
       <SubmissionField
         label="Name"
@@ -48,6 +53,9 @@ export const ArtistSubmissionItem = ({
 const ArtistSubmissionsList: React.FC = () => {
   const { status, artistId, userId } =
     useOutletContext<ArtistSubmissionListOutletContext>();
+
+  const { mutateAsync: discardFn } = useMutation(api.discardMyArtistSubmission);
+
   const { data, isFetching, isFetchingNextPage, fetchNextPage, hasNextPage } =
     useInfiniteQuery(
       cacheKeys.artistSubmissionsKey({
@@ -79,7 +87,11 @@ const ArtistSubmissionsList: React.FC = () => {
       {data?.pages.map((page) => (
         <Stack key={page.currentPage}>
           {page.artists.map((submission) => (
-            <ArtistSubmissionItem submission={submission} hideUser={!!userId} />
+            <ArtistSubmissionItem
+              submission={submission}
+              hideUser={!!userId}
+              discardFn={discardFn}
+            />
           ))}
         </Stack>
       ))}

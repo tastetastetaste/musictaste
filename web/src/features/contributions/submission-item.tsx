@@ -1,8 +1,14 @@
 import { useTheme } from '@emotion/react';
 import { IconArrowBigDown, IconArrowBigUp } from '@tabler/icons-react';
 import React, { Fragment } from 'react';
-import { useMutation } from 'react-query';
-import { IUser, SubmissionStatus, VoteType } from 'shared';
+import { useMutation, useQueryClient } from 'react-query';
+import {
+  IArtistSubmission,
+  ILabelSubmission,
+  IReleaseSubmission,
+  SubmissionStatus,
+  VoteType,
+} from 'shared';
 import { Group } from '../../components/flex/group';
 import { IconButton } from '../../components/icon-button';
 import { Link } from '../../components/links/link';
@@ -10,8 +16,11 @@ import { useAuth } from '../account/useAuth';
 import { millisecondsToTimeString } from './release-tracks-fields';
 
 import styled from '@emotion/styled';
-import { User } from '../users/user';
+import dayjs from 'dayjs';
+import { Button } from '../../components/button';
 import { FlexChild } from '../../components/flex/flex-child';
+import { cacheKeys } from '../../utils/cache-keys';
+import { User } from '../users/user';
 
 const FieldContainer = styled.div`
   display: flex;
@@ -294,30 +303,49 @@ export const SubmissionActions = ({
   );
 };
 
+export type DiscardSubmissionFn = (submissionId: string) => Promise<void>;
+
 export const SubmissionItemWrapper = ({
   children,
-  status,
   link,
-  id,
   voteFn,
-  user,
+  discardFn,
   hideUser,
+  submission,
 }: {
   children: React.ReactElement | React.ReactElement[];
-  status: any;
   link?: string;
-  id: string;
   voteFn: (params: { submissionId: string; vote: VoteType }) => Promise<any>;
-  user: IUser;
+  discardFn?: DiscardSubmissionFn;
   hideUser?: boolean;
+  submission: IArtistSubmission | ILabelSubmission | IReleaseSubmission;
 }) => {
   const { colors } = useTheme();
+  const { me } = useAuth();
+  const qc = useQueryClient();
+
   const color =
-    status === SubmissionStatus['DISAPPROVED']
+    submission.submissionStatus === SubmissionStatus['DISAPPROVED']
       ? colors.error
-      : status === SubmissionStatus['APPROVED']
+      : submission.submissionStatus === SubmissionStatus['APPROVED']
         ? colors.highlight
         : colors.text;
+
+  const handleDiscard = async () => {
+    const confirmed = confirm(
+      'Are you sure you want to discard this contribution?',
+    );
+
+    if (!confirmed) return;
+
+    if (discardFn) {
+      await discardFn(submission.id);
+      qc.resetQueries(cacheKeys.releaseSubmissionsKey());
+      qc.resetQueries(cacheKeys.artistSubmissionsKey());
+      qc.resetQueries(cacheKeys.labelSubmissionsKey());
+    }
+  };
+
   return (
     <div
       css={(theme) => ({
@@ -337,7 +365,11 @@ export const SubmissionItemWrapper = ({
       <div>{children}</div>
       <Group justify="apart" wrap>
         <Group align="center" gap="md">
-          <SubmissionActions id={id} status={status} voteFn={voteFn} />
+          <SubmissionActions
+            id={submission.id}
+            status={submission.submissionStatus}
+            voteFn={voteFn}
+          />
           <div
             css={(theme) => ({
               display: 'flex',
@@ -355,11 +387,17 @@ export const SubmissionItemWrapper = ({
                 fontSize: theme.font.size.small,
               })}
             >
-              {SubmissionStatus[status]}
+              {SubmissionStatus[submission.submissionStatus]}
             </span>
           </div>
         </Group>
-        {!hideUser && <User user={user} />}
+        {!hideUser && <User user={submission.user} />}
+        {me?.id === submission.user.id &&
+          dayjs().diff(submission.createdAt, 'hour') < 1 && (
+            <Button danger onClick={handleDiscard}>
+              Discard
+            </Button>
+          )}
       </Group>
     </div>
   );

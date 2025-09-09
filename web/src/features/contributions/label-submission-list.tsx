@@ -1,5 +1,5 @@
 import { Fragment } from 'react';
-import { useInfiniteQuery } from 'react-query';
+import { useInfiniteQuery, useMutation } from 'react-query';
 import { useOutletContext } from 'react-router-dom';
 import { ILabelSubmission, SubmissionStatus } from 'shared';
 import { FetchMore } from '../../components/fetch-more';
@@ -8,7 +8,11 @@ import { Loading } from '../../components/loading';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
 import { getLabelPathname } from '../../utils/get-pathname';
-import { SubmissionField, SubmissionItemWrapper } from './submission-item';
+import {
+  DiscardSubmissionFn,
+  SubmissionField,
+  SubmissionItemWrapper,
+} from './submission-item';
 
 class LabelSubmissionListOutletContext {
   status?: SubmissionStatus;
@@ -19,20 +23,21 @@ class LabelSubmissionListOutletContext {
 export const LabelSubmissionItem = ({
   submission,
   hideUser,
+  discardFn,
 }: {
   submission: ILabelSubmission;
   hideUser?: boolean;
+  discardFn?: DiscardSubmissionFn;
 }) => {
   const { original, changes } = submission;
   const hasOriginal = !!original;
   return (
     <SubmissionItemWrapper
-      status={submission.submissionStatus}
       link={submission.labelId && getLabelPathname(submission.labelId)}
-      id={submission.id}
       voteFn={api.labelSubmissionVote}
-      user={submission.user}
       hideUser={hideUser}
+      discardFn={discardFn}
+      submission={submission}
     >
       <SubmissionField
         label="Name"
@@ -48,6 +53,9 @@ export const LabelSubmissionItem = ({
 const LabelSubmissionsList: React.FC = () => {
   const { status, labelId, userId } =
     useOutletContext<LabelSubmissionListOutletContext>();
+
+  const { mutateAsync: discardFn } = useMutation(api.discardMyLabelSubmission);
+
   const { data, isFetching, isFetchingNextPage, fetchNextPage, hasNextPage } =
     useInfiniteQuery(
       cacheKeys.labelSubmissionsKey({
@@ -79,7 +87,11 @@ const LabelSubmissionsList: React.FC = () => {
       {data?.pages.map((page) => (
         <Stack key={page.currentPage}>
           {page.labels.map((submission) => (
-            <LabelSubmissionItem submission={submission} hideUser={!!userId} />
+            <LabelSubmissionItem
+              submission={submission}
+              hideUser={!!userId}
+              discardFn={discardFn}
+            />
           ))}
         </Stack>
       ))}

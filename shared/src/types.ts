@@ -381,6 +381,7 @@ export interface IReleaseSubmission {
   submissionType: any;
   submissionStatus: any;
   user: IUserSummary;
+  createdAt: string;
 }
 
 export interface IArtistChanges {
@@ -396,6 +397,7 @@ export interface IArtistSubmission {
   submissionType: any;
   submissionStatus: any;
   user: IUserSummary;
+  createdAt: string;
 }
 
 export interface ILabelChanges {
@@ -411,6 +413,7 @@ export interface ILabelSubmission {
   submissionType: any;
   submissionStatus: any;
   user: IUserSummary;
+  createdAt: string;
 }
 export interface IReleaseSubmissionsResponse extends IPagination {
   releases: IReleaseSubmission[];

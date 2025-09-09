@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Patch,
@@ -142,6 +143,42 @@ export class SubmissionsController {
       submissionId,
       body.vote,
       user,
+    );
+  }
+
+  @Delete('releases/:submissionId')
+  @UseGuards(AuthenticatedGuard)
+  discardMyReleaseSubmission(
+    @Param('submissionId') submissionId: string,
+    @CurUser() user: CurrentUserPayload,
+  ) {
+    return this.submissionsService.discardMyReleaseSubmission(
+      submissionId,
+      user.id,
+    );
+  }
+
+  @Delete('labels/:submissionId')
+  @UseGuards(AuthenticatedGuard)
+  discardMyLabelSubmission(
+    @Param('submissionId') submissionId: string,
+    @CurUser() user: CurrentUserPayload,
+  ) {
+    return this.submissionsService.discardMyLabelSubmission(
+      submissionId,
+      user.id,
+    )
+  }
+
+  @Delete('artists/:submissionId')
+  @UseGuards(AuthenticatedGuard)
+  discardMyArtistSubmission(
+    @Param('submissionId') submissionId: string,
+    @CurUser() user: CurrentUserPayload,
+  ) {
+    return this.submissionsService.discardMyArtistSubmission(
+      submissionId,
+      user.id,
     );
   }
 

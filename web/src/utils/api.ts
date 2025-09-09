@@ -449,6 +449,15 @@ const getLabelSubmissions = ({
     )
     .then((res) => res.data);
 
+const discardMyReleaseSubmission = (submissionId: string) =>
+  client.delete('submissions/releases/' + submissionId).then((res) => res.data);
+
+const discardMyLabelSubmission = (submissionId: string) =>
+  client.delete('submissions/labels/' + submissionId).then((res) => res.data);
+
+const discardMyArtistSubmission = (submissionId: string) =>
+  client.delete('submissions/artists/' + submissionId).then((res) => res.data);
+
 const processPendingDeletion = (data: ProcessPendingDeletionDto) =>
   client
     .post('submissions/process-pending-deletion', data)
@@ -655,6 +664,9 @@ export const api = {
   getReleaseSubmissions,
   getArtistSubmissions,
   getLabelSubmissions,
+  discardMyArtistSubmission,
+  discardMyLabelSubmission,
+  discardMyReleaseSubmission,
   processPendingDeletion,
   getUserContributionsStats,
   releaseSubmissionVote,
