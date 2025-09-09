@@ -149,6 +149,10 @@ const LabelSubmissionsList = lazy(
   () => import('./features/contributions/label-submission-list'),
 );
 
+const HistoryPageWrapper = lazy(
+  () => import('./features/contributions/history-page-wrapper'),
+);
+
 const PendingDeletionsPage = lazy(
   () => import('./features/contributions/pending-deletions-page'),
 );
@@ -583,6 +587,40 @@ const router = createBrowserRouter([
             <PendingDeletionsPage />
           </Suspense>
         ),
+      },
+      {
+        path: 'history',
+        element: (
+          <Suspense fallback={<Fallback />}>
+            <HistoryPageWrapper />
+          </Suspense>
+        ),
+        children: [
+          {
+            path: 'release/:id',
+            element: (
+              <Suspense fallback={<Fallback />}>
+                <ReleaseSubmissionsList />
+              </Suspense>
+            ),
+          },
+          {
+            path: 'artist/:id',
+            element: (
+              <Suspense fallback={<Fallback />}>
+                <ArtistSubmissionsList />
+              </Suspense>
+            ),
+          },
+          {
+            path: 'label/:id',
+            element: (
+              <Suspense fallback={<Fallback />}>
+                <LabelSubmissionsList />
+              </Suspense>
+            ),
+          },
+        ],
       },
       {
         path: 'contributions',

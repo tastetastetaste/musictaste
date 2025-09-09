@@ -228,6 +228,10 @@ export const ReleasePageContainer: React.FC<{
           to: '/contributions/releases/' + release.id,
         },
         {
+          label: 'History',
+          to: '/history/release/' + release.id,
+        },
+        {
           label: 'Report',
           action: () => setOpenReport(true),
         },

@@ -60,6 +60,10 @@ const LabelPage = () => {
       title={label ? label.name : ''}
       menu={[
         {
+          label: 'History',
+          to: '/history/label/' + label?.id,
+        },
+        {
           label: 'Report',
           action: () => setOpenReport(true),
         },

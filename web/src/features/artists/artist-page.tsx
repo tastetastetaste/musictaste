@@ -91,6 +91,10 @@ const ArtistPage = () => {
       title={artist ? artist.name : ''}
       menu={[
         {
+          label: 'History',
+          to: '/history/artist/' + artist?.id,
+        },
+        {
           label: 'Report',
           action: () => setOpenReport(true),
         },
