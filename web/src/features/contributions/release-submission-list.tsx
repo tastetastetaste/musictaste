@@ -98,6 +98,15 @@ export const ReleaseSubmissionItem = ({
           value ? <ImagePreview src={value} alt="cover" /> : null
         }
       />
+      {submission.note && (
+        <SubmissionField
+          label="Note"
+          originalValue={undefined}
+          changedValue={submission.note}
+          showOriginal={false}
+          renderValue={(value) => <span>{value}</span>}
+        />
+      )}
     </SubmissionItemWrapper>
   );
 };

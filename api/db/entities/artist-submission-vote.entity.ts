@@ -5,12 +5,14 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  Unique,
 } from 'typeorm';
 import { SharedBaseEntity } from '../shared/base-entity';
 import { ArtistSubmission } from './artist-submission.entity';
 import { User } from './user.entity';
 
 @Entity()
+@Unique(['userId', 'artistSubmissionId'])
 export class ArtistSubmissionVote extends SharedBaseEntity {
   @Column()
   userId: string;

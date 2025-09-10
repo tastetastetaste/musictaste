@@ -401,8 +401,9 @@ export class SubmissionService {
       const submissionVotes = await this.releaseSubmissionVoteRepository
         .createQueryBuilder('v')
         .addSelect('COUNT(v.id)', 'totalVotes')
-        .addSelect('SUM(v.vote)', 'netVotes')
+        .addSelect('SUM(v.type)', 'netVotes')
         .where('v.releaseSubmissionId = :id', { id: submissionId })
+        .groupBy('v.id')
         .getRawOne();
 
       closeSubmission = Number(submissionVotes.totalVotes) >= 3;
@@ -666,6 +667,7 @@ export class SubmissionService {
     const [rss, totalItems] =
       await this.releaseSubmissionRepository.findAndCount({
         where,
+        relations: ['votes'],
         order: {
           createdAt: 'DESC',
         },
@@ -700,7 +702,12 @@ export class SubmissionService {
       ),
     ];
 
-    const uniqueUserIds = [...new Set(rss.map((rs) => rs.userId))];
+    const uniqueUserIds = [
+      ...new Set([
+        ...rss.map((rs) => rs.userId),
+        ...rss.flatMap((rs) => rs.votes?.map((vote) => vote.userId) || []),
+      ]),
+    ];
 
     const [artists, labels, languages, users] = await Promise.all([
       this.artistsRepository.find({ where: { id: In(allArtistIds) } }),
@@ -746,6 +753,14 @@ export class SubmissionService {
           user: users.find((u) => u.id === rs.userId),
           changes,
           original: original ? original : null,
+          votes:
+            rs.votes?.map((vote) => ({
+              id: vote.id,
+              type: vote.type,
+              userId: vote.userId,
+              user: users.find((u) => u.id === vote.userId),
+              createdAt: vote.createdAt,
+            })) || [],
         };
       }),
       totalItems,
@@ -772,6 +787,7 @@ export class SubmissionService {
     const [rss, totalItems] =
       await this.artistSubmissionRepository.findAndCount({
         where,
+        relations: ['votes'],
         order: {
           createdAt: 'DESC',
         },
@@ -779,7 +795,12 @@ export class SubmissionService {
         skip: (page - 1) * pageSize,
       });
 
-    const uniqueUserIds = [...new Set(rss.map((rs) => rs.userId))];
+    const uniqueUserIds = [
+      ...new Set([
+        ...rss.map((rs) => rs.userId),
+        ...rss.flatMap((rs) => rs.votes?.map((vote) => vote.userId) || []),
+      ]),
+    ];
 
     const users = await this.usersService.getUsersByIds(uniqueUserIds);
 
@@ -787,6 +808,14 @@ export class SubmissionService {
       artists: rss.map(({ ...rs }) => ({
         ...rs,
         user: users.find((u) => u.id === rs.userId),
+        votes:
+          rs.votes?.map((vote) => ({
+            id: vote.id,
+            type: vote.type,
+            userId: vote.userId,
+            user: users.find((u) => u.id === vote.userId),
+            createdAt: vote.createdAt,
+          })) || [],
       })),
       totalItems,
       currentPage: page,
@@ -812,6 +841,7 @@ export class SubmissionService {
     const [rss, totalItems] = await this.labelSubmissionRepository.findAndCount(
       {
         where,
+        relations: ['votes'],
         order: {
           createdAt: 'DESC',
         },
@@ -820,7 +850,12 @@ export class SubmissionService {
       },
     );
 
-    const uniqueUserIds = [...new Set(rss.map((rs) => rs.userId))];
+    const uniqueUserIds = [
+      ...new Set([
+        ...rss.map((rs) => rs.userId),
+        ...rss.flatMap((rs) => rs.votes?.map((vote) => vote.userId) || []),
+      ]),
+    ];
 
     const users = await this.usersService.getUsersByIds(uniqueUserIds);
 
@@ -828,6 +863,14 @@ export class SubmissionService {
       labels: rss.map(({ ...rs }) => ({
         ...rs,
         user: users.find((u) => u.id === rs.userId),
+        votes:
+          rs.votes?.map((vote) => ({
+            id: vote.id,
+            type: vote.type,
+            userId: vote.userId,
+            user: users.find((u) => u.id === vote.userId),
+            createdAt: vote.createdAt,
+          })) || [],
       })),
       totalItems,
       currentPage: page,

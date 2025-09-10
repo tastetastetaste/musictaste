@@ -372,6 +372,14 @@ export interface IReleaseChanges {
   tracks: { track: string; title: string; durationMs?: number }[];
 }
 
+export interface IReleaseSubmissionVote {
+  id: string;
+  type: VoteType;
+  userId: string;
+  user: IUserSummary;
+  createdAt: string;
+}
+
 export interface IReleaseSubmission {
   id: string;
   userId: string;
@@ -382,10 +390,20 @@ export interface IReleaseSubmission {
   submissionStatus: any;
   user: IUserSummary;
   createdAt: string;
+  note: string;
+  votes: IReleaseSubmissionVote[];
 }
 
 export interface IArtistChanges {
   name: string;
+}
+
+export interface IArtistSubmissionVote {
+  id: string;
+  type: VoteType;
+  userId: string;
+  user: IUserSummary;
+  createdAt: string;
 }
 
 export interface IArtistSubmission {
@@ -398,10 +416,19 @@ export interface IArtistSubmission {
   submissionStatus: any;
   user: IUserSummary;
   createdAt: string;
+  votes: IArtistSubmissionVote[];
 }
 
 export interface ILabelChanges {
   name: string;
+}
+
+export interface ILabelSubmissionVote {
+  id: string;
+  type: VoteType;
+  userId: string;
+  user: IUserSummary;
+  createdAt: string;
 }
 
 export interface ILabelSubmission {
@@ -414,6 +441,7 @@ export interface ILabelSubmission {
   submissionStatus: any;
   user: IUserSummary;
   createdAt: string;
+  votes: ILabelSubmissionVote[];
 }
 export interface IReleaseSubmissionsResponse extends IPagination {
   releases: IReleaseSubmission[];

@@ -103,9 +103,9 @@ export class CreateReleaseDto {
   @ValidateNested({ each: true })
   @Type(() => TrackDto)
   tracks?: TrackDto[];
-  @IsOptional()
   @IsString()
-  note?: string;
+  @MinLength(1)
+  note: string;
 }
 
 export class UpdateReleaseDto {
@@ -136,8 +136,8 @@ export class UpdateReleaseDto {
   @ValidateNested({ each: true })
   @Type(() => TrackDto)
   tracks?: TrackDto[];
-  @IsOptional()
   @IsString()
+  @MinLength(1)
   note?: string;
 }
 

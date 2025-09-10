@@ -25,15 +25,7 @@ import {
 } from '../../static/site-info';
 // import { themeOptions, useThemeSwitcher } from '../../features/theme/useTheme';
 import { Sidebar } from './sidebar';
-
-const links = [
-  { to: '/', label: 'Home', exact: true },
-  { to: '/releases/new', label: 'Releases', exact: false },
-  { to: '/reviews/new', label: 'Reviews', exact: false },
-  { to: '/lists/new', label: 'Lists', exact: false },
-  { to: '/theme', label: 'Theme', exact: true },
-  { to: '/contributing', label: 'Contributing', exact: true },
-];
+import { useAuth } from '../../features/account/useAuth';
 
 const SidebarContent = ({
   closeSidebar,
@@ -44,6 +36,23 @@ const SidebarContent = ({
   onOpenSupportDialog: any;
   onOpenContactDialog: any;
 }) => {
+  const { canVoteOnSubmissions } = useAuth();
+  const links = [
+    { to: '/', label: 'Home', exact: true },
+    { to: '/releases/new', label: 'Releases', exact: false },
+    { to: '/reviews/new', label: 'Reviews', exact: false },
+    { to: '/lists/new', label: 'Lists', exact: false },
+    { to: '/theme', label: 'Theme', exact: true },
+    { to: '/contributing', label: 'Contributing', exact: true },
+  ];
+
+  if (canVoteOnSubmissions) {
+    links.push({
+      to: '/contributions/releases',
+      label: 'Open Contributions',
+      exact: true,
+    });
+  }
   return (
     <Fragment>
       <Stack justify="apart">

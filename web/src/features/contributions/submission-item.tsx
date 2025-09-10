@@ -277,11 +277,11 @@ export const SubmissionActions = ({
     return <div></div>;
 
   return (
-    <Group gap={10}>
+    <Fragment>
       {data ? (
         <span>Ok</span>
       ) : (
-        <Fragment>
+        <Group gap={30}>
           <IconButton
             title="Vote Up"
             onClick={() => vote({ submissionId: id, vote: VoteType.UP })}
@@ -296,10 +296,10 @@ export const SubmissionActions = ({
           >
             <IconArrowBigDown />
           </IconButton>
-        </Fragment>
+        </Group>
       )}
       {isLoading && <span>loading..</span>}
-    </Group>
+    </Fragment>
   );
 };
 
@@ -364,12 +364,15 @@ export const SubmissionItemWrapper = ({
       )}
       <div>{children}</div>
       <Group justify="apart" wrap>
-        <Group align="center" gap="md">
-          <SubmissionActions
-            id={submission.id}
-            status={submission.submissionStatus}
-            voteFn={voteFn}
-          />
+        <Group align="center">
+          {!submission.votes.some((v) => v.userId === me.id) && (
+            <SubmissionActions
+              id={submission.id}
+              status={submission.submissionStatus}
+              voteFn={voteFn}
+            />
+          )}
+
           <div
             css={(theme) => ({
               display: 'flex',
@@ -398,6 +401,22 @@ export const SubmissionItemWrapper = ({
               Discard
             </Button>
           )}
+      </Group>
+      <Group>
+        {submission.votes.map((v) => (
+          <Group>
+            <User user={v.user} avatarOnly />
+            {v.type === VoteType.UP ? (
+              <IconArrowBigUp
+                css={({ colors }) => ({ color: colors.highlight })}
+              />
+            ) : (
+              <IconArrowBigDown
+                css={({ colors }) => ({ color: colors.error })}
+              />
+            )}
+          </Group>
+        ))}
       </Group>
     </div>
   );
