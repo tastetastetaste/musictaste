@@ -1,4 +1,4 @@
-import { IArtistResponse } from 'shared';
+import { IArtistResponse, IRelease } from 'shared';
 import { api } from '../../utils/api';
 import { useQuery } from 'react-query';
 import { useParams } from 'react-router-dom';
@@ -13,60 +13,98 @@ import { useState } from 'react';
 import { ReportDialog } from '../reports/report-dialog';
 import { cacheKeys } from '../../utils/cache-keys';
 
+interface ReleasesSectionProps {
+  title: string;
+  releases: IRelease[];
+}
+
+const ReleasesSection: React.FC<ReleasesSectionProps> = ({
+  title,
+  releases,
+}) => {
+  if (releases.length === 0) return null;
+
+  const sortedReleases = [...releases].sort(
+    (a, b) => Number(new Date(b.date)) - Number(new Date(a.date)),
+  );
+
+  return (
+    <>
+      <Typography size="title-lg">{title}</Typography>
+      <Grid cols={[2, 4, 4, 6]} gap={RELEASE_GRID_PADDING}>
+        {sortedReleases.map((release) => (
+          <Release release={release} key={release.id} />
+        ))}
+      </Grid>
+    </>
+  );
+};
+
 const Releases: React.FC<{ releases: IArtistResponse['releases'] }> = ({
   releases,
 }) => {
+  const sections = [
+    {
+      title: 'Albums',
+      types: ['LP'],
+    },
+    {
+      title: 'EPs',
+      types: ['EP'],
+    },
+    {
+      title: 'Singles',
+      types: ['Single'],
+    },
+    {
+      title: 'Mixtapes',
+      types: ['Mixtape'],
+    },
+    {
+      title: 'Live',
+      types: ['Live'],
+    },
+    {
+      title: 'Compilation',
+      types: ['Compilation'],
+    },
+    {
+      title: 'Reissue',
+      types: ['Reissue'],
+    },
+    {
+      title: 'Other',
+      types: [
+        'Other',
+        'Instrumental',
+        'Cover',
+        'Soundtrack',
+        'DJ',
+        'Mix',
+        'Video',
+        'Remix',
+      ],
+    },
+    {
+      title: 'Unofficial',
+      types: ['Unofficial'],
+    },
+  ];
+
   return (
     <Stack gap="sm">
-      {releases.some((r) => r.type === 'LP') && (
-        <Typography size="title-lg">Albums</Typography>
-      )}
-      <Grid cols={[2, 4, 4, 6]} gap={RELEASE_GRID_PADDING}>
-        {releases
-          .filter((r) => r.type === 'LP')
-          .sort((a, b) => Number(new Date(b.date)) - Number(new Date(a.date)))
-          .map((release) => (
-            <Release release={release} key={release.id} />
-          ))}
-      </Grid>
-
-      {releases.some((r) => r.type === 'EP') && (
-        <Typography size="title-lg">EPs</Typography>
-      )}
-      <Grid cols={[2, 4, 4, 6]} gap={RELEASE_GRID_PADDING}>
-        {releases
-          .filter((r) => r.type === 'EP')
-          .sort((a, b) => Number(new Date(b.date)) - Number(new Date(a.date)))
-          .map((release) => (
-            <Release release={release} key={release.id} />
-          ))}
-      </Grid>
-
-      {releases.some((r) => r.type === 'Single') && (
-        <Typography size="title-lg">Singles</Typography>
-      )}
-      <Grid cols={[2, 4, 4, 6]} gap={RELEASE_GRID_PADDING}>
-        {releases
-          .filter((r) => r.type === 'Single')
-          .sort((a, b) => Number(new Date(b.date)) - Number(new Date(a.date)))
-          .map((release) => (
-            <Release release={release} key={release.id} />
-          ))}
-      </Grid>
-
-      {releases.some(
-        (r) => r.type !== 'LP' && r.type !== 'EP' && r.type !== 'Single',
-      ) && <Typography size="title-lg">Other</Typography>}
-      <Grid cols={[2, 4, 4, 6]} gap={RELEASE_GRID_PADDING}>
-        {releases
-          .filter(
-            (r) => r.type !== 'LP' && r.type !== 'EP' && r.type !== 'Single',
-          )
-          .sort((a, b) => Number(new Date(b.date)) - Number(new Date(a.date)))
-          .map((release) => (
-            <Release release={release} key={release.id} />
-          ))}
-      </Grid>
+      {sections.map((section) => {
+        const filteredReleases = releases.filter((r) =>
+          section.types.includes(r.type),
+        );
+        return (
+          <ReleasesSection
+            key={section.title}
+            title={section.title}
+            releases={filteredReleases}
+          />
+        );
+      })}
     </Stack>
   );
 };
