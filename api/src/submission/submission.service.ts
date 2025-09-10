@@ -420,13 +420,16 @@ export class SubmissionService {
         await this.applyReleaseSubmission(releaseSubmission);
       }
 
+      if (
+        !approveSubmission &&
+        releaseSubmission.submissionStatus === SubmissionStatus.AUTO_APPROVED &&
+        releaseSubmission.submissionType === SubmissionType.CREATE
+      )
+        await this.releasesService.deleteRelease(releaseSubmission.releaseId);
+
       releaseSubmission.submissionStatus = approveSubmission
         ? SubmissionStatus.APPROVED
-        : releaseSubmission.submissionStatus ===
-              SubmissionStatus.AUTO_APPROVED &&
-            releaseSubmission.submissionType === SubmissionType.CREATE
-          ? SubmissionStatus.PENDING_ENTITY_DELETION
-          : SubmissionStatus.DISAPPROVED;
+        : SubmissionStatus.DISAPPROVED;
 
       await this.releaseSubmissionRepository.save(releaseSubmission);
     }
@@ -551,7 +554,7 @@ export class SubmissionService {
       const submissionVotes = await this.labelSubmissionVoteRepository
         .createQueryBuilder('v')
         .addSelect('COUNT(v.id)', 'totalVotes')
-        .addSelect('SUM(v.vote)', 'netVotes')
+        .addSelect('SUM(v.type)', 'netVotes')
         .where('v.labelSubmissionId = :id', { id: submissionId })
         .getRawOne();
 
@@ -569,12 +572,16 @@ export class SubmissionService {
         await this.applyLabelSubmission(labelSubmission);
       }
 
+      if (
+        !approveSubmission &&
+        labelSubmission.submissionStatus === SubmissionStatus.AUTO_APPROVED &&
+        labelSubmission.submissionType === SubmissionType.CREATE
+      )
+        await this.labelsService.deleteLabel(labelSubmission.labelId);
+
       labelSubmission.submissionStatus = approveSubmission
         ? SubmissionStatus.APPROVED
-        : labelSubmission.submissionStatus === SubmissionStatus.AUTO_APPROVED &&
-            labelSubmission.submissionType === SubmissionType.CREATE
-          ? SubmissionStatus.PENDING_ENTITY_DELETION
-          : SubmissionStatus.DISAPPROVED;
+        : SubmissionStatus.DISAPPROVED;
 
       await this.labelSubmissionRepository.save(labelSubmission);
     }
@@ -619,7 +626,7 @@ export class SubmissionService {
       const submissionVotes = await this.artistSubmissionVoteRepository
         .createQueryBuilder('v')
         .addSelect('COUNT(v.id)', 'totalVotes')
-        .addSelect('SUM(v.vote)', 'netVotes')
+        .addSelect('SUM(v.type)', 'netVotes')
         .where('v.artistSubmissionId = :id', { id: submissionId })
         .getRawOne();
 
@@ -637,13 +644,16 @@ export class SubmissionService {
         await this.applyArtistSubmission(artistSubmission);
       }
 
+      if (
+        !approveSubmission &&
+        artistSubmission.submissionStatus === SubmissionStatus.AUTO_APPROVED &&
+        artistSubmission.submissionType === SubmissionType.CREATE
+      )
+        await this.artistsService.deleteArtist(artistSubmission.artistId);
+
       artistSubmission.submissionStatus = approveSubmission
         ? SubmissionStatus.APPROVED
-        : artistSubmission.submissionStatus ===
-              SubmissionStatus.AUTO_APPROVED &&
-            artistSubmission.submissionType === SubmissionType.CREATE
-          ? SubmissionStatus.PENDING_ENTITY_DELETION
-          : SubmissionStatus.DISAPPROVED;
+        : SubmissionStatus.DISAPPROVED;
 
       await this.artistSubmissionRepository.save(artistSubmission);
     }
