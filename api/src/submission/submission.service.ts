@@ -400,10 +400,9 @@ export class SubmissionService {
     ) {
       const submissionVotes = await this.releaseSubmissionVoteRepository
         .createQueryBuilder('v')
-        .addSelect('COUNT(v.id)', 'totalVotes')
+        .select('COUNT(v.id)', 'totalVotes')
         .addSelect('SUM(v.type)', 'netVotes')
         .where('v.releaseSubmissionId = :id', { id: submissionId })
-        .groupBy('v.id')
         .getRawOne();
 
       closeSubmission = Number(submissionVotes.totalVotes) >= 3;
@@ -553,7 +552,7 @@ export class SubmissionService {
     ) {
       const submissionVotes = await this.labelSubmissionVoteRepository
         .createQueryBuilder('v')
-        .addSelect('COUNT(v.id)', 'totalVotes')
+        .select('COUNT(v.id)', 'totalVotes')
         .addSelect('SUM(v.type)', 'netVotes')
         .where('v.labelSubmissionId = :id', { id: submissionId })
         .getRawOne();
@@ -630,8 +629,13 @@ export class SubmissionService {
         .where('v.artistSubmissionId = :id', { id: submissionId })
         .getRawOne();
 
+      console.log(submissionVotes);
+
       closeSubmission = Number(submissionVotes.totalVotes) >= 3;
       approveSubmission = Number(submissionVotes.netVotes) > 0;
+
+      console.log(closeSubmission);
+      console.log(approveSubmission);
     } else {
       throw new BadRequestException();
     }
