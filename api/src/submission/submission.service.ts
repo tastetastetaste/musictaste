@@ -423,8 +423,10 @@ export class SubmissionService {
         !approveSubmission &&
         releaseSubmission.submissionStatus === SubmissionStatus.AUTO_APPROVED &&
         releaseSubmission.submissionType === SubmissionType.CREATE
-      )
+      ) {
         await this.releasesService.deleteRelease(releaseSubmission.releaseId);
+        releaseSubmission.releaseId = null;
+      }
 
       releaseSubmission.submissionStatus = approveSubmission
         ? SubmissionStatus.APPROVED
@@ -575,8 +577,10 @@ export class SubmissionService {
         !approveSubmission &&
         labelSubmission.submissionStatus === SubmissionStatus.AUTO_APPROVED &&
         labelSubmission.submissionType === SubmissionType.CREATE
-      )
+      ) {
         await this.labelsService.deleteLabel(labelSubmission.labelId);
+        labelSubmission.labelId = null;
+      }
 
       labelSubmission.submissionStatus = approveSubmission
         ? SubmissionStatus.APPROVED
@@ -629,13 +633,8 @@ export class SubmissionService {
         .where('v.artistSubmissionId = :id', { id: submissionId })
         .getRawOne();
 
-      console.log(submissionVotes);
-
       closeSubmission = Number(submissionVotes.totalVotes) >= 3;
       approveSubmission = Number(submissionVotes.netVotes) > 0;
-
-      console.log(closeSubmission);
-      console.log(approveSubmission);
     } else {
       throw new BadRequestException();
     }
@@ -652,8 +651,10 @@ export class SubmissionService {
         !approveSubmission &&
         artistSubmission.submissionStatus === SubmissionStatus.AUTO_APPROVED &&
         artistSubmission.submissionType === SubmissionType.CREATE
-      )
+      ) {
         await this.artistsService.deleteArtist(artistSubmission.artistId);
+        artistSubmission.artistId = null;
+      }
 
       artistSubmission.submissionStatus = approveSubmission
         ? SubmissionStatus.APPROVED
