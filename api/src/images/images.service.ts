@@ -60,7 +60,7 @@ export class ImagesService {
     const id = nanoid(11);
     const sizes = imageFor === 'user' ? this.userSizes : this.releaseSizes;
 
-    const resizedImages = await this.resizeImages(buffer, sizes);
+    const resizedImages = await this.resizeImages(buffer, sizes, imageFor);
 
     await this.uploadImagesToS3(resizedImages, container, id);
 
@@ -83,7 +83,7 @@ export class ImagesService {
     const id = nanoid(11);
     const sizes = imageFor === 'user' ? this.userSizes : this.releaseSizes;
 
-    const resizedImages = await this.resizeImages(buffer, sizes);
+    const resizedImages = await this.resizeImages(buffer, sizes, imageFor);
 
     await this.uploadImagesToS3(resizedImages, container, id);
 
@@ -93,6 +93,7 @@ export class ImagesService {
   private async resizeImages(
     buffer: Buffer,
     sizes: { suffix: string; size?: number; quality?: number }[],
+    imageFor: 'release' | 'user',
   ): Promise<ResizedImage[]> {
     return Promise.all(
       sizes.map(async (size) => {
@@ -100,7 +101,11 @@ export class ImagesService {
           size.suffix === 'original'
             ? await sharp(buffer).jpeg({ quality: 100 }).toBuffer()
             : await sharp(buffer)
-                .resize({ width: size.size, height: size.size })
+                .resize(
+                  imageFor === 'release'
+                    ? { width: size.size }
+                    : { width: size.size, height: size.size },
+                )
                 .jpeg({ quality: size.quality })
                 .toBuffer();
         return { buffer: resizedImage, suffix: size.suffix };
