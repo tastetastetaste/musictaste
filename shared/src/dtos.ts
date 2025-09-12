@@ -23,6 +23,7 @@ import {
   VoteType,
   ReleaseType,
   FindReleasesType,
+  ContributorStatus,
 } from './enums';
 import dayjs from 'dayjs';
 
@@ -203,6 +204,15 @@ export class UpdateUserProfileDto {
   @MinLength(1)
   name: string;
   bio?: string;
+}
+
+export class UpdateUserContributorStatusDto {
+  @IsString()
+  userId: string;
+
+  @Type(() => Number)
+  @IsEnum(ContributorStatus)
+  status: ContributorStatus;
 }
 
 // --- LISTS

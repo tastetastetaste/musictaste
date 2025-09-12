@@ -46,6 +46,7 @@ import {
   ProcessPendingDeletionDto,
   SearchType,
   UpdateReleaseDto,
+  UpdateUserContributorStatusDto,
   VoteType,
 } from 'shared';
 
@@ -603,6 +604,12 @@ const unFollow = ({ id }: { id: string }) =>
 const report = (report: CreateReportDto) =>
   client.post('reports', report).then((res) => res.data);
 
+// ----------------
+//     ADMIN
+// ----------------
+const updateUserContributorStatus = (data: UpdateUserContributorStatusDto) =>
+  client.patch('admin/user/contributor-status', data).then((res) => res.data);
+
 export const api = {
   getArtist,
   getLabel,
@@ -689,4 +696,5 @@ export const api = {
   follow,
   unFollow,
   report,
+  updateUserContributorStatus,
 };

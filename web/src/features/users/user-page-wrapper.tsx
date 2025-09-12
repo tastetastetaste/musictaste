@@ -1,5 +1,5 @@
 import { IUserProfileResponse } from 'shared';
-import { useQuery } from 'react-query';
+import { useMutation, useQuery } from 'react-query';
 import { Outlet, useParams } from 'react-router-dom';
 import { Stack } from '../../components/flex/stack';
 import { Loading } from '../../components/loading';
@@ -20,7 +20,7 @@ export type UserPageOutletContext = {
 const UserPageWrapper: React.FC = () => {
   const { username } = useParams();
 
-  const { me } = useAuth();
+  const { me, isAdmin } = useAuth();
 
   const [openReport, setOpenReport] = useState(false);
 
@@ -31,6 +31,29 @@ const UserPageWrapper: React.FC = () => {
       enabled: !!username,
     },
   );
+
+  const { mutate: updateContributorStatusMutation } = useMutation(
+    api.updateUserContributorStatus,
+  );
+
+  const updateContributorStatus = () => {
+    const status = prompt(
+      '0=Not Contributor, 20=Contributor, 40=Trusted Contributor, 60=Editor, 80=Admin',
+    );
+    if (status) {
+      updateContributorStatusMutation(
+        {
+          userId: data.user.id,
+          status: parseInt(status),
+        },
+        {
+          onSuccess: () => {
+            alert('Updated');
+          },
+        },
+      );
+    }
+  };
 
   if (isLoading) {
     return <Loading />;
@@ -54,6 +77,14 @@ const UserPageWrapper: React.FC = () => {
           label: 'Report',
           action: () => setOpenReport(true),
         },
+        ...(isAdmin
+          ? [
+              {
+                label: 'Contributor Status',
+                action: updateContributorStatus,
+              },
+            ]
+          : []),
       ]}
       image={data.user.image?.md}
     >
