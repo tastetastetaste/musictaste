@@ -8,6 +8,7 @@ You can start contributing data by selecting **"Add Release"** from the dropdown
 - **Artist/Band**: Select the artist or band.  
   - If you don't find the artist, click **"Add new artist"** below the input field to add a new artist to the database.  
   - If the name is in non-Latin text, use the localized English name followed by the original non-Latin text in square brackets (e.g., *Ichiko Aoba [青葉市子]*) to make it easier to search.  
+  - For classical music, use all performers and composers as artists.
 - **Type**: Select the release type.  
   - The list of types is self-explanatory, but note that we use **"Reissue"** as the type for deluxe and extended editions.  
 - **Date**: Release date.  
@@ -15,11 +16,13 @@ You can start contributing data by selecting **"Add Release"** from the dropdown
 - **Label**: Select the label.  
   - If you don't find the label, click **"Add new label"** below the input field to add a new one to the database.  
   - When adding a label, please use the full label name — not a shortened version.  
+  - If it doesn't have a label, use **"Not On Label (Self-Released)"** as a label.
 - **Language**: Select the language.  
   - If the language isn't listed, please send feedback (contact information is in the sidebar).  
 - **Cover Art**: Drag and drop, or click to select cover art.  
 - **Add Tracks**: Click, then enter the number of tracks you want to add. Fill in the titles and (optionally) the length for each track.  
-- **Note/Source**: You may add a note for the person reviewing your contribution (optional).  
+  - For compilations that consist of various artists, list the artist next to the song title. (see this [example](https://www.musictaste.xyz/release/tYKIC5MZ1R-F))
+- **Note/Source**: Add a note for the person reviewing your contribution (include links).  
 - **Submit**: Click **"Submit"** to add the release.  
 
 #### Importing from MusicBrainz
@@ -40,6 +43,16 @@ You can autofill the fields by importing from MusicBrainz.
 - You will see a screen identical to the **Add Release** screen.  
 - Make your changes and click **"Submit"**.  
 - Edits may take up to 24 hours to be approved.
+
+## Discarding Data Submissions
+
+If you add or edit data by mistake (or accident), you can discard it within **1 hour** after submitting.
+
+- Find the submission (multiple options)
+  - You can fine all your contributions in **your contributions page** (from the top right menu in your profile page)
+  - You can find **history pages** of releases, artists, and labels in their own pages in the top right menu
+- Click the **"Discard"** button.
+- Confirm the action.
 
 ## Reporting Music Data
 
@@ -66,6 +79,8 @@ Each music data contribution goes through an approval process and is assigned on
 	- The contribution has been reviewed and approved, and the data has been added to the database.
 - **DISAPPROVED**
 	- The contribution has been reviewed and rejected, and the data has not been added to the database.
+- **PENDING ENTITY DELETION**
+  - AUTO APPROVED contribution has been disapproved and the linked data is now pending hard deletion.
 
 ## Contributor roles
 
