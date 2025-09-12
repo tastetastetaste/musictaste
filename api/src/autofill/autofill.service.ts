@@ -41,9 +41,7 @@ export class AutofillService {
           setTimeout(() => rej('Request timed out'), 15000),
         ),
       ]);
-    } catch (err) {
-      return null;
-    }
+    } catch (err) {}
 
     const release = await this.musicBrainzApi.lookupRelease(mbid, [
       'recordings',
