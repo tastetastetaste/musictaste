@@ -13,14 +13,14 @@ export const SearchLabel = ({ q }: { q: string }) => {
       q: q!,
       type: ['labels'],
       page: 1,
-      pageSize: 12,
+      pageSize: 100,
     }),
     () =>
       api.search({
         q: q!,
         type: ['labels'],
         page: 1,
-        pageSize: 12,
+        pageSize: 100,
       }),
     { enabled: !!q },
   );

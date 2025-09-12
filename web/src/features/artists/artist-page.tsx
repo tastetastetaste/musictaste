@@ -12,6 +12,7 @@ import { RELEASE_GRID_PADDING } from '../releases/releases-virtual-grid';
 import { useState } from 'react';
 import { ReportDialog } from '../reports/report-dialog';
 import { cacheKeys } from '../../utils/cache-keys';
+import { useSnackbar } from '../../hooks/useSnackbar';
 
 interface ReleasesSectionProps {
   title: string;
@@ -112,6 +113,8 @@ const Releases: React.FC<{ releases: IArtistResponse['releases'] }> = ({
 const ArtistPage = () => {
   const { id } = useParams();
 
+  const { snackbar } = useSnackbar();
+
   const [openReport, setOpenReport] = useState(false);
 
   const { data, isLoading } = useQuery(
@@ -131,6 +134,13 @@ const ArtistPage = () => {
         {
           label: 'History',
           to: '/history/artist/' + artist?.id,
+        },
+        {
+          label: 'Copy ID',
+          action: () => {
+            navigator.clipboard.writeText(artist?.id || '');
+            snackbar('ID copied to clipboard');
+          },
         },
         {
           label: 'Report',

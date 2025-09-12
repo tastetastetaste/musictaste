@@ -22,11 +22,12 @@ export class SearchService {
   ) {}
 
   async search({
-    q,
+    q: query,
     type,
     page,
     pageSize,
   }: SearchDto): Promise<ISearchResponse> {
+    const q = query.trim();
     const curPageSize = pageSize || 10;
     const take = (page || 1) * curPageSize;
     const skip = ((page || 1) - 1) * curPageSize;

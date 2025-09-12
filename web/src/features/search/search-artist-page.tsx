@@ -13,14 +13,14 @@ export const SearchArtist = ({ q }: { q: string }) => {
       q: q!,
       type: ['artists'],
       page: 1,
-      pageSize: 12,
+      pageSize: 100,
     }),
     () =>
       api.search({
         q: q!,
         type: ['artists'],
         page: 1,
-        pageSize: 12,
+        pageSize: 100,
       }),
     { enabled: !!q },
   );

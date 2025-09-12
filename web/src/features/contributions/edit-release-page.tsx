@@ -31,6 +31,8 @@ import { FormInputError } from '../../components/inputs/form-input-error';
 import { cacheKeys } from '../../utils/cache-keys';
 import { Link } from '../../components/links/link';
 import { Group } from '../../components/flex/group';
+import { AddByIdArtistDialog } from './add-by-id-artist-dialog';
+import { AddByIdLabelDialog } from './add-by-id-label-dialog';
 
 export interface EditReleaseFormValues extends UpdateReleaseDto {
   mbid: string;
@@ -44,6 +46,8 @@ const EditReleasePage = () => {
 
   const [openCreateArtistDialog, setOpenCreateArtistDialog] = useState(false);
   const [openCreateLabelDialog, setOpenCreateLabelDialog] = useState(false);
+  const [openAddByIdArtistDialog, setOpenAddByIdArtistDialog] = useState(false);
+  const [openAddByIdLabelDialog, setOpenAddByIdLabelDialog] = useState(false);
 
   const [importMessage, setImportMessage] = useState('');
   const [importLoading, setImportLoading] = useState(false);
@@ -246,12 +250,20 @@ const EditReleasePage = () => {
             />
             <FormInputError error={errors.artistsIds} />
             <FlexChild align="flex-end">
-              <Button
-                variant="text"
-                onClick={() => setOpenCreateArtistDialog(true)}
-              >
-                Add new artist
-              </Button>
+              <Group gap="lg" wrap>
+                <Button
+                  variant="text"
+                  onClick={() => setOpenAddByIdArtistDialog(true)}
+                >
+                  Select by ID
+                </Button>
+                <Button
+                  variant="text"
+                  onClick={() => setOpenCreateArtistDialog(true)}
+                >
+                  Add new artist
+                </Button>
+              </Group>
             </FlexChild>
             <Controller
               name="type"
@@ -288,12 +300,20 @@ const EditReleasePage = () => {
             />
             <FormInputError error={errors.labelsIds} />
             <FlexChild align="flex-end">
-              <Button
-                variant="text"
-                onClick={() => setOpenCreateLabelDialog(true)}
-              >
-                Add new label
-              </Button>
+              <Group gap="lg" wrap>
+                <Button
+                  variant="text"
+                  onClick={() => setOpenAddByIdLabelDialog(true)}
+                >
+                  Select by ID
+                </Button>
+                <Button
+                  variant="text"
+                  onClick={() => setOpenCreateLabelDialog(true)}
+                >
+                  Add new label
+                </Button>
+              </Group>
             </FlexChild>
             <Controller
               name="languages"
@@ -346,6 +366,34 @@ const EditReleasePage = () => {
         <CreateLabelDialog
           isOpen={openCreateLabelDialog}
           onClose={() => setOpenCreateLabelDialog(false)}
+        />
+        <AddByIdArtistDialog
+          isOpen={openAddByIdArtistDialog}
+          onClose={() => setOpenAddByIdArtistDialog(false)}
+          onAddArtist={(artist) => {
+            const currentArtists = getValues('artists') || [];
+            const newArtists = [...currentArtists, artist];
+            setValue('artists', newArtists);
+            setValue(
+              'artistsIds',
+              newArtists.map((a) => a.value),
+            );
+          }}
+          currentArtists={getValues('artists') || []}
+        />
+        <AddByIdLabelDialog
+          isOpen={openAddByIdLabelDialog}
+          onClose={() => setOpenAddByIdLabelDialog(false)}
+          onAddLabel={(label) => {
+            const currentLabels = getValues('labels') || [];
+            const newLabels = [...currentLabels, label];
+            setValue('labels', newLabels);
+            setValue(
+              'labelsIds',
+              newLabels.map((l) => l.value),
+            );
+          }}
+          currentLabels={getValues('labels') || []}
         />
       </Container>
     </AppPageWrapper>

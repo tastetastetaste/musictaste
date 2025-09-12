@@ -13,14 +13,14 @@ export const SearchRelease = ({ q }: { q?: string }) => {
       q: q!,
       type: ['releases'],
       page: 1,
-      pageSize: 12,
+      pageSize: 50,
     }),
     () =>
       api.search({
         q: q!,
         type: ['releases'],
         page: 1,
-        pageSize: 12,
+        pageSize: 50,
       }),
     { enabled: !!q },
   );
