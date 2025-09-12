@@ -15,6 +15,7 @@ import { updateReviewAfterVote_2 } from '../features/reviews/update-review-after
 import AppPageWrapper from '../layout/app-page-wrapper';
 import { api } from '../utils/api';
 import { cacheKeys } from '../utils/cache-keys';
+import Support from './support';
 
 const HomePage = () => {
   const queryClient = useQueryClient();
@@ -113,6 +114,7 @@ const HomePage = () => {
             ))}
         </Grid>
       </Stack>
+      <Support />
     </AppPageWrapper>
   );
 };

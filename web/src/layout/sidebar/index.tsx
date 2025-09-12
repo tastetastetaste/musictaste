@@ -8,7 +8,6 @@ import {
 import { Fragment, useState } from 'react';
 import { Button } from '../../components/button';
 import Dialog from '../../components/dialog';
-import { Dropdown } from '../../components/dropdown';
 import { Group } from '../../components/flex/group';
 import { Stack } from '../../components/flex/stack';
 import { IconButton } from '../../components/icon-button';
@@ -150,11 +149,6 @@ const AppSidebar = () => {
           You can support us by donating on Ko-fi. Your support will help us
           keep the site alive, further its development, and provide more
           resources to improve our services.
-        </Typography>
-        <Typography>
-          Please include your username in the message box when you donate so we
-          can update your supporter status. If needed, feel free to{' '}
-          <Link to={`mailto:${CONTACT_EMAIL}`}>contact us</Link>!
         </Typography>
         <Button onClick={() => window.open(KOFI_LINK, '_blank')}>Donate</Button>
       </Dialog>
