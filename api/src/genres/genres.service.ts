@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateGenreVoteDto, IReleaseGenre } from 'shared';
+import { CreateGenreVoteDto, IGenreResponse, IReleaseGenre } from 'shared';
 import { Repository } from 'typeorm';
 import { GenreChanges } from '../../db/entities/genre-submission.entity';
 import { Genre } from '../../db/entities/genre.entity';
@@ -18,9 +18,21 @@ export class GenresService {
     private releaseGenreVotesRepository: Repository<ReleaseGenreVote>,
 
     @InjectRepository(Genre)
-    private genresRepository: Repository<Genre>,
+    private genreRepository: Repository<Genre>,
+    @InjectRepository(ReleaseGenre)
+    private releaseGenreRepository: Repository<ReleaseGenre>,
     private usersService: UsersService,
   ) {}
+
+  async findOne(id: string): Promise<IGenreResponse> {
+    const genre = await this.genreRepository.findOne({ where: { id } });
+
+    if (!genre) throw new NotFoundException();
+
+    return {
+      genre,
+    };
+  }
 
   async releaseGenres(releaseId: string): Promise<IReleaseGenre[]> {
     const releaseGenres = await this.releaseGenresRepository
@@ -130,6 +142,6 @@ export class GenresService {
     genre.name = name;
     genre.bio = bio;
 
-    return this.genresRepository.save(genre);
+    return this.genreRepository.save(genre);
   }
 }

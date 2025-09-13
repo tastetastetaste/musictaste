@@ -110,6 +110,39 @@ export const ArtistsLinks = ({
   );
 };
 
+export const LabelsLinks = ({
+  links,
+}: {
+  links: { label: string; href: string }[];
+}) => {
+  return (
+    <Typography color="sub">
+      {links.map(({ label, href }, i) => (
+        <Fragment key={href}>
+          {i > 0 && ', '}
+          <Link to={href}>{label}</Link>
+        </Fragment>
+      ))}
+    </Typography>
+  );
+};
+export const GenresLinks = ({
+  links,
+}: {
+  links: { label: string; href: string }[];
+}) => {
+  return (
+    <Typography color="sub">
+      {links.map(({ label, href }, i) => (
+        <Fragment key={href}>
+          {i > 0 && ', '}
+          <Link to={href}>{label}</Link>
+        </Fragment>
+      ))}
+    </Typography>
+  );
+};
+
 export const ReviewLink: React.FC<{
   entryId: string;
 }> = ({ entryId }) => {

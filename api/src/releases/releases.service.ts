@@ -26,6 +26,7 @@ import {
   TrackChanges,
 } from '../../db/entities/release-submission.entity';
 import { Release } from '../../db/entities/release.entity';
+import { ReleaseGenre } from '../../db/entities/release-genre.entity';
 import { Track } from '../../db/entities/track.entity';
 import { UserRelease } from '../../db/entities/user-release.entity';
 import { genId } from '../common/genId';
@@ -254,12 +255,30 @@ export class ReleasesService {
     }));
   }
 
-  async findNewReleases(page: number = 1, pageSize: number = 48) {
+  async findNewReleases(
+    page: number = 1,
+    pageSize: number = 48,
+    genreId?: string,
+  ) {
     const qb = this.releasesRepository
       .createQueryBuilder('release')
       .select('release.id', 'id')
-      .where("release.date >= date_trunc('year', current_date)")
-      .andWhere('release.date <= current_date');
+      .where('release.date <= current_date');
+
+    if (genreId) {
+      const subQuery = this.releasesRepository
+        .createQueryBuilder('subRelease')
+        .select('subRelease.id')
+        .leftJoin(
+          ReleaseGenre,
+          'rg',
+          'rg.releaseId = subRelease.id AND rg.votesAvg > 0',
+        )
+        .where('rg.genreId = :genreId', { genreId });
+
+      qb.andWhere(`release.id IN (${subQuery.getQuery()})`);
+      qb.setParameters(subQuery.getParameters());
+    }
 
     const qb2 = qb.clone();
 
@@ -308,8 +327,7 @@ export class ReleasesService {
   async findRecentlyAddedReleases(page: number = 1, pageSize: number = 48) {
     const qb = this.releasesRepository
       .createQueryBuilder('release')
-      .select('release.id', 'id')
-      .where("release.createdAt >= date_trunc('year', current_date)");
+      .select('release.id', 'id');
 
     const totalItems = await qb.clone().getCount();
 
@@ -333,7 +351,7 @@ export class ReleasesService {
       .select('release.id', 'id')
       .addSelect('COUNT(ur.id)', 'popularity')
       .leftJoin('release.entries', 'ur', 'release.id = ur.releaseId')
-      .where("ur.createdAt >= date_trunc('year', current_date)")
+      .where("ur.createdAt >= NOW() - INTERVAL '30 days'")
       .groupBy('release.id')
       .orderBy('popularity', 'DESC')
       .addOrderBy('release.id', 'DESC')

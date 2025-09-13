@@ -65,11 +65,17 @@ const releaseInMyListsKey = (releaseId: string) => [
   'inMyLists',
 ];
 
-const releasesKey = (
-  type: FindReleasesType,
-  page?: number,
-  pageSize?: number,
-) => ['releases', type, page, pageSize];
+const releasesKey = ({
+  type,
+  page,
+  pageSize,
+  genreId,
+}: {
+  type: FindReleasesType;
+  page?: number;
+  pageSize?: number;
+  genreId?: string;
+}) => ['releases', type, page, pageSize, genreId];
 
 // RELEASE SUBMISSIONS
 
@@ -147,6 +153,9 @@ const artistKey = (id: string) => ['artist', id];
 // LABELS
 const labelKey = (id: string) => ['label', id];
 
+// GENRES
+const genreKey = (id: string) => ['genre', id];
+
 // LANGUAGES
 const languagesKey = () => ['languages'];
 
@@ -219,6 +228,7 @@ const searchKey = (filters: {
 export const cacheKeys = {
   artistKey,
   labelKey,
+  genreKey,
   entryKey,
   myReleaseEntryKey,
   entriesKey,

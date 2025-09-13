@@ -8,15 +8,20 @@ import { FindReleasesType } from 'shared';
 
 export interface ReleasesListRendererProps {
   type: FindReleasesType;
+  genreId?: string;
 }
 
-export function ReleasesListRenderer({ type }: ReleasesListRendererProps) {
-  const cacheKey = cacheKeys.releasesKey(type);
+export function ReleasesListRenderer({
+  type,
+  genreId,
+}: ReleasesListRendererProps) {
+  const cacheKey = cacheKeys.releasesKey({ type, genreId });
 
   const { data, isFetching, isFetchingNextPage, fetchNextPage, hasNextPage } =
     useInfiniteQuery(
       cacheKey,
-      async ({ pageParam = 1 }) => api.getReleases(type as any, pageParam),
+      async ({ pageParam = 1 }) =>
+        api.getReleases(type as any, pageParam, 48, genreId),
       {
         getNextPageParam: (lastPage, pages) => {
           return pages.length < lastPage.totalPages

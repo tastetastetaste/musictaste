@@ -177,6 +177,9 @@ export class FindReleasesDto {
   @Type(() => Number)
   @IsInt()
   pageSize?: number;
+  @IsOptional()
+  @IsString()
+  genreId?: string;
 }
 
 // --- USER

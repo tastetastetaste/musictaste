@@ -37,11 +37,19 @@ const HomePage = () => {
   );
 
   const { data: newReleasesData } = useQuery(
-    cacheKeys.releasesKey(FindReleasesType.New, 1, 12),
+    cacheKeys.releasesKey({
+      type: FindReleasesType.New,
+      page: 1,
+      pageSize: 12,
+    }),
     () => api.getReleases(FindReleasesType.New, 1, 12),
   );
   const { data: recentlyAddedReleasesData } = useQuery(
-    cacheKeys.releasesKey(FindReleasesType.Recent, 1, 12),
+    cacheKeys.releasesKey({
+      type: FindReleasesType.Recent,
+      page: 1,
+      pageSize: 12,
+    }),
     () => api.getReleases(FindReleasesType.Recent, 1, 12),
   );
   const { data: listsData } = useQuery(cacheKeys.newListsKey(1), () =>

@@ -22,6 +22,7 @@ import { ThemeProvider } from './features/theme/useTheme';
 import NotFoundPage from './layout/not-found-page';
 import { ScreenSizeProvider } from './hooks/useMediaQuery';
 import GenreSubmissionsList from './features/contributions/genre-submission-list';
+import GenrePage from './features/genres/genre-page';
 
 const UserPageWrapper = lazy(
   () => import('./features/users/user-page-wrapper'),
@@ -830,6 +831,14 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<Fallback />}>
             <LabelPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'genre/:id',
+        element: (
+          <Suspense fallback={<Fallback />}>
+            <GenrePage />
           </Suspense>
         ),
       },

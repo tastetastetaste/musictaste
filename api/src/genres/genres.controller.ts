@@ -8,7 +8,7 @@ import {
   UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
-import { ContributorStatus, CreateGenreVoteDto } from 'shared';
+import { ContributorStatus, CreateGenreVoteDto, IGenreResponse } from 'shared';
 import { AuthenticatedGuard } from '../auth/Authenticated.guard';
 import { CurUser } from '../decorators/user.decorator';
 import { GenresService } from './genres.service';
@@ -18,6 +18,11 @@ import { CurrentUserPayload } from '../auth/session.serializer';
 @UseGuards(AuthenticatedGuard)
 export class GenresController {
   constructor(private readonly genresService: GenresService) {}
+
+  @Get(':id')
+  findOne(@Param('id') id: string): Promise<IGenreResponse> {
+    return this.genresService.findOne(id);
+  }
 
   @Get('release/:id')
   find(@Param('id') id: string) {

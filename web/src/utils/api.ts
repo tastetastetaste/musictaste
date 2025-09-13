@@ -22,6 +22,7 @@ import {
   IEntriesResponse,
   IEntry,
   IEntryResonse,
+  IGenreResponse,
   IGenreSubmissionsResponse,
   ILabelResponse,
   ILabelSubmissionsResponse,
@@ -73,6 +74,12 @@ const getArtist = (id: string) =>
 // ----------------
 const getLabel = (id: string) =>
   client.get<ILabelResponse>('labels/' + id).then((res) => res.data);
+
+// ----------------
+//     GENRE
+// ----------------
+const getGenre = (id: string) =>
+  client.get<IGenreResponse>('genres/' + id).then((res) => res.data);
 
 // ----------------
 //     LANGUAGE
@@ -376,10 +383,15 @@ const getReleaseInMyLists = (releaseId: string) =>
 const getRelease = (id: string) =>
   client.get<IReleaseResponse>('releases/' + id).then((res) => res.data);
 
-const getReleases = (type: FindReleasesType, page: number, pageSize?: number) =>
+const getReleases = (
+  type: FindReleasesType,
+  page: number,
+  pageSize?: number,
+  genreId?: string,
+) =>
   client
     .get<IReleasesResponse>(
-      `releases?type=${type}&page=${page}${pageSize ? `&pageSize=${pageSize}` : ''}`,
+      `releases?type=${type}&page=${page}${pageSize ? `&pageSize=${pageSize}` : ''}${genreId ? `&genreId=${genreId}` : ''}`,
     )
     .then((res) => res.data);
 
@@ -644,6 +656,7 @@ const updateUserContributorStatus = (data: UpdateUserContributorStatusDto) =>
 export const api = {
   getArtist,
   getLabel,
+  getGenre,
   createArtist,
   createLabel,
   getLanguages,

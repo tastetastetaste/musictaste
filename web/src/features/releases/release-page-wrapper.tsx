@@ -17,7 +17,11 @@ import { SOMETHING_WENT_WRONG } from '../../static/feedback';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
 import { formatExactDate, getYearFromDate } from '../../utils/date-format';
-import { getArtistPathname } from '../../utils/get-pathname';
+import {
+  getArtistPathname,
+  getGenrePathname,
+  getLabelPathname,
+} from '../../utils/get-pathname';
 import { useAuth } from '../account/useAuth';
 import { RatingCircle, RatingValue } from '../ratings/rating';
 import { ReportDialog } from '../reports/report-dialog';
@@ -25,7 +29,13 @@ import { User } from '../users/user';
 import { ReleaseActionsFullPage } from './release-actions/release-actions-full-page';
 import ReleaseGenreVote from './release-genre-vote';
 import ReleaseTracks from './release-tracks';
-import { ArtistsLinks, FavoriteTracks, ReviewLink } from './release/shared';
+import {
+  ArtistsLinks,
+  FavoriteTracks,
+  GenresLinks,
+  LabelsLinks,
+  ReviewLink,
+} from './release/shared';
 import { Fragment, useState } from 'react';
 
 const ReleaseInfo: React.FC<{
@@ -40,13 +50,13 @@ const ReleaseInfo: React.FC<{
   const languagesStr =
     languages && languages.map((lang: any) => lang.name).join(', ');
 
-  const labelStr = labels && labels.map((label: any) => label.name).join(', ');
+  // const labelStr = labels && labels.map((label: any) => label.name).join(', ');
 
-  const genresStr =
-    (genres &&
-      genres.length !== 0 &&
-      genres.map((genre: any) => genre.name).join(', ')) ||
-    '';
+  // const genresStr =
+  //   (genres &&
+  //     genres.length !== 0 &&
+  //     genres.map((genre: any) => genre.name).join(', ')) ||
+  //   '';
 
   return (
     <Stack gap="lg">
@@ -86,7 +96,7 @@ const ReleaseInfo: React.FC<{
           <Typography>{languagesStr}</Typography>
         </Group>
       )}
-      {labelStr && (
+      {labels.length && (
         <Group gap={5}>
           <Typography
             color="sub"
@@ -96,7 +106,14 @@ const ReleaseInfo: React.FC<{
           >
             Label
           </Typography>
-          <Typography>{labelStr}</Typography>
+          {/* <Typography>{labelStr}</Typography> */}
+
+          <LabelsLinks
+            links={labels.map((a) => ({
+              label: a.name,
+              href: getLabelPathname(a.id),
+            }))}
+          />
         </Group>
       )}
       <Group gap={5}>
@@ -108,7 +125,14 @@ const ReleaseInfo: React.FC<{
         >
           Genre
         </Typography>
-        <Typography>{genresStr}</Typography>
+        {/* <Typography>{genresStr}</Typography> */}
+
+        <GenresLinks
+          links={genres.map((a) => ({
+            label: a.name,
+            href: getGenrePathname(a.id),
+          }))}
+        />
         {isLoggedIn && <ReleaseGenreVote releaseId={releaseId} />}
       </Group>
     </Stack>

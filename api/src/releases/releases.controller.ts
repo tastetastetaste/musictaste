@@ -21,7 +21,11 @@ export class ReleasesController {
 
     switch (query.type) {
       case 'new':
-        result = await this.releasesService.findNewReleases(page, pageSize);
+        result = await this.releasesService.findNewReleases(
+          page,
+          pageSize,
+          query.genreId,
+        );
         break;
       case 'popular':
         result = await this.releasesService.findPopularReleases(page, pageSize);

@@ -78,6 +78,12 @@ export interface IReleaseGenre {
   genreVotes: IGenreVote[];
 }
 
+export interface IGenre {
+  id: string;
+  name: string;
+  bio: string;
+}
+
 export interface ILabel {
   id: string;
   name: string;
@@ -86,6 +92,10 @@ export interface ILabel {
 export interface ILabelResponse {
   label: ILabel;
   releases: IRelease[];
+}
+
+export interface IGenreResponse {
+  genre: IGenre;
 }
 
 export interface ILanguage {
