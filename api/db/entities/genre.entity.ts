@@ -8,6 +8,9 @@ export class Genre extends SharedBaseEntity {
   @Column()
   name: string;
 
+  @Column('text', { nullable: true })
+  bio: string;
+
   @OneToMany(() => ReleaseGenre, (rg) => rg.genre)
   releaseConnection: Promise<ReleaseGenre[]>;
 

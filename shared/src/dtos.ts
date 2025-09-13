@@ -154,6 +154,18 @@ export class CreateLabelDto {
   name: string;
 }
 
+export class CreateGenreDto {
+  @IsString()
+  @MinLength(1)
+  name: string;
+  @IsString()
+  @MinLength(1)
+  bio: string;
+  @IsString()
+  @MinLength(1)
+  note: string;
+}
+
 export class FindReleasesDto {
   @IsString()
   @IsEnum(FindReleasesType)
@@ -383,6 +395,22 @@ export class FindLabelSubmissionsDto {
   @IsOptional()
   @IsString()
   labelId?: string;
+  @IsOptional()
+  @Type(() => Number)
+  @IsEnum(SubmissionStatus)
+  status?: number;
+  @Type(() => Number)
+  @IsInt()
+  page: number;
+}
+
+export class FindGenreSubmissionsDto {
+  @IsOptional()
+  @IsString()
+  userId?: string;
+  @IsOptional()
+  @IsString()
+  genreId?: string;
   @IsOptional()
   @Type(() => Number)
   @IsEnum(SubmissionStatus)

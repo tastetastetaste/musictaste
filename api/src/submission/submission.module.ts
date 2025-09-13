@@ -17,6 +17,9 @@ import { SubmissionsController } from './submissions.controller';
 import { LabelSubmissionVote } from '../../db/entities/label-submission-vote.entity';
 import { ArtistSubmissionVote } from '../../db/entities/artist-submission-vote.entity';
 import { ArtistsModule } from '../artists/artists.module';
+import { GenreSubmission } from '../../db/entities/genre-submission.entity';
+import { GenreSubmissionVote } from '../../db/entities/genre-submission-vote.entity';
+import { GenresModule } from '../genres/genres.module';
 
 @Module({
   imports: [
@@ -31,12 +34,15 @@ import { ArtistsModule } from '../artists/artists.module';
       ReleaseSubmissionVote,
       LabelSubmissionVote,
       ArtistSubmissionVote,
+      GenreSubmission,
+      GenreSubmissionVote,
     ]),
     ReleasesModule,
     ImagesModule,
     UsersModule,
     LabelsModule,
     ArtistsModule,
+    GenresModule,
   ],
   controllers: [SubmissionsController],
   providers: [SubmissionService],

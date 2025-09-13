@@ -9,12 +9,15 @@ import dayjs from 'dayjs';
 import {
   ContributorStatus,
   CreateArtistDto,
+  CreateGenreDto,
   CreateLabelDto,
   CreateReleaseDto,
   FindArtistSubmissionsDto,
+  FindGenreSubmissionsDto,
   FindLabelSubmissionsDto,
   FindReleaseSubmissionsDto,
   IArtistSubmissionsResponse,
+  IGenreSubmissionsResponse,
   ILabelSubmissionsResponse,
   IReleaseSubmissionsResponse,
   ProcessPendingDeletionDto,
@@ -41,6 +44,9 @@ import { ImagesService } from '../images/images.service';
 import { LabelsService } from '../labels/labels.service';
 import { ReleasesService } from '../releases/releases.service';
 import { UsersService } from '../users/users.service';
+import { GenreSubmission } from '../../db/entities/genre-submission.entity';
+import { GenreSubmissionVote } from '../../db/entities/genre-submission-vote.entity';
+import { GenresService } from '../genres/genres.service';
 
 @Injectable()
 export class SubmissionService {
@@ -67,11 +73,16 @@ export class SubmissionService {
     private labelSubmissionVoteRepository: Repository<LabelSubmissionVote>,
     @InjectRepository(ArtistSubmissionVote)
     private artistSubmissionVoteRepository: Repository<ArtistSubmissionVote>,
+    @InjectRepository(GenreSubmission)
+    private genreSubmissionRepository: Repository<GenreSubmission>,
+    @InjectRepository(GenreSubmissionVote)
+    private genreSubmissionVoteRepository: Repository<GenreSubmissionVote>,
     private releasesService: ReleasesService,
     private imagesService: ImagesService,
     private usersService: UsersService,
     private labelsService: LabelsService,
     private artistsService: ArtistsService,
+    private genresService: GenresService,
   ) {}
 
   // --- ARTISTS
@@ -351,6 +362,44 @@ export class SubmissionService {
 
     return { message: 'Submitted for review - thank you!' };
   }
+
+  // --- GENRES
+
+  // genreSubmission.genreId = genre.id;
+  private async applyGenreSubmission(submission: GenreSubmission) {
+    if (submission.submissionType === SubmissionType.CREATE) {
+      const genre = await this.genresService.createGenre(submission.changes);
+
+      return genre;
+    } else {
+      return false;
+    }
+  }
+
+  async createGenreSubmission(
+    { name, bio, note }: CreateGenreDto,
+    user: CurrentUserPayload,
+  ) {
+    if (user.contributorStatus === ContributorStatus.NOT_A_CONTRIBUTOR)
+      throw new BadRequestException(
+        "You can't submit contributions at this time",
+      );
+    const genreSubmission = new GenreSubmission();
+    genreSubmission.changes = { name, bio };
+    genreSubmission.submissionType = SubmissionType.CREATE;
+    genreSubmission.submissionStatus = SubmissionStatus.OPEN;
+    genreSubmission.userId = user.id;
+    genreSubmission.note = note;
+
+    await this.genreSubmissionRepository.save(genreSubmission);
+
+    return {
+      message: `Genre "${name}" is awaiting approval`,
+      genreSubmission: genreSubmission,
+    };
+  }
+
+  // --- approving/disapproving submissions
 
   private async applyReleaseSubmission(submission: ReleaseSubmission) {
     if (submission.submissionType === SubmissionType.CREATE) {
@@ -689,6 +738,72 @@ export class SubmissionService {
     return { message: 'Voted successfully' };
   }
 
+  async genreSubmissionVote(
+    submissionId: string,
+    vote: VoteType,
+    user: CurrentUserPayload,
+  ) {
+    const genreSubmission = await this.genreSubmissionRepository.findOne({
+      where: {
+        id: submissionId,
+      },
+    });
+
+    if (
+      !genreSubmission ||
+      genreSubmission.submissionStatus === SubmissionStatus.APPROVED ||
+      genreSubmission.submissionStatus === SubmissionStatus.DISAPPROVED
+    )
+      throw new BadRequestException();
+
+    const newVote = new GenreSubmissionVote();
+    newVote.type = vote;
+    newVote.userId = user.id;
+    newVote.genreSubmissionId = genreSubmission.id;
+
+    await this.genreSubmissionVoteRepository.save(newVote);
+
+    let closeSubmission = false;
+    let approveSubmission = false;
+
+    if (user.contributorStatus >= ContributorStatus.EDITOR) {
+      closeSubmission = true;
+      approveSubmission = vote === VoteType.UP;
+    } else if (
+      user.contributorStatus >= ContributorStatus.TRUSTED_CONTRIBUTOR
+    ) {
+      const submissionVotes = await this.genreSubmissionVoteRepository
+        .createQueryBuilder('v')
+        .addSelect('COUNT(v.id)', 'totalVotes')
+        .addSelect('SUM(v.type)', 'netVotes')
+        .where('v.genreSubmissionId = :id', { id: submissionId })
+        .getRawOne();
+
+      closeSubmission = Number(submissionVotes.totalVotes) >= 5;
+      approveSubmission = Number(submissionVotes.netVotes) > 3;
+    } else {
+      throw new BadRequestException();
+    }
+
+    if (closeSubmission) {
+      if (
+        approveSubmission &&
+        genreSubmission.submissionStatus === SubmissionStatus.OPEN
+      ) {
+        await this.applyGenreSubmission(genreSubmission);
+        genreSubmission.submissionStatus = SubmissionStatus.APPROVED;
+      } else {
+        genreSubmission.submissionStatus = SubmissionStatus.DISAPPROVED;
+      }
+
+      await this.genreSubmissionRepository.save(genreSubmission);
+    }
+
+    return { message: 'Voted successfully' };
+  }
+
+  // --- Query submissions
+
   async getReleaseSubmissions({
     status,
     releaseId,
@@ -918,6 +1033,62 @@ export class SubmissionService {
     };
   }
 
+  async getGenreSubmissions({
+    page,
+    status,
+    genreId,
+    userId,
+  }: FindGenreSubmissionsDto): Promise<IGenreSubmissionsResponse> {
+    const pageSize = 24;
+    const where: any = {};
+
+    if (status) where.submissionStatus = status;
+    if (genreId) where.genreId = genreId;
+    if (userId) where.userId = userId;
+
+    const [rss, totalItems] = await this.genreSubmissionRepository.findAndCount(
+      {
+        where,
+        relations: ['votes'],
+        order: {
+          createdAt: 'DESC',
+        },
+        take: pageSize,
+        skip: (page - 1) * pageSize,
+      },
+    );
+
+    const uniqueUserIds = [
+      ...new Set([
+        ...rss.map((rs) => rs.userId),
+        ...rss.flatMap((rs) => rs.votes?.map((vote) => vote.userId) || []),
+      ]),
+    ];
+
+    const users = await this.usersService.getUsersByIds(uniqueUserIds);
+
+    return {
+      genres: rss.map(({ ...rs }) => ({
+        ...rs,
+        user: users.find((u) => u.id === rs.userId),
+        votes:
+          rs.votes?.map((vote) => ({
+            id: vote.id,
+            type: vote.type,
+            userId: vote.userId,
+            user: users.find((u) => u.id === vote.userId),
+            createdAt: vote.createdAt,
+          })) || [],
+      })),
+      totalItems,
+      currentPage: page,
+      currentItems: (page - 1) * pageSize + rss.length,
+      itemsPerPage: pageSize,
+      totalPages: Math.ceil(totalItems / pageSize),
+    };
+  }
+
+  // --- User contributions stats
   async getUserContributionsStats(userId: string) {
     const [
       addedReleases,
@@ -998,6 +1169,8 @@ export class SubmissionService {
       editedLabels,
     };
   }
+
+  // --- Discard current user's submissions
 
   async discardMyArtistSubmission(submissionId: string, userId: string) {
     const submission = await this.artistSubmissionRepository.findOne({

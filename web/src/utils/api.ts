@@ -1,12 +1,14 @@
 import axios from 'axios';
 import {
   CreateArtistDto,
+  CreateGenreDto,
   CreateGenreVoteDto,
   CreateLabelDto,
   CreateReleaseDto,
   CreateReportDto,
   EntriesSortByEnum,
   FindArtistSubmissionsDto,
+  FindGenreSubmissionsDto,
   FindLabelSubmissionsDto,
   FindReleasesType,
   FindReleaseSubmissionsDto,
@@ -20,6 +22,7 @@ import {
   IEntriesResponse,
   IEntry,
   IEntryResonse,
+  IGenreSubmissionsResponse,
   ILabelResponse,
   ILabelSubmissionsResponse,
   ILanguage,
@@ -410,6 +413,9 @@ const updateRelease = ({ id, data }: { id: string; data: UpdateReleaseDto }) =>
     })
     .then((res) => res.data);
 
+const createGenre = (data: CreateGenreDto) =>
+  client.post('submissions/genres', data).then((res) => res.data);
+
 const getReleaseSubmissions = ({
   page,
   status,
@@ -446,6 +452,20 @@ const getLabelSubmissions = ({
     .get<ILabelSubmissionsResponse>(
       `submissions/labels?page=${page}${status ? '&status=' + status : ''}${
         labelId ? '&labelId=' + labelId : ''
+      }${userId ? '&userId=' + userId : ''}`,
+    )
+    .then((res) => res.data);
+
+const getGenreSubmissions = ({
+  page,
+  status,
+  genreId,
+  userId,
+}: FindGenreSubmissionsDto) =>
+  client
+    .get<IGenreSubmissionsResponse>(
+      `submissions/genres?page=${page}${status ? '&status=' + status : ''}${
+        genreId ? '&genreId=' + genreId : ''
       }${userId ? '&userId=' + userId : ''}`,
     )
     .then((res) => res.data);
@@ -495,6 +515,17 @@ const artistSubmissionVote = ({
 }) =>
   client
     .patch('submissions/artists/vote/' + submissionId, { vote })
+    .then((res) => res.data);
+
+const genreSubmissionVote = ({
+  submissionId,
+  vote,
+}: {
+  submissionId: string;
+  vote: VoteType;
+}) =>
+  client
+    .patch('submissions/genres/vote/' + submissionId, { vote })
     .then((res) => res.data);
 
 const getUserContributionsStats = (userId: string) =>
@@ -668,9 +699,11 @@ export const api = {
   getReleases,
   createRelease,
   updateRelease,
+  createGenre,
   getReleaseSubmissions,
   getArtistSubmissions,
   getLabelSubmissions,
+  getGenreSubmissions,
   discardMyArtistSubmission,
   discardMyLabelSubmission,
   discardMyReleaseSubmission,
@@ -679,6 +712,7 @@ export const api = {
   releaseSubmissionVote,
   labelSubmissionVote,
   artistSubmissionVote,
+  genreSubmissionVote,
   trackVote,
   removeTrackVote,
   getReleaseGenres,

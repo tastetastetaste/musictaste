@@ -1,44 +1,38 @@
 import { Fragment } from 'react';
-import { useInfiniteQuery, useMutation } from 'react-query';
+import { useInfiniteQuery } from 'react-query';
 import { useOutletContext } from 'react-router-dom';
-import { ILabelSubmission, SubmissionStatus } from 'shared';
+import { IGenreSubmission, SubmissionStatus } from 'shared';
 import { FetchMore } from '../../components/fetch-more';
 import { Stack } from '../../components/flex/stack';
 import { Loading } from '../../components/loading';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
-import { getLabelPathname } from '../../utils/get-pathname';
-import {
-  DiscardSubmissionFn,
-  SubmissionField,
-  SubmissionItemWrapper,
-} from './submission-item';
+// import { getGenrePathname } from '../../utils/get-pathname';
+import { SubmissionField, SubmissionItemWrapper } from './submission-item';
+import { Typography } from '../../components/typography';
 
-class LabelSubmissionListOutletContext {
+class GenreSubmissionListOutletContext {
   status?: SubmissionStatus;
   userId?: string;
-  labelId?: string;
+  genreId?: string;
 }
 
-export const LabelSubmissionItem = ({
+export const GenreSubmissionItem = ({
   submission,
   hideUser,
-  discardFn,
 }: {
-  submission: ILabelSubmission;
+  submission: IGenreSubmission;
   hideUser?: boolean;
-  discardFn?: DiscardSubmissionFn;
 }) => {
   const { original, changes } = submission;
   const hasOriginal = !!original;
   return (
     <SubmissionItemWrapper
-      link={submission.labelId && getLabelPathname(submission.labelId)}
-      voteFn={api.labelSubmissionVote}
+      // link={submission.genreId && getGenrePathname(submission.genreId)}
+      voteFn={api.genreSubmissionVote}
       hideUser={hideUser}
-      discardFn={discardFn}
       submission={submission}
-      submissionType="label"
+      submissionType="genre"
     >
       <SubmissionField
         label="Name"
@@ -47,28 +41,40 @@ export const LabelSubmissionItem = ({
         showOriginal={hasOriginal}
         renderValue={(v) => <span>{v}</span>}
       />
+      <SubmissionField
+        label="Bio"
+        originalValue={original?.bio}
+        changedValue={changes?.bio}
+        showOriginal={hasOriginal}
+        renderValue={(v) => <Typography whiteSpace="pre-wrap">{v}</Typography>}
+      />
+      <SubmissionField
+        label="Note"
+        originalValue={submission.note}
+        changedValue={submission.note}
+        showOriginal={hasOriginal}
+        renderValue={(v) => <Typography whiteSpace="pre-wrap">{v}</Typography>}
+      />
     </SubmissionItemWrapper>
   );
 };
 
-const LabelSubmissionsList: React.FC = () => {
-  const { status, labelId, userId } =
-    useOutletContext<LabelSubmissionListOutletContext>();
-
-  const { mutateAsync: discardFn } = useMutation(api.discardMyLabelSubmission);
+const GenreSubmissionsList: React.FC = () => {
+  const { status, genreId, userId } =
+    useOutletContext<GenreSubmissionListOutletContext>();
 
   const { data, isFetching, isFetchingNextPage, fetchNextPage, hasNextPage } =
     useInfiniteQuery(
-      cacheKeys.labelSubmissionsKey({
+      cacheKeys.genreSubmissionsKey({
         status,
-        labelId,
+        genreId,
         userId,
       }),
       async ({ pageParam = 1 }) =>
-        api.getLabelSubmissions({
+        api.getGenreSubmissions({
           page: pageParam,
           status,
-          labelId,
+          genreId,
           userId,
         }),
       {
@@ -87,12 +93,11 @@ const LabelSubmissionsList: React.FC = () => {
     <Fragment>
       {data?.pages.map((page) => (
         <Stack key={page.currentPage}>
-          {page.labels.map((submission) => (
-            <LabelSubmissionItem
+          {page.genres.map((submission) => (
+            <GenreSubmissionItem
               key={submission.id}
               submission={submission}
               hideUser={!!userId}
-              discardFn={discardFn}
             />
           ))}
         </Stack>
@@ -104,4 +109,4 @@ const LabelSubmissionsList: React.FC = () => {
   );
 };
 
-export default LabelSubmissionsList;
+export default GenreSubmissionsList;

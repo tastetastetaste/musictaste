@@ -38,6 +38,7 @@ export const ArtistSubmissionItem = ({
       hideUser={hideUser}
       discardFn={discardFn}
       submission={submission}
+      submissionType="artist"
     >
       <SubmissionField
         label="Name"
@@ -88,6 +89,7 @@ const ArtistSubmissionsList: React.FC = () => {
         <Stack key={page.currentPage}>
           {page.artists.map((submission) => (
             <ArtistSubmissionItem
+              key={submission.id}
               submission={submission}
               hideUser={!!userId}
               discardFn={discardFn}

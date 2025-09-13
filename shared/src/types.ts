@@ -443,6 +443,33 @@ export interface ILabelSubmission {
   createdAt: string;
   votes: ILabelSubmissionVote[];
 }
+
+export interface IGenreChanges {
+  name: string;
+  bio: string;
+}
+
+export interface IGenreSubmissionVote {
+  id: string;
+  type: VoteType;
+  userId: string;
+  user: IUserSummary;
+  createdAt: string;
+}
+
+export interface IGenreSubmission {
+  id: string;
+  userId: string;
+  genreId?: string;
+  changes: IGenreChanges;
+  original?: IGenreChanges;
+  submissionType: any;
+  submissionStatus: any;
+  user: IUserSummary;
+  createdAt: string;
+  note: string;
+  votes: IGenreSubmissionVote[];
+}
 export interface IReleaseSubmissionsResponse extends IPagination {
   releases: IReleaseSubmission[];
 }
@@ -451,6 +478,9 @@ export interface IArtistSubmissionsResponse extends IPagination {
 }
 export interface ILabelSubmissionsResponse extends IPagination {
   labels: ILabelSubmission[];
+}
+export interface IGenreSubmissionsResponse extends IPagination {
+  genres: IGenreSubmission[];
 }
 
 export interface IUserContributionsStatsResponse {

@@ -6,14 +6,18 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
 } from 'typeorm';
 import { SharedBaseEntity } from '../shared/base-entity';
 import { Genre } from './genre.entity';
 import { User } from './user.entity';
+import { GenreSubmissionVote } from './genre-submission-vote.entity';
 
 export class GenreChanges {
   @IsString()
   name: string;
+  @IsString()
+  bio: string;
 }
 
 @Entity()
@@ -24,7 +28,7 @@ export class GenreSubmission extends SharedBaseEntity {
   @Column({ nullable: true })
   genreId: string;
 
-  @Column('text')
+  @Column('simple-json')
   changes: GenreChanges;
 
   @Column('simple-json', { nullable: true })
@@ -43,6 +47,12 @@ export class GenreSubmission extends SharedBaseEntity {
   @ManyToOne(() => User, (user) => user.genreSubmissions)
   @JoinColumn({ name: 'userId' })
   user: User;
+
+  @OneToMany(() => GenreSubmissionVote, (vote) => vote.genreSubmission)
+  votes: GenreSubmissionVote[];
+
+  @Column('text', { nullable: true })
+  note: string;
 
   @CreateDateColumn()
   createdAt: string;

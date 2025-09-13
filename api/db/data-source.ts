@@ -31,6 +31,7 @@ import { UserReleaseTag } from './entities/user-release-tag.entity';
 import { UserRelease } from './entities/user-release.entity';
 import { User } from './entities/user.entity';
 import { ArtistSubmissionVote } from './entities/artist-submission-vote.entity';
+import { GenreSubmissionVote } from './entities/genre-submission-vote.entity';
 import { LabelSubmissionVote } from './entities/label-submission-vote.entity';
 import { ReleaseSubmissionVote } from './entities/release-submission-vote.entity';
 
@@ -54,6 +55,7 @@ export const dataSourceOptions: DataSourceOptions = {
     ArtistSubmissionVote,
     Artist,
     GenreSubmission,
+    GenreSubmissionVote,
     Genre,
     LabelSubmission,
     LabelSubmissionVote,

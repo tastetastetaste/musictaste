@@ -28,6 +28,8 @@ const ContributionsPageWrapper = () => {
       return '/contributions/artists';
     } else if (path.includes('/labels')) {
       return '/contributions/labels';
+    } else if (path.includes('/genres')) {
+      return '/contributions/genres';
     }
     return '/contributions/releases';
   };
@@ -67,6 +69,10 @@ const ContributionsPageWrapper = () => {
             {
               label: 'labels',
               to: `/contributions/labels/${currentStatus === SubmissionStatus.AUTO_APPROVED ? 'auto-approved' : 'open'}`,
+            },
+            {
+              label: 'genres',
+              to: `/contributions/genres/${currentStatus === SubmissionStatus.AUTO_APPROVED ? 'auto-approved' : 'open'}`,
             },
           ]}
         />

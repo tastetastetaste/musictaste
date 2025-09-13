@@ -16,9 +16,11 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ContributorStatus,
   CreateArtistDto,
+  CreateGenreDto,
   CreateLabelDto,
   CreateReleaseDto,
   FindArtistSubmissionsDto,
+  FindGenreSubmissionsDto,
   FindLabelSubmissionsDto,
   FindReleaseSubmissionsDto,
   ProcessPendingDeletionDto,
@@ -56,6 +58,16 @@ export class SubmissionsController {
     @CurUser() user: CurrentUserPayload,
   ) {
     return this.submissionsService.createLabelSubmission(createLabelDto, user);
+  }
+
+  @Throttle({ default: { limit: 20, ttl: 1000 * 60 * 60 } })
+  @Post('genres')
+  @UseGuards(AuthenticatedGuard)
+  createGenre(
+    @Body() createGenreDto: CreateGenreDto,
+    @CurUser() user: CurrentUserPayload,
+  ) {
+    return this.submissionsService.createGenreSubmission(createGenreDto, user);
   }
 
   @Throttle({ default: { limit: 60, ttl: 1000 * 60 * 60 } })
@@ -146,6 +158,23 @@ export class SubmissionsController {
     );
   }
 
+  @Patch('genres/vote/:submissionId')
+  @UseGuards(AuthenticatedGuard)
+  genreSubmissionVote(
+    @Param('submissionId') submissionId: string,
+    @Body() body: SubmissionVoteDto,
+    @CurUser() user: CurrentUserPayload,
+  ) {
+    if (user.contributorStatus < ContributorStatus.TRUSTED_CONTRIBUTOR)
+      throw new UnauthorizedException();
+
+    return this.submissionsService.genreSubmissionVote(
+      submissionId,
+      body.vote,
+      user,
+    );
+  }
+
   @Delete('releases/:submissionId')
   @UseGuards(AuthenticatedGuard)
   discardMyReleaseSubmission(
@@ -167,7 +196,7 @@ export class SubmissionsController {
     return this.submissionsService.discardMyLabelSubmission(
       submissionId,
       user.id,
-    )
+    );
   }
 
   @Delete('artists/:submissionId')
@@ -210,6 +239,12 @@ export class SubmissionsController {
   @UseGuards(AuthenticatedGuard)
   getLabelSubmissions(@Query() query: FindLabelSubmissionsDto) {
     return this.submissionsService.getLabelSubmissions(query);
+  }
+
+  @Get('genres')
+  @UseGuards(AuthenticatedGuard)
+  getGenreSubmissions(@Query() query: FindGenreSubmissionsDto) {
+    return this.submissionsService.getGenreSubmissions(query);
   }
 
   @Get('user-contributions/:userId')

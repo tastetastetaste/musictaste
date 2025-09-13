@@ -55,6 +55,10 @@ const UserContributionsPageWrapper = () => {
               label: 'labels',
               to: `/${username}/contributions/labels`,
             },
+            {
+              label: 'genres',
+              to: `/${username}/contributions/genres`,
+            },
           ]}
         />
         {isLoggedIn ? (

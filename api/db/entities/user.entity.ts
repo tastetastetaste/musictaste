@@ -24,6 +24,7 @@ import { UserRelease } from './user-release.entity';
 import { ArtistSubmissionVote } from './artist-submission-vote.entity';
 import { ReleaseSubmissionVote } from './release-submission-vote.entity';
 import { LabelSubmissionVote } from './label-submission-vote.entity';
+import { GenreSubmissionVote } from './genre-submission-vote.entity';
 
 @Entity()
 export class User extends SharedBaseEntity {
@@ -105,6 +106,9 @@ export class User extends SharedBaseEntity {
 
   @OneToMany(() => LabelSubmissionVote, (vote) => vote.user)
   labelSubmissionVotes: LabelSubmissionVote[];
+
+  @OneToMany(() => GenreSubmissionVote, (vote) => vote.user)
+  genreSubmissionVotes: GenreSubmissionVote[];
 
   @CreateDateColumn()
   createdAt: string;

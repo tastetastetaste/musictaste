@@ -120,6 +120,22 @@ const labelSubmissionsKey = (filters?: {
       ]
     : ['labelSubmissions'];
 
+const genreSubmissionsKey = (filters?: {
+  page?: number;
+  status?: number;
+  genreId?: string;
+  userId?: string;
+}) =>
+  filters
+    ? [
+        'genreSubmissions',
+        filters.status,
+        filters.genreId,
+        filters.userId,
+        filters.page,
+      ]
+    : ['genreSubmissions'];
+
 const userContributionsStatsKey = (userId: string) => [
   'userContributionsStats',
   userId,
@@ -222,6 +238,7 @@ export const cacheKeys = {
   releaseSubmissionsKey,
   artistSubmissionsKey,
   labelSubmissionsKey,
+  genreSubmissionsKey,
   userContributionsStatsKey,
   currentUserKey,
   userProfileKey,

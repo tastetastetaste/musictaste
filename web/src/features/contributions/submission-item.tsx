@@ -4,6 +4,7 @@ import React, { Fragment } from 'react';
 import { useMutation, useQueryClient } from 'react-query';
 import {
   IArtistSubmission,
+  IGenreSubmission,
   ILabelSubmission,
   IReleaseSubmission,
   SubmissionStatus,
@@ -312,13 +313,19 @@ export const SubmissionItemWrapper = ({
   discardFn,
   hideUser,
   submission,
+  submissionType,
 }: {
   children: React.ReactElement | React.ReactElement[];
   link?: string;
   voteFn: (params: { submissionId: string; vote: VoteType }) => Promise<any>;
   discardFn?: DiscardSubmissionFn;
   hideUser?: boolean;
-  submission: IArtistSubmission | ILabelSubmission | IReleaseSubmission;
+  submission:
+    | IArtistSubmission
+    | ILabelSubmission
+    | IReleaseSubmission
+    | IGenreSubmission;
+  submissionType: 'artist' | 'label' | 'release' | 'genre';
 }) => {
   const { colors } = useTheme();
   const { me } = useAuth();
@@ -395,7 +402,8 @@ export const SubmissionItemWrapper = ({
           </div>
         </Group>
         {!hideUser && <User user={submission.user} />}
-        {me?.id === submission.user.id &&
+        {submissionType !== 'genre' &&
+          me?.id === submission.user.id &&
           dayjs().diff(submission.createdAt, 'hour') < 1 && (
             <Button danger onClick={handleDiscard}>
               Discard

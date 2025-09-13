@@ -63,6 +63,15 @@ If you find incorrect or inappropriate data, you can report it directly:
 - Enter the reason for the report in the text field.  
 - Click **Send** to submit the report.
 
+## Contributing Genres
+
+You can contribute genres from [this page](/contributions/genres/new).
+
+- **Name**: The name of the genre.
+- **Bio**: The bio of the genre (must not be copied from other sources).
+- **Note/Source**: Add a note for the person reviewing your contribution (include links).
+- **Submit**: Click **"Submit"** to add the genre.
+
 ## Contribution Statuses
 
 Each music data contribution goes through an approval process and is assigned one of the following statuses:
@@ -96,6 +105,7 @@ Each user is assigned one of the following roles:
   - Can vote on contributions submitted by other users.
       - If a contribution receives more upvotes than downvotes, it gets approved.
       - Three votes will finalize the contribution.
+      - Genres require 4+ upvotes out of 5 votes to be approved.
 - **Editor**
   - Can add and edit music data directly without review.
   - Can approve or reject contributions submitted by other users.

@@ -27,21 +27,23 @@ type GenreItemProps = {
 
 const GenreItem: React.FC<GenreItemProps> = ({ genre, releaseId, vote }) => {
   return (
-    <Group justify="apart">
-      <span>{genre.name}</span>
-      <IconButton
-        title="Vote Up"
-        onClick={() =>
-          vote({
-            releaseId,
-            genreId: genre.id,
-            voteType: VoteType.UP,
-          })
-        }
-      >
-        <IconArrowBigUp />
-      </IconButton>
-    </Group>
+    <div css={{ padding: '6px 0' }}>
+      <Group justify="apart">
+        <span>{genre.name}</span>
+        <IconButton
+          title="Upvote"
+          onClick={() =>
+            vote({
+              releaseId,
+              genreId: genre.id,
+              voteType: VoteType.UP,
+            })
+          }
+        >
+          <IconArrowBigUp />
+        </IconButton>
+      </Group>
+    </div>
   );
 };
 

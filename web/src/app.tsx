@@ -21,6 +21,7 @@ import { SOMETHING_WENT_WRONG } from './static/feedback';
 import { ThemeProvider } from './features/theme/useTheme';
 import NotFoundPage from './layout/not-found-page';
 import { ScreenSizeProvider } from './hooks/useMediaQuery';
+import GenreSubmissionsList from './features/contributions/genre-submission-list';
 
 const UserPageWrapper = lazy(
   () => import('./features/users/user-page-wrapper'),
@@ -116,6 +117,9 @@ const AddReleasePage = lazy(
 );
 const EditReleasePage = lazy(
   () => import('./features/contributions/edit-release-page'),
+);
+const AddGenrePage = lazy(
+  () => import('./features/contributions/add-genre-page'),
 );
 const NewListsPage = lazy(() => import('./features/lists/new-lists-page'));
 const PopularListsPage = lazy(
@@ -298,6 +302,14 @@ const router = createBrowserRouter([
             element: (
               <Suspense fallback={<Fallback />}>
                 <LabelSubmissionsList />
+              </Suspense>
+            ),
+          },
+          {
+            path: 'genres',
+            element: (
+              <Suspense fallback={<Fallback />}>
+                <GenreSubmissionsList />
               </Suspense>
             ),
           },
@@ -581,6 +593,14 @@ const router = createBrowserRouter([
         ),
       },
       {
+        path: 'contributions/genres/new',
+        element: (
+          <Suspense fallback={<Fallback />}>
+            <AddGenrePage />
+          </Suspense>
+        ),
+      },
+      {
         path: 'contributions/pending-deletions',
         element: (
           <Suspense fallback={<Fallback />}>
@@ -700,6 +720,31 @@ const router = createBrowserRouter([
                 element: (
                   <Suspense fallback={<Fallback />}>
                     <LabelSubmissionsList />
+                  </Suspense>
+                ),
+              },
+            ],
+          },
+          {
+            path: 'genres',
+            children: [
+              {
+                index: true,
+                element: <Navigate to="/contributions/genres/open" replace />,
+              },
+              {
+                path: 'open',
+                element: (
+                  <Suspense fallback={<Fallback />}>
+                    <GenreSubmissionsList />
+                  </Suspense>
+                ),
+              },
+              {
+                path: 'auto-approved',
+                element: (
+                  <Suspense fallback={<Fallback />}>
+                    <GenreSubmissionsList />
                   </Suspense>
                 ),
               },

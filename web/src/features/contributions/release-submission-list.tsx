@@ -15,6 +15,7 @@ import {
   SubmissionItemWrapper,
   TracksComparisonField,
 } from './submission-item';
+import { Typography } from '../../components/typography';
 
 export const ReleaseSubmissionItem = ({
   submission,
@@ -35,6 +36,7 @@ export const ReleaseSubmissionItem = ({
       hideUser={hideUser}
       submission={submission}
       discardFn={discardFn}
+      submissionType="release"
     >
       <SubmissionField
         label="Title"
@@ -104,7 +106,9 @@ export const ReleaseSubmissionItem = ({
           originalValue={undefined}
           changedValue={submission.note}
           showOriginal={false}
-          renderValue={(value) => <span>{value}</span>}
+          renderValue={(v) => (
+            <Typography whiteSpace="pre-wrap">{v}</Typography>
+          )}
         />
       )}
     </SubmissionItemWrapper>
