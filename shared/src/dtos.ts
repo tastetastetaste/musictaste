@@ -24,6 +24,7 @@ import {
   ReleaseType,
   FindReleasesType,
   ContributorStatus,
+  SubmissionSortByEnum,
 } from './enums';
 import dayjs from 'dayjs';
 
@@ -370,6 +371,9 @@ export class FindReleaseSubmissionsDto {
   @Type(() => Number)
   @IsEnum(SubmissionStatus)
   status?: number;
+  @IsOptional()
+  @IsEnum(SubmissionSortByEnum)
+  sortBy?: SubmissionSortByEnum;
   @Type(() => Number)
   @IsInt()
   page: number;
@@ -386,6 +390,9 @@ export class FindArtistSubmissionsDto {
   @Type(() => Number)
   @IsEnum(SubmissionStatus)
   status?: number;
+  @IsOptional()
+  @IsEnum(SubmissionSortByEnum)
+  sortBy?: SubmissionSortByEnum;
   @Type(() => Number)
   @IsInt()
   page: number;
@@ -402,6 +409,9 @@ export class FindLabelSubmissionsDto {
   @Type(() => Number)
   @IsEnum(SubmissionStatus)
   status?: number;
+  @IsOptional()
+  @IsEnum(SubmissionSortByEnum)
+  sortBy?: SubmissionSortByEnum;
   @Type(() => Number)
   @IsInt()
   page: number;
@@ -418,6 +428,9 @@ export class FindGenreSubmissionsDto {
   @Type(() => Number)
   @IsEnum(SubmissionStatus)
   status?: number;
+  @IsOptional()
+  @IsEnum(SubmissionSortByEnum)
+  sortBy?: SubmissionSortByEnum;
   @Type(() => Number)
   @IsInt()
   page: number;

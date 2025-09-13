@@ -9,6 +9,7 @@ import { Typography } from '../../components/typography';
 import { useQuery } from 'react-query';
 import { cacheKeys } from '../../utils/cache-keys';
 import { api } from '../../utils/api';
+import { SubmissionSortByEnum } from 'shared';
 
 const UserContributionsPageWrapper = () => {
   const { username } = useParams();
@@ -62,7 +63,12 @@ const UserContributionsPageWrapper = () => {
           ]}
         />
         {isLoggedIn ? (
-          <Outlet context={{ userId: data.user.id }} />
+          <Outlet
+            context={{
+              userId: data.user.id,
+              sortBy: SubmissionSortByEnum.Newest,
+            }}
+          />
         ) : (
           <Feedback message="Please login to access this page" />
         )}

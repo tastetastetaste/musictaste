@@ -69,7 +69,7 @@ You can contribute genres from [this page](/contributions/genres/new).
 
 - **Name**: The name of the genre.
 - **Bio**: The bio of the genre (must not be copied from other sources).
-- **Note/Source**: Add a note for the person reviewing your contribution (include links).
+- **Note/Source**: Add sources and a note for the person reviewing your contribution (must provide multiple sources).
 - **Submit**: Click **"Submit"** to add the genre.
 
 ## Contribution Statuses

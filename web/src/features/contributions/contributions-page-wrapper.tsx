@@ -5,7 +5,7 @@ import { Loading } from '../../components/loading';
 import { Navigation } from '../../components/nav';
 import AppPageWrapper from '../../layout/app-page-wrapper';
 import { useAuth } from '../account/useAuth';
-import { SubmissionStatus } from 'shared';
+import { SubmissionStatus, SubmissionSortByEnum } from 'shared';
 
 const ContributionsPageWrapper = () => {
   const { isLoading, isLoggedIn } = useAuth();
@@ -78,7 +78,12 @@ const ContributionsPageWrapper = () => {
         />
 
         {isLoggedIn ? (
-          <Outlet context={{ status: currentStatus }} />
+          <Outlet
+            context={{
+              status: currentStatus,
+              sortBy: SubmissionSortByEnum.Oldest,
+            }}
+          />
         ) : (
           <Feedback message="Please login to access this page" />
         )}

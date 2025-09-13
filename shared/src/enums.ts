@@ -66,3 +66,8 @@ export enum FindReleasesType {
   Top = 'top',
   TopOTY = 'top-oty',
 }
+
+export enum SubmissionSortByEnum {
+  Newest = 'newest',
+  Oldest = 'oldest',
+}

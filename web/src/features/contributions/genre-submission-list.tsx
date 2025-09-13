@@ -1,7 +1,11 @@
 import { Fragment } from 'react';
 import { useInfiniteQuery } from 'react-query';
 import { useOutletContext } from 'react-router-dom';
-import { IGenreSubmission, SubmissionStatus } from 'shared';
+import {
+  IGenreSubmission,
+  SubmissionStatus,
+  SubmissionSortByEnum,
+} from 'shared';
 import { FetchMore } from '../../components/fetch-more';
 import { Stack } from '../../components/flex/stack';
 import { Loading } from '../../components/loading';
@@ -15,6 +19,7 @@ class GenreSubmissionListOutletContext {
   status?: SubmissionStatus;
   userId?: string;
   genreId?: string;
+  sortBy?: SubmissionSortByEnum;
 }
 
 export const GenreSubmissionItem = ({
@@ -60,7 +65,7 @@ export const GenreSubmissionItem = ({
 };
 
 const GenreSubmissionsList: React.FC = () => {
-  const { status, genreId, userId } =
+  const { status, genreId, userId, sortBy } =
     useOutletContext<GenreSubmissionListOutletContext>();
 
   const { data, isFetching, isFetchingNextPage, fetchNextPage, hasNextPage } =
@@ -69,6 +74,7 @@ const GenreSubmissionsList: React.FC = () => {
         status,
         genreId,
         userId,
+        sortBy,
       }),
       async ({ pageParam = 1 }) =>
         api.getGenreSubmissions({
@@ -76,6 +82,7 @@ const GenreSubmissionsList: React.FC = () => {
           status,
           genreId,
           userId,
+          sortBy,
         }),
       {
         getNextPageParam: (lastPage, pages) =>

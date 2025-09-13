@@ -84,6 +84,7 @@ const releaseSubmissionsKey = (filters?: {
   status?: number;
   releaseId?: string;
   userId?: string;
+  sortBy?: string;
 }) =>
   filters
     ? [
@@ -91,6 +92,7 @@ const releaseSubmissionsKey = (filters?: {
         filters.status,
         filters.releaseId,
         filters.userId,
+        filters.sortBy,
         filters.page,
       ]
     : ['releaseSubmissions'];
@@ -99,6 +101,7 @@ const artistSubmissionsKey = (filters?: {
   status?: number;
   artistId?: string;
   userId?: string;
+  sortBy?: string;
 }) =>
   filters
     ? [
@@ -106,6 +109,7 @@ const artistSubmissionsKey = (filters?: {
         filters.status,
         filters.artistId,
         filters.userId,
+        filters.sortBy,
         filters.page,
       ]
     : ['artistSubmissions'];
@@ -115,6 +119,7 @@ const labelSubmissionsKey = (filters?: {
   status?: number;
   labelId?: string;
   userId?: string;
+  sortBy?: string;
 }) =>
   filters
     ? [
@@ -122,6 +127,7 @@ const labelSubmissionsKey = (filters?: {
         filters.status,
         filters.labelId,
         filters.userId,
+        filters.sortBy,
         filters.page,
       ]
     : ['labelSubmissions'];
@@ -131,6 +137,7 @@ const genreSubmissionsKey = (filters?: {
   status?: number;
   genreId?: string;
   userId?: string;
+  sortBy?: string;
 }) =>
   filters
     ? [
@@ -138,6 +145,7 @@ const genreSubmissionsKey = (filters?: {
         filters.status,
         filters.genreId,
         filters.userId,
+        filters.sortBy,
         filters.page,
       ]
     : ['genreSubmissions'];

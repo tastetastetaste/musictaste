@@ -1,5 +1,6 @@
 import { Outlet, useParams } from 'react-router-dom';
 import AppPageWrapper from '../../layout/app-page-wrapper';
+import { SubmissionSortByEnum } from 'shared';
 
 const HistoryPageWrapper = () => {
   const { id } = useParams<{ id: string }>();
@@ -17,7 +18,9 @@ const HistoryPageWrapper = () => {
 
   return (
     <AppPageWrapper>
-      <Outlet context={outletContext} />
+      <Outlet
+        context={{ ...outletContext, sortBy: SubmissionSortByEnum.Newest }}
+      />
     </AppPageWrapper>
   );
 };

@@ -47,6 +47,7 @@ import { UsersService } from '../users/users.service';
 import { GenreSubmission } from '../../db/entities/genre-submission.entity';
 import { GenreSubmissionVote } from '../../db/entities/genre-submission-vote.entity';
 import { GenresService } from '../genres/genres.service';
+import { SubmissionSortByEnum } from 'shared';
 
 @Injectable()
 export class SubmissionService {
@@ -814,6 +815,7 @@ export class SubmissionService {
     releaseId,
     userId,
     page,
+    sortBy,
   }: FindReleaseSubmissionsDto): Promise<IReleaseSubmissionsResponse> {
     const pageSize = 24;
     const where: any = {};
@@ -827,7 +829,7 @@ export class SubmissionService {
         where,
         relations: ['votes'],
         order: {
-          createdAt: 'DESC',
+          createdAt: sortBy === SubmissionSortByEnum.Oldest ? 'ASC' : 'DESC',
         },
         take: pageSize,
         skip: (page - 1) * pageSize,
@@ -934,6 +936,7 @@ export class SubmissionService {
     status,
     artistId,
     userId,
+    sortBy,
   }: FindArtistSubmissionsDto): Promise<IArtistSubmissionsResponse> {
     const pageSize = 24;
     const where: any = {};
@@ -947,7 +950,7 @@ export class SubmissionService {
         where,
         relations: ['votes'],
         order: {
-          createdAt: 'DESC',
+          createdAt: sortBy === SubmissionSortByEnum.Oldest ? 'ASC' : 'DESC',
         },
         take: pageSize,
         skip: (page - 1) * pageSize,
@@ -988,6 +991,7 @@ export class SubmissionService {
     status,
     labelId,
     userId,
+    sortBy,
   }: FindLabelSubmissionsDto): Promise<ILabelSubmissionsResponse> {
     const pageSize = 24;
     const where: any = {};
@@ -1001,7 +1005,7 @@ export class SubmissionService {
         where,
         relations: ['votes'],
         order: {
-          createdAt: 'DESC',
+          createdAt: sortBy === SubmissionSortByEnum.Oldest ? 'ASC' : 'DESC',
         },
         take: pageSize,
         skip: (page - 1) * pageSize,
@@ -1043,6 +1047,7 @@ export class SubmissionService {
     status,
     genreId,
     userId,
+    sortBy,
   }: FindGenreSubmissionsDto): Promise<IGenreSubmissionsResponse> {
     const pageSize = 24;
     const where: any = {};
@@ -1056,7 +1061,7 @@ export class SubmissionService {
         where,
         relations: ['votes'],
         order: {
-          createdAt: 'DESC',
+          createdAt: sortBy === SubmissionSortByEnum.Oldest ? 'ASC' : 'DESC',
         },
         take: pageSize,
         skip: (page - 1) * pageSize,

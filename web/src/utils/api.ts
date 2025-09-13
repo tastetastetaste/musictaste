@@ -433,12 +433,13 @@ const getReleaseSubmissions = ({
   status,
   releaseId,
   userId,
+  sortBy,
 }: FindReleaseSubmissionsDto) =>
   client
     .get<IReleaseSubmissionsResponse>(
       `submissions/releases?page=${page}${status ? '&status=' + status : ''}${
         releaseId ? '&releaseId=' + releaseId : ''
-      }${userId ? '&userId=' + userId : ''}`,
+      }${userId ? '&userId=' + userId : ''}${sortBy ? '&sortBy=' + sortBy : ''}`,
     )
     .then((res) => res.data);
 const getArtistSubmissions = ({
@@ -446,12 +447,13 @@ const getArtistSubmissions = ({
   status,
   artistId,
   userId,
+  sortBy,
 }: FindArtistSubmissionsDto) =>
   client
     .get<IArtistSubmissionsResponse>(
       `submissions/artists?page=${page}${status ? '&status=' + status : ''}${
         artistId ? '&artistId=' + artistId : ''
-      }${userId ? '&userId=' + userId : ''}`,
+      }${userId ? '&userId=' + userId : ''}${sortBy ? '&sortBy=' + sortBy : ''}`,
     )
     .then((res) => res.data);
 const getLabelSubmissions = ({
@@ -459,12 +461,13 @@ const getLabelSubmissions = ({
   status,
   labelId,
   userId,
+  sortBy,
 }: FindLabelSubmissionsDto) =>
   client
     .get<ILabelSubmissionsResponse>(
       `submissions/labels?page=${page}${status ? '&status=' + status : ''}${
         labelId ? '&labelId=' + labelId : ''
-      }${userId ? '&userId=' + userId : ''}`,
+      }${userId ? '&userId=' + userId : ''}${sortBy ? '&sortBy=' + sortBy : ''}`,
     )
     .then((res) => res.data);
 
@@ -473,12 +476,13 @@ const getGenreSubmissions = ({
   status,
   genreId,
   userId,
+  sortBy,
 }: FindGenreSubmissionsDto) =>
   client
     .get<IGenreSubmissionsResponse>(
       `submissions/genres?page=${page}${status ? '&status=' + status : ''}${
         genreId ? '&genreId=' + genreId : ''
-      }${userId ? '&userId=' + userId : ''}`,
+      }${userId ? '&userId=' + userId : ''}${sortBy ? '&sortBy=' + sortBy : ''}`,
     )
     .then((res) => res.data);
 

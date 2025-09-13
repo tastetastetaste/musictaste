@@ -1,7 +1,11 @@
 import { Fragment } from 'react';
 import { useInfiniteQuery, useMutation } from 'react-query';
 import { useOutletContext } from 'react-router-dom';
-import { IReleaseSubmission, SubmissionStatus } from 'shared';
+import {
+  IReleaseSubmission,
+  SubmissionStatus,
+  SubmissionSortByEnum,
+} from 'shared';
 import { FetchMore } from '../../components/fetch-more';
 import { Stack } from '../../components/flex/stack';
 import { Loading } from '../../components/loading';
@@ -119,10 +123,11 @@ export class ReleaseSubmissionListOutletContext {
   status?: SubmissionStatus;
   userId?: string;
   releaseId?: string;
+  sortBy?: SubmissionSortByEnum;
 }
 
 const ReleaseSubmissionsList = () => {
-  const { userId, releaseId, status } =
+  const { userId, releaseId, status, sortBy } =
     useOutletContext<ReleaseSubmissionListOutletContext>();
 
   const { mutateAsync: discardFn } = useMutation(
@@ -135,6 +140,7 @@ const ReleaseSubmissionsList = () => {
         status,
         releaseId,
         userId,
+        sortBy,
       }),
       async ({ pageParam = 1 }) =>
         api.getReleaseSubmissions({
@@ -142,6 +148,7 @@ const ReleaseSubmissionsList = () => {
           status,
           releaseId,
           userId,
+          sortBy,
         }),
       {
         getNextPageParam: (lastPage, pages) =>

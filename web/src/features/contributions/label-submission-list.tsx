@@ -1,7 +1,11 @@
 import { Fragment } from 'react';
 import { useInfiniteQuery, useMutation } from 'react-query';
 import { useOutletContext } from 'react-router-dom';
-import { ILabelSubmission, SubmissionStatus } from 'shared';
+import {
+  ILabelSubmission,
+  SubmissionStatus,
+  SubmissionSortByEnum,
+} from 'shared';
 import { FetchMore } from '../../components/fetch-more';
 import { Stack } from '../../components/flex/stack';
 import { Loading } from '../../components/loading';
@@ -18,6 +22,7 @@ class LabelSubmissionListOutletContext {
   status?: SubmissionStatus;
   userId?: string;
   labelId?: string;
+  sortBy?: SubmissionSortByEnum;
 }
 
 export const LabelSubmissionItem = ({
@@ -52,7 +57,7 @@ export const LabelSubmissionItem = ({
 };
 
 const LabelSubmissionsList: React.FC = () => {
-  const { status, labelId, userId } =
+  const { status, labelId, userId, sortBy } =
     useOutletContext<LabelSubmissionListOutletContext>();
 
   const { mutateAsync: discardFn } = useMutation(api.discardMyLabelSubmission);
@@ -63,6 +68,7 @@ const LabelSubmissionsList: React.FC = () => {
         status,
         labelId,
         userId,
+        sortBy,
       }),
       async ({ pageParam = 1 }) =>
         api.getLabelSubmissions({
@@ -70,6 +76,7 @@ const LabelSubmissionsList: React.FC = () => {
           status,
           labelId,
           userId,
+          sortBy,
         }),
       {
         getNextPageParam: (lastPage, pages) =>
