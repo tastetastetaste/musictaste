@@ -5,12 +5,14 @@ import {
   Get,
   Param,
   Post,
+  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
-import { CreateGenreVoteDto } from 'shared';
+import { ContributorStatus, CreateGenreVoteDto } from 'shared';
 import { AuthenticatedGuard } from '../auth/Authenticated.guard';
 import { CurUser } from '../decorators/user.decorator';
 import { GenresService } from './genres.service';
+import { CurrentUserPayload } from '../auth/session.serializer';
 
 @Controller('genres')
 @UseGuards(AuthenticatedGuard)
@@ -23,8 +25,11 @@ export class GenresController {
   }
 
   @Post('rg')
-  vote(@Body() body: CreateGenreVoteDto, @CurUser('id') userId) {
-    return this.genresService.genreVote(body, userId);
+  vote(@Body() body: CreateGenreVoteDto, @CurUser() user: CurrentUserPayload) {
+    if (user.contributorStatus < ContributorStatus.CONTRIBUTOR)
+      throw new UnauthorizedException();
+
+    return this.genresService.genreVote(body, user.id);
   }
 
   @Delete('rg/:id')
