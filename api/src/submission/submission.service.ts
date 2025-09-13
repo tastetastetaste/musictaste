@@ -692,7 +692,7 @@ export class SubmissionService {
     ) {
       const submissionVotes = await this.artistSubmissionVoteRepository
         .createQueryBuilder('v')
-        .addSelect('COUNT(v.id)', 'totalVotes')
+        .select('COUNT(v.id)', 'totalVotes')
         .addSelect('SUM(v.type)', 'netVotes')
         .where('v.artistSubmissionId = :id', { id: submissionId })
         .getRawOne();
@@ -774,7 +774,7 @@ export class SubmissionService {
     ) {
       const submissionVotes = await this.genreSubmissionVoteRepository
         .createQueryBuilder('v')
-        .addSelect('COUNT(v.id)', 'totalVotes')
+        .select('COUNT(v.id)', 'totalVotes')
         .addSelect('SUM(v.type)', 'netVotes')
         .where('v.genreSubmissionId = :id', { id: submissionId })
         .getRawOne();
@@ -790,8 +790,13 @@ export class SubmissionService {
         approveSubmission &&
         genreSubmission.submissionStatus === SubmissionStatus.OPEN
       ) {
-        await this.applyGenreSubmission(genreSubmission);
-        genreSubmission.submissionStatus = SubmissionStatus.APPROVED;
+        const genre = await this.applyGenreSubmission(genreSubmission);
+        if (genre) {
+          genreSubmission.submissionStatus = SubmissionStatus.APPROVED;
+          genreSubmission.genreId = genre.id;
+        } else {
+          genreSubmission.submissionStatus = SubmissionStatus.DISAPPROVED;
+        }
       } else {
         genreSubmission.submissionStatus = SubmissionStatus.DISAPPROVED;
       }
