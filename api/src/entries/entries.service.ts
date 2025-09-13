@@ -298,7 +298,7 @@ export class EntriesService {
         urQB.leftJoin('review.votes', 'votes');
 
       if (!userId && !releaseId)
-        urQB.where("review.createdAt >= current_date - interval '2 day'");
+        urQB.where("review.createdAt >= current_date - interval '24 hours'");
     }
 
     if (genre) {
