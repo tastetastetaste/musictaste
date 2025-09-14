@@ -91,7 +91,6 @@ export interface ILabel {
 
 export interface ILabelResponse {
   label: ILabel;
-  releases: IRelease[];
 }
 
 export interface IGenreResponse {

@@ -25,6 +25,7 @@ export class ReleasesController {
           page,
           pageSize,
           query.genreId,
+          query.labelId,
         );
         break;
       case 'popular':

@@ -388,10 +388,11 @@ const getReleases = (
   page: number,
   pageSize?: number,
   genreId?: string,
+  labelId?: string,
 ) =>
   client
     .get<IReleasesResponse>(
-      `releases?type=${type}&page=${page}${pageSize ? `&pageSize=${pageSize}` : ''}${genreId ? `&genreId=${genreId}` : ''}`,
+      `releases?type=${type}&page=${page}${pageSize ? `&pageSize=${pageSize}` : ''}${genreId ? `&genreId=${genreId}` : ''}${labelId ? `&labelId=${labelId}` : ''}`,
     )
     .then((res) => res.data);
 

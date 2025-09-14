@@ -70,12 +70,14 @@ const releasesKey = ({
   page,
   pageSize,
   genreId,
+  labelId,
 }: {
   type: FindReleasesType;
   page?: number;
   pageSize?: number;
   genreId?: string;
-}) => ['releases', type, page, pageSize, genreId];
+  labelId?: string;
+}) => ['releases', type, page, pageSize, genreId, labelId];
 
 // RELEASE SUBMISSIONS
 

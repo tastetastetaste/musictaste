@@ -10,6 +10,6 @@ export class LabelsController {
 
   @Get(':id')
   findOne(@Param('id') id: string): Promise<ILabelResponse> {
-    return this.labelsService.findOneWithReleases(id);
+    return this.labelsService.findOne(id);
   }
 }

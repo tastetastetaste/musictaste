@@ -181,6 +181,9 @@ export class FindReleasesDto {
   @IsOptional()
   @IsString()
   genreId?: string;
+  @IsOptional()
+  @IsString()
+  labelId?: string;
 }
 
 // --- USER

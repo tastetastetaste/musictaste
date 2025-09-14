@@ -200,18 +200,6 @@ export class ReleasesService {
     return result;
   }
 
-  async getReleasesByLabel(labelId: string) {
-    const res = await this.releaseLabelRepository.find({
-      where: { labelId },
-    });
-
-    const result = this.getReleasesByIdsWithStats(
-      res.map((ra) => ra.releaseId),
-    );
-
-    return result;
-  }
-
   async getContributors(id: string) {
     const releaseSubmissions = await this.releasesSubmissions.find({
       where: { releaseId: id },
@@ -259,6 +247,7 @@ export class ReleasesService {
     page: number = 1,
     pageSize: number = 48,
     genreId?: string,
+    labelId?: string,
   ) {
     const qb = this.releasesRepository
       .createQueryBuilder('release')
@@ -275,6 +264,17 @@ export class ReleasesService {
           'rg.releaseId = subRelease.id AND rg.votesAvg > 0',
         )
         .where('rg.genreId = :genreId', { genreId });
+
+      qb.andWhere(`release.id IN (${subQuery.getQuery()})`);
+      qb.setParameters(subQuery.getParameters());
+    }
+
+    if (labelId) {
+      const subQuery = this.releasesRepository
+        .createQueryBuilder('subRelease')
+        .select('subRelease.id')
+        .leftJoin(ReleaseLabel, 'rl', 'rl.releaseId = subRelease.id')
+        .where('rl.labelId = :labelId', { labelId });
 
       qb.andWhere(`release.id IN (${subQuery.getQuery()})`);
       qb.setParameters(subQuery.getParameters());

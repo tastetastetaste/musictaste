@@ -1,44 +1,15 @@
+import { useState } from 'react';
 import { useQuery } from 'react-query';
 import { useParams } from 'react-router-dom';
-import { cacheKeys } from '../../utils/cache-keys';
-import { api } from '../../utils/api';
-import AppPageWrapper from '../../layout/app-page-wrapper';
-import { Loading } from '../../components/loading';
+import { FindReleasesType } from 'shared';
 import { Stack } from '../../components/flex/stack';
+import { Loading } from '../../components/loading';
 import { Typography } from '../../components/typography';
-import { ILabelResponse } from 'shared';
-import { Grid } from '../../components/flex/grid';
-import { RELEASE_GRID_PADDING } from '../releases/releases-virtual-grid';
-import { Release } from '../releases/release';
-import { Feedback } from '../../components/feedback';
-import { useState } from 'react';
+import AppPageWrapper from '../../layout/app-page-wrapper';
+import { api } from '../../utils/api';
+import { cacheKeys } from '../../utils/cache-keys';
+import ReleasesListRenderer from '../releases/releases-list-renderer';
 import { ReportDialog } from '../reports/report-dialog';
-
-const Releases: React.FC<{ releases: ILabelResponse['releases'] }> = ({
-  releases,
-}) => {
-  return (
-    <Stack gap="sm">
-      {releases.length > 0 ? (
-        <>
-          <Typography size="title-lg">Releases</Typography>
-
-          <Grid cols={[2, 4, 4, 6]} gap={RELEASE_GRID_PADDING}>
-            {releases
-              .sort(
-                (a, b) => Number(new Date(b.date)) - Number(new Date(a.date)),
-              )
-              .map((release) => (
-                <Release release={release} key={release.id} />
-              ))}
-          </Grid>
-        </>
-      ) : (
-        <Feedback message="There are no releases associated with this label" />
-      )}
-    </Stack>
-  );
-};
 
 const LabelPage = () => {
   const { id } = useParams();
@@ -85,7 +56,7 @@ const LabelPage = () => {
               {label.name}
             </Typography>
           </div>
-          <Releases releases={data.releases} />
+          <ReleasesListRenderer type={FindReleasesType.New} labelId={id} />
         </Stack>
       ) : (
         <div></div>
