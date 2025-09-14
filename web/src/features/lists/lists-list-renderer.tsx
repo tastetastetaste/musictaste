@@ -8,7 +8,7 @@ import { Loading } from '../../components/loading';
 import { Feedback } from '../../components/feedback';
 import { cacheKeys } from '../../utils/cache-keys';
 
-export const LIST_GRID_PADDING = '16px';
+export const LIST_GRID_PADDING = '8px';
 
 const Container = styled.div`
   padding: 0;

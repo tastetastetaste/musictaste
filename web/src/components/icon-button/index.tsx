@@ -1,5 +1,6 @@
 import styled from '@emotion/styled';
 import React, { forwardRef } from 'react';
+import { Group } from '../flex/group';
 
 const Button = styled.button<{ $active?: boolean; $danger?: boolean }>`
   display: flex;
@@ -110,8 +111,10 @@ export const IconButton = forwardRef(
         ref={ref as any}
         type="button"
       >
-        {children}
-        {typeof num === 'number' && <Text $active={active}>{num}</Text>}
+        <Group gap="sm">
+          {children}
+          {typeof num === 'number' && <Text $active={active}>{num}</Text>}
+        </Group>
       </ButtonComponent>
     );
   },

@@ -49,9 +49,9 @@ export const User: React.FC<IUserItemProps> = ({
       <Typography color="sub">@{username}</Typography>
     </Stack>
   ) : (
-    <Group gap="sm">
+    <Group gap="md">
       {userAvatar}
-      <Stack>
+      <Stack gap="sm">
         <Link to={getUserPathname(username)}>{name}</Link>
         <Typography color="sub" size="small">
           @{username}

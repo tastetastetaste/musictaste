@@ -13,6 +13,7 @@ const StyledHeader = styled.header`
   width: 100%;
   height: 60px;
   z-index: 1;
+  border-radius: ${({ theme }) => theme.border_radius.base};
   background: ${({ theme }) => theme.colors.background_sub};
   width: 100%;
 `;
@@ -59,16 +60,27 @@ const HomeLink = () => {
 
 const AppHeader = memo(function AppHeaderFu() {
   return (
-    <StyledHeader>
-      <StyledHeaderContent>
-        <Group gap="sm">
-          <HomeLink />
-          <AppSidebar />
-          <QuickSearch />
-        </Group>
-        <UserMenu />
-      </StyledHeaderContent>
-    </StyledHeader>
+    <div
+      css={{
+        height: '100%',
+        maxWidth: '100%',
+        width: CONTENT_MAX_WIDTH,
+        padding: CONTENT_PADDING,
+        margin: '0 auto',
+        paddingTop: '8px',
+      }}
+    >
+      <StyledHeader>
+        <StyledHeaderContent>
+          <Group gap="sm">
+            <HomeLink />
+            <AppSidebar />
+            <QuickSearch />
+          </Group>
+          <UserMenu />
+        </StyledHeaderContent>
+      </StyledHeader>
+    </div>
   );
 });
 

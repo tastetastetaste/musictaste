@@ -96,7 +96,7 @@ const ReleaseInfo: React.FC<{
           <Typography>{languagesStr}</Typography>
         </Group>
       )}
-      {labels.length && (
+      {labels.length ? (
         <Group gap={5}>
           <Typography
             color="sub"
@@ -115,7 +115,7 @@ const ReleaseInfo: React.FC<{
             }))}
           />
         </Group>
-      )}
+      ) : null}
       <Group gap={5}>
         <Typography
           color="sub"

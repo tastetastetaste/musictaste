@@ -1,6 +1,7 @@
 import styled from '@emotion/styled';
 import MarkdownToJsx from 'markdown-to-jsx';
 import { Link } from 'react-router-dom';
+import { SITE_DOMAIN } from '../../static/site-info';
 
 const MarkdownContainer = styled.div`
   h1,
@@ -125,7 +126,10 @@ export function Markdown({ children: child }: MarkdownProps) {
           overrides: {
             a: {
               component: ({ children, href, title }) => {
-                const relative = href?.startsWith('/');
+                const relative =
+                  href?.startsWith('/') ||
+                  href?.startsWith('https://' + SITE_DOMAIN) ||
+                  href?.startsWith('https://www.' + SITE_DOMAIN);
 
                 return (
                   <MDLink

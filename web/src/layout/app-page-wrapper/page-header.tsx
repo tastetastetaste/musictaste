@@ -9,7 +9,7 @@ const StyledPageHeader = styled.div`
   position: relative;
   flex-grow: 0;
   flex-shrink: 0;
-  flex-basis: 60px;
+  flex-basis: 50px;
   margin-left: 10px;
   margin-right: 10px;
   width: 100%;
