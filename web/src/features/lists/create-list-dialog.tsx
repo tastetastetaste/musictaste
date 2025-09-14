@@ -55,7 +55,7 @@ const CreateListForm = ({ redirect = false, closeDialog }: any) => {
         <Input placeholder="Title" {...register('title')} />
         <FormInputError error={errors.title} />
         <Textarea
-          placeholder="Description (supports Markdown)"
+          placeholder="Description"
           {...register('description', { required: false })}
         />
         <FormInputError error={errors.description} />

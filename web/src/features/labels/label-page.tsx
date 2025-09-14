@@ -46,10 +46,9 @@ const LabelPage = () => {
         <Stack>
           <div
             css={{
-              height: 280,
+              height: '130px',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center',
             }}
           >
             <Typography size="title-xl" as="h1">

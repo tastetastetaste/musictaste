@@ -85,6 +85,10 @@ const GlobalStyles = () => {
             font-family: ${theme.font.family.base};
             font-size: 14px;
             font-weight: ${theme.font.weight.normal};
+            font-optical-sizing: auto;
+            font-style: normal;
+            font-variation-settings: 'wdth' 100;
+
             background: ${theme.colors.background};
 
             color: ${theme.colors.text};
@@ -92,6 +96,8 @@ const GlobalStyles = () => {
 
             overflow-x: hidden;
             overflow-y: scroll;
+
+            padding-bottom: 50px;
           }
 
           input::-webkit-outer-spin-button,

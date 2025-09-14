@@ -42,11 +42,7 @@ const ReviewForm = ({
   return (
     <form onSubmit={handleSubmit(submit)}>
       <Stack gap="sm">
-        <Textarea
-          placeholder="Review (supports Markdown)"
-          {...register('body')}
-          rows={22}
-        />
+        <Textarea placeholder="Review" {...register('body')} rows={22} />
         <Button
           type="submit"
           disabled={updateEntryLoading || createEntryLoading}

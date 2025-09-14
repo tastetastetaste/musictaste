@@ -68,6 +68,9 @@ const AppHeader = memo(function AppHeaderFu() {
         padding: CONTENT_PADDING,
         margin: '0 auto',
         paddingTop: '8px',
+        position: 'sticky',
+        top: 0,
+        zIndex: 1,
       }}
     >
       <StyledHeader>

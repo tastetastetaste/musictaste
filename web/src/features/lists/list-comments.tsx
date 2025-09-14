@@ -52,7 +52,7 @@ const CreateListCommentForm = ({ listId }: { listId: string }) => {
       <Stack gap="sm">
         <Textarea
           {...register('body', { required: true })}
-          placeholder="Comment (supports Markdown)"
+          placeholder="Comment"
         />
         {isDirty && (
           <Button type="submit" disabled={isLoading}>

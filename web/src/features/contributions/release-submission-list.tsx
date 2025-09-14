@@ -101,7 +101,11 @@ export const ReleaseSubmissionItem = ({
         changedValue={changes?.imageUrl}
         showOriginal={hasOriginal}
         renderValue={(value) =>
-          value ? <ImagePreview src={value} alt="cover" /> : null
+          value ? (
+            <div>
+              <ImagePreview src={value} alt="cover" />
+            </div>
+          ) : null
         }
       />
       {submission.note && (

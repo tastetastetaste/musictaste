@@ -9,7 +9,7 @@ import FeaturesOverview from './features-overview';
 import { List } from '../features/lists/list';
 import { LIST_GRID_PADDING } from '../features/lists/lists-list-renderer';
 import { Release } from '../features/releases/release';
-import { RELEASE_GRID_PADDING } from '../features/releases/releases-virtual-grid';
+import { RELEASE_GRID_GAP } from '../features/releases/releases-virtual-grid';
 import { Review } from '../features/reviews/review';
 import { updateReviewAfterVote_2 } from '../features/reviews/update-review-after-vote';
 import AppPageWrapper from '../layout/app-page-wrapper';
@@ -73,7 +73,7 @@ const HomePage = () => {
         <Link to="/releases/new" size="title-lg">
           New Releases
         </Link>
-        <Grid cols={[2, 6]} gap={RELEASE_GRID_PADDING}>
+        <Grid cols={[2, 6]} gap={RELEASE_GRID_GAP}>
           {newReleases &&
             newReleases.map((r) => <Release key={r.id} release={r} />)}
         </Grid>
@@ -115,7 +115,7 @@ const HomePage = () => {
         <Link to="/releases/recently-added" size="title-lg">
           Recently Added
         </Link>
-        <Grid cols={[2, 6]} gap={RELEASE_GRID_PADDING}>
+        <Grid cols={[2, 6]} gap={RELEASE_GRID_GAP}>
           {recentlyAddedReleases &&
             recentlyAddedReleases.map((r) => (
               <Release key={r.id} release={r} />

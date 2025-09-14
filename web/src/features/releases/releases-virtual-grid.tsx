@@ -7,6 +7,7 @@ import { Release } from './release';
 import { getRowIndexes } from '../users/user-music-virtual-grid';
 
 export const RELEASE_GRID_PADDING = '4px';
+export const RELEASE_GRID_GAP = '8px';
 
 export const ReleasesVirtualGrid: React.FC<{
   releases: InfiniteData<IReleasesResponse>;

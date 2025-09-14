@@ -15,6 +15,7 @@ import {
   getReleasePathname,
 } from '../../utils/get-pathname';
 import { ReleaseActions } from '../releases/release-actions/release-actions';
+import { Markdown } from '../../components/markdown';
 
 interface IListItemProps {
   item: Pick<IListItem, 'id' | 'release' | 'note'>;
@@ -51,7 +52,7 @@ export const ListItem: React.FC<IListItemProps> = ({
           </div>
         </Group>
         <FlexChild grow>
-          <Stack>
+          <Stack gap="sm">
             <ArtistsLinks
               links={release.artists.map((a) => ({
                 href: getArtistPathname(a.id),
@@ -61,7 +62,7 @@ export const ListItem: React.FC<IListItemProps> = ({
             <ReleaseTitleLink to={getReleasePathname(release.id)}>
               {release.title}
             </ReleaseTitleLink>
-            <Typography whiteSpace="pre-wrap">{note}</Typography>
+            {note ? <Markdown>{note}</Markdown> : null}
 
             <Typography size="small">
               {`${getYearFromDate(release.date)} · ${release.type}`}

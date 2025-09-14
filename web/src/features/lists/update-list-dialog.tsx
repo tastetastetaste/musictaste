@@ -79,7 +79,7 @@ const UpdateListForm: React.FC<{
         />
         <FormInputError error={errors.title} />
         <Textarea
-          placeholder="Description (supports Markdown)"
+          placeholder="Description"
           {...register('description', { required: false })}
         />
         <FormInputError error={errors.description} />

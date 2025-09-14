@@ -1,25 +1,25 @@
-import { EntriesSortByEnum, IUser } from 'shared';
-import { api } from '../../utils/api';
 import { Fragment } from 'react';
 import { useQuery, useQueryClient } from 'react-query';
 import { useOutletContext } from 'react-router-dom';
+import { EntriesSortByEnum, IUser } from 'shared';
 import { FlexChild } from '../../components/flex/flex-child';
 import { Grid } from '../../components/flex/grid';
 import { ResponsiveRow } from '../../components/flex/responsive-row';
 import { Stack } from '../../components/flex/stack';
 import { Link } from '../../components/links/link';
 import { Loading } from '../../components/loading';
-import { Release } from '../releases/release';
-import { RELEASE_GRID_PADDING } from '../releases/releases-virtual-grid';
 import { Markdown } from '../../components/markdown';
 import { Typography } from '../../components/typography';
+import { api } from '../../utils/api';
+import { cacheKeys } from '../../utils/cache-keys';
 import { List } from '../lists/list';
+import { LIST_GRID_PADDING } from '../lists/lists-list-renderer';
+import { Release } from '../releases/release';
+import { RELEASE_GRID_GAP } from '../releases/releases-virtual-grid';
 import { Review } from '../reviews/review';
+import { updateReviewAfterVote_2 } from '../reviews/update-review-after-vote';
 import { UserPageOutletContext } from './user-page-wrapper';
 import { UserGenresChart, UserRatingsChart } from './user-profile-charts';
-import { LIST_GRID_PADDING } from '../lists/lists-list-renderer';
-import { cacheKeys } from '../../utils/cache-keys';
-import { updateReviewAfterVote_2 } from '../reviews/update-review-after-vote';
 
 const BioSection = ({ bio }: { bio?: string | null }) =>
   bio ? <Markdown>{bio}</Markdown> : <div></div>;
@@ -63,7 +63,7 @@ const RecentlyAddedReleases: React.FC<{ userId: string; username: string }> = ({
           >
             Recently Added
           </Link>
-          <Grid cols={[2, 5]} gap={RELEASE_GRID_PADDING}>
+          <Grid cols={[2, 5]} gap={RELEASE_GRID_GAP}>
             {releases.map((ur) => (
               <Release key={ur.id} release={ur.release!} entry={ur} size="lg" />
             ))}

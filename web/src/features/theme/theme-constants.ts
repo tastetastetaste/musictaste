@@ -6,8 +6,8 @@ export const baseTheme: Omit<Theme, 'colors'> = {
   },
   font: {
     family: {
-      base: "'PT Sans', sans-serif",
-      sub: "'PT Sans', sans-serif",
+      base: "'Open Sans', sans-serif",
+      sub: "'Open Sans', sans-serif",
     },
     weight: {
       normal: 400,

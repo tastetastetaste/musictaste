@@ -1,18 +1,18 @@
-import { IArtistResponse, IRelease } from 'shared';
-import { api } from '../../utils/api';
+import { useState } from 'react';
 import { useQuery } from 'react-query';
 import { useParams } from 'react-router-dom';
+import { IArtistResponse, IRelease } from 'shared';
 import { Grid } from '../../components/flex/grid';
 import { Stack } from '../../components/flex/stack';
 import { Loading } from '../../components/loading';
-import { Release } from '../releases/release';
 import { Typography } from '../../components/typography';
-import AppPageWrapper from '../../layout/app-page-wrapper';
-import { RELEASE_GRID_PADDING } from '../releases/releases-virtual-grid';
-import { useState } from 'react';
-import { ReportDialog } from '../reports/report-dialog';
-import { cacheKeys } from '../../utils/cache-keys';
 import { useSnackbar } from '../../hooks/useSnackbar';
+import AppPageWrapper from '../../layout/app-page-wrapper';
+import { api } from '../../utils/api';
+import { cacheKeys } from '../../utils/cache-keys';
+import { Release } from '../releases/release';
+import { RELEASE_GRID_GAP } from '../releases/releases-virtual-grid';
+import { ReportDialog } from '../reports/report-dialog';
 
 interface ReleasesSectionProps {
   title: string;
@@ -32,7 +32,7 @@ const ReleasesSection: React.FC<ReleasesSectionProps> = ({
   return (
     <>
       <Typography size="title-lg">{title}</Typography>
-      <Grid cols={[2, 4, 4, 6]} gap={RELEASE_GRID_PADDING}>
+      <Grid cols={[2, 4, 4, 6]} gap={RELEASE_GRID_GAP}>
         {sortedReleases.map((release) => (
           <Release release={release} key={release.id} />
         ))}
@@ -154,10 +154,9 @@ const ArtistPage = () => {
         <Stack>
           <div
             css={{
-              height: 280,
+              height: '130px',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center',
             }}
           >
             <Typography size="title-xl" as="h1">

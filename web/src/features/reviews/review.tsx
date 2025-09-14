@@ -50,7 +50,32 @@ const ReviewActions = ({
     updateAfterVote(reviewId, vote);
   };
 
-  if (!isLoggedIn) return <div></div>;
+  if (!isLoggedIn)
+    return (
+      <Group gap="sm">
+        <Group gap="sm">
+          <IconArrowUp />+{netVotes}
+        </Group>
+        <IconButton
+          title="Comments"
+          num={Number(commentsCount)}
+          onClick={() => navigate('/review/' + entryId)}
+        >
+          <IconMessage />
+        </IconButton>
+        {/* {netVotes > 0 ? (
+          <Group gap="sm">
+            <IconArrowUp />
+        +{netVotes}
+          </Group>
+        ) : (
+          <Group gap="sm">
+            <IconArrowDown />
+            {netVotes}
+          </Group>
+        )} */}
+      </Group>
+    );
 
   return (
     <Group gap="sm">
@@ -59,6 +84,7 @@ const ReviewActions = ({
           title="upvote"
           onClick={() => vote(VoteType.UP)}
           active={userVote === VoteType.UP}
+          disabled={!isLoggedIn}
         >
           <IconArrowUp />
         </IconButton>
@@ -67,6 +93,7 @@ const ReviewActions = ({
           title="downvote"
           onClick={() => vote(VoteType.DOWN)}
           active={userVote === VoteType.DOWN}
+          disabled={!isLoggedIn}
         >
           <IconArrowDown />
         </IconButton>
@@ -124,7 +151,7 @@ export const Review: React.FC<ReviewProps> = ({
             flexGrow: 0,
             flexShrink: 0,
             position: 'sticky',
-            top: '10px',
+            top: '80px',
           }}
         >
           <Release release={release} size="lg" />
@@ -144,8 +171,9 @@ export const Review: React.FC<ReviewProps> = ({
 
           <div
             style={{
-              minHeight: 235,
-              padding: !smallScreen && '0 58px',
+              paddingLeft: '5px',
+              paddingRight: smallScreen ? '5px' : '58px',
+              fontSize: '13px',
             }}
           >
             <Markdown>{MDString}</Markdown>

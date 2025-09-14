@@ -80,11 +80,7 @@ const SettingsProfilePage = () => {
             <Input placeholder="Username" {...register('username')} />
             <FormInputError error={errors.username} />
           </Stack>
-          <Textarea
-            placeholder="Bio (supports Markdown)"
-            {...register('bio')}
-            rows={22}
-          />
+          <Textarea placeholder="Bio" {...register('bio')} rows={22} />
           <FormInputError error={errors.bio} />
           <Button type="submit" disabled={isLoading}>
             save
