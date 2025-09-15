@@ -446,15 +446,22 @@ export class ReleasesService {
       imagePath,
     },
   }: ReleaseSubmission) {
-    const newRelease = new Release();
-
-    newRelease.title = title;
-    newRelease.type = type;
-    newRelease.date = dayjs(date).format('YYYY-MM-DD').toString();
-    newRelease.imagePath = imagePath;
-
     try {
-      const release = await this.releasesRepository.save(newRelease);
+      const id = genId();
+
+      // use `insert` to prevent accidental overwrite
+      await this.releasesRepository.insert({
+        id,
+        title,
+        type,
+        date: dayjs(date).format('YYYY-MM-DD').toString(),
+        imagePath: imagePath,
+      });
+      const release = await this.releasesRepository.findOne({
+        where: {
+          id,
+        },
+      });
 
       const artists = await this.artistsRepository.find({
         where: {
