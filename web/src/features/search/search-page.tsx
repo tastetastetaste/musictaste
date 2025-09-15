@@ -13,9 +13,9 @@ const SearchPage = () => {
   return (
     <Stack gap="sm">
       <Typography size="title-lg">Releases</Typography>
-      <SearchRelease q={q} />
+      <SearchRelease q={decodeURIComponent(q)} />
       <Typography size="title-lg">Artists</Typography>
-      <SearchArtist q={q} />
+      <SearchArtist q={decodeURIComponent(q)} />
     </Stack>
   );
 };

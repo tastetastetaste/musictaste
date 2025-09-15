@@ -372,6 +372,33 @@ export class ReleasesService {
     };
   }
 
+  async findNewPopularReleases(page: number = 1, pageSize: number = 48) {
+    const qb = this.releasesRepository
+      .createQueryBuilder('release')
+      .select('release.id', 'id')
+      .addSelect('COUNT(ur.id)', 'popularity')
+      .leftJoin('release.entries', 'ur', 'release.id = ur.releaseId')
+      .where("release.date >= NOW() - INTERVAL '30 days'")
+      .groupBy('release.id')
+      .orderBy('popularity', 'DESC')
+      .addOrderBy('release.id', 'DESC')
+      .limit(pageSize)
+      .offset((page - 1) * pageSize);
+
+    const qb2 = qb.clone();
+
+    const releases = await this.getReleasesByIdsWithStats(
+      (await qb.getRawMany()).map((r) => r.id),
+    );
+
+    const totalItems = await qb2.getCount();
+
+    return {
+      releases,
+      totalItems,
+    };
+  }
+
   async findTopReleasesOAT(page: number = 1, pageSize: number = 48) {
     const result = await this.userReleaseRepository
       .createQueryBuilder('ur')
@@ -379,9 +406,11 @@ export class ReleasesService {
       .addSelect('AVG(rating.rating)', 'averageRating')
       .leftJoin('ur.release', 'release')
       .leftJoin('ur.rating', 'rating')
-      .where('release.type = :releaseType', { releaseType: ReleaseType.LP })
+      .where('release.type IN (:...releaseTypes)', {
+        releaseTypes: [ReleaseType.LP, ReleaseType.Live],
+      })
       .groupBy('ur.releaseId')
-      .having('COUNT(rating.id) >= 10')
+      .having('COUNT(rating.id) >= 15')
       .orderBy('AVG(rating.rating)', 'DESC', 'NULLS LAST')
       .addOrderBy('ur.releaseId', 'DESC')
       .limit(100)
@@ -414,7 +443,9 @@ export class ReleasesService {
         startDate,
         endDate,
       })
-      .andWhere('release.type = :releaseType', { releaseType: ReleaseType.LP })
+      .andWhere('release.type IN (:...releaseTypes)', {
+        releaseTypes: [ReleaseType.LP, ReleaseType.Live],
+      })
       .groupBy('ur.releaseId')
       .having('COUNT(rating) >= 5')
       .orderBy('AVG(rating.rating)', 'DESC', 'NULLS LAST')

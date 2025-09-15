@@ -36,13 +36,13 @@ const HomePage = () => {
     }),
   );
 
-  const { data: newReleasesData } = useQuery(
+  const { data: newPopularReleasesData } = useQuery(
     cacheKeys.releasesKey({
-      type: FindReleasesType.New,
+      type: FindReleasesType.NewPopular,
       page: 1,
       pageSize: 12,
     }),
-    () => api.getReleases(FindReleasesType.New, 1, 12),
+    () => api.getReleases(FindReleasesType.NewPopular, 1, 12),
   );
   const { data: recentlyAddedReleasesData } = useQuery(
     cacheKeys.releasesKey({
@@ -60,7 +60,7 @@ const HomePage = () => {
 
   const reviews = reviewsData?.entries;
 
-  const newReleases = newReleasesData?.releases;
+  const newReleases = newPopularReleasesData?.releases;
   const recentlyAddedReleases = recentlyAddedReleasesData?.releases;
 
   const lists = listsData?.lists;

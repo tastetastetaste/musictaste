@@ -31,6 +31,12 @@ export class ReleasesController {
       case 'popular':
         result = await this.releasesService.findPopularReleases(page, pageSize);
         break;
+      case 'new-popular':
+        result = await this.releasesService.findNewPopularReleases(
+          page,
+          pageSize,
+        );
+        break;
       case 'upcoming':
         result = await this.releasesService.findUpcomingReleases(
           page,

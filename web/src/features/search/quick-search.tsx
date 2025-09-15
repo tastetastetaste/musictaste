@@ -27,7 +27,7 @@ export const QuickSearch = () => {
 
   const handleKeyPress = (event: any) => {
     if (event.key === 'Enter') {
-      navigate(`/search?q=${value}`);
+      navigate(`/search?q=${encodeURIComponent(value)}`);
       setFocus(false);
       setValue('');
     }

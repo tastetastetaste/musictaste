@@ -60,6 +60,7 @@ export enum EntriesSortByEnum {
 
 export enum FindReleasesType {
   New = 'new',
+  NewPopular = 'new-popular',
   Popular = 'popular',
   Upcoming = 'upcoming',
   Recent = 'recent',

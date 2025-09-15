@@ -5,7 +5,7 @@ import ReleasesPageWrapper from './releases-page-wrapper';
 const NewReleasesPage = () => {
   return (
     <ReleasesPageWrapper>
-      <ReleasesListRenderer type={FindReleasesType.New} />
+      <ReleasesListRenderer type={FindReleasesType.NewPopular} />
     </ReleasesPageWrapper>
   );
 };
