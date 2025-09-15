@@ -172,7 +172,7 @@ export const Review: React.FC<ReviewProps> = ({
           <div
             style={{
               paddingLeft: '5px',
-              paddingRight: smallScreen ? '5px' : '58px',
+              paddingRight: '5px',
               fontSize: '13px',
             }}
           >

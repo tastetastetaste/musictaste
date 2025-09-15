@@ -595,7 +595,7 @@ const search = ({
   return client
     .get<ISearchResponse>(
       'search?q=' +
-        q +
+        encodeURIComponent(q) +
         '&type=' +
         type.join('&type=') +
         '&page=' +
