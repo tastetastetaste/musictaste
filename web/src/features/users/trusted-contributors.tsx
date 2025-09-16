@@ -20,15 +20,15 @@ export const TrustedContributors: React.FC = () => {
   return (
     <Stack gap="md">
       <Typography size="title">Trusted Contributors</Typography>
-      <Typography color="sub">
-        Shout out to our trusted contributors for helping us approve and
-        disapprove contributions!
+      <Typography>
+        Shoutout to our trusted contributors for reviewing and approving
+        contributions!
       </Typography>
-      <Group gap="md" wrap>
+      <Stack gap="md">
         {contributors.map((contributor) => (
-          <User key={contributor.id} user={contributor} isLarge />
+          <User key={contributor.id} user={contributor} />
         ))}
-      </Group>
+      </Stack>
     </Stack>
   );
 };
