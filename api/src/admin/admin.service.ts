@@ -3,7 +3,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../../db/entities/user.entity';
 import { RedisService } from '../redis/redis.service';
-import { UpdateUserContributorStatusDto } from 'shared';
+import {
+  UpdateUserContributorStatusDto,
+  UpdateUserSupporterStatusDto,
+} from 'shared';
 
 @Injectable()
 export class AdminService {
@@ -20,6 +23,21 @@ export class AdminService {
 
     await this.userRepository.update(userId, {
       contributorStatus: status,
+    });
+
+    await this.redisService.removeUserSessions(userId);
+
+    return true;
+  }
+
+  async updateUserSupporterStatus(
+    updateUserSupporterStatusDto: UpdateUserSupporterStatusDto,
+  ) {
+    const { userId, supporter } = updateUserSupporterStatusDto;
+
+    await this.userRepository.update(userId, {
+      supporter,
+      supporterStartDate: new Date().toISOString(),
     });
 
     await this.redisService.removeUserSessions(userId);

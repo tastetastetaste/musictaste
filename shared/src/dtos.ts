@@ -25,6 +25,8 @@ import {
   FindReleasesType,
   ContributorStatus,
   SubmissionSortByEnum,
+  FindUsersType,
+  SupporterStatus,
 } from './enums';
 import dayjs from 'dayjs';
 
@@ -232,6 +234,20 @@ export class UpdateUserContributorStatusDto {
   @Type(() => Number)
   @IsEnum(ContributorStatus)
   status: ContributorStatus;
+}
+
+export class UpdateUserSupporterStatusDto {
+  @IsString()
+  userId: string;
+  @Type(() => Number)
+  @IsEnum(SupporterStatus)
+  supporter: SupporterStatus;
+}
+
+export class FindUsersDto {
+  @IsString()
+  @IsEnum(FindUsersType)
+  type: FindUsersType;
 }
 
 // --- LISTS

@@ -3,7 +3,11 @@ import {
   IconUserMinus,
   IconUserPlus,
 } from '@tabler/icons-react';
-import { IUserProfileResponse } from 'shared';
+import {
+  ContributorStatus,
+  IUserProfileResponse,
+  SupporterStatus,
+} from 'shared';
 import { api } from '../../utils/api';
 import { useMutation, useQueryClient } from 'react-query';
 import { Group } from '../../components/flex/group';
@@ -15,6 +19,8 @@ import { useHover } from '../../hooks/useHover';
 import { Typography } from '../../components/typography';
 import { getUserPathname } from '../../utils/get-pathname';
 import { cacheKeys } from '../../utils/cache-keys';
+import { SupporterBadge } from '../../components/badge/supporter-badge';
+import { TrustedBadge } from '../../components/badge/trusted-badge';
 
 const FollowAction = ({
   userId,
@@ -94,7 +100,7 @@ export const UserOverview: React.FC<OverviewSectionProps> = ({
   user: {
     following,
     followedBy,
-    user: { id, username, name, image },
+    user: { id, username, name, image, supporter, contributorStatus },
     stats: {
       entriesCount,
       followersCount,
@@ -136,11 +142,19 @@ export const UserOverview: React.FC<OverviewSectionProps> = ({
             }}
           />
         )}
-        <Stack gap="lg">
+        <Stack gap="lg" align="start">
           <Stack>
             <Typography size="title-xl">{name}</Typography>
             <Typography>@{username}</Typography>
           </Stack>
+          <Group gap="md" wrap>
+            {supporter === SupporterStatus.SUPPORTER ? (
+              <SupporterBadge size="large" />
+            ) : null}
+            {contributorStatus === ContributorStatus.TRUSTED_CONTRIBUTOR ? (
+              <TrustedBadge size="large" />
+            ) : null}
+          </Group>
           {isLoggedIn && !isUserMyself && (
             <Group align="center">
               <FollowAction

@@ -1,4 +1,4 @@
-import { IUser } from 'shared';
+import { ContributorStatus, IUser, SupporterStatus } from 'shared';
 import { getUserPathname } from '../../utils/get-pathname';
 import { Avatar } from './avatar';
 import { CardLink } from '../../components/links/card-link';
@@ -6,6 +6,8 @@ import { Group } from '../../components/flex/group';
 import { Link } from '../../components/links/link';
 import { Stack } from '../../components/flex/stack';
 import { Typography } from '../../components/typography';
+import { SupporterBadge } from '../../components/badge/supporter-badge';
+import { TrustedBadge } from '../../components/badge/trusted-badge';
 
 interface IUserItemProps {
   user: IUser;
@@ -14,7 +16,7 @@ interface IUserItemProps {
 }
 
 export const User: React.FC<IUserItemProps> = ({
-  user: { username, name, image },
+  user: { username, name, image, supporter, contributorStatus },
   avatarOnly = false,
   isLarge = false,
 }) => {
@@ -40,16 +42,21 @@ export const User: React.FC<IUserItemProps> = ({
 
   if (avatarOnly) return userAvatar;
 
+  const isSupporter = supporter === SupporterStatus.SUPPORTER;
+  const isTrusted = contributorStatus === ContributorStatus.TRUSTED_CONTRIBUTOR;
+
   return isLarge ? (
-    <Stack align="center" justify="center">
+    <Stack align="center" justify="center" gap="md">
       {userAvatar}
       <Link to={getUserPathname(username)} size="title">
         {name}
       </Link>
       <Typography color="sub">@{username}</Typography>
+      {isSupporter ? <SupporterBadge /> : null}
+      {isTrusted ? <TrustedBadge /> : null}
     </Stack>
   ) : (
-    <Group gap="md">
+    <Group gap="md" wrap>
       {userAvatar}
       <Stack gap="sm">
         <Link to={getUserPathname(username)}>{name}</Link>
@@ -57,6 +64,9 @@ export const User: React.FC<IUserItemProps> = ({
           @{username}
         </Typography>
       </Stack>
+
+      {isSupporter ? <SupporterBadge /> : null}
+      {isTrusted ? <TrustedBadge /> : null}
     </Group>
   );
 };

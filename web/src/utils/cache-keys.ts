@@ -1,4 +1,4 @@
-import { FindReleasesType } from 'shared';
+import { FindReleasesType, FindUsersType } from 'shared';
 
 // ENTRY
 const entryKey = (id: string) => ['entry', id];
@@ -196,6 +196,7 @@ const popularListsKey = (page?: number) => ['lists', 'popular', page];
 
 // USERS
 const currentUserKey = () => ['user', 'me'];
+const findUsersKey = (type?: FindUsersType) => ['users', type];
 const userProfileKey = (username: string) => ['userProfile', username];
 const userFollowersKey = (id: string) => ['user', id, 'followers'];
 const userFollowingKey = (id: string) => ['user', id, 'following'];
@@ -261,6 +262,7 @@ export const cacheKeys = {
   genreSubmissionsKey,
   userContributionsStatsKey,
   currentUserKey,
+  findUsersKey,
   userProfileKey,
   userFollowersKey,
   userFollowingKey,

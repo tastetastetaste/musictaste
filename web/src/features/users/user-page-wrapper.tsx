@@ -36,6 +36,10 @@ const UserPageWrapper: React.FC = () => {
     api.updateUserContributorStatus,
   );
 
+  const { mutate: updateSupporterStatusMutation } = useMutation(
+    api.updateUserSupporterStatus,
+  );
+
   const updateContributorStatus = () => {
     const status = prompt(
       '0=Not Contributor, 20=Contributor, 40=Trusted Contributor, 60=Editor, 80=Admin',
@@ -45,6 +49,23 @@ const UserPageWrapper: React.FC = () => {
         {
           userId: data.user.id,
           status: parseInt(status),
+        },
+        {
+          onSuccess: () => {
+            alert('Updated');
+          },
+        },
+      );
+    }
+  };
+
+  const updateSupporterStatus = () => {
+    const status = prompt('0=Not Supporter, 10=Supporter');
+    if (status) {
+      updateSupporterStatusMutation(
+        {
+          userId: data.user.id,
+          supporter: parseInt(status),
         },
         {
           onSuccess: () => {
@@ -82,6 +103,10 @@ const UserPageWrapper: React.FC = () => {
               {
                 label: 'Contributor Status',
                 action: updateContributorStatus,
+              },
+              {
+                label: 'Supporter Status',
+                action: updateSupporterStatus,
               },
             ]
           : []),

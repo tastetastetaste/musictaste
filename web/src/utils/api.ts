@@ -12,6 +12,7 @@ import {
   FindLabelSubmissionsDto,
   FindReleasesType,
   FindReleaseSubmissionsDto,
+  FindUsersType,
   IArtistResponse,
   IArtistSubmissionsResponse,
   IAutofillRelease,
@@ -46,11 +47,13 @@ import {
   IUserProfileResponse,
   IUserRatingBucket,
   IUserReleaseDate,
+  IUsersResponse,
   IUserTag,
   ProcessPendingDeletionDto,
   SearchType,
   UpdateReleaseDto,
   UpdateUserContributorStatusDto,
+  UpdateUserSupporterStatusDto,
   VoteType,
 } from 'shared';
 
@@ -658,6 +661,15 @@ const report = (report: CreateReportDto) =>
 const updateUserContributorStatus = (data: UpdateUserContributorStatusDto) =>
   client.patch('admin/user/contributor-status', data).then((res) => res.data);
 
+const updateUserSupporterStatus = (data: UpdateUserSupporterStatusDto) =>
+  client.patch('admin/user/supporter-status', data).then((res) => res.data);
+
+const findUsers = (type: FindUsersType) => {
+  return client
+    .get<IUsersResponse>(`users?${type ? `type=${type}` : ''}`)
+    .then((res) => res.data);
+};
+
 export const api = {
   getArtist,
   getLabel,
@@ -749,4 +761,6 @@ export const api = {
   unFollow,
   report,
   updateUserContributorStatus,
+  updateUserSupporterStatus,
+  findUsers,
 };

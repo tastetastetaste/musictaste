@@ -1,27 +1,30 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
   UnauthorizedException,
   UploadedFile,
-  UseInterceptors,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import {
+  FindUsersDto,
   ICurrentUserResponse,
   IUserFollowsResponse,
   IUserProfileResponse,
+  IUsersResponse,
   UpdateUserProfileDto,
 } from 'shared';
+import { AuthenticatedGuard } from '../auth/Authenticated.guard';
 import { CurrentUserPayload } from '../auth/session.serializer';
 import { CurUser } from '../decorators/user.decorator';
 import { UsersService } from './users.service';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { AuthenticatedGuard } from '../auth/Authenticated.guard';
 
 @Controller('users')
 export class UsersController {
@@ -65,6 +68,13 @@ export class UsersController {
       following,
       followedBy,
     };
+  }
+
+  @Get()
+  async findUsers(
+    @Query() findUsersDto: FindUsersDto,
+  ): Promise<IUsersResponse> {
+    return await this.usersService.findUsers(findUsersDto.type);
   }
 
   @Get(':id/followers')

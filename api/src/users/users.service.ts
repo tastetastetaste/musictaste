@@ -1,4 +1,11 @@
-import { IUser, IUserStats, UpdateUserProfileDto } from 'shared';
+import {
+  IUser,
+  IUserStats,
+  UpdateUserProfileDto,
+  ContributorStatus,
+  FindUsersType,
+  IUsersResponse,
+} from 'shared';
 import {
   BadRequestException,
   forwardRef,
@@ -94,7 +101,15 @@ export class UsersService {
 
   async getUserById(id: string): Promise<IUser> {
     const user = await this.usersRepository.findOne({
-      select: ['id', 'name', 'username', 'bio', 'imagePath'],
+      select: [
+        'id',
+        'name',
+        'username',
+        'bio',
+        'imagePath',
+        'contributorStatus',
+        'supporter',
+      ],
       where: {
         id,
       },
@@ -108,7 +123,15 @@ export class UsersService {
 
   async getUsersByIds(ids: string[]): Promise<IUser[]> {
     const users = await this.usersRepository.find({
-      select: ['id', 'name', 'username', 'bio', 'imagePath'],
+      select: [
+        'id',
+        'name',
+        'username',
+        'bio',
+        'imagePath',
+        'contributorStatus',
+        'supporter',
+      ],
       where: {
         id: In(ids),
       },
@@ -129,7 +152,15 @@ export class UsersService {
 
   async getUserByUsername(username: string): Promise<IUser> {
     const user = await this.usersRepository.findOne({
-      select: ['id', 'name', 'username', 'bio', 'imagePath'],
+      select: [
+        'id',
+        'name',
+        'username',
+        'bio',
+        'imagePath',
+        'contributorStatus',
+        'supporter',
+      ],
       where: {
         username: username.toLowerCase(),
       },
@@ -240,5 +271,30 @@ export class UsersService {
     await this.userFollowingRepository.delete({ id: uf.id });
 
     return true;
+  }
+
+  async findUsers(type: FindUsersType): Promise<IUsersResponse> {
+    const qb = this.usersRepository
+      .createQueryBuilder('u')
+      .select('u.id', 'id');
+
+    if (type === FindUsersType.Supporter) {
+      qb.where('u.supporter = :supporter', { supporter: true }).orderBy(
+        'u.createdAt',
+        'DESC',
+      );
+    } else if (type === FindUsersType.Trusted) {
+      qb.where('u.contributorStatus = :status', {
+        status: ContributorStatus.TRUSTED_CONTRIBUTOR,
+      }).orderBy('u.createdAt', 'DESC');
+    } else {
+      throw new BadRequestException();
+    }
+
+    const reuslt = await qb.getRawMany();
+
+    const users = await this.getUsersByIds(reuslt.map((user) => user.id));
+
+    return { users };
   }
 }

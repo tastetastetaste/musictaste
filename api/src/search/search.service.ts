@@ -82,7 +82,14 @@ export class SearchService {
       type.includes('users')
         ? this.usersRepository
             .createQueryBuilder('u')
-            .select(['u.id', 'u.username', 'u.name', 'u.imagePath'])
+            .select([
+              'u.id',
+              'u.username',
+              'u.name',
+              'u.imagePath',
+              'u.supporter',
+              'u.contributorStatus',
+            ])
             .where('u.username ilike :username', {
               username: `${q}%`,
             })

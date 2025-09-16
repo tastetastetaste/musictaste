@@ -43,6 +43,11 @@ export enum ContributorStatus {
   ADMIN = 80,
 }
 
+export enum SupporterStatus {
+  NOT_A_SUPPORTER = 0,
+  SUPPORTER = 10,
+}
+
 // other enums
 
 export enum EntriesSortByEnum {
@@ -66,6 +71,11 @@ export enum FindReleasesType {
   Recent = 'recent',
   Top = 'top',
   TopOTY = 'top-oty',
+}
+
+export enum FindUsersType {
+  Supporter = 'supporter',
+  Trusted = 'trusted',
 }
 
 export enum SubmissionSortByEnum {

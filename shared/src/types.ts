@@ -1,4 +1,4 @@
-import { ContributorStatus, VoteType } from './enums';
+import { ContributorStatus, SupporterStatus, VoteType } from './enums';
 
 export interface IArtistSummary {
   id: string;
@@ -210,6 +210,8 @@ export interface IUserSummary {
   username: string;
   name: string;
   image?: IUserImage;
+  supporter: SupporterStatus;
+  contributorStatus: ContributorStatus;
 }
 
 export interface IUser {
@@ -218,6 +220,8 @@ export interface IUser {
   username: string;
   image?: IUserImage;
   bio?: string;
+  supporter: SupporterStatus;
+  contributorStatus: ContributorStatus;
 }
 
 export interface IUserImage {
@@ -229,8 +233,11 @@ export interface IUserImage {
 export interface ICurrentUserResponse {
   user: IUser & {
     confirmed: boolean;
-    contributorStatus: ContributorStatus;
   };
+}
+
+export interface IUsersResponse {
+  users: IUser[];
 }
 
 export interface IUserStats {
