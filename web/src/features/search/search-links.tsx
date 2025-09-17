@@ -2,6 +2,7 @@ import { IArtistSummary, IReleaseSummary } from 'shared';
 import { Link } from '../../components/links/link';
 import {
   getArtistPathname,
+  getGenrePathname,
   getLabelPathname,
   getReleasePathname,
 } from '../../utils/get-pathname';
@@ -14,6 +15,10 @@ export const ArtistSearchLink = ({ artist }: { artist: IArtistSummary }) => (
 
 export const LabelSearchLink = ({ label }: { label: IArtistSummary }) => (
   <Link to={getLabelPathname(label.id)}>{label.name}</Link>
+);
+
+export const GenreSearchLink = ({ genre }: { genre: IArtistSummary }) => (
+  <Link to={getGenrePathname(genre.id)}>{genre.name}</Link>
 );
 
 export const ReleaseSearchLink = ({

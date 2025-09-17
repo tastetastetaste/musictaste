@@ -35,6 +35,10 @@ const SearchPageWrapper: React.FC = () => {
             label: 'Label',
             to: `/search/label${q ? '?q=' + q : ''}`,
           },
+          {
+            label: 'Genre',
+            to: `/search/genre${q ? '?q=' + q : ''}`,
+          },
           { label: 'User', to: `/search/user${q ? '?q=' + q : ''}` },
         ]}
       />
