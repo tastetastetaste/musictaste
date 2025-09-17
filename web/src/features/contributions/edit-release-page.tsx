@@ -1,24 +1,29 @@
 import { classValidatorResolver } from '@hookform/resolvers/class-validator';
-import { SubmissionStatus, UpdateReleaseDto } from 'shared';
-import { api } from '../../utils/api';
 import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useMutation, useQuery } from 'react-query';
 import { useNavigate, useParams } from 'react-router-dom';
+import { SubmissionStatus, UpdateReleaseDto } from 'shared';
 import { Button } from '../../components/button';
 import { Container } from '../../components/containers/container';
+import { Feedback } from '../../components/feedback';
 import { FlexChild } from '../../components/flex/flex-child';
+import { Group } from '../../components/flex/group';
 import { Stack } from '../../components/flex/stack';
+import { Dropzone } from '../../components/inputs/dropzone';
+import { FormInputError } from '../../components/inputs/form-input-error';
+import { Input } from '../../components/inputs/input';
+import { Select } from '../../components/inputs/select';
+import { Textarea } from '../../components/inputs/textarea';
+import { Link } from '../../components/links/link';
+import { Typography } from '../../components/typography';
 import { useSnackbar } from '../../hooks/useSnackbar';
 import AppPageWrapper from '../../layout/app-page-wrapper';
-import { Feedback } from '../../components/feedback';
-import { Dropzone } from '../../components/inputs/dropzone';
-import { Select } from '../../components/inputs/select';
-import { Input } from '../../components/inputs/input';
-import { ReleaseTypeOptions } from './shared';
-import { AUTH_REQUIRED_PAGE, ON_EDIT_RELEASE } from '../../static/feedback';
-import { useAuth } from '../account/useAuth';
-import { Typography } from '../../components/typography';
+import { ON_EDIT_RELEASE } from '../../static/feedback';
+import { api } from '../../utils/api';
+import { cacheKeys } from '../../utils/cache-keys';
+import { AddByIdArtistDialog } from './add-by-id-artist-dialog';
+import { AddByIdLabelDialog } from './add-by-id-label-dialog';
 import CreateArtistDialog from './create-artist-dialog';
 import CreateLabelDialog from './create-label-dialog';
 import { importFromMusicBrainz } from './import-data';
@@ -26,13 +31,7 @@ import ReleaseTracksFields from './release-tracks-fields';
 import { SelectArtist } from './select-artist';
 import { SelectLabel } from './select-label';
 import { SelectLanguage } from './select-language';
-import { Textarea } from '../../components/inputs/textarea';
-import { FormInputError } from '../../components/inputs/form-input-error';
-import { cacheKeys } from '../../utils/cache-keys';
-import { Link } from '../../components/links/link';
-import { Group } from '../../components/flex/group';
-import { AddByIdArtistDialog } from './add-by-id-artist-dialog';
-import { AddByIdLabelDialog } from './add-by-id-label-dialog';
+import { ReleaseTypeOptions } from './shared';
 
 export interface EditReleaseFormValues extends UpdateReleaseDto {
   mbid: string;
@@ -168,8 +167,6 @@ const EditReleasePage = () => {
 
   const { snackbar } = useSnackbar();
 
-  const { isLoading: isAuthLoading, isLoggedIn } = useAuth();
-
   useEffect(() => {
     if (isSubmitSuccessful) {
       snackbar(ON_EDIT_RELEASE);
@@ -189,13 +186,6 @@ const EditReleasePage = () => {
     setImportLoading(false);
   };
 
-  if (!isAuthLoading && !isLoggedIn) {
-    return (
-      <AppPageWrapper title={title}>
-        <Feedback message={AUTH_REQUIRED_PAGE} />
-      </AppPageWrapper>
-    );
-  }
   return (
     <AppPageWrapper title={title}>
       <Container>
@@ -352,7 +342,9 @@ const EditReleasePage = () => {
             <Button
               variant="main"
               type="submit"
-              disabled={isLoading || !!openSubmission}
+              disabled={
+                isLoading || isOpenSubmissionLoading || !!openSubmission
+              }
             >
               Submit
             </Button>

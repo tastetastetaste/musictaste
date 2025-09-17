@@ -1,10 +1,8 @@
-import { Controller, Get, Param, UseGuards } from '@nestjs/common';
-import { AuthenticatedGuard } from '../auth/Authenticated.guard';
-import { LabelsService } from './labels.service';
+import { Controller, Get, Param } from '@nestjs/common';
 import { ILabelResponse } from 'shared';
+import { LabelsService } from './labels.service';
 
 @Controller('labels')
-@UseGuards(AuthenticatedGuard)
 export class LabelsController {
   constructor(private readonly labelsService: LabelsService) {}
 

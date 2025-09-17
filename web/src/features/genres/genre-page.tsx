@@ -27,6 +27,10 @@ const GenrePage = () => {
       title={genre ? genre.name : ''}
       menu={[
         {
+          label: 'Edit',
+          to: '/contributions/genres/' + genre?.id,
+        },
+        {
           label: 'History',
           to: '/history/genre/' + genre?.id,
         },

@@ -169,6 +169,18 @@ export class CreateGenreDto {
   note: string;
 }
 
+export class UpdateGenreDto {
+  @IsString()
+  @MinLength(1)
+  name: string;
+  @IsString()
+  @MinLength(1)
+  bio: string;
+  @IsString()
+  @MinLength(1)
+  note: string;
+}
+
 export class FindReleasesDto {
   @IsString()
   @IsEnum(FindReleasesType)

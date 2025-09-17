@@ -14,15 +14,17 @@ import {
 } from 'react-router-dom';
 import { Button } from './components/button';
 import { Stack } from './components/flex/stack';
-import { Loading as Fallback } from './components/loading';
-import { UseAuthProvider } from './features/account/useAuth';
+import { Loading as Fallback, Loading } from './components/loading';
+import { useAuth, UseAuthProvider } from './features/account/useAuth';
 import { SnackbarProvider, useSnackbar } from './hooks/useSnackbar';
-import { SOMETHING_WENT_WRONG } from './static/feedback';
+import { AUTH_REQUIRED_PAGE, SOMETHING_WENT_WRONG } from './static/feedback';
 import { ThemeProvider } from './features/theme/useTheme';
 import NotFoundPage from './layout/not-found-page';
 import { ScreenSizeProvider } from './hooks/useMediaQuery';
 import GenreSubmissionsList from './features/contributions/genre-submission-list';
 import GenrePage from './features/genres/genre-page';
+import { Feedback } from './components/feedback';
+import AppPageWrapper from './layout/app-page-wrapper';
 
 const UserPageWrapper = lazy(
   () => import('./features/users/user-page-wrapper'),
@@ -124,6 +126,9 @@ const EditReleasePage = lazy(
 );
 const AddGenrePage = lazy(
   () => import('./features/contributions/add-genre-page'),
+);
+const EditGenrePage = lazy(
+  () => import('./features/contributions/edit-genre-page'),
 );
 const NewListsPage = lazy(() => import('./features/lists/new-lists-page'));
 const PopularListsPage = lazy(
@@ -227,6 +232,21 @@ const RootErrorPage = () => {
   );
 };
 
+const AuthRequiredPage = ({ children }: { children: React.ReactNode }) => {
+  const { isLoading, isLoggedIn } = useAuth();
+
+  if (isLoading) return <Loading />;
+
+  if (!isLoggedIn) {
+    return (
+      <AppPageWrapper>
+        <Feedback message={AUTH_REQUIRED_PAGE} />
+      </AppPageWrapper>
+    );
+  }
+  return children;
+};
+
 const router = createBrowserRouter([
   {
     path: 'account/confirm/:token',
@@ -280,9 +300,11 @@ const router = createBrowserRouter([
       {
         path: ':username/contributions',
         element: (
-          <Suspense fallback={<Fallback />}>
-            <UserContributionsPageWrapper />
-          </Suspense>
+          <AuthRequiredPage>
+            <Suspense fallback={<Fallback />}>
+              <UserContributionsPageWrapper />
+            </Suspense>
+          </AuthRequiredPage>
         ),
         children: [
           {
@@ -380,9 +402,11 @@ const router = createBrowserRouter([
       {
         path: 'settings',
         element: (
-          <Suspense fallback={<Fallback />}>
-            <SettingsPageWrapper />
-          </Suspense>
+          <AuthRequiredPage>
+            <Suspense fallback={<Fallback />}>
+              <SettingsPageWrapper />
+            </Suspense>
+          </AuthRequiredPage>
         ),
         children: [
           { index: true, element: <Navigate to="/settings/profile" replace /> },
@@ -591,41 +615,61 @@ const router = createBrowserRouter([
       {
         path: 'contributions/releases/new',
         element: (
-          <Suspense fallback={<Fallback />}>
-            <AddReleasePage />
-          </Suspense>
+          <AuthRequiredPage>
+            <Suspense fallback={<Fallback />}>
+              <AddReleasePage />
+            </Suspense>
+          </AuthRequiredPage>
         ),
       },
       {
         path: 'contributions/releases/:id',
         element: (
-          <Suspense fallback={<Fallback />}>
-            <EditReleasePage />
-          </Suspense>
+          <AuthRequiredPage>
+            <Suspense fallback={<Fallback />}>
+              <EditReleasePage />
+            </Suspense>
+          </AuthRequiredPage>
         ),
       },
       {
         path: 'contributions/genres/new',
         element: (
-          <Suspense fallback={<Fallback />}>
-            <AddGenrePage />
-          </Suspense>
+          <AuthRequiredPage>
+            <Suspense fallback={<Fallback />}>
+              <AddGenrePage />
+            </Suspense>
+          </AuthRequiredPage>
+        ),
+      },
+      {
+        path: 'contributions/genres/:id',
+        element: (
+          <AuthRequiredPage>
+            <Suspense fallback={<Fallback />}>
+              <EditGenrePage />
+            </Suspense>
+          </AuthRequiredPage>
         ),
       },
       {
         path: 'contributions/pending-deletions',
         element: (
-          <Suspense fallback={<Fallback />}>
-            <PendingDeletionsPage />
-          </Suspense>
+          <AuthRequiredPage>
+            <Suspense fallback={<Fallback />}>
+              <PendingDeletionsPage />
+            </Suspense>
+          </AuthRequiredPage>
         ),
       },
       {
         path: 'history',
         element: (
-          <Suspense fallback={<Fallback />}>
-            <HistoryPageWrapper />
-          </Suspense>
+          <AuthRequiredPage>
+            <Suspense fallback={<Fallback />}>
+              <HistoryPageWrapper />
+            </Suspense>
+          </AuthRequiredPage>
         ),
         children: [
           {
@@ -665,9 +709,11 @@ const router = createBrowserRouter([
       {
         path: 'contributions',
         element: (
-          <Suspense fallback={<Fallback />}>
-            <ContributionsPageWrapper />
-          </Suspense>
+          <AuthRequiredPage>
+            <Suspense fallback={<Fallback />}>
+              <ContributionsPageWrapper />
+            </Suspense>
+          </AuthRequiredPage>
         ),
         children: [
           {
@@ -808,9 +854,11 @@ const router = createBrowserRouter([
           {
             path: 'edit',
             element: (
-              <Suspense fallback={<Fallback />}>
-                <EditListPage />
-              </Suspense>
+              <AuthRequiredPage>
+                <Suspense fallback={<Fallback />}>
+                  <EditListPage />
+                </Suspense>
+              </AuthRequiredPage>
             ),
           },
         ],

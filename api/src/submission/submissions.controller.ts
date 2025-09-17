@@ -25,6 +25,7 @@ import {
   FindReleaseSubmissionsDto,
   ProcessPendingDeletionDto,
   SubmissionVoteDto,
+  UpdateGenreDto,
   UpdateReleaseDto,
 } from 'shared';
 import { AuthenticatedGuard } from '../auth/Authenticated.guard';
@@ -68,6 +69,21 @@ export class SubmissionsController {
     @CurUser() user: CurrentUserPayload,
   ) {
     return this.submissionsService.createGenreSubmission(createGenreDto, user);
+  }
+
+  @Throttle({ default: { limit: 20, ttl: 1000 * 60 * 60 } })
+  @Post('genres/:genreId')
+  @UseGuards(AuthenticatedGuard)
+  updateGenre(
+    @Param('genreId') genreId: string,
+    @Body() updateGenreDto: UpdateGenreDto,
+    @CurUser() user: CurrentUserPayload,
+  ) {
+    return this.submissionsService.updateGenreSubmission(
+      genreId,
+      updateGenreDto,
+      user,
+    );
   }
 
   @Throttle({ default: { limit: 60, ttl: 1000 * 60 * 60 } })

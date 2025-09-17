@@ -20,6 +20,7 @@ import { ArtistsModule } from '../artists/artists.module';
 import { GenreSubmission } from '../../db/entities/genre-submission.entity';
 import { GenreSubmissionVote } from '../../db/entities/genre-submission-vote.entity';
 import { GenresModule } from '../genres/genres.module';
+import { Genre } from '../../db/entities/genre.entity';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { GenresModule } from '../genres/genres.module';
       Artist,
       Label,
       Language,
+      Genre,
       ReleaseSubmission,
       LabelSubmission,
       ArtistSubmission,

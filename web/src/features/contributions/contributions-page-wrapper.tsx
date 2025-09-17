@@ -1,14 +1,10 @@
 import { Outlet, useLocation } from 'react-router-dom';
-import { Feedback } from '../../components/feedback';
+import { SubmissionSortByEnum, SubmissionStatus } from 'shared';
 import { Stack } from '../../components/flex/stack';
-import { Loading } from '../../components/loading';
 import { Navigation } from '../../components/nav';
 import AppPageWrapper from '../../layout/app-page-wrapper';
-import { useAuth } from '../account/useAuth';
-import { SubmissionStatus, SubmissionSortByEnum } from 'shared';
 
 const ContributionsPageWrapper = () => {
-  const { isLoading, isLoggedIn } = useAuth();
   const location = useLocation();
 
   const getCurrentStatus = () => {
@@ -35,10 +31,6 @@ const ContributionsPageWrapper = () => {
   };
 
   const basePath = getBasePath();
-
-  if (isLoading) {
-    return <Loading />;
-  }
 
   return (
     <AppPageWrapper>
@@ -77,16 +69,12 @@ const ContributionsPageWrapper = () => {
           ]}
         />
 
-        {isLoggedIn ? (
-          <Outlet
-            context={{
-              status: currentStatus,
-              sortBy: SubmissionSortByEnum.Oldest,
-            }}
-          />
-        ) : (
-          <Feedback message="Please login to access this page" />
-        )}
+        <Outlet
+          context={{
+            status: currentStatus,
+            sortBy: SubmissionSortByEnum.Oldest,
+          }}
+        />
       </Stack>
     </AppPageWrapper>
   );

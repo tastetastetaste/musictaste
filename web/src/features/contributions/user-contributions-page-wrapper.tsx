@@ -1,22 +1,18 @@
-import { Outlet, useParams } from 'react-router-dom';
-import { Stack } from '../../components/flex/stack';
-import { Navigation } from '../../components/nav';
-import AppPageWrapper from '../../layout/app-page-wrapper';
-import { useAuth } from '../account/useAuth';
-import { Loading } from '../../components/loading';
-import { Feedback } from '../../components/feedback';
-import { Typography } from '../../components/typography';
 import { useQuery } from 'react-query';
-import { cacheKeys } from '../../utils/cache-keys';
-import { api } from '../../utils/api';
+import { Outlet, useParams } from 'react-router-dom';
 import { SubmissionSortByEnum } from 'shared';
+import { Stack } from '../../components/flex/stack';
+import { Loading } from '../../components/loading';
+import { Navigation } from '../../components/nav';
+import { Typography } from '../../components/typography';
+import AppPageWrapper from '../../layout/app-page-wrapper';
+import { api } from '../../utils/api';
+import { cacheKeys } from '../../utils/cache-keys';
 
 const UserContributionsPageWrapper = () => {
   const { username } = useParams();
 
-  const { isLoading, isLoggedIn } = useAuth();
-
-  const { data, isLoading: isLoading2 } = useQuery(
+  const { data, isLoading } = useQuery(
     cacheKeys.userProfileKey(username),
     () => api.getUserProfile(username!),
     {
@@ -32,7 +28,7 @@ const UserContributionsPageWrapper = () => {
     },
   );
 
-  if (isLoading || isLoading2 || !data) {
+  if (isLoading || !data) {
     return <Loading />;
   }
 
@@ -62,16 +58,12 @@ const UserContributionsPageWrapper = () => {
             },
           ]}
         />
-        {isLoggedIn ? (
-          <Outlet
-            context={{
-              userId: data.user.id,
-              sortBy: SubmissionSortByEnum.Newest,
-            }}
-          />
-        ) : (
-          <Feedback message="Please login to access this page" />
-        )}
+        <Outlet
+          context={{
+            userId: data.user.id,
+            sortBy: SubmissionSortByEnum.Newest,
+          }}
+        />
       </Stack>
     </AppPageWrapper>
   );

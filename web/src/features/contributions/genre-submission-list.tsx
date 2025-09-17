@@ -55,9 +55,9 @@ export const GenreSubmissionItem = ({
       />
       <SubmissionField
         label="Note"
-        originalValue={submission.note}
+        originalValue={undefined}
         changedValue={submission.note}
-        showOriginal={hasOriginal}
+        showOriginal={false}
         renderValue={(v) => <Typography whiteSpace="pre-wrap">{v}</Typography>}
       />
     </SubmissionItemWrapper>

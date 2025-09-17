@@ -16,3 +16,4 @@ export const AUTH_REQUIRED_PAGE =
   'Please login or sign up to access this page.';
 
 export const ON_EDIT_RELEASE = 'Changes submitted successfully';
+export const ON_EDIT_GENRE = 'Changes submitted successfully';

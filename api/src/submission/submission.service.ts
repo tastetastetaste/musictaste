@@ -24,6 +24,7 @@ import {
   ReleaseType,
   SubmissionStatus,
   SubmissionType,
+  UpdateGenreDto,
   UpdateReleaseDto,
   VoteType,
 } from 'shared';
@@ -48,6 +49,7 @@ import { GenreSubmission } from '../../db/entities/genre-submission.entity';
 import { GenreSubmissionVote } from '../../db/entities/genre-submission-vote.entity';
 import { GenresService } from '../genres/genres.service';
 import { SubmissionSortByEnum } from 'shared';
+import { Genre } from '../../db/entities/genre.entity';
 
 @Injectable()
 export class SubmissionService {
@@ -57,6 +59,8 @@ export class SubmissionService {
     @InjectRepository(Artist) private artistsRepository: Repository<Artist>,
 
     @InjectRepository(Label) private labelsRepository: Repository<Label>,
+
+    @InjectRepository(Genre) private genresRepository: Repository<Genre>,
 
     @InjectRepository(Language)
     private languagesRepository: Repository<Language>,
@@ -369,11 +373,13 @@ export class SubmissionService {
   // genreSubmission.genreId = genre.id;
   private async applyGenreSubmission(submission: GenreSubmission) {
     if (submission.submissionType === SubmissionType.CREATE) {
-      const genre = await this.genresService.createGenre(submission.changes);
+      const genre = await this.genresService.createGenre(submission);
 
       return genre;
     } else {
-      return false;
+      const genre = await this.genresService.updateGenre(submission);
+
+      return genre;
     }
   }
 
@@ -397,6 +403,52 @@ export class SubmissionService {
     return {
       message: `Genre "${name}" is awaiting approval`,
       genreSubmission: genreSubmission,
+    };
+  }
+
+  async updateGenreSubmission(
+    genreId: string,
+    { name, bio, note }: UpdateGenreDto,
+    user: CurrentUserPayload,
+  ) {
+    if (user.contributorStatus === ContributorStatus.NOT_A_CONTRIBUTOR)
+      throw new BadRequestException(
+        "You can't submit contributions at this time",
+      );
+
+    const genre = await this.genresRepository.findOne({
+      where: { id: genreId },
+    });
+
+    if (!genre) throw new NotFoundException();
+
+    const exist = await this.genreSubmissionRepository.findOne({
+      where: {
+        genreId,
+        submissionStatus: SubmissionStatus.OPEN,
+      },
+    });
+
+    if (exist) {
+      throw new BadRequestException(
+        'There is already an open edit submission for this genre',
+      );
+    }
+
+    const gs = new GenreSubmission();
+    gs.genreId = genreId;
+    gs.changes = { name, bio };
+    gs.original = { name: genre.name, bio: genre.bio };
+    gs.submissionType = SubmissionType.UPDATE;
+    gs.submissionStatus = SubmissionStatus.OPEN;
+    gs.userId = user.id;
+    gs.note = note;
+
+    await this.genreSubmissionRepository.save(gs);
+
+    return {
+      message: `Genre "${name}" is awaiting approval`,
+      genreSubmission: gs,
     };
   }
 
@@ -794,7 +846,8 @@ export class SubmissionService {
         const genre = await this.applyGenreSubmission(genreSubmission);
         if (genre) {
           genreSubmission.submissionStatus = SubmissionStatus.APPROVED;
-          genreSubmission.genreId = genre.id;
+          if (genreSubmission.submissionType === SubmissionType.CREATE)
+            genreSubmission.genreId = genre.id;
         } else {
           genreSubmission.submissionStatus = SubmissionStatus.DISAPPROVED;
         }

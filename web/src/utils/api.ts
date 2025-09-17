@@ -51,6 +51,7 @@ import {
   IUserTag,
   ProcessPendingDeletionDto,
   SearchType,
+  UpdateGenreDto,
   UpdateReleaseDto,
   UpdateUserContributorStatusDto,
   UpdateUserSupporterStatusDto,
@@ -432,6 +433,9 @@ const updateRelease = ({ id, data }: { id: string; data: UpdateReleaseDto }) =>
 const createGenre = (data: CreateGenreDto) =>
   client.post('submissions/genres', data).then((res) => res.data);
 
+const updateGenre = ({ id, data }: { id: string; data: UpdateGenreDto }) =>
+  client.post('submissions/genres/' + id, data).then((res) => res.data);
+
 const getReleaseSubmissions = ({
   page,
   status,
@@ -730,6 +734,7 @@ export const api = {
   createRelease,
   updateRelease,
   createGenre,
+  updateGenre,
   getReleaseSubmissions,
   getArtistSubmissions,
   getLabelSubmissions,

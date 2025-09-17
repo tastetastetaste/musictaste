@@ -15,7 +15,6 @@ import { GenresService } from './genres.service';
 import { CurrentUserPayload } from '../auth/session.serializer';
 
 @Controller('genres')
-@UseGuards(AuthenticatedGuard)
 export class GenresController {
   constructor(private readonly genresService: GenresService) {}
 
@@ -30,6 +29,7 @@ export class GenresController {
   }
 
   @Post('rg')
+  @UseGuards(AuthenticatedGuard)
   vote(@Body() body: CreateGenreVoteDto, @CurUser() user: CurrentUserPayload) {
     if (user.contributorStatus < ContributorStatus.CONTRIBUTOR)
       throw new UnauthorizedException();
@@ -38,6 +38,7 @@ export class GenresController {
   }
 
   @Delete('rg/:id')
+  @UseGuards(AuthenticatedGuard)
   removeVote(@Param('id') id: string, @CurUser('id') userId) {
     return this.genresService.removeGenreVote({ releaseGenreId: id }, userId);
   }
