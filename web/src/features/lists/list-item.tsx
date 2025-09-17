@@ -10,6 +10,7 @@ import {
 } from '../releases/release/shared';
 import { Typography } from '../../components/typography';
 import { getYearFromDate } from '../../utils/date-format';
+import { formatReleaseType } from '../releases/format-release-type';
 import {
   getArtistPathname,
   getReleasePathname,
@@ -63,9 +64,8 @@ export const ListItem: React.FC<IListItemProps> = ({
               {release.title}
             </ReleaseTitleLink>
             {note ? <Markdown>{note}</Markdown> : null}
-
             <Typography size="small">
-              {`${getYearFromDate(release.date)} · ${release.type}`}
+              {`${getYearFromDate(release.date)} · ${formatReleaseType(release.type)}`}
             </Typography>
           </Stack>
         </FlexChild>

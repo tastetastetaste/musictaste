@@ -17,6 +17,7 @@ import { SOMETHING_WENT_WRONG } from '../../static/feedback';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
 import { formatExactDate, getYearFromDate } from '../../utils/date-format';
+import { formatReleaseType } from './format-release-type';
 import {
   getArtistPathname,
   getGenrePathname,
@@ -81,7 +82,7 @@ const ReleaseInfo: React.FC<{
         >
           Type
         </Typography>
-        <Typography>{type}</Typography>
+        <Typography>{formatReleaseType(type)}</Typography>
       </Group>
       {languagesStr && (
         <Group gap={5}>

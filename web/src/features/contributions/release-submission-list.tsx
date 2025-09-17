@@ -11,6 +11,7 @@ import { Stack } from '../../components/flex/stack';
 import { Loading } from '../../components/loading';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
+import { formatReleaseType } from '../releases/format-release-type';
 import { getReleasePathname } from '../../utils/get-pathname';
 import {
   DiscardSubmissionFn,
@@ -63,7 +64,7 @@ export const ReleaseSubmissionItem = ({
         originalValue={original?.type}
         changedValue={changes?.type}
         showOriginal={hasOriginal}
-        renderValue={(v) => <span>{v}</span>}
+        renderValue={(v) => <span>{formatReleaseType(v)}</span>}
       />
       <SubmissionField
         label="Date"

@@ -5,6 +5,7 @@ import { Stack } from '../../../components/flex/stack';
 import { ReleaseActions } from '../release-actions/release-actions';
 import { Typography } from '../../../components/typography';
 import { getYearFromDate } from '../../../utils/date-format';
+import { formatReleaseType } from '../format-release-type';
 import {
   getArtistPathname,
   getReleasePathname,
@@ -70,7 +71,7 @@ export const Release: React.FC<IReleaseItemProps> = ({
             </ReleaseTitleLink>
             {isDetailedRelease(release) && (
               <Typography size="small">
-                {`${getYearFromDate(release.date)} · ${release.type}`}
+                {`${getYearFromDate(release.date)} · ${formatReleaseType(release.type)}`}
               </Typography>
             )}
           </Stack>
@@ -121,7 +122,7 @@ export const Release: React.FC<IReleaseItemProps> = ({
                 <ReleaseActions id={release.id} date={release.date} />
               </Group>
               <Typography size="small" color="sub">
-                {`${getYearFromDate(release.date)} · ${release.type}`}
+                {`${getYearFromDate(release.date)} · ${formatReleaseType(release.type)}`}
               </Typography>
             </>
           )}
