@@ -7,21 +7,39 @@ import { Stack } from '../../components/flex/stack';
 import { IconButton } from '../../components/icon-button';
 import { Typography } from '../../components/typography';
 import { useAuth } from '../account/useAuth';
-import { millisecondsToTimeString } from '../contributions/release-tracks-fields';
+import {
+  millisecondsToTimeString,
+  millisecondsToTimeStringFull,
+} from '../contributions/release-tracks-fields';
 import { useReleaseActions } from './release-actions/useReleaseActions';
 import dayjs from 'dayjs';
-
+import { FlexChild } from '../../components/flex/flex-child';
+import Color from 'color';
+import { Tooltip } from '../../components/popover/tooltip';
 export const FavIcon = IconThumbUpFilled;
 export const LeastFavIcon = IconThumbDownFilled;
 
-const StyledTrack = styled.div<{ alt: boolean }>`
+const StyledTrack = styled.div<{ alt: boolean; upvotesRatio?: number }>`
   display: flex;
   width: 100%;
-  background: ${({ theme, alt }) =>
-    alt ? theme.colors.background_sub : theme.colors.background};
+  background: ${({ theme, alt, upvotesRatio }) =>
+    typeof upvotesRatio === 'number'
+      ? `linear-gradient(90deg, ${Color(
+          alt ? theme.colors.background_sub : theme.colors.background,
+        )
+          .alpha(1)
+          .rgb()
+          .toString()} ${upvotesRatio - 2}%, ${Color(theme.colors.error).alpha(0.3).rgb().toString()} ${upvotesRatio + 2}%)`
+      : alt
+        ? theme.colors.background_sub
+        : theme.colors.background};
   padding: 8px 16px;
   border-radius: ${({ theme }) => theme.border_radius.base};
   gap: 12px;
+`;
+
+const DurationContainer = styled.div`
+  padding: 8px 16px;
 `;
 
 type TrackWithMyVote = ITrackWithVotes & {
@@ -94,49 +112,86 @@ const ReleaseTracks: React.FC<{
         <Stack>
           {tracks &&
             tracks.map((t, i) => (
-              <StyledTrack key={t.id} alt={i % 2 === 0}>
-                <Group justify="apart">
-                  <Group gap="sm">
-                    <Typography color="sub" whiteSpace="nowrap">
-                      {t.track}
-                    </Typography>
-                    <Typography>{t.title}</Typography>
-                  </Group>
+              <StyledTrack
+                key={t.id}
+                alt={i % 2 === 0}
+                upvotesRatio={
+                  (Number(t.upvotes) /
+                    (Number(t.upvotes) + Number(t.downvotes))) *
+                  100
+                }
+              >
+                {/* track number fixed width */}
+                <FlexChild basis="20px">
+                  <Typography color="sub" whiteSpace="nowrap">
+                    {t.track}
+                  </Typography>
+                </FlexChild>
+                {/* track title flex grow and shrink */}
+                <FlexChild grow={1} shrink={1}>
+                  <Typography>{t.title}</Typography>
+                </FlexChild>
+                {/* track duration fixed width */}
+                <FlexChild basis="40px">
                   <Typography color="sub" whiteSpace="nowrap">
                     {t.durationMs ? millisecondsToTimeString(t.durationMs) : ''}
                   </Typography>
-                </Group>
+                </FlexChild>
+                {/* track reactions fixed width */}
                 {!isUnreleased && (
-                  <Group justify="end" gap="sm">
-                    {isLoggedIn && (
-                      <IconButton
-                        title="Favorite"
-                        active={t.vote === VoteType.UP}
-                        onClick={() => clickFu(VoteType.UP, t)}
-                        disabled={createEntryLoading}
+                  <FlexChild basis={isLoggedIn ? '80px' : '40px'}>
+                    <Group justify="apart">
+                      {isLoggedIn && (
+                        <IconButton
+                          title="Favorite"
+                          active={t.vote === VoteType.UP}
+                          onClick={() => clickFu(VoteType.UP, t)}
+                          disabled={createEntryLoading}
+                        >
+                          <FavIcon />
+                        </IconButton>
+                      )}
+                      <Tooltip
+                        content={`${t.upvotes} upvotes - ${t.downvotes} downvotes`}
                       >
-                        <FavIcon />
-                      </IconButton>
-                    )}
-                    <Typography whiteSpace="nowrap">
-                      {Number(t.upvotes) - Number(t.downvotes) > 0
-                        ? `+${Number(t.upvotes) - Number(t.downvotes)}`
-                        : Number(t.upvotes) - Number(t.downvotes)}
-                    </Typography>
-                    {isLoggedIn && (
-                      <IconButton
-                        title="Least Favorite"
-                        active={t.vote === VoteType.DOWN}
-                        onClick={() => clickFu(VoteType.DOWN, t)}
-                        disabled={createEntryLoading}
-                      >
-                        <LeastFavIcon />
-                      </IconButton>
-                    )}
-                  </Group>
+                        <Typography whiteSpace="nowrap" size="body-bold">
+                          {Number(t.upvotes) - Number(t.downvotes) > 0
+                            ? `+${Number(t.upvotes) - Number(t.downvotes)}`
+                            : Number(t.upvotes) - Number(t.downvotes)}
+                        </Typography>
+                      </Tooltip>
+
+                      {isLoggedIn && (
+                        <IconButton
+                          title="Least Favorite"
+                          active={t.vote === VoteType.DOWN}
+                          onClick={() => clickFu(VoteType.DOWN, t)}
+                          disabled={createEntryLoading}
+                        >
+                          <LeastFavIcon />
+                        </IconButton>
+                      )}
+                    </Group>
+                  </FlexChild>
                 )}
               </StyledTrack>
             ))}
+
+          {tracks?.length > 0 && (
+            <Group justify="end">
+              <DurationContainer>
+                <Typography color="sub">
+                  {tracks.length} track{tracks.length !== 1 ? 's' : ''}
+                  {tracks && tracks.every((t) => t.durationMs)
+                    ? ', ' +
+                      millisecondsToTimeStringFull(
+                        tracks?.reduce((acc, t) => acc + t.durationMs, 0),
+                      )
+                    : ''}
+                </Typography>
+              </DurationContainer>
+            </Group>
+          )}
         </Stack>
       </Stack>
     </div>

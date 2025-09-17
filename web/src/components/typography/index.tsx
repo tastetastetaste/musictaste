@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
 
 interface TypographyProps {
-  size?: 'title-xl' | 'title-lg' | 'title' | 'body' | 'small';
+  size?: 'title-xl' | 'title-lg' | 'title' | 'body' | 'body-bold' | 'small';
   color?: 'main' | 'sub' | 'primary' | 'highlight' | 'error' | 'bg' | 'inherit';
   whiteSpace?: 'normal' | 'pre-wrap' | 'nowrap';
 }
@@ -34,7 +34,7 @@ export const Typography = styled.span<TypographyProps>`
   font-weight: ${({ theme, size }) =>
     size === 'title-xl'
       ? theme.font.weight.bolder
-      : size === 'title-lg' || size === 'title'
+      : size === 'title-lg' || size === 'title' || size === 'body-bold'
         ? theme.font.weight.bold
         : theme.font.weight.normal};
   display: block;

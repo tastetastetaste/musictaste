@@ -22,6 +22,25 @@ export function millisecondsToTimeString(ms: string | number) {
   }
 }
 
+export function millisecondsToTimeStringFull(ms: string | number) {
+  ms = Number(ms);
+  const hours = Math.floor(ms / 3600000);
+  const minutes = Math.floor((ms % 3600000) / 60000);
+  const seconds = Math.floor((ms % 60000) / 1000);
+
+  const hourStr = `${hours} hour${hours !== 1 ? 's' : ''}`;
+  const minuteStr = `${minutes < 10 ? '0' : ''}${minutes} minute${minutes !== 1 ? 's' : ''}`;
+  const secondStr = `${seconds < 10 ? '0' : ''}${seconds} second${seconds !== 1 ? 's' : ''}`;
+
+  if (hours > 0) {
+    return `${hourStr}, ${minuteStr} and ${secondStr}`;
+  } else if (minutes > 0) {
+    return `${minuteStr} and ${secondStr}`;
+  } else {
+    return secondStr;
+  }
+}
+
 export function timeStringToMilliseconds(timeString: string) {
   // SS
   let milliseconds = Number(timeString) * 1000;
