@@ -14,6 +14,8 @@ const HistoryPageWrapper = () => {
     outletContext = { artistId: id };
   } else if (pathname.includes('/history/label/')) {
     outletContext = { labelId: id };
+  } else if (pathname.includes('/history/genre/')) {
+    outletContext = { genreId: id };
   }
 
   return (

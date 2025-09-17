@@ -25,12 +25,12 @@ const GenrePage = () => {
   return (
     <AppPageWrapper
       title={genre ? genre.name : ''}
-      // menu={[
-      //   {
-      //     label: 'History',
-      //     to: '/history/genre/' + genre?.id,
-      //   },
-      // ]}
+      menu={[
+        {
+          label: 'History',
+          to: '/history/genre/' + genre?.id,
+        },
+      ]}
     >
       {isLoading ? <Loading /> : <div></div>}
 
@@ -40,7 +40,8 @@ const GenrePage = () => {
             css={{
               height: '130px',
               display: 'flex',
-              alignItems: 'center',
+              flexDirection: 'column',
+              justifyContent: 'center',
             }}
           >
             <Typography size="title-xl" as="h1">

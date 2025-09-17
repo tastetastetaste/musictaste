@@ -156,7 +156,8 @@ const ArtistPage = () => {
             css={{
               height: '130px',
               display: 'flex',
-              alignItems: 'center',
+              flexDirection: 'column',
+              justifyContent: 'center',
             }}
           >
             <Typography size="title-xl" as="h1">

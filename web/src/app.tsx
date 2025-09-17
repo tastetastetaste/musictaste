@@ -652,6 +652,14 @@ const router = createBrowserRouter([
               </Suspense>
             ),
           },
+          {
+            path: 'genre/:id',
+            element: (
+              <Suspense fallback={<Fallback />}>
+                <GenreSubmissionsList />
+              </Suspense>
+            ),
+          },
         ],
       },
       {
