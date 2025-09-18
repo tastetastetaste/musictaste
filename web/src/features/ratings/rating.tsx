@@ -11,7 +11,7 @@ import { Stack } from '../../components/flex/stack';
 
 const StyledRatingCircle = styled.div<{ color?: string; lg?: boolean }>`
   flex: 0 0 auto;
-  width: ${({ lg }) => (lg ? '70px' : '50px')};
+  width: ${({ lg }) => (lg ? '80px' : '50px')};
   color: ${({ color, theme }) => color || theme.colors.text};
   svg {
     display: block;
@@ -27,7 +27,7 @@ const StyledRatingCircle = styled.div<{ color?: string; lg?: boolean }>`
 `;
 
 const StyledRatingCount = styled.span`
-  font-size: ${({ theme }) => theme.font.size.small};
+  font-size: ${({ theme }) => theme.font.size.body};
   align-self: center;
   color: ${({ theme }) => theme.colors.text_sub};
 `;
@@ -125,33 +125,31 @@ export const RatingCircle = ({
   const color = getColor(rating);
 
   return (
-    <StyledRatingCircle color={value ? color : undefined} lg={lg}>
-      <svg viewBox="0 0 36 36">
-        <path
-          strokeDasharray={`${value}, 100`}
-          d="M18 2.0845
-                  a 15.9155 15.9155 0 0 1 0 31.831
-                  a 15.9155 15.9155 0 0 1 0 -31.831"
-        />
-        <text
-          x="50%"
-          y="53%"
-          dominantBaseline="middle"
-          textAnchor="middle"
-          style={{
-            color: 'inherit',
-            fill: 'currentColor',
-            fontWeight: '700',
-          }}
-        >
-          {value ? formatRatingNumber(value) : 'NA'}
-          {count && (
-            <tspan fontWeight={200} fontSize={8}>
-              ({count})
-            </tspan>
-          )}
-        </text>
-      </svg>
-    </StyledRatingCircle>
+    <Stack align="center">
+      <StyledRatingCircle color={value ? color : undefined} lg={lg}>
+        <svg viewBox="0 0 36 36">
+          <path
+            strokeDasharray={`${value}, 100`}
+            d="M18 2.0845
+                    a 15.9155 15.9155 0 0 1 0 31.831
+                    a 15.9155 15.9155 0 0 1 0 -31.831"
+          />
+          <text
+            x="50%"
+            y="53%"
+            dominantBaseline="middle"
+            textAnchor="middle"
+            style={{
+              color: 'inherit',
+              fill: 'currentColor',
+              fontWeight: '700',
+            }}
+          >
+            {value ? formatRatingNumber(value) : 'NA'}
+          </text>
+        </svg>
+      </StyledRatingCircle>
+      {count && <StyledRatingCount>({count})</StyledRatingCount>}
+    </Stack>
   );
 };
