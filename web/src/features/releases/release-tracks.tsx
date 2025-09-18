@@ -116,9 +116,11 @@ const ReleaseTracks: React.FC<{
                 key={t.id}
                 alt={i % 2 === 0}
                 upvotesRatio={
-                  (Number(t.upvotes) /
-                    (Number(t.upvotes) + Number(t.downvotes))) *
-                  100
+                  t.upvotes || t.downvotes
+                    ? (Number(t.upvotes) /
+                        (Number(t.upvotes) + Number(t.downvotes))) *
+                      100
+                    : null
                 }
               >
                 {/* track number fixed width */}

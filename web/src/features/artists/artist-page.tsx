@@ -1,8 +1,10 @@
+import { IconChevronDown, IconChevronRight } from '@tabler/icons-react';
 import { useState } from 'react';
 import { useQuery } from 'react-query';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { IArtistResponse, IRelease } from 'shared';
 import { Grid } from '../../components/flex/grid';
+import { Group } from '../../components/flex/group';
 import { Stack } from '../../components/flex/stack';
 import { Loading } from '../../components/loading';
 import { Typography } from '../../components/typography';
@@ -17,13 +19,38 @@ import { ReportDialog } from '../reports/report-dialog';
 interface ReleasesSectionProps {
   title: string;
   releases: IRelease[];
+  expand?: boolean;
 }
 
 const ReleasesSection: React.FC<ReleasesSectionProps> = ({
   title,
   releases,
+  expand = false,
 }) => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
+
   if (releases.length === 0) return null;
+
+  const sectionKey = `${title.toLowerCase().replace(/\s+/g, '_')}`;
+  const isCollapsedParam = searchParams.get(sectionKey);
+
+  const isCollapsed = isCollapsedParam ? isCollapsedParam === 'true' : !expand;
+
+  const toggleCollapsed = () => {
+    const newSearchParams = new URLSearchParams(searchParams);
+    const newCollapsedState = !isCollapsed;
+
+    newSearchParams.set(sectionKey, newCollapsedState.toString());
+    navigate(`?${newSearchParams.toString()}`, { replace: true });
+  };
+
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      toggleCollapsed();
+    }
+  };
 
   const sortedReleases = [...releases].sort(
     (a, b) => Number(new Date(b.date)) - Number(new Date(a.date)),
@@ -31,12 +58,33 @@ const ReleasesSection: React.FC<ReleasesSectionProps> = ({
 
   return (
     <>
-      <Typography size="title-lg">{title}</Typography>
-      <Grid cols={[2, 4, 4, 6]} gap={RELEASE_GRID_GAP}>
-        {sortedReleases.map((release) => (
-          <Release release={release} key={release.id} />
-        ))}
-      </Grid>
+      <div
+        css={{ cursor: 'pointer', padding: '8px 0' }}
+        onClick={toggleCollapsed}
+        onKeyDown={handleKeyDown}
+        tabIndex={0}
+        role="button"
+        aria-label={`${isCollapsed ? 'Expand' : 'Collapse'} ${title} section`}
+      >
+        <Group gap="md" align="center">
+          <Typography size="title-lg">{title}</Typography>
+          <Typography size="title" color="sub">
+            ({releases.length})
+          </Typography>
+          {isCollapsed ? (
+            <IconChevronRight strokeWidth={3} />
+          ) : (
+            <IconChevronDown strokeWidth={3} />
+          )}
+        </Group>
+      </div>
+      {!isCollapsed && (
+        <Grid cols={[2, 4, 4, 6]} gap={RELEASE_GRID_GAP}>
+          {sortedReleases.map((release) => (
+            <Release release={release} key={release.id} />
+          ))}
+        </Grid>
+      )}
     </>
   );
 };
@@ -66,24 +114,40 @@ const Releases: React.FC<{ releases: IArtistResponse['releases'] }> = ({
       types: ['Live'],
     },
     {
-      title: 'Compilation',
+      title: 'DJ Mixes',
+      types: ['DJMix'],
+    },
+    {
+      title: 'Compilations',
       types: ['Compilation'],
     },
     {
-      title: 'Reissue',
+      title: 'Soundtracks',
+      types: ['Soundtrack'],
+    },
+    {
+      title: 'Remixes',
+      types: ['Remix'],
+    },
+    {
+      title: 'Covers',
+      types: ['Cover'],
+    },
+    {
+      title: 'Instrumentals',
+      types: ['Instrumental'],
+    },
+    {
+      title: 'Videos',
+      types: ['Video'],
+    },
+    {
+      title: 'Reissues',
       types: ['Reissue'],
     },
     {
       title: 'Other',
-      types: [
-        'Other',
-        'Instrumental',
-        'Cover',
-        'Soundtrack',
-        'DJMix',
-        'Video',
-        'Remix',
-      ],
+      types: ['Other'],
     },
     {
       title: 'Unofficial',
@@ -91,17 +155,27 @@ const Releases: React.FC<{ releases: IArtistResponse['releases'] }> = ({
     },
   ];
 
+  let firstSectionExpanded = false;
+
   return (
     <Stack gap="sm">
       {sections.map((section) => {
         const filteredReleases = releases.filter((r) =>
           section.types.includes(r.type),
         );
+
+        // expand first section that has releases and collapse other sections
+        const expand = !firstSectionExpanded && filteredReleases.length > 0;
+        if (expand) {
+          firstSectionExpanded = true;
+        }
+
         return (
           <ReleasesSection
             key={section.title}
             title={section.title}
             releases={filteredReleases}
+            expand={expand}
           />
         );
       })}
