@@ -42,10 +42,11 @@ const GenrePage = () => {
         <Stack>
           <div
             css={{
-              height: '130px',
+              minHeight: '130px',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'center',
+              padding: '10px 0',
             }}
           >
             <Typography size="title-xl" as="h1">

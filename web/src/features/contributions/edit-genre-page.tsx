@@ -108,7 +108,7 @@ const EditGenrePage = () => {
         >
           <Stack gap="sm">
             <Group justify="apart" align="center" wrap>
-              <Typography size="title-lg">Add Genre</Typography>
+              <Typography size="title-lg">Edit Genre</Typography>
               <Link to="/contributing">
                 Need help? Read the Contributing Guide.
               </Link>

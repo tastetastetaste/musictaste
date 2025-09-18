@@ -13,11 +13,11 @@ import { baseTheme, THEME_COLOR_PRESETS } from './theme-constants';
 export function useThemeColors() {
   const [themeColors, setThemeColors] = useLocalStorage<Theme['colors']>(
     'themeColors',
-    THEME_COLOR_PRESETS['light'],
+    THEME_COLOR_PRESETS['gray 1'],
   );
   const [selectedPreset, setSelectedPreset] = useLocalStorage<string>(
     'themePreset',
-    'light',
+    'gray 1',
   );
 
   const applyPreset = (presetName: string) => {
