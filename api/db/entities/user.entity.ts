@@ -6,7 +6,7 @@ import {
   OneToMany,
   UpdateDateColumn,
 } from 'typeorm';
-import { ContributorStatus, SupporterStatus } from 'shared';
+import { ContributorStatus, SupporterStatus, UpdateUserThemeDto } from 'shared';
 import { ArtistSubmission } from './artist-submission.entity';
 import { SharedBaseEntity } from '../shared/base-entity';
 import { GenreSubmission } from './genre-submission.entity';
@@ -58,6 +58,9 @@ export class User extends SharedBaseEntity {
 
   @Column('timestamp', { nullable: true })
   supporterStartDate: string;
+
+  @Column('simple-json', { nullable: true })
+  theme: UpdateUserThemeDto;
 
   @OneToMany(() => UserRelease, (ur) => ur.user)
   entries: UserRelease[];

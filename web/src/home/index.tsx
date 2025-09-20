@@ -122,7 +122,7 @@ const HomePage = () => {
             ))}
         </Grid>
       </Stack>
-      <Support />
+      {/* <Support /> */}
     </AppPageWrapper>
   );
 };

@@ -11,6 +11,7 @@ import { ReportDialog } from '../reports/report-dialog';
 import { useState } from 'react';
 import { cacheKeys } from '../../utils/cache-keys';
 import { updateReviewAfterVote } from './update-review-after-vote';
+import { UserThemeProvider } from '../theme/user-theme-provider';
 
 const ReviewPage = () => {
   const { id } = useParams();
@@ -31,11 +32,7 @@ const ReviewPage = () => {
 
   const [openReport, setOpenReport] = useState(false);
 
-  if (isFetching && !data) {
-    return <Loading />;
-  }
-
-  if (!id || !data || !data.entry || !data.entry.reviewId) {
+  if (!isFetching && (!id || !data || !data.entry || !data.entry.reviewId)) {
     return <Feedback message={SOMETHING_WENT_WRONG} />;
   }
 
@@ -50,41 +47,47 @@ const ReviewPage = () => {
     });
   };
 
-  const isMyReview = me?.id === data.entry.userId;
+  const isMyReview = me?.id === data?.entry?.userId;
 
   return (
-    <AppPageWrapper
-      title="Review"
-      menu={
-        isMyReview
-          ? [{ label: 'Remove', action: removeReviewAction }]
-          : [
-              {
-                label: 'Report',
-                action: () => setOpenReport(true),
-              },
-            ]
-      }
-    >
-      <Review
-        entry={data.entry}
-        updateAfterVote={(_, vote) =>
-          updateReviewAfterVote({
-            vote,
-            cacheKey,
-            queryClient: qc,
-          })
+    <UserThemeProvider user={data?.entry?.user}>
+      <AppPageWrapper
+        title="Review"
+        menu={
+          isMyReview
+            ? [{ label: 'Remove', action: removeReviewAction }]
+            : [
+                {
+                  label: 'Report',
+                  action: () => setOpenReport(true),
+                },
+              ]
         }
-        fullPage
-      />
+      >
+        {isFetching ? (
+          <Loading />
+        ) : (
+          <Review
+            entry={data.entry}
+            updateAfterVote={(_, vote) =>
+              updateReviewAfterVote({
+                vote,
+                cacheKey,
+                queryClient: qc,
+              })
+            }
+            fullPage
+          />
+        )}
 
-      <ReportDialog
-        isOpen={openReport}
-        onClose={() => setOpenReport(false)}
-        id={id}
-        type="review"
-      />
-    </AppPageWrapper>
+        <ReportDialog
+          isOpen={openReport}
+          onClose={() => setOpenReport(false)}
+          id={id}
+          type="review"
+        />
+      </AppPageWrapper>
+    </UserThemeProvider>
   );
 };
 

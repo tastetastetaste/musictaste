@@ -22,9 +22,9 @@ import {
   SITE_NAME,
   TWITTER_URL,
 } from '../../static/site-info';
-// import { themeOptions, useThemeSwitcher } from '../../features/theme/useTheme';
 import { Sidebar } from './sidebar';
 import { useAuth } from '../../features/account/useAuth';
+import { Markdown } from '../../components/markdown';
 
 const SidebarContent = ({
   closeSidebar,
@@ -91,7 +91,9 @@ const SidebarContent = ({
             </IconButton>
           </Group>
           <Button onClick={onOpenContactDialog}>Contact</Button>
-          <Button onClick={onOpenSupportDialog}>Support</Button>
+          <Button onClick={onOpenSupportDialog} variant="highlight">
+            Support us
+          </Button>
 
           <Typography size="small">
             <Link to="/legal/terms" size="small">
@@ -143,14 +145,24 @@ const AppSidebar = () => {
       <Dialog
         isOpen={openSupportDialog}
         onClose={() => setOpenSupportDialog(false)}
-        title="Support us"
+        title="Thank you for considering supporting MusicTaste!"
       >
-        <Typography>
-          You can support us by donating on Ko-fi. Your support will help us
-          keep the site alive, further its development, and provide more
-          resources to improve our services.
-        </Typography>
-        <Button onClick={() => window.open(KOFI_LINK, '_blank')}>Donate</Button>
+        <Markdown>
+          {`Your donation will allow us to put more time, effort, and resources into this project. You will also be making the website better for everyone!
+
+You will get the following for one year:
+- Supporter badge
+- The ability to specify custom profile theme colors that appear on your profile and in your full page reviews and lists
+- More supporter only features as they are added
+
+Donations are made through our Ko-fi page`}
+        </Markdown>
+        <Button
+          onClick={() => window.open(KOFI_LINK, '_blank')}
+          variant="highlight"
+        >
+          Donate
+        </Button>
       </Dialog>
     </Fragment>
   );

@@ -1,17 +1,18 @@
-import { IUserProfileResponse } from 'shared';
+import { useState } from 'react';
 import { useMutation, useQuery } from 'react-query';
 import { Outlet, useParams } from 'react-router-dom';
+import { IUserProfileResponse } from 'shared';
+import { Feedback } from '../../components/feedback';
 import { Stack } from '../../components/flex/stack';
 import { Loading } from '../../components/loading';
 import AppPageWrapper from '../../layout/app-page-wrapper';
 import { SOMETHING_WENT_WRONG } from '../../static/feedback';
 import { api } from '../../utils/api';
-import { Feedback } from '../../components/feedback';
-import { useAuth } from '../account/useAuth';
-import { UserOverview } from './user-overview';
-import { useState } from 'react';
-import { ReportDialog } from '../reports/report-dialog';
 import { cacheKeys } from '../../utils/cache-keys';
+import { useAuth } from '../account/useAuth';
+import { ReportDialog } from '../reports/report-dialog';
+import { UserThemeProvider } from '../theme/user-theme-provider';
+import { UserOverview } from './user-overview';
 
 export type UserPageOutletContext = {
   isUserMyself: boolean;
@@ -87,43 +88,45 @@ const UserPageWrapper: React.FC = () => {
   const isUserMyself = (me?.id && me.id === data.user.id) || false;
 
   return (
-    <AppPageWrapper
-      title={data.user.name + ' (@' + data.user.username + ') '}
-      menu={[
-        {
-          label: 'Contributions',
-          to: `/${data.user.username}/contributions/releases`,
-        },
-        {
-          label: 'Report',
-          action: () => setOpenReport(true),
-        },
-        ...(isAdmin
-          ? [
-              {
-                label: 'Contributor Status',
-                action: updateContributorStatus,
-              },
-              {
-                label: 'Supporter Status',
-                action: updateSupporterStatus,
-              },
-            ]
-          : []),
-      ]}
-      image={data.user.image?.md}
-    >
-      <Stack>
-        <UserOverview user={data} isUserMyself={isUserMyself} />
-        <Outlet context={{ ...data, isUserMyself }} />
-      </Stack>
-      <ReportDialog
-        isOpen={openReport}
-        onClose={() => setOpenReport(false)}
-        id={data.user.id}
-        type="user"
-      />
-    </AppPageWrapper>
+    <UserThemeProvider user={data.user}>
+      <AppPageWrapper
+        title={data.user.name + ' (@' + data.user.username + ') '}
+        menu={[
+          {
+            label: 'Contributions',
+            to: `/${data.user.username}/contributions/releases`,
+          },
+          {
+            label: 'Report',
+            action: () => setOpenReport(true),
+          },
+          ...(isAdmin
+            ? [
+                {
+                  label: 'Contributor Status',
+                  action: updateContributorStatus,
+                },
+                {
+                  label: 'Supporter Status',
+                  action: updateSupporterStatus,
+                },
+              ]
+            : []),
+        ]}
+        image={data.user.image?.md}
+      >
+        <Stack>
+          <UserOverview user={data} isUserMyself={isUserMyself} />
+          <Outlet context={{ ...data, isUserMyself }} />
+        </Stack>
+        <ReportDialog
+          isOpen={openReport}
+          onClose={() => setOpenReport(false)}
+          id={data.user.id}
+          type="user"
+        />
+      </AppPageWrapper>
+    </UserThemeProvider>
   );
 };
 

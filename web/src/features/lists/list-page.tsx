@@ -34,6 +34,7 @@ import ListItems from './list-items';
 import UpdateListDialog from './update-list-dialog';
 import { ReportDialog } from '../reports/report-dialog';
 import { cacheKeys } from '../../utils/cache-keys';
+import { UserThemeProvider } from '../theme/user-theme-provider';
 
 const ListLike = ({
   likedByMe,
@@ -201,56 +202,54 @@ const ListPage = () => {
     ? [{ label: 'Delete List', action: () => setDeleteListDialogOpen(true) }]
     : [{ label: 'Report', action: () => setOpenReport(true) }];
 
-  if (isLoading) {
-    return <Loading />;
-  }
-
   if (!isLoading && !list) {
     return <Feedback message={SOMETHING_WENT_WRONG} />;
   }
   return (
-    <AppPageWrapper title={(list && list.title) || undefined} menu={menu}>
-      {isLoading ? (
-        <Loading />
-      ) : list ? (
-        <ListItems
-          id={list.id}
-          ranked={list.ranked}
-          grid={list.grid}
-          listItemsCount={list.listItemsCount}
-        >
-          <ListBody
-            list={list}
-            isMyList={isMyList}
-            openEditListDialog={openEditListDialog}
-          />
-        </ListItems>
-      ) : (
-        <div></div>
-      )}
-      {isMyList && list ? (
-        <Fragment>
-          <UpdateListDialog
-            list={list}
-            IsOpen={editListDialogOpen}
-            close={() => setEditListDialogOpen(false)}
-          />
-          <DeleteListDialog
-            list={list}
-            IsOpen={deleteListDialogOpen}
-            close={() => setDeleteListDialogOpen(false)}
-          />
-        </Fragment>
-      ) : (
-        <div></div>
-      )}
-      <ReportDialog
-        isOpen={openReport}
-        onClose={() => setOpenReport(false)}
-        id={id}
-        type="list"
-      />
-    </AppPageWrapper>
+    <UserThemeProvider user={list?.user}>
+      <AppPageWrapper title={(list && list.title) || undefined} menu={menu}>
+        {isLoading ? (
+          <Loading />
+        ) : list ? (
+          <ListItems
+            id={list.id}
+            ranked={list.ranked}
+            grid={list.grid}
+            listItemsCount={list.listItemsCount}
+          >
+            <ListBody
+              list={list}
+              isMyList={isMyList}
+              openEditListDialog={openEditListDialog}
+            />
+          </ListItems>
+        ) : (
+          <div></div>
+        )}
+        {isMyList && list ? (
+          <Fragment>
+            <UpdateListDialog
+              list={list}
+              IsOpen={editListDialogOpen}
+              close={() => setEditListDialogOpen(false)}
+            />
+            <DeleteListDialog
+              list={list}
+              IsOpen={deleteListDialogOpen}
+              close={() => setDeleteListDialogOpen(false)}
+            />
+          </Fragment>
+        ) : (
+          <div></div>
+        )}
+        <ReportDialog
+          isOpen={openReport}
+          onClose={() => setOpenReport(false)}
+          id={id}
+          type="list"
+        />
+      </AppPageWrapper>
+    </UserThemeProvider>
   );
 };
 

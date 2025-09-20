@@ -52,16 +52,21 @@ export interface ListProps {
 }
 
 export function List({ list, withoutUser }: ListProps) {
+  const linkTo = getListPathname(list.id);
+  const linkState = {
+    user: list.user,
+  };
+
   return (
     <CardContainer>
       <Stack gap="sm">
         <Group justify="apart">
-          <Link size="title" to={getListPathname(list.id)}>
+          <Link size="title" to={linkTo} state={linkState}>
             {list.title}
           </Link>
           {!list.published && <IconLock />}
         </Group>
-        <CardLink to={getListPathname(list.id)}>
+        <CardLink to={linkTo} state={linkState}>
           <Thumb cover={list.cover} />
         </CardLink>
         <Group justify="apart">

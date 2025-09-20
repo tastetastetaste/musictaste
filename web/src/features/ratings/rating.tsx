@@ -8,6 +8,7 @@ import {
 import { FlexChild } from '../../components/flex/flex-child';
 import styled from '@emotion/styled';
 import { Stack } from '../../components/flex/stack';
+import { Typography } from '../../components/typography';
 
 const StyledRatingCircle = styled.div<{ color?: string; lg?: boolean }>`
   flex: 0 0 auto;
@@ -67,11 +68,12 @@ export const RatingValue: React.FC<{ value?: number }> = ({ value }) => {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          fontWeight: 'bold',
         }}
       >
         <Stack>
-          <span title={rating}>{rating}</span>
+          <Typography title={rating} size="body-bold">
+            {rating}
+          </Typography>
           {rated && <RatingUnderline value={value} />}
         </Stack>
       </div>
@@ -89,9 +91,9 @@ export const UserRating: React.FC<{
     <Group gap="sm">
       <RatingValue value={rating.rating} />
       {!hideDate && rating?.updatedAt && (
-        <span title={formatDateTime(rating.updatedAt)}>
+        <Typography title={formatDateTime(rating.updatedAt)}>
           {formatRelativeTimeShort(rating.updatedAt)}
-        </span>
+        </Typography>
       )}
     </Group>
   ) : null;

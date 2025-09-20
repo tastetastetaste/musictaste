@@ -12,6 +12,7 @@ import { cacheKeys } from '../../utils/cache-keys';
 const StyledText = styled.text`
   font-size: 3px;
   font-family: ${({ theme }) => theme.font.family.base};
+  color: ${({ theme }) => theme.colors.text};
   pointer-events: none;
 `;
 

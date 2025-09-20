@@ -96,8 +96,6 @@ const GlobalStyles = () => {
 
             overflow-x: hidden;
             overflow-y: scroll;
-
-            padding-bottom: 50px;
           }
 
           input::-webkit-outer-spin-button,

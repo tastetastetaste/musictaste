@@ -54,6 +54,7 @@ import {
   UpdateGenreDto,
   UpdateReleaseDto,
   UpdateUserContributorStatusDto,
+  UpdateUserThemeDto,
   UpdateUserSupporterStatusDto,
   VoteType,
 } from 'shared';
@@ -651,6 +652,14 @@ const updateImage = ({ id, image }: { id: string; image }) =>
       },
     )
     .then((res) => res.data);
+const updateTheme = ({
+  id,
+  theme,
+}: {
+  id: string;
+  theme: UpdateUserThemeDto;
+}) =>
+  client.patch('users/' + id + '/update-theme', theme).then((res) => res.data);
 const follow = ({ id }: { id: string }) =>
   client.post('users/' + id + '/following').then((res) => res.data);
 const unFollow = ({ id }: { id: string }) =>
@@ -762,6 +771,7 @@ export const api = {
   getUserFollowing,
   updateProfile,
   updateImage,
+  updateTheme,
   follow,
   unFollow,
   report,

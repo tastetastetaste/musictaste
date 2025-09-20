@@ -40,7 +40,7 @@ export class AdminService {
       supporterStartDate: new Date().toISOString(),
     });
 
-    await this.redisService.removeUserSessions(userId);
+    // await this.redisService.removeUserSessions(userId);
 
     return true;
   }

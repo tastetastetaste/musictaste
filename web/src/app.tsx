@@ -187,7 +187,11 @@ const QueryProvider = ({ children }: { children: any }) => {
       },
       mutations: {
         onError: (error: any) => {
-          snackbar(error?.response?.data?.message || SOMETHING_WENT_WRONG, {
+          let message = error?.response?.data?.message || SOMETHING_WENT_WRONG;
+          if (Array.isArray(message)) {
+            message = message[0];
+          }
+          snackbar(message, {
             isError: true,
           });
         },

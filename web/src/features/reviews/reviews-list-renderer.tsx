@@ -1,4 +1,4 @@
-import { EntriesSortByEnum } from 'shared';
+import { EntriesSortByEnum, IUserSummary } from 'shared';
 import { api } from '../../utils/api';
 import { useInfiniteQuery, useQueryClient } from 'react-query';
 import { Feedback } from '../../components/feedback';
@@ -13,12 +13,14 @@ export interface ReviewsListRendererProps {
   sortBy?: EntriesSortByEnum.ReviewDate | EntriesSortByEnum.ReviewTop;
   userId?: string;
   releaseId?: string;
+  user?: IUserSummary;
 }
 
 export function ReviewsListRenderer({
   sortBy,
   releaseId,
   userId,
+  user,
 }: ReviewsListRendererProps) {
   const cacheKey = cacheKeys.entriesKey({
     userId,
@@ -61,6 +63,7 @@ export function ReviewsListRenderer({
               <Review
                 key={r.id}
                 entry={r}
+                user={user}
                 updateAfterVote={(id, vote) =>
                   updateReviewAfterVote_3({
                     id,

@@ -8,6 +8,7 @@ const PopoverContainer = styled.div`
   padding: 8px 8px;
   background: ${({ theme }) => theme.colors.background_sub};
   border-radius: ${({ theme }) => theme.border_radius.base};
+  color: ${({ theme }) => theme.colors.text};
 `;
 
 export interface PopoverProps {

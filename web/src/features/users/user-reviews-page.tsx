@@ -10,6 +10,7 @@ const UserReviewsPage = () => {
     <ReviewsListRenderer
       userId={user.id}
       sortBy={EntriesSortByEnum.ReviewDate}
+      user={user}
     />
   );
 };

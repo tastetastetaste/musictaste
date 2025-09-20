@@ -109,6 +109,7 @@ const Reviews: React.FC<{ user: IUser }> = ({ user }) => {
               <Review
                 key={r.id}
                 entry={r}
+                user={user}
                 updateAfterVote={(id, vote) =>
                   updateReviewAfterVote_2({
                     id,

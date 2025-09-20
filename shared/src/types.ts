@@ -30,7 +30,7 @@ export interface IList {
   commentsCount: number;
   cover: string[];
   userId: string;
-  user: IUser;
+  user: IUserSummary;
 }
 
 export interface IListItem {
@@ -43,7 +43,7 @@ export interface IListItem {
 export interface IListComment {
   id: string;
   body: string;
-  user: IUser;
+  user: IUserSummary;
   createdAt: string;
 }
 
@@ -153,13 +153,13 @@ export interface IReleasesResponse extends IPagination {
 export interface IReleaseResponse {
   release: IReleaseFullInfo;
   tracks: ITrackWithVotes[];
-  contributors: IUser[];
+  contributors: IUserSummary[];
 }
 
 export interface IReviewComment {
   id: string;
   body: string;
-  user: IUser;
+  user: IUserSummary;
   createdAt: string;
 }
 export interface IReviewCommentsResponse extends IPagination {
@@ -174,8 +174,7 @@ export interface IEntry {
   reviewId: string;
   hasTrackVotes: boolean;
   rating?: IRating;
-
-  user?: IUser | null;
+  user?: IUserSummary | null;
   release?: IRelease | null;
   review?: IReview | null;
   trackVotes?: ITrackVote[] | null;
@@ -211,7 +210,18 @@ export interface IUserSummary {
   name: string;
   image?: IUserImage;
   supporter: SupporterStatus;
+  theme?: IUserTheme;
   contributorStatus: ContributorStatus;
+}
+
+export interface IUserTheme {
+  background: string;
+  background_sub: string;
+  primary: string;
+  highlight: string;
+  text: string;
+  text_sub: string;
+  error: string;
 }
 
 export interface IUser {
@@ -220,6 +230,7 @@ export interface IUser {
   username: string;
   image?: IUserImage;
   bio?: string;
+  theme?: IUserTheme;
   supporter: SupporterStatus;
   contributorStatus: ContributorStatus;
 }
@@ -237,7 +248,7 @@ export interface ICurrentUserResponse {
 }
 
 export interface IUsersResponse {
-  users: IUser[];
+  users: IUserSummary[];
 }
 
 export interface IUserStats {
@@ -257,7 +268,7 @@ export interface IUserProfileResponse {
 }
 
 export interface IUserFollowsResponse {
-  users: IUser[];
+  users: IUserSummary[];
 }
 
 export interface IUserArtist {

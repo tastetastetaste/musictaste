@@ -16,15 +16,17 @@ interface CustomLinkProps {
   to: To;
   onClick?: () => void;
   children?: any;
+  state?: any;
 }
 
 export const CardLink: React.FC<CustomLinkProps> = ({
   to,
+  state,
   children,
   onClick,
 }) => {
   return (
-    <StyledLink to={to} onClick={onClick}>
+    <StyledLink to={to} state={state} onClick={onClick}>
       {children}
     </StyledLink>
   );

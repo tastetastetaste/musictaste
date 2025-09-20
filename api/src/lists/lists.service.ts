@@ -79,8 +79,34 @@ export class ListsService {
   }
 
   private async getOneById(id: string) {
-    const lists = await this.getManyByIds([id]);
-    return lists[0];
+    const list = await this.listsRepository
+      .createQueryBuilder('l')
+      .select('l.id', 'id')
+      .addSelect('l.userId', 'userId')
+      .addSelect('l.title', 'title')
+      .addSelect('l.description', 'description')
+      .addSelect('l.ranked', 'ranked')
+      .addSelect('l.grid', 'grid')
+      .addSelect('l.published', 'published')
+      .addSelect('l.publishedDate', 'publishedDate')
+      .addSelect('l.createdAt', 'createdAt')
+      .addSelect('l.updatedAt', 'updatedAt')
+      .addSelect('COUNT(DISTINCT like.id)', 'likesCount')
+      .addSelect('COUNT(DISTINCT comment.id)', 'commentsCount')
+      .addSelect('COUNT(DISTINCT item.id)', 'listItemsCount')
+      .leftJoin('l.likes', 'like')
+      .leftJoin('l.comments', 'comment')
+      .leftJoin('l.items', 'item')
+      .groupBy('l.id')
+      .where('l.id = :id', { id })
+      .getRawOne();
+
+    const user = await this.usersService.getUserById(list.userId);
+
+    return {
+      ...list,
+      user,
+    };
   }
 
   private async getCover(id: string) {

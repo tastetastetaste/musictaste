@@ -1,7 +1,7 @@
 import { IconArrowDown, IconArrowUp, IconMessage } from '@tabler/icons-react';
 import { useMutation } from 'react-query';
 import { useNavigate } from 'react-router-dom';
-import { IEntry, IReview, VoteType } from 'shared';
+import { IEntry, IReview, IUserSummary, VoteType } from 'shared';
 import { FlexChild } from '../../components/flex/flex-child';
 import { Group } from '../../components/flex/group';
 import { Stack } from '../../components/flex/stack';
@@ -21,12 +21,14 @@ import {
 import { User } from '../users/user';
 import { ReviewComments } from './review-comments';
 import { UpdateReviewAfterVoteFu } from './update-review-after-vote';
+import { getReviewPathname } from '../../utils/get-pathname';
 
 const ReviewActions = ({
   reviewId,
   entryId,
   countData: { netVotes, commentsCount, userVote },
   updateAfterVote,
+  user,
 }: {
   reviewId: string;
   entryId: string;
@@ -35,6 +37,7 @@ const ReviewActions = ({
     'netVotes' | 'totalVotes' | 'commentsCount' | 'userVote'
   >;
   updateAfterVote: UpdateReviewAfterVoteFu;
+  user: IUserSummary;
 }) => {
   const { isLoggedIn } = useAuth();
 
@@ -50,6 +53,11 @@ const ReviewActions = ({
     updateAfterVote(reviewId, vote);
   };
 
+  const linkTo = getReviewPathname(entryId);
+  const linkState = {
+    user,
+  };
+
   if (!isLoggedIn)
     return (
       <Group gap="sm">
@@ -59,7 +67,7 @@ const ReviewActions = ({
         <IconButton
           title="Comments"
           num={Number(commentsCount)}
-          onClick={() => navigate('/review/' + entryId)}
+          onClick={() => navigate(linkTo, { state: linkState })}
         >
           <IconMessage />
         </IconButton>
@@ -88,7 +96,7 @@ const ReviewActions = ({
         >
           <IconArrowUp />
         </IconButton>
-        {netVotes > 0 ? `+${netVotes}` : netVotes}
+        <Typography>{netVotes > 0 ? `+${netVotes}` : netVotes}</Typography>
         <IconButton
           title="downvote"
           onClick={() => vote(VoteType.DOWN)}
@@ -101,7 +109,7 @@ const ReviewActions = ({
       <IconButton
         title="Comments"
         num={Number(commentsCount)}
-        onClick={() => navigate('/review/' + entryId)}
+        onClick={() => navigate(linkTo, { state: linkState })}
       >
         <IconMessage />
       </IconButton>
@@ -114,6 +122,7 @@ export interface ReviewProps {
   hideRelease?: boolean;
   fullPage?: boolean;
   updateAfterVote: UpdateReviewAfterVoteFu;
+  user?: IUserSummary;
 }
 
 export const Review: React.FC<ReviewProps> = ({
@@ -121,7 +130,10 @@ export const Review: React.FC<ReviewProps> = ({
   hideRelease,
   updateAfterVote,
   fullPage,
+  user: userFromUserPage,
 }) => {
+  // user is null in user page
+  // release is null in release page
   const { review, rating, user, release } = entry;
 
   const smallScreen = useMediaQuery({ down: 'md' });
@@ -186,6 +198,7 @@ export const Review: React.FC<ReviewProps> = ({
                 reviewId={id}
                 entryId={entry.id}
                 updateAfterVote={updateAfterVote}
+                user={user || userFromUserPage}
               />
               {fullPage && entry.hasTrackVotes && (
                 <FavoriteTracks entryId={entry.id} />

@@ -438,7 +438,7 @@ const UserMusicFilters = ({
         overflowY: 'auto',
         padding: '4px',
         position: 'sticky',
-        top: 0,
+        top: '80px',
         right: 0,
         display: 'flex',
         flexDirection: 'column',

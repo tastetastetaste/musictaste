@@ -1,34 +1,29 @@
-import AppPageWrapper from '../../layout/app-page-wrapper';
-import { useThemeColors } from './useTheme';
-import { Input } from '../../components/inputs/input';
+import { useMutation } from 'react-query';
+import { Button } from '../../components/button';
 import { Container } from '../../components/containers/container';
-import { Stack } from '../../components/flex/stack';
 import { Group } from '../../components/flex/group';
+import { Stack } from '../../components/flex/stack';
+import { Input } from '../../components/inputs/input';
 import { Typography } from '../../components/typography';
+import { useSnackbar } from '../../hooks/useSnackbar';
+import AppPageWrapper from '../../layout/app-page-wrapper';
+import { api } from '../../utils/api';
+import { useAuth } from '../account/useAuth';
 import { THEME_COLOR_PRESETS } from './theme-constants';
-
-const colorFields = [
-  { name: 'background', label: 'background' },
-  {
-    name: 'background_sub',
-    label: 'background sub',
-  },
-  {
-    name: 'primary',
-    label: 'primary',
-  },
-  {
-    name: 'highlight',
-    label: 'highlight',
-  },
-  { name: 'text', label: 'text' },
-  { name: 'text_sub', label: 'text sub' },
-  { name: 'error', label: 'error' },
-];
+import { useThemeColors } from './useTheme';
 
 const ThemePage = () => {
   const { themeColors, setThemeColors, applyPreset, selectedPreset } =
     useThemeColors();
+  const { me } = useAuth();
+
+  const { snackbar } = useSnackbar();
+
+  const { mutateAsync: updateTheme, isLoading } = useMutation(api.updateTheme, {
+    onSuccess: () => {
+      snackbar('Your profile theme colors have been updated');
+    },
+  });
 
   const handlePresetClick = (presetName: string) => {
     applyPreset(presetName);
@@ -38,12 +33,35 @@ const ThemePage = () => {
     setThemeColors({ ...themeColors, [field]: value });
   };
 
+  const handleSaveTheme = async () => {
+    await updateTheme({ id: me.id, theme: themeColors });
+  };
+
+  const colorFields = [
+    { name: 'background', label: 'background' },
+    {
+      name: 'background_sub',
+      label: 'background sub',
+    },
+    {
+      name: 'primary',
+      label: 'primary',
+    },
+    {
+      name: 'highlight',
+      label: 'highlight',
+    },
+    { name: 'text', label: 'text' },
+    { name: 'text_sub', label: 'text sub' },
+    { name: 'error', label: 'error' },
+  ];
+
   return (
     <AppPageWrapper title="Theme">
       <Container>
-        <Stack gap={16}>
+        <Stack gap="lg">
           <Typography size="title">Theme Presets</Typography>
-          <Group gap={12} wrap>
+          <Group gap="md" wrap>
             {Object.keys(THEME_COLOR_PRESETS).map((themeName) => (
               <button
                 key={themeName}
@@ -66,9 +84,9 @@ const ThemePage = () => {
             ))}
           </Group>
           <Typography size="title">Customize Colors</Typography>
-          <Stack gap={4}>
+          <Stack gap="sm">
             {colorFields.map(({ name, label }) => (
-              <Group align="center" gap={4} key={name}>
+              <Group align="center" key={name}>
                 <div css={{ flex: '1 1 120px' }}>
                   <Typography size="body">{label}</Typography>
                 </div>
@@ -97,6 +115,19 @@ const ThemePage = () => {
               </Group>
             ))}
           </Stack>
+          {me ? (
+            <Button
+              variant="highlight"
+              onClick={handleSaveTheme}
+              disabled={isLoading || !me?.id || !me.supporter}
+            >
+              {isLoading
+                ? 'Saving...'
+                : !me?.supporter
+                  ? 'Support us to use these colors on your profile'
+                  : 'Use these colors on your profile'}
+            </Button>
+          ) : null}
         </Stack>
       </Container>
     </AppPageWrapper>

@@ -5,6 +5,9 @@ import {
   ContributorStatus,
   FindUsersType,
   IUsersResponse,
+  UpdateUserThemeDto,
+  IUserSummary,
+  SupporterStatus,
 } from 'shared';
 import {
   BadRequestException,
@@ -12,15 +15,16 @@ import {
   Inject,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
+import { List } from '../../db/entities/list.entity';
+import { UserFollowing } from '../../db/entities/user-following.entity';
+import { UserRelease } from '../../db/entities/user-release.entity';
+import { User } from '../../db/entities/user.entity';
 import { ImagesService } from '../images/images.service';
 import { ReleasesService } from '../releases/releases.service';
-import { UserFollowing } from '../../db/entities/user-following.entity';
-import { User } from '../../db/entities/user.entity';
-import { UserRelease } from '../../db/entities/user-release.entity';
-import { List } from '../../db/entities/list.entity';
 
 export type UserCountType =
   | 'entries'
@@ -106,6 +110,7 @@ export class UsersService {
         'name',
         'username',
         'bio',
+        'theme',
         'imagePath',
         'contributorStatus',
         'supporter',
@@ -121,16 +126,16 @@ export class UsersService {
     };
   }
 
-  async getUsersByIds(ids: string[]): Promise<IUser[]> {
+  async getUsersByIds(ids: string[]): Promise<IUserSummary[]> {
     const users = await this.usersRepository.find({
       select: [
         'id',
         'name',
         'username',
-        'bio',
         'imagePath',
         'contributorStatus',
         'supporter',
+        'theme',
       ],
       where: {
         id: In(ids),
@@ -157,6 +162,7 @@ export class UsersService {
         'name',
         'username',
         'bio',
+        'theme',
         'imagePath',
         'contributorStatus',
         'supporter',
@@ -238,6 +244,18 @@ export class UsersService {
     return true;
   }
 
+  async updateTheme(id: string, theme: UpdateUserThemeDto) {
+    const user = await this.usersRepository.findOne({
+      where: { id },
+      select: ['id', 'supporter'],
+    });
+
+    if (!user || !user.supporter) throw new UnauthorizedException();
+
+    await this.usersRepository.update(id, { theme });
+    return true;
+  }
+
   async follow(id: string, currentUserId: string) {
     if (id === currentUserId) throw new BadRequestException();
 
@@ -279,10 +297,9 @@ export class UsersService {
       .select('u.id', 'id');
 
     if (type === FindUsersType.Supporter) {
-      qb.where('u.supporter = :supporter', { supporter: true }).orderBy(
-        'u.createdAt',
-        'DESC',
-      );
+      qb.where('u.supporter = :supporter', {
+        supporter: SupporterStatus.SUPPORTER,
+      }).orderBy('u.createdAt', 'DESC');
     } else if (type === FindUsersType.Trusted) {
       qb.where('u.contributorStatus = :status', {
         status: ContributorStatus.TRUSTED_CONTRIBUTOR,

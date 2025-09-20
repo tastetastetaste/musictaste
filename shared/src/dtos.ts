@@ -4,7 +4,6 @@ import {
   IsArray,
   IsEmail,
   IsEnum,
-  IsIn,
   IsInt,
   IsNumber,
   IsOptional,
@@ -17,18 +16,18 @@ import {
   ValidateNested,
   ValidationOptions,
 } from 'class-validator';
-import {
-  EntriesSortByEnum,
-  SubmissionStatus,
-  VoteType,
-  ReleaseType,
-  FindReleasesType,
-  ContributorStatus,
-  SubmissionSortByEnum,
-  FindUsersType,
-  SupporterStatus,
-} from './enums';
 import dayjs from 'dayjs';
+import {
+  ContributorStatus,
+  EntriesSortByEnum,
+  FindReleasesType,
+  FindUsersType,
+  ReleaseType,
+  SubmissionSortByEnum,
+  SubmissionStatus,
+  SupporterStatus,
+  VoteType,
+} from './enums';
 
 export function IsDayjsDateString(validationOptions?: ValidationOptions) {
   return function (object: Object, propertyName: string) {
@@ -42,7 +41,26 @@ export function IsDayjsDateString(validationOptions?: ValidationOptions) {
           return typeof value === 'string' && dayjs(value).isValid();
         },
         defaultMessage(args) {
-          return `${args?.property} must be a valid date string`;
+          return `"${args?.property}" must be a valid date string`;
+        },
+      },
+    });
+  };
+}
+
+export function IsValidColor(validationOptions?: ValidationOptions) {
+  return function (object: Object, propertyName: string) {
+    registerDecorator({
+      name: 'isValidColor',
+      target: object.constructor,
+      propertyName: propertyName,
+      options: validationOptions,
+      validator: {
+        validate(value, args) {
+          return typeof value === 'string' && /^#[0-9a-f]{6}$/i.test(value);
+        },
+        defaultMessage(args) {
+          return `"${args?.property}" must be a valid hex color string`;
         },
       },
     });
@@ -237,6 +255,22 @@ export class UpdateUserProfileDto {
   @MinLength(1)
   name: string;
   bio?: string;
+}
+export class UpdateUserThemeDto {
+  @IsValidColor()
+  background: string;
+  @IsValidColor()
+  background_sub: string;
+  @IsValidColor()
+  primary: string;
+  @IsValidColor()
+  highlight: string;
+  @IsValidColor()
+  text: string;
+  @IsValidColor()
+  text_sub: string;
+  @IsValidColor()
+  error: string;
 }
 
 export class UpdateUserContributorStatusDto {

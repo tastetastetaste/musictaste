@@ -20,6 +20,7 @@ import {
   IUserProfileResponse,
   IUsersResponse,
   UpdateUserProfileDto,
+  UpdateUserThemeDto,
 } from 'shared';
 import { AuthenticatedGuard } from '../auth/Authenticated.guard';
 import { CurrentUserPayload } from '../auth/session.serializer';
@@ -120,5 +121,17 @@ export class UsersController {
       buffer: image.buffer,
       mimetype: image.mimetype,
     });
+  }
+
+  @Patch(':id/update-theme')
+  @UseGuards(AuthenticatedGuard)
+  updateTheme(
+    @Param('id') id: string,
+    @Body() updateUserThemeDto: UpdateUserThemeDto,
+    @CurUser() user: CurrentUserPayload,
+  ) {
+    if (id !== user.id) throw new UnauthorizedException();
+
+    return this.usersService.updateTheme(id, updateUserThemeDto);
   }
 }
