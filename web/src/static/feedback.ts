@@ -8,8 +8,6 @@ export const ON_USER_UPDATE_PASSWORD = 'Password updated successfully';
 
 export const USER_EMAIL_CONFIRMED = `Email confirmed successfully`;
 
-export const PROFILE_UPDATE_SUCCESS = 'Profile updated successfully';
-
 export const IMAGE_UPLOADED_SUCCESS = 'Image uploaded successfully';
 
 export const AUTH_REQUIRED_PAGE =

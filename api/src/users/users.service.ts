@@ -2,6 +2,7 @@ import {
   IUser,
   IUserStats,
   UpdateUserProfileDto,
+  UpdateUserPreferencesDto,
   ContributorStatus,
   FindUsersType,
   IUsersResponse,
@@ -103,6 +104,29 @@ export class UsersService {
     return result;
   }
 
+  async getCurrentUserById(id: string): Promise<IUser> {
+    const user = await this.usersRepository.findOne({
+      select: [
+        'id',
+        'name',
+        'username',
+        'bio',
+        'theme',
+        'imagePath',
+        'contributorStatus',
+        'supporter',
+        'allowExplicitCoverArt',
+      ],
+      where: {
+        id,
+      },
+    });
+
+    return {
+      ...user,
+      image: this.imagesService.getUserImage(user.imagePath),
+    };
+  }
   async getUserById(id: string): Promise<IUser> {
     const user = await this.usersRepository.findOne({
       select: [
@@ -235,6 +259,14 @@ export class UsersService {
     updateUserProfileInput.username =
       updateUserProfileInput.username.toLowerCase();
     await this.usersRepository.update({ id }, updateUserProfileInput);
+    return true;
+  }
+
+  async updatePreferences(
+    id: string,
+    updateUserPreferencesInput: UpdateUserPreferencesDto,
+  ) {
+    await this.usersRepository.update({ id }, updateUserPreferencesInput);
     return true;
   }
 

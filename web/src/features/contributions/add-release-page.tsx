@@ -2,7 +2,7 @@ import { classValidatorResolver } from '@hookform/resolvers/class-validator';
 import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useMutation } from 'react-query';
-import { CreateReleaseDto } from 'shared';
+import { CreateReleaseDto, ExplicitCoverArt } from 'shared';
 import { Button } from '../../components/button';
 import { Container } from '../../components/containers/container';
 import { Feedback } from '../../components/feedback';
@@ -29,6 +29,19 @@ import { ReleaseTypeOptions } from './shared';
 import { Group } from '../../components/flex/group';
 import { AddByIdArtistDialog } from './add-by-id-artist-dialog';
 import { AddByIdLabelDialog } from './add-by-id-label-dialog';
+
+export const ExplicitCoverArtOptions = [
+  { value: ExplicitCoverArt.NUDITY, label: 'Nudity' },
+  {
+    value: ExplicitCoverArt.EXPLICIT_SEXUAL_CONTENT,
+    label: 'Explicit Sexual Content',
+  },
+  { value: ExplicitCoverArt.BLOOD_GORE, label: 'Blood Gore' },
+  {
+    value: ExplicitCoverArt.EXPLICIT_HATEFUL_CONTENT,
+    label: 'Explicit Hateful Content',
+  },
+];
 
 export interface CreateReleaseFormValues extends CreateReleaseDto {
   mbid: string;
@@ -60,6 +73,7 @@ const AddReleasePage = () => {
     languages: [],
     type: '',
     note: '',
+    explicitCoverArt: [],
   };
 
   const {
@@ -244,6 +258,24 @@ const AddReleasePage = () => {
               )}
             />
             <FormInputError error={errors.image || errors.imageUrl} />
+            <Controller
+              name="explicitCoverArt"
+              control={control}
+              render={({ field: { value, onChange, ...field } }) => (
+                <Select
+                  {...field}
+                  options={ExplicitCoverArtOptions}
+                  placeholder="Explicit Cover Art (select all that apply)"
+                  isMulti={true}
+                  value={ExplicitCoverArtOptions.filter((opt) =>
+                    value?.includes(opt.value),
+                  )}
+                  onChange={(selected) =>
+                    onChange(selected.map((opt) => opt.value))
+                  }
+                />
+              )}
+            />
             <ReleaseTracksFields control={control} register={register} />
             <Textarea {...register('note')} placeholder="Note/source" />
             <FormInputError error={errors.note} />

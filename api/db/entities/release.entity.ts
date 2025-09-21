@@ -1,4 +1,4 @@
-import { ReleaseType } from 'shared';
+import { ExplicitCoverArt, ReleaseType } from 'shared';
 import { Column, CreateDateColumn, Entity, OneToMany } from 'typeorm';
 import { SharedBaseEntity } from '../shared/base-entity';
 import { ListItem } from './list-item.entity';
@@ -23,6 +23,9 @@ export class Release extends SharedBaseEntity {
 
   @Column('text', { nullable: true })
   imagePath: string;
+
+  @Column('simple-array', { nullable: true })
+  explicitCoverArt?: ExplicitCoverArt[];
 
   @OneToMany(() => ReleaseArtist, (ra) => ra.release)
   artistConnection: ReleaseArtist[];

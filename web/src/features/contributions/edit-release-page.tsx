@@ -32,6 +32,7 @@ import { SelectArtist } from './select-artist';
 import { SelectLabel } from './select-label';
 import { SelectLanguage } from './select-language';
 import { ReleaseTypeOptions } from './shared';
+import { ExplicitCoverArtOptions } from './add-release-page';
 
 export interface EditReleaseFormValues extends UpdateReleaseDto {
   mbid: string;
@@ -65,6 +66,7 @@ const EditReleasePage = () => {
     labels: [],
     languages: [],
     type: '',
+    explicitCoverArt: [],
   };
 
   const {
@@ -153,6 +155,7 @@ const EditReleasePage = () => {
               }))
             : undefined,
         imageUrl: release.cover?.original,
+        explicitCoverArt: release.explicitCoverArt,
       });
     }
   }, [releaseData]);
@@ -171,7 +174,7 @@ const EditReleasePage = () => {
     if (isSubmitSuccessful) {
       snackbar(ON_EDIT_RELEASE);
 
-      navigate(`/release/${releaseId}`);
+      navigate(`/release/${releaseId}`, { replace: true });
     }
   }, [isSubmitSuccessful]);
 
@@ -335,7 +338,25 @@ const EditReleasePage = () => {
                 />
               )}
             />
-            <FormInputError error={errors.image} />
+            <FormInputError error={errors.image || errors.imageUrl} />
+            <Controller
+              name="explicitCoverArt"
+              control={control}
+              render={({ field: { value, onChange, ...field } }) => (
+                <Select
+                  {...field}
+                  options={ExplicitCoverArtOptions}
+                  placeholder="Explicit Cover Art (select all that apply)"
+                  isMulti={true}
+                  value={ExplicitCoverArtOptions.filter((opt) =>
+                    value?.includes(opt.value),
+                  )}
+                  onChange={(selected) =>
+                    onChange(selected.map((opt) => opt.value))
+                  }
+                />
+              )}
+            />
             <ReleaseTracksFields control={control} register={register} />
             <Textarea {...register('note')} placeholder="Note/source" />
             <FormInputError error={errors.note} />

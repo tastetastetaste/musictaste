@@ -20,6 +20,7 @@ import {
   IUserProfileResponse,
   IUsersResponse,
   UpdateUserProfileDto,
+  UpdateUserPreferencesDto,
   UpdateUserThemeDto,
 } from 'shared';
 import { AuthenticatedGuard } from '../auth/Authenticated.guard';
@@ -39,7 +40,7 @@ export class UsersController {
         user: null,
       };
 
-    const u = await this.usersService.getUserById(currentUser.id);
+    const u = await this.usersService.getCurrentUserById(currentUser.id);
 
     return {
       user: {
@@ -106,6 +107,17 @@ export class UsersController {
   ) {
     if (id !== currentUserId) throw new UnauthorizedException();
     return this.usersService.updateProfile(id, updateUserProfileDto);
+  }
+
+  @Patch(':id/update-preferences')
+  @UseGuards(AuthenticatedGuard)
+  updatePreferences(
+    @Param('id') id: string,
+    @Body() updateUserPreferencesDto: UpdateUserPreferencesDto,
+    @CurUser('id') currentUserId: string,
+  ) {
+    if (id !== currentUserId) throw new UnauthorizedException();
+    return this.usersService.updatePreferences(id, updateUserPreferencesDto);
   }
 
   @Patch(':id/update-image')

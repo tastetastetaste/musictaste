@@ -36,7 +36,14 @@ export class SearchService {
       type.includes('releases')
         ? this.releasesRepository
             .createQueryBuilder('r')
-            .select(['r.id', 'r.title', 'r.imagePath', 'a.id', 'a.name'])
+            .select([
+              'r.id',
+              'r.title',
+              'r.imagePath',
+              'a.id',
+              'a.name',
+              'r.explicitCoverArt',
+            ])
             .leftJoinAndSelect('r.artistConnection', 'ac')
             .leftJoinAndSelect('ac.artist', 'a')
             .where('r.title ilike :title', {

@@ -196,6 +196,7 @@ export class SubmissionService {
       tracks,
       type,
       note,
+      explicitCoverArt,
       ...rest
     }: CreateReleaseDto,
     user: CurrentUserPayload,
@@ -241,6 +242,7 @@ export class SubmissionService {
       languagesIds: languagesIds,
       imagePath: imageUrl,
       tracks: tracks,
+      explicitCoverArt: explicitCoverArt,
     };
 
     const release = await this.applyReleaseSubmission(releaseSubmission);
@@ -270,6 +272,7 @@ export class SubmissionService {
       tracks,
       type,
       note,
+      explicitCoverArt,
       ...rest
     }: UpdateReleaseDto,
     user: CurrentUserPayload,
@@ -336,6 +339,7 @@ export class SubmissionService {
       languagesIds: languagesIds,
       imagePath: imageUrl,
       tracks: tracks,
+      explicitCoverArt: explicitCoverArt,
     };
 
     rs.original = {
@@ -346,6 +350,7 @@ export class SubmissionService {
       labelsIds: release.labelConnection.map((l) => l.labelId),
       languagesIds: release.languageConnection.map((l) => l.languageId),
       imagePath: release.imagePath,
+      explicitCoverArt: release.explicitCoverArt,
       tracks: release.tracks
         .sort((a, b) => a.order - b.order)
         .map((t) => ({

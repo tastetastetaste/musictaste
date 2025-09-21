@@ -14,6 +14,8 @@ import { Link } from '../../components/links/link';
 import { Typography } from '../../components/typography';
 import { getListPathname } from '../../utils/get-pathname';
 import { User } from '../users/user';
+import { IListReleaseCover } from 'shared';
+import { hideExplicitCoverArtFn } from '../releases/release/shared';
 
 const StyledListThumb = styled.div`
   position: relative;
@@ -92,19 +94,21 @@ export function List({ list, withoutUser }: ListProps) {
 }
 
 interface ThumbProps {
-  cover: Array<string | undefined | null>;
+  cover: Array<IListReleaseCover>;
 }
 
 const Thumb = ({ cover }: ThumbProps) => {
   return (
     <Group>
       {cover && cover.length !== 0 ? (
-        cover.map((imageStr, i) => (
+        cover.map((cover, i) => (
           <StyledListThumb key={i}>
-            {imageStr ? (
-              <img src={imageStr} alt="release" />
+            {hideExplicitCoverArtFn(cover.explicitCoverArt) ? (
+              <img src={`/placeholder/explicit-sm.jpeg`} alt="release" />
+            ) : cover?.cover ? (
+              <img src={cover.cover} alt="release" />
             ) : (
-              <img src="/placeholder.jpg" alt="release" />
+              <img src="/placeholder/sm.jpeg" alt="release" />
             )}
           </StyledListThumb>
         ))

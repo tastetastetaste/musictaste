@@ -20,6 +20,7 @@ import dayjs from 'dayjs';
 import {
   ContributorStatus,
   EntriesSortByEnum,
+  ExplicitCoverArt,
   FindReleasesType,
   FindUsersType,
   ReleaseType,
@@ -121,6 +122,9 @@ export class CreateReleaseDto {
   @IsString()
   imageUrl?: string;
   @IsOptional()
+  @IsEnum(ExplicitCoverArt, { each: true })
+  explicitCoverArt?: ExplicitCoverArt[];
+  @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => TrackDto)
@@ -153,6 +157,9 @@ export class UpdateReleaseDto {
   @IsOptional()
   @IsString()
   imageUrl?: string;
+  @IsOptional()
+  @IsEnum(ExplicitCoverArt, { each: true })
+  explicitCoverArt?: ExplicitCoverArt[];
   @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
@@ -256,6 +263,12 @@ export class UpdateUserProfileDto {
   name: string;
   bio?: string;
 }
+
+export class UpdateUserPreferencesDto {
+  @IsEnum(ExplicitCoverArt, { each: true })
+  allowExplicitCoverArt: ExplicitCoverArt[];
+}
+
 export class UpdateUserThemeDto {
   @IsValidColor()
   background: string;

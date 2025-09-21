@@ -6,7 +6,12 @@ import {
   OneToMany,
   UpdateDateColumn,
 } from 'typeorm';
-import { ContributorStatus, SupporterStatus, UpdateUserThemeDto } from 'shared';
+import {
+  ContributorStatus,
+  ExplicitCoverArt,
+  SupporterStatus,
+  UpdateUserThemeDto,
+} from 'shared';
 import { ArtistSubmission } from './artist-submission.entity';
 import { SharedBaseEntity } from '../shared/base-entity';
 import { GenreSubmission } from './genre-submission.entity';
@@ -52,6 +57,9 @@ export class User extends SharedBaseEntity {
 
   @Column('boolean', { default: false })
   confirmed: boolean;
+
+  @Column('simple-array', { nullable: true })
+  allowExplicitCoverArt?: ExplicitCoverArt[];
 
   @Column('int', { default: SupporterStatus.NOT_A_SUPPORTER })
   supporter: SupporterStatus;

@@ -31,6 +31,7 @@ export class AuthService {
         'username',
         'name',
         'contributorStatus',
+        'supporter',
         'confirmed',
       ],
     });

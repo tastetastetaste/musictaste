@@ -21,6 +21,13 @@ export enum ReleaseType {
   Other = 25,
 }
 
+export enum ExplicitCoverArt {
+  NUDITY = 'NUDITY',
+  EXPLICIT_SEXUAL_CONTENT = 'EXPLICIT_SEXUAL_CONTENT',
+  BLOOD_GORE = 'BLOOD_GORE',
+  EXPLICIT_HATEFUL_CONTENT = 'EXPLICIT_HATEFUL_CONTENT',
+}
+
 export enum SubmissionStatus {
   AUTO_APPROVED = 1, // for adding music data (open, applied)
   OPEN = 2, // for edits (open, unapplied)

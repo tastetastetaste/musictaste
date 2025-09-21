@@ -25,7 +25,7 @@ export const User: React.FC<IUserItemProps> = ({
       <img
         width="170px"
         height="170px"
-        src={image?.md || '/placeholder.jpg'}
+        src={image?.md || '/placeholder/md.jpeg'}
         alt={username}
         style={{
           borderRadius: '50%',

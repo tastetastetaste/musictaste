@@ -76,13 +76,17 @@ const isEmptyValue = (v: any) => {
   if (typeof v === 'object') return Object.keys(v).length === 0;
   return false;
 };
+
+const isPlainObject = (v: any): v is Record<string, any> =>
+  v !== null && typeof v === 'object' && !Array.isArray(v);
+
 const hasChanges = (original: any, updated: any): boolean => {
   if (original === updated) return false;
   if (Array.isArray(original) && Array.isArray(updated)) {
     if (original.length !== updated.length) return true;
     return original.some((item, index) => hasChanges(item, updated[index]));
   }
-  if (typeof original === 'object' && typeof updated === 'object') {
+  if (isPlainObject(original) && isPlainObject(updated)) {
     const keys = new Set([...Object.keys(original), ...Object.keys(updated)]);
     return Array.from(keys).some((key) =>
       hasChanges(original[key], updated[key]),

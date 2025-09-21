@@ -54,9 +54,11 @@ import {
   UpdateGenreDto,
   UpdateReleaseDto,
   UpdateUserContributorStatusDto,
+  UpdateUserPreferencesDto,
   UpdateUserThemeDto,
   UpdateUserSupporterStatusDto,
   VoteType,
+  UpdateUserProfileDto,
 } from 'shared';
 
 const client = axios.create({
@@ -635,11 +637,17 @@ const updateProfile = ({
   ...data
 }: {
   id: string;
-  username: string;
-  name: string;
-  bio?: string;
-}) =>
+} & UpdateUserProfileDto) =>
   client.patch('users/' + id + '/update-profile', data).then((res) => res.data);
+const updatePreferences = ({
+  id,
+  ...data
+}: {
+  id: string;
+} & UpdateUserPreferencesDto) =>
+  client
+    .patch('users/' + id + '/update-preferences', data)
+    .then((res) => res.data);
 const updateImage = ({ id, image }: { id: string; image }) =>
   client
     .patch(
@@ -770,6 +778,7 @@ export const api = {
   getUserFollowers,
   getUserFollowing,
   updateProfile,
+  updatePreferences,
   updateImage,
   updateTheme,
   follow,

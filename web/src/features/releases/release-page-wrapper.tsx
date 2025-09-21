@@ -2,7 +2,12 @@ import { useTheme } from '@emotion/react';
 import { FastAverageColor, FastAverageColorResult } from 'fast-average-color';
 import { useQuery } from 'react-query';
 import { Outlet, useParams } from 'react-router-dom';
-import { IReleaseCover, IReleaseResponse, IUser } from 'shared';
+import {
+  ExplicitCoverArt,
+  IReleaseCover,
+  IReleaseResponse,
+  IUser,
+} from 'shared';
 import { Feedback } from '../../components/feedback';
 import { FlexChild } from '../../components/flex/flex-child';
 import { Group } from '../../components/flex/group';
@@ -34,6 +39,7 @@ import {
   ArtistsLinks,
   FavoriteTracks,
   GenresLinks,
+  hideExplicitCoverArtFn,
   LabelsLinks,
   ReviewLink,
 } from './release/shared';
@@ -141,17 +147,25 @@ const ReleaseInfo: React.FC<{
 };
 
 const ReleaseCover: React.FC<{
+  explicitCoverArt?: ExplicitCoverArt[];
   src?: IReleaseCover;
   alt: string;
-}> = ({ src, alt }) => {
+}> = ({ src, alt, explicitCoverArt }) => {
   const { border_radius, colors } = useTheme();
-
   const size = 600;
+
+  const hideExplicitCoverArt = hideExplicitCoverArtFn(explicitCoverArt);
 
   return (
     <img
       id="cover"
-      src={src ? src.lg : '/placeholder.jpg'}
+      src={
+        hideExplicitCoverArt
+          ? `/placeholder/explicit-lg.jpeg`
+          : src
+            ? src.lg
+            : '/placeholder/lg.jpeg'
+      }
       width={size}
       height={size}
       css={{
@@ -274,6 +288,7 @@ export const ReleasePageContainer: React.FC<{
         <FlexChild grow shrink basis="0">
           <Group justify="center">
             <ReleaseCover
+              explicitCoverArt={release.explicitCoverArt}
               src={release.cover}
               alt={`${release.artists.map((a) => a.name).join(', ')} - ${release.title}`}
             />

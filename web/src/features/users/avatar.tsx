@@ -20,7 +20,7 @@ export function Avatar({ src, alt }: AvatarProps) {
   return (
     <Container>
       <img
-        src={src || '/placeholder.jpg'}
+        src={src || '/placeholder/sm.jpeg'}
         alt={alt}
         width={50}
         height={50}

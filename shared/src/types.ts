@@ -1,4 +1,9 @@
-import { ContributorStatus, SupporterStatus, VoteType } from './enums';
+import {
+  ContributorStatus,
+  ExplicitCoverArt,
+  SupporterStatus,
+  VoteType,
+} from './enums';
 
 export interface IArtistSummary {
   id: string;
@@ -15,6 +20,11 @@ export interface IArtistResponse {
   releases: IRelease[];
 }
 
+export interface IListReleaseCover {
+  cover: string;
+  explicitCoverArt?: ExplicitCoverArt[];
+}
+
 export interface IList {
   id: string;
   title: string;
@@ -28,7 +38,7 @@ export interface IList {
   listItemsCount: number;
   likesCount: number;
   commentsCount: number;
-  cover: string[];
+  cover: IListReleaseCover[];
   userId: string;
   user: IUserSummary;
 }
@@ -129,6 +139,7 @@ export interface IReleaseSummary {
   title: string;
   cover?: IReleaseCover;
   artists: IArtistSummary[];
+  explicitCoverArt?: ExplicitCoverArt[];
 }
 
 export interface IRelease extends IReleaseSummary {
@@ -244,6 +255,7 @@ export interface IUserImage {
 export interface ICurrentUserResponse {
   user: IUser & {
     confirmed: boolean;
+    allowExplicitCoverArt?: ExplicitCoverArt[];
   };
 }
 
@@ -397,6 +409,7 @@ export interface IReleaseChanges {
   languages: ILanguage[];
   imageUrl: string;
   tracks: { track: string; title: string; durationMs?: number }[];
+  explicitCoverArt?: ExplicitCoverArt[];
 }
 
 export interface IReleaseSubmissionVote {

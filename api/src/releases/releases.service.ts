@@ -100,6 +100,7 @@ export class ReleasesService {
         'release.date',
         'release.type',
         'release.imagePath',
+        'release.explicitCoverArt',
       ])
       .leftJoinAndSelect('release.artistConnection', 'releaseArtists')
       .leftJoinAndSelect('releaseArtists.artist', 'artist')
@@ -122,6 +123,7 @@ export class ReleasesService {
         date: r.date.toString(),
         artists: artistConnection.map((ac: any) => ac.artist),
         cover: this.imagesService.getReleaseCover(r.imagePath),
+        explicitCoverArt: r.explicitCoverArt,
       };
     });
   }
@@ -148,6 +150,7 @@ export class ReleasesService {
         'release.date',
         'release.type',
         'release.imagePath',
+        'release.explicitCoverArt',
       ])
       .leftJoinAndSelect('release.artistConnection', 'releaseArtists')
       .leftJoinAndSelect('releaseArtists.artist', 'artist')
@@ -185,6 +188,7 @@ export class ReleasesService {
         .map((gc: any) => gc.genre),
       cover: this.imagesService.getReleaseCover(r.imagePath),
       stats: stats[id],
+      explicitCoverArt: r.explicitCoverArt,
     };
   }
 
@@ -476,6 +480,7 @@ export class ReleasesService {
       tracks,
       type,
       imagePath,
+      explicitCoverArt,
     },
   }: ReleaseSubmission) {
     try {
@@ -488,6 +493,7 @@ export class ReleasesService {
         type,
         date: dayjs(date).format('YYYY-MM-DD').toString(),
         imagePath: imagePath,
+        explicitCoverArt: explicitCoverArt,
       });
       const release = await this.releasesRepository.findOne({
         where: {
@@ -587,13 +593,14 @@ export class ReleasesService {
       labelsIds,
       languagesIds,
       tracks,
+      explicitCoverArt,
     } = submission.changes;
 
     if (title) _release.title = title;
     if (date) _release.date = dayjs(date).format('YYYY-MM-DD').toString();
     if (type) _release.type = type;
     if (imagePath) _release.imagePath = imagePath;
-
+    if (explicitCoverArt) _release.explicitCoverArt = explicitCoverArt;
     if (artistsIds) {
       const releaseArtists = await this.releaseArtistRepository.find({
         where: { releaseId: _release.id },

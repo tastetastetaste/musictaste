@@ -21,6 +21,7 @@ import {
   TracksComparisonField,
 } from './submission-item';
 import { Typography } from '../../components/typography';
+import { ExplicitCoverArtOptions } from './add-release-page';
 
 export const ReleaseSubmissionItem = ({
   submission,
@@ -108,6 +109,22 @@ export const ReleaseSubmissionItem = ({
             </div>
           ) : null
         }
+      />
+      <SubmissionField
+        label="Explicit Cover Art"
+        originalValue={original?.explicitCoverArt}
+        changedValue={changes?.explicitCoverArt}
+        showOriginal={hasOriginal}
+        renderValue={(value) => (
+          <span>
+            {value
+              .map(
+                (v) =>
+                  ExplicitCoverArtOptions.find((o) => o.value === v)?.label,
+              )
+              .join(', ')}
+          </span>
+        )}
       />
       {submission.note && (
         <SubmissionField

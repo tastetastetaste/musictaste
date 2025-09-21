@@ -114,10 +114,11 @@ export class ListsService {
       `
       SELECT 
         "li"."listId", 
-        "r"."imagePath" AS "imagePath" 
+        "r"."imagePath" AS "imagePath",
+        "r"."explicitCoverArt" AS "explicitCoverArt"
       FROM "list_item" "li" 
       LEFT JOIN ( 
-        SELECT "r"."id" ,"r"."imagePath" from "release" "r"
+        SELECT "r"."id" ,"r"."imagePath", "r"."explicitCoverArt" from "release" "r"
       ) "r" ON "li"."releaseId" = "r"."id"
       WHERE "li"."listId" = $1
       ORDER BY "li"."index" LIMIT 5
@@ -125,9 +126,12 @@ export class ListsService {
       [id],
     );
 
-    return result.map(
-      (itm) => this.imagesService.getReleaseCover(itm.imagePath)?.sm,
-    );
+    return result.map((itm) => ({
+      cover: this.imagesService.getReleaseCover(itm.imagePath)?.sm,
+      explicitCoverArt: itm.explicitCoverArt
+        ? itm.explicitCoverArt.split(',')
+        : null,
+    }));
   }
 
   async find(

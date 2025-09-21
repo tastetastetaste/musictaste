@@ -132,7 +132,7 @@ export const UserOverview: React.FC<OverviewSectionProps> = ({
           <img
             width={ImageSize}
             height={ImageSize}
-            src="/placeholder.jpg"
+            src="/placeholder/md.jpeg"
             alt={username}
             style={{
               borderRadius: '50%',

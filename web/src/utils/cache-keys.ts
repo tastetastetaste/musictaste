@@ -1,8 +1,8 @@
 import { FindReleasesType, FindUsersType } from 'shared';
 
 // ENTRY
-const entryKey = (id: string) => ['entry', id];
-const myReleaseEntryKey = (releaseId: string) => ['user', 'me', releaseId];
+const entryKey = (id: string) => ['entries', id];
+const myReleaseEntryKey = (releaseId: string) => ['entries', 'me', releaseId];
 
 const entriesKey = (filters: {
   withReview?: boolean;
@@ -19,31 +19,32 @@ const entriesKey = (filters: {
   type?: string;
   page?: number;
   pageSize?: number;
-}) => [
-  'entries',
-  filters.withReview,
-  ...(filters.releaseId
-    ? ['release', filters.releaseId]
-    : filters.userId
-      ? ['user', filters.userId]
-      : []),
+}) =>
+  [
+    'entries',
+    filters.withReview,
+    ...(filters.releaseId
+      ? ['release', filters.releaseId]
+      : filters.userId
+        ? ['user', filters.userId]
+        : []),
 
-  ...(filters.sortBy
-    ? [
-        filters.sortBy,
-        filters.year,
-        filters.decade,
-        filters.bucket,
-        filters.genre,
-        filters.artist,
-        filters.label,
-        filters.tag,
-        filters.type,
-        filters.page,
-        filters.pageSize,
-      ]
-    : []),
-];
+    ...(filters.sortBy
+      ? [
+          filters.sortBy,
+          filters.year,
+          filters.decade,
+          filters.bucket,
+          filters.genre,
+          filters.artist,
+          filters.label,
+          filters.tag,
+          filters.type,
+          filters.page,
+          filters.pageSize,
+        ]
+      : []),
+  ].filter(Boolean);
 
 const reviewCommentsKey = (reviewId: string) => [
   'review',
@@ -52,15 +53,15 @@ const reviewCommentsKey = (reviewId: string) => [
 ];
 
 // RELEASE
-const releaseKey = (id: string) => ['release', id];
+const releaseKey = (id: string) => ['releases', id];
 
 const releaseFollowingEntriesKey = (releaseId: string) => [
-  'release',
+  'releases',
   releaseId,
   'following',
 ];
 const releaseInMyListsKey = (releaseId: string) => [
-  'release',
+  'releases',
   releaseId,
   'inMyLists',
 ];
@@ -72,12 +73,12 @@ const releasesKey = ({
   genreId,
   labelId,
 }: {
-  type: FindReleasesType;
+  type?: FindReleasesType;
   page?: number;
   pageSize?: number;
   genreId?: string;
   labelId?: string;
-}) => ['releases', type, page, pageSize, genreId, labelId];
+}) => ['releases', type, page, pageSize, genreId, labelId].filter(Boolean);
 
 // RELEASE SUBMISSIONS
 

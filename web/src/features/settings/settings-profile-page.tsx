@@ -11,7 +11,6 @@ import { Stack } from '../../components/flex/stack';
 import { useSnackbar } from '../../hooks/useSnackbar';
 import { Textarea } from '../../components/inputs/textarea';
 import { Input } from '../../components/inputs/input';
-import { PROFILE_UPDATE_SUCCESS } from '../../static/feedback';
 import { SettingsPageOutletContext } from './settings-page-wrapper';
 import { Typography } from '../../components/typography';
 import { FormInputError } from '../../components/inputs/form-input-error';
@@ -62,7 +61,7 @@ const SettingsProfilePage = () => {
       id: user.id,
       ...data,
     });
-    snackbar(PROFILE_UPDATE_SUCCESS);
+    snackbar('Profile updated');
   };
 
   return (
@@ -83,7 +82,7 @@ const SettingsProfilePage = () => {
           <Textarea placeholder="Bio" {...register('bio')} rows={22} />
           <FormInputError error={errors.bio} />
           <Button type="submit" disabled={isLoading}>
-            save
+            Save
           </Button>
         </Stack>
       </form>

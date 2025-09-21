@@ -8,10 +8,15 @@ import {
 } from 'typeorm';
 import { Release } from './release.entity';
 import { User } from './user.entity';
-import { IsString, IsEnum, IsOptional } from 'class-validator';
+import { IsString, IsEnum, IsOptional, IsNumber } from 'class-validator';
 import { Type } from 'class-transformer';
 import { SharedBaseEntity } from '../shared/base-entity';
-import { ReleaseType, SubmissionStatus, SubmissionType } from 'shared';
+import {
+  ExplicitCoverArt,
+  ReleaseType,
+  SubmissionStatus,
+  SubmissionType,
+} from 'shared';
 import { ReleaseSubmissionVote } from './release-submission-vote.entity';
 
 export class TrackChanges {
@@ -47,6 +52,10 @@ export class ReleaseChanges {
   @IsString()
   @IsOptional()
   imagePath: string;
+
+  @IsEnum(ExplicitCoverArt, { each: true })
+  @IsOptional()
+  explicitCoverArt?: ExplicitCoverArt[];
 
   @Type(() => TrackChanges)
   @IsOptional()

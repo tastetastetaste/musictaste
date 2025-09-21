@@ -3,7 +3,7 @@ import { IconMusicHeart, IconNote } from '@tabler/icons-react';
 import { Fragment, useState } from 'react';
 import { useQuery } from 'react-query';
 import { LinkProps, useNavigate } from 'react-router-dom';
-import { IReleaseSummary, VoteType } from 'shared';
+import { ExplicitCoverArt, IReleaseSummary, VoteType } from 'shared';
 import { FlexChild } from '../../../components/flex/flex-child';
 import { Group } from '../../../components/flex/group';
 import { Stack } from '../../../components/flex/stack';
@@ -20,6 +20,7 @@ import {
 } from '../../../utils/get-pathname';
 import { FavIcon, LeastFavIcon } from '../release-tracks';
 import { cacheKeys } from '../../../utils/cache-keys';
+import { useAuth } from '../../account/useAuth';
 
 export type ReleaseImageSizeT = 'lg' | 'md' | 'sm' | 'xs';
 
@@ -55,18 +56,41 @@ interface ReleaseImageLinkProps {
   size?: ReleaseImageSizeT;
 }
 
+export const hideExplicitCoverArtFn = (
+  releaseExplicitCoverArt?: ExplicitCoverArt[],
+) => {
+  const { me } = useAuth();
+  return (
+    releaseExplicitCoverArt &&
+    releaseExplicitCoverArt.length > 0 &&
+    (!me ||
+      !me.allowExplicitCoverArt ||
+      releaseExplicitCoverArt.some(
+        (c) => !me.allowExplicitCoverArt.includes(c),
+      ))
+  );
+};
+
 export const ReleaseImageLink: React.FC<ReleaseImageLinkProps> = ({
-  release: { id, cover, artists, title },
+  release: { id, cover, artists, title, explicitCoverArt },
   size = 'md',
 }) => {
   const sizeKey =
     size === 'xs' || size === 'sm' ? 'sm' : size === 'md' ? 'md' : 'lg';
 
+  const hideExplicitCoverArt = hideExplicitCoverArtFn(explicitCoverArt);
+
   return (
     <CardLink to={getReleasePathname(id)}>
       <StyledReleaseImageContainer size={size}>
         <StyledReleaseImage
-          src={cover ? cover[sizeKey] : '/placeholder.jpg'}
+          src={
+            hideExplicitCoverArt
+              ? `/placeholder/explicit-${sizeKey}.jpeg`
+              : cover
+                ? cover[sizeKey]
+                : `/placeholder/${sizeKey}.jpeg`
+          }
           alt={`${artists.map((a) => a.name).join(', ')} - ${title}`}
           width={releaseImageWidthMap[size]}
           height={releaseImageWidthMap[size]}

@@ -71,6 +71,9 @@ const SettingsImagePage = lazy(
 const SettingsAccountPage = lazy(
   () => import('./features/settings/settings-account-page'),
 );
+const SettingsContentPage = lazy(
+  () => import('./features/settings/settings-content-page'),
+);
 const SearchPage = lazy(() => import('./features/search/search-page'));
 const SearchArtistPage = lazy(
   () => import('./features/search/search-artist-page'),
@@ -427,6 +430,14 @@ const router = createBrowserRouter([
             element: (
               <Suspense fallback={<Fallback />}>
                 <SettingsImagePage />
+              </Suspense>
+            ),
+          },
+          {
+            path: 'content',
+            element: (
+              <Suspense fallback={<Fallback />}>
+                <SettingsContentPage />
               </Suspense>
             ),
           },
