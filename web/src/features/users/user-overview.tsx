@@ -20,7 +20,7 @@ import { Typography } from '../../components/typography';
 import { getUserPathname } from '../../utils/get-pathname';
 import { cacheKeys } from '../../utils/cache-keys';
 import { SupporterBadge } from '../../components/badge/supporter-badge';
-import { TrustedBadge } from '../../components/badge/trusted-badge';
+// import { TrustedBadge } from '../../components/badge/trusted-badge';
 
 const FollowAction = ({
   userId,
@@ -151,9 +151,9 @@ export const UserOverview: React.FC<OverviewSectionProps> = ({
             {supporter === SupporterStatus.SUPPORTER ? (
               <SupporterBadge size="large" />
             ) : null}
-            {contributorStatus === ContributorStatus.TRUSTED_CONTRIBUTOR ? (
+            {/* {contributorStatus === ContributorStatus.TRUSTED_CONTRIBUTOR ? (
               <TrustedBadge size="large" />
-            ) : null}
+            ) : null} */}
           </Group>
           {isLoggedIn && !isUserMyself && (
             <Group align="center">
