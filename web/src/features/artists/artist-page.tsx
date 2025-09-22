@@ -98,16 +98,16 @@ const Releases: React.FC<{ releases: IArtistResponse['releases'] }> = ({
       types: ['LP'],
     },
     {
+      title: 'Mixtapes',
+      types: ['Mixtape'],
+    },
+    {
       title: 'EPs',
       types: ['EP'],
     },
     {
       title: 'Singles',
       types: ['Single'],
-    },
-    {
-      title: 'Mixtapes',
-      types: ['Mixtape'],
     },
     {
       title: 'Live',
@@ -237,6 +237,11 @@ const ArtistPage = () => {
             <Typography size="title-xl" as="h1">
               {artist.name}
             </Typography>
+            {artist.nameLatin ? (
+              <Typography size="title-lg">{artist.nameLatin}</Typography>
+            ) : (
+              ''
+            )}
           </div>
           <Releases releases={data.releases} />
         </Stack>
