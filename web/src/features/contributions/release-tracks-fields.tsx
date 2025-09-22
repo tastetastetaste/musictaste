@@ -10,6 +10,8 @@ import { Input } from '../../components/inputs/input';
 import { Typography } from '../../components/typography';
 
 export function millisecondsToTimeString(ms: string | number) {
+  if (ms == null) return '';
+
   ms = Number(ms);
   const hours = Math.floor(ms / 3600000);
   const minutes = Math.floor((ms % 3600000) / 60000);

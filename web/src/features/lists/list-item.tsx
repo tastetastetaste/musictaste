@@ -54,15 +54,12 @@ export const ListItem: React.FC<IListItemProps> = ({
         </Group>
         <FlexChild grow>
           <Stack gap="sm">
-            <ArtistsLinks
-              links={release.artists.map((a) => ({
-                href: getArtistPathname(a.id),
-                label: a.name,
-              }))}
+            <ArtistsLinks artists={release.artists} />
+            <ReleaseTitleLink
+              to={getReleasePathname(release.id)}
+              title={release.title}
+              latinTitle={release.titleLatin}
             />
-            <ReleaseTitleLink to={getReleasePathname(release.id)}>
-              {release.title}
-            </ReleaseTitleLink>
             {note ? <Markdown>{note}</Markdown> : null}
             <Typography size="small">
               {`${getYearFromDate(release.date)} · ${formatReleaseType(release.type)}`}

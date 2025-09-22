@@ -11,6 +11,7 @@ import { ReleasesService } from '../releases/releases.service';
 import { ArtistSubmission } from '../../db/entities/artist-submission.entity';
 import { Artist } from '../../db/entities/artist.entity';
 import { ReleaseArtist } from '../../db/entities/release-artist.entity';
+import { genId } from '../common/genId';
 
 @Injectable()
 export class ArtistsService {
@@ -36,30 +37,19 @@ export class ArtistsService {
     };
   }
 
-  async create({ name }: CreateArtistDto, userId: string) {
-    const artist = new Artist();
+  async create({ name, nameLatin }: CreateArtistDto) {
+    const id = genId();
 
-    artist.name = name;
-
-    const newArtist = await this.artistsRepository.save(artist);
-
-    const artistSubmission = new ArtistSubmission();
-
-    artistSubmission.changes = {
+    // use `insert` to prevent accidental overwrite
+    await this.artistsRepository.insert({
+      id,
       name,
-    };
+      nameLatin,
+    });
 
-    artistSubmission.submissionType = SubmissionType.CREATE;
-    artistSubmission.submissionStatus = SubmissionStatus.APPROVED;
-    artistSubmission.artistId = artist.id;
-    artistSubmission.userId = userId;
+    const artist = await this.artistsRepository.findOne({ where: { id } });
 
-    await this.artistSubmissionRepository.save(artistSubmission);
-
-    return {
-      artist: newArtist,
-      message: `"${name}" has been added successfully`,
-    };
+    return artist;
   }
 
   async deleteArtist(id: string) {

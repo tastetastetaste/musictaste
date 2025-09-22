@@ -33,10 +33,6 @@ export const SelectArtist = forwardRef(
       { enabled: !!query },
     );
 
-    useEffect(() => {
-      console.log('artist value', field.value);
-    }, [field.value]);
-
     return (
       <Select
         {...field}
@@ -49,9 +45,9 @@ export const SelectArtist = forwardRef(
         isMulti={true}
         options={
           data?.artists &&
-          data.artists.map(({ id, name }) => ({
+          data.artists.map(({ id, name, nameLatin }) => ({
             value: id,
-            label: name,
+            label: name + (nameLatin ? ` [${nameLatin}]` : ''),
           }))
         }
         placeholder="Artist/Band"

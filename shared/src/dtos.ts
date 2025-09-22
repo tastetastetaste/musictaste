@@ -100,6 +100,11 @@ export class CreateReleaseDto {
   @IsString()
   @MinLength(1)
   title: string;
+
+  @IsString()
+  @IsOptional()
+  titleLatin?: string;
+
   @ArrayMinSize(1)
   @IsString({ each: true })
   artistsIds: string[];
@@ -138,6 +143,11 @@ export class UpdateReleaseDto {
   @IsString()
   @MinLength(1)
   title: string;
+
+  @IsString()
+  @IsOptional()
+  titleLatin?: string;
+
   @IsString({ each: true })
   artistsIds: string[];
   @IsString()
@@ -174,6 +184,10 @@ export class CreateArtistDto {
   @IsString()
   @MinLength(1)
   name: string;
+
+  @IsString()
+  @IsOptional()
+  nameLatin?: string;
 }
 
 export class CreateLabelDto {

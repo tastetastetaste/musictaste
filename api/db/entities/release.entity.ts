@@ -15,6 +15,9 @@ export class Release extends SharedBaseEntity {
   @Column()
   title: string;
 
+  @Column({ nullable: true })
+  titleLatin?: string;
+
   @Column('int')
   type: ReleaseType;
 

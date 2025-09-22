@@ -820,6 +820,7 @@ export class EntriesService {
       .createQueryBuilder('ra')
       .select('artist.id', 'artistId')
       .addSelect('artist.name', 'artistName')
+      .addSelect('artist.nameLatin', 'artistNameLatin')
       .addSelect('COUNT(artist.id)::int', 'artistCount')
 
       .innerJoin(
@@ -836,6 +837,7 @@ export class EntriesService {
     const result = artists.map((ua) => ({
       id: ua.artistId,
       name: ua.artistName,
+      nameLatin: ua.artistNameLatin,
       count: ua.artistCount,
     }));
 

@@ -244,7 +244,7 @@ export const ReleasePageContainer: React.FC<{
   data: IReleaseResponse;
   children: JSX.Element | JSX.Element[];
 }> = ({ data: { release, tracks, contributors }, children }) => {
-  const { id, title, cover, artists, date } = release;
+  const { id, title, titleLatin, cover, artists, date } = release;
 
   const { colors } = useTheme();
 
@@ -305,13 +305,11 @@ export const ReleasePageContainer: React.FC<{
           <Stack gap="lg">
             <Group align="center" justify="apart" gap="lg">
               <Stack>
-                <ArtistsLinks
-                  links={artists.map((a) => ({
-                    label: a.name,
-                    href: getArtistPathname(a.id),
-                  }))}
-                />
+                <ArtistsLinks artists={artists} />
                 <Typography size="title-xl">{title}</Typography>
+                {titleLatin && (
+                  <Typography size="title-lg">{titleLatin}</Typography>
+                )}
               </Stack>
               {release.stats?.ratingsCount > 0 && (
                 <RatingCircle

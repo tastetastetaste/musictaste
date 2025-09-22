@@ -110,15 +110,12 @@ export const EditListItem: React.FC<
             <ReleaseImageLink release={release} size="xs" />
             <FlexChild grow shrink>
               <Stack gap="sm">
-                <ArtistsLinks
-                  links={release.artists.map((a) => ({
-                    href: getArtistPathname(a.id),
-                    label: a.name,
-                  }))}
+                <ArtistsLinks artists={release.artists} />
+                <ReleaseTitleLink
+                  to={getReleasePathname(release.id)}
+                  title={release.title}
+                  latinTitle={release.titleLatin}
                 />
-                <ReleaseTitleLink to={getReleasePathname(release.id)}>
-                  {release.title}
-                </ReleaseTitleLink>
                 <Note note={note} id={id} listId={listId} />
               </Stack>
             </FlexChild>

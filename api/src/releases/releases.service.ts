@@ -97,6 +97,7 @@ export class ReleasesService {
       .select([
         'release.id',
         'release.title',
+        'release.titleLatin',
         'release.date',
         'release.type',
         'release.imagePath',
@@ -147,6 +148,7 @@ export class ReleasesService {
       .select([
         'release.id',
         'release.title',
+        'release.titleLatin',
         'release.date',
         'release.type',
         'release.imagePath',
@@ -473,6 +475,7 @@ export class ReleasesService {
   async createRelease({
     changes: {
       title,
+      titleLatin,
       artistsIds,
       date,
       labelsIds,
@@ -490,6 +493,7 @@ export class ReleasesService {
       await this.releasesRepository.insert({
         id,
         title,
+        titleLatin,
         type,
         date: dayjs(date).format('YYYY-MM-DD').toString(),
         imagePath: imagePath,
@@ -586,6 +590,7 @@ export class ReleasesService {
 
     const {
       title,
+      titleLatin,
       date,
       type,
       imagePath,
@@ -597,6 +602,7 @@ export class ReleasesService {
     } = submission.changes;
 
     if (title) _release.title = title;
+    if (titleLatin) _release.titleLatin = titleLatin;
     if (date) _release.date = dayjs(date).format('YYYY-MM-DD').toString();
     if (type) _release.type = type;
     if (imagePath) _release.imagePath = imagePath;

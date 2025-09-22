@@ -7,7 +7,7 @@ import {
   getReleasePathname,
 } from '../../utils/get-pathname';
 import { Group } from '../../components/flex/group';
-import { ReleaseImageLink } from '../releases/release/shared';
+import { ReleaseImageLink, ReleaseTitleLink } from '../releases/release/shared';
 
 export const ArtistSearchLink = ({ artist }: { artist: IArtistSummary }) => (
   <Link to={getArtistPathname(artist.id)}>{artist.name}</Link>
@@ -30,6 +30,11 @@ export const ReleaseSearchLink = ({
     <div css={{ minWidth: '70px' }}>
       <ReleaseImageLink release={release} size="xs" />
     </div>
-    <Link to={getReleasePathname(release.id)}>{release.title}</Link>
+    <Link to={getReleasePathname(release.id)}>
+      {release.title}
+      <span css={{ fontStyle: 'italic' }}>
+        {release.titleLatin && ` [${release.titleLatin}]`}
+      </span>
+    </Link>
   </Group>
 );

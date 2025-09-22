@@ -52,12 +52,23 @@ export const ReleaseSubmissionItem = ({
         renderValue={(v) => <span>{v}</span>}
       />
       <SubmissionField
+        label="Title (Latin)"
+        originalValue={original?.titleLatin}
+        changedValue={changes?.titleLatin}
+        showOriginal={hasOriginal}
+        renderValue={(v) => <span>{v}</span>}
+      />
+      <SubmissionField
         label="Artists"
         originalValue={original?.artists}
         changedValue={changes?.artists}
         showOriginal={hasOriginal}
         renderValue={(value) => (
-          <span>{value.map((a) => a?.name).join(', ')}</span>
+          <span>
+            {value
+              .map((a) => a?.name + (a?.nameLatin ? ` [${a?.nameLatin}]` : ''))
+              .join(', ')}
+          </span>
         )}
       />
       <SubmissionField

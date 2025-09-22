@@ -52,6 +52,13 @@ export const ArtistSubmissionItem = ({
         showOriginal={hasOriginal}
         renderValue={(v) => <span>{v}</span>}
       />
+      <SubmissionField
+        label="Name (Latin)"
+        originalValue={original?.nameLatin}
+        changedValue={changes?.nameLatin}
+        showOriginal={hasOriginal}
+        renderValue={(v) => <span>{v}</span>}
+      />
     </SubmissionItemWrapper>
   );
 };

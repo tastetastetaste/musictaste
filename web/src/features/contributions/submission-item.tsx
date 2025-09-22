@@ -82,6 +82,8 @@ const isPlainObject = (v: any): v is Record<string, any> =>
 
 const hasChanges = (original: any, updated: any): boolean => {
   if (original === updated) return false;
+  // null and undefined
+  if (original == null && updated == null) return false;
   if (Array.isArray(original) && Array.isArray(updated)) {
     if (original.length !== updated.length) return true;
     return original.some((item, index) => hasChanges(item, updated[index]));

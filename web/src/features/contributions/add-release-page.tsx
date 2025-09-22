@@ -61,6 +61,7 @@ const AddReleasePage = () => {
   const defaultValues = {
     mbid: '',
     title: '',
+    titleLatin: '',
     date: '',
     image: null,
     imageUrl: '',
@@ -150,6 +151,11 @@ const AddReleasePage = () => {
             {importMessage?.length > 0 && <Feedback message={importMessage} />}
             <Input placeholder="Title" {...register('title')} />
             <FormInputError error={errors.title} />
+            <Input
+              placeholder="English / Latin-script title (if applicable)"
+              {...register('titleLatin')}
+            />
+            <FormInputError error={errors.titleLatin} />
             <Controller
               name="artists"
               control={control}

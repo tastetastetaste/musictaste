@@ -30,6 +30,10 @@ export class ReleaseChanges {
   @IsString()
   title: string;
 
+  @IsString()
+  @IsOptional()
+  titleLatin?: string;
+
   @IsEnum(ReleaseType)
   type: ReleaseType;
 

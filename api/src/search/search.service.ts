@@ -39,15 +39,20 @@ export class SearchService {
             .select([
               'r.id',
               'r.title',
+              'r.titleLatin',
               'r.imagePath',
               'a.id',
               'a.name',
+              'a.nameLatin',
               'r.explicitCoverArt',
             ])
             .leftJoinAndSelect('r.artistConnection', 'ac')
             .leftJoinAndSelect('ac.artist', 'a')
             .where('r.title ilike :title', {
               title: `${q}%`,
+            })
+            .orWhere('r.titleLatin ilike :titleLatin', {
+              titleLatin: `${q}%`,
             })
             .take(take)
             .skip(skip)
@@ -56,9 +61,12 @@ export class SearchService {
       type.includes('artists')
         ? this.artistsRepository
             .createQueryBuilder('a')
-            .select(['a.id', 'a.name'])
+            .select(['a.id', 'a.name', 'a.nameLatin'])
             .where('a.name ilike :name', {
               name: `${q}%`,
+            })
+            .orWhere('a.nameLatin ilike :nameLatin', {
+              nameLatin: `${q}%`,
             })
             .take(take)
             .skip(skip)

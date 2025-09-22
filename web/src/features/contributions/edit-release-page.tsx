@@ -55,6 +55,7 @@ const EditReleasePage = () => {
   const defaultValues = {
     mbid: '',
     title: '',
+    titleLatin: '',
     date: '',
     image: null,
     imageUrl: '',
@@ -124,6 +125,7 @@ const EditReleasePage = () => {
       reset({
         ...defaultValues,
         title: release.title,
+        titleLatin: release.titleLatin,
         artists: release.artists.map((a) => ({
           label: a.name,
           value: a.id,
@@ -231,6 +233,11 @@ const EditReleasePage = () => {
             {importMessage?.length > 0 && <Feedback message={importMessage} />}
             <Input placeholder="Title" {...register('title')} />
             <FormInputError error={errors.title} />
+            <Input
+              placeholder="English / Latin-script title (if applicable)"
+              {...register('titleLatin')}
+            />
+            <FormInputError error={errors.titleLatin} />
             <Controller
               name="artists"
               control={control}

@@ -3,7 +3,12 @@ import { IconMusicHeart, IconNote } from '@tabler/icons-react';
 import { Fragment, useState } from 'react';
 import { useQuery } from 'react-query';
 import { LinkProps, useNavigate } from 'react-router-dom';
-import { ExplicitCoverArt, IReleaseSummary, VoteType } from 'shared';
+import {
+  ExplicitCoverArt,
+  IArtistSummary,
+  IReleaseSummary,
+  VoteType,
+} from 'shared';
 import { FlexChild } from '../../../components/flex/flex-child';
 import { Group } from '../../../components/flex/group';
 import { Stack } from '../../../components/flex/stack';
@@ -15,6 +20,7 @@ import { Popover } from '../../../components/popover';
 import { Typography } from '../../../components/typography';
 import { api } from '../../../utils/api';
 import {
+  getArtistPathname,
   getReleasePathname,
   getReviewPathname,
 } from '../../../utils/get-pathname';
@@ -104,30 +110,38 @@ export const ReleaseImageLink: React.FC<ReleaseImageLinkProps> = ({
 };
 
 export const ReleaseTitleLink = ({
-  children,
   to,
+  title,
+  latinTitle,
 }: {
   to: LinkProps['to'];
-  children: any;
+  title: string;
+  latinTitle?: string;
 }) => {
   return (
     <Link to={to} size="title">
-      {children}
+      {title}
+      <span css={{ fontStyle: 'italic' }}>
+        {latinTitle && ` [${latinTitle}]`}
+      </span>
     </Link>
   );
 };
 
-export const ArtistsLinks = ({
-  links,
-}: {
-  links: { label: string; href: string }[];
-}) => {
+export const ArtistsLinks = ({ artists }: { artists: IArtistSummary[] }) => {
   return (
     <Typography color="sub">
-      {links.map(({ label, href }, i) => (
-        <Fragment key={href}>
+      {artists.map(({ id, name, nameLatin }, i) => (
+        <Fragment key={id}>
           {i > 0 && ', '}
-          <Link to={href}>{label}</Link>
+          <Link to={getArtistPathname(id)}>
+            {name}{' '}
+            {nameLatin ? (
+              <span css={{ fontStyle: 'italic' }}>[{nameLatin}]</span>
+            ) : (
+              ''
+            )}
+          </Link>
         </Fragment>
       ))}
     </Typography>

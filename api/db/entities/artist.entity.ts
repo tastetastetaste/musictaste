@@ -8,6 +8,9 @@ export class Artist extends SharedBaseEntity {
   @Column()
   name: string;
 
+  @Column({ nullable: true })
+  nameLatin?: string;
+
   @OneToMany(() => ReleaseArtist, (ra) => ra.artist)
   releaseConnection: Promise<ReleaseArtist[]>;
 

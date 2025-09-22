@@ -93,7 +93,7 @@ export class SubmissionService {
   // --- ARTISTS
 
   async createArtistSubmission(
-    { name }: CreateArtistDto,
+    { name, nameLatin }: CreateArtistDto,
     user: CurrentUserPayload,
   ) {
     if (user.contributorStatus === ContributorStatus.NOT_A_CONTRIBUTOR)
@@ -101,7 +101,7 @@ export class SubmissionService {
         "You can't submit contributions at this time",
       );
     const artistSubmission = new ArtistSubmission();
-    artistSubmission.changes = { name };
+    artistSubmission.changes = { name, nameLatin };
     artistSubmission.submissionType = SubmissionType.CREATE;
     artistSubmission.submissionStatus =
       user.contributorStatus >= ContributorStatus.EDITOR
@@ -127,13 +127,9 @@ export class SubmissionService {
 
   private async applyArtistSubmission(submission: ArtistSubmission) {
     if (submission.submissionType === SubmissionType.CREATE) {
-      const artist = new Artist();
+      const artist = this.artistsService.create(submission.changes);
 
-      artist.name = submission.changes.name;
-
-      const newArtist = await this.artistsRepository.save(artist);
-
-      return newArtist;
+      return artist;
     } else {
       return false;
     }
@@ -189,6 +185,7 @@ export class SubmissionService {
   async createReleaseSubmission(
     {
       title,
+      titleLatin,
       artistsIds,
       date,
       labelsIds,
@@ -235,6 +232,7 @@ export class SubmissionService {
 
     releaseSubmission.changes = {
       title: title,
+      titleLatin: titleLatin,
       type: ReleaseType[type],
       date: dayjs(date).format('YYYY-MM-DD').toString(),
       artistsIds: artistsIds,
@@ -265,6 +263,7 @@ export class SubmissionService {
     releaseId: string,
     {
       title,
+      titleLatin,
       artistsIds,
       date,
       labelsIds,
@@ -332,6 +331,7 @@ export class SubmissionService {
 
     rs.changes = {
       title: title,
+      titleLatin: titleLatin,
       type: ReleaseType[type],
       date: dayjs(date).format('YYYY-MM-DD').toString(),
       artistsIds: artistsIds,
@@ -344,6 +344,7 @@ export class SubmissionService {
 
     rs.original = {
       title: release.title,
+      titleLatin: release.titleLatin,
       type: release.type,
       date: release.date,
       artistsIds: release.artistConnection.map((a) => a.artistId),

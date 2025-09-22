@@ -8,11 +8,13 @@ import {
 export interface IArtistSummary {
   id: string;
   name: string;
+  nameLatin?: string;
 }
 
 export interface IArtist {
   id: string;
   name: string;
+  nameLatin?: string;
 }
 
 export interface IArtistResponse {
@@ -137,6 +139,7 @@ export interface IReleaseStats {
 export interface IReleaseSummary {
   id: string;
   title: string;
+  titleLatin?: string;
   cover?: IReleaseCover;
   artists: IArtistSummary[];
   explicitCoverArt?: ExplicitCoverArt[];
@@ -286,6 +289,7 @@ export interface IUserFollowsResponse {
 export interface IUserArtist {
   id: string;
   name: string;
+  nameLatin?: string;
   count: number;
 }
 
@@ -402,6 +406,7 @@ export interface ICreateLabelResponse {
 
 export interface IReleaseChanges {
   title: string;
+  titleLatin?: string;
   type: string;
   date: any;
   artists: IArtistSummary[];
@@ -436,6 +441,7 @@ export interface IReleaseSubmission {
 
 export interface IArtistChanges {
   name: string;
+  nameLatin?: string;
 }
 
 export interface IArtistSubmissionVote {
@@ -535,9 +541,10 @@ export interface IUserContributionsStatsResponse {
 export interface IAutofillRelease {
   id: string;
   imageUrl: string;
-  artists: { name: string }[];
+  artists: { name: string; nameLatin?: string }[];
   labels: { name: string }[];
   title: string;
+  titleLatin?: string;
   type: string;
   date: string;
   tracks: any;

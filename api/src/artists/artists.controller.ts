@@ -12,10 +12,4 @@ export class ArtistsController {
   findOne(@Param('id') id: string): Promise<IArtistResponse> {
     return this.artistsService.findOneWithReleases(id);
   }
-
-  @UseGuards(AuthenticatedGuard)
-  @Post()
-  create(@Body() input: CreateArtistDto, @CurUser('id') userId: string) {
-    return this.artistsService.create(input, userId);
-  }
 }
