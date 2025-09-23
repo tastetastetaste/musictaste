@@ -4,28 +4,32 @@ export const CONTRIBUTING_MD = `# Contributing to the Database
 
 You can start contributing data by selecting **"Add Release"** from the dropdown that appears when you click your avatar in the top right corner.
 
-- **Title**: The title of the release.  
+- **Title**: The original title of the release.  
+- **English / Latin-script title (if applicable)**: The title of the release in English or Latin-script if the original title is in non-Latin script.
 - **Artist/Band**: Select the artist or band.  
-  - If you don't find the artist, click **"Add new artist"** below the input field to add a new artist to the database.  
-  - If the name is in non-Latin text, use the localized English name followed by the original non-Latin text in square brackets (e.g., *Ichiko Aoba [青葉市子]*) to make it easier to search.  
   - For classical music, use all performers and composers as artists.
+  - If you don't find the artist, click **"Add new artist"** below the input field to add a new artist to the database.  
+    - **Name**: The original name of the artist.
+    - **English / Latin-script name (if applicable)**: The name of the artist in English or Latin-script if the original name is in non-Latin script.
+  - If you know the artist is in the database but can't find them, click **"Select by ID"** below the input field to select the artist by ID. Artist ID can be copied from the top right menu of the artist page.
 - **Type**: Select the release type.  
-  - The list of types is self-explanatory, but note that we use **"Reissue"** as the type for deluxe and extended editions.  
 - **Date**: Release date.  
   - Accepted formats: YYYY, YYYY-MM, YYYY-MM-DD, MM/DD/YYYY, MM-DD-YYYY, or MMM DD, YYYY.  
 - **Label**: Select the label.  
-  - If you don't find the label, click **"Add new label"** below the input field to add a new one to the database.  
-  - When adding a label, please use the full label name — not a shortened version.  
   - If it doesn't have a label, use **"Not On Label (Self-Released)"** as a label.
+  - If you don't find the label, click **"Add new label"** below the input field to add a new one to the database.  
+    - When adding a label, please use the full label name — not a shortened version.  
+  - Similar to artists, you can select the label by ID. 
 - **Language**: Select the language.  
   - If the language isn't listed, please send feedback (contact information is in the sidebar).  
-- **Cover Art**: Drag and drop, or click to select cover art.  
+- **Cover Art**: Drag and drop, or click to select cover art.
+- **Explicit Cover Art**: Select all that apply.
 - **Add Tracks**: Click, then enter the number of tracks you want to add. Fill in the titles and (optionally) the length for each track.  
   - For compilations that consist of various artists, list the artist next to the song title. (see this [example](https://www.musictaste.xyz/release/tYKIC5MZ1R-F))
 - **Note/Source**: Add a note for the person reviewing your contribution (include links).  
 - **Submit**: Click **"Submit"** to add the release.  
 
-#### Importing from MusicBrainz
+### Importing from MusicBrainz
 
 You can autofill the fields by importing from MusicBrainz.
 
@@ -36,11 +40,21 @@ You can autofill the fields by importing from MusicBrainz.
 - Click **"Import"**.  
 - Edit and fill in any missing information as necessary.
 
+## Contributing Genres
+
+You can contribute genres from [this page](/contributions/genres/new).
+
+- **Name**: The name of the genre.
+- **Bio**: The bio of the genre (must not be copied from other sources).
+- **Note/Source**: Add sources and a note for the person reviewing your contribution (must provide multiple sources).
+- **Submit**: Click **"Submit"** to add the genre.
+
 ## Editing Data
 
-- Go to the release page.  
+You can edit releases, artists, and genres using a similar process:
+
+- Go to the release, artist, or genre page you want to edit.  
 - Click the dropdown menu in the top right corner and select **"Edit"**.  
-- You will see a screen identical to the **Add Release** screen.  
 - Make your changes and click **"Submit"**.  
 - Edits may take up to 24 hours to be approved.
 
@@ -50,7 +64,7 @@ If you add or edit data by mistake (or accident), you can discard it within **1 
 
 - Find the submission (multiple options)
   - You can fine all your contributions in **your contributions page** (from the top right menu in your profile page)
-  - You can find **history pages** of releases, artists, and labels in their own pages in the top right menu
+  - You can find **history pages** of releases, artists, labels, and genres in their own pages in the top right menu
 - Click the **"Discard"** button.
 - Confirm the action.
 
@@ -62,15 +76,6 @@ If you find incorrect or inappropriate data, you can report it directly:
 - Click the dropdown menu in the top right corner and select **"Report"**.  
 - Enter the reason for the report in the text field.  
 - Click **Send** to submit the report.
-
-## Contributing Genres
-
-You can contribute genres from [this page](/contributions/genres/new).
-
-- **Name**: The name of the genre.
-- **Bio**: The bio of the genre (must not be copied from other sources).
-- **Note/Source**: Add sources and a note for the person reviewing your contribution (must provide multiple sources).
-- **Submit**: Click **"Submit"** to add the genre.
 
 ## Contribution Statuses
 
