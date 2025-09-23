@@ -157,6 +157,9 @@ export class GenresService {
     const genre = await this.genreRepository.findOne({
       where: { id: genreId },
     });
+
+    if (!genre) throw new NotFoundException();
+
     genre.name = name;
     genre.bio = bio;
     return this.genreRepository.save(genre);

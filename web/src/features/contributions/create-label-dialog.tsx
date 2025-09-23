@@ -46,7 +46,14 @@ const CreateLabelDialog: React.FC<{
 
   return (
     <Dialog isOpen={isOpen} onClose={onClose} title="Add Label">
-      <form onSubmit={handleSubmit(createLabel)}>
+      <form
+        onSubmit={handleSubmit(createLabel)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+          }
+        }}
+      >
         <Stack gap="sm">
           <Input placeholder="Name" {...register('name')} />
           <FormInputError error={errors.name} />

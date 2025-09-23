@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation, useQuery } from 'react-query';
 import { useNavigate, useParams } from 'react-router-dom';
-import { CreateGenreDto, SubmissionStatus } from 'shared';
+import { UpdateArtistDto, SubmissionStatus } from 'shared';
 import { Button } from '../../components/button';
 import { Container } from '../../components/containers/container';
 import { Group } from '../../components/flex/group';
@@ -18,11 +18,11 @@ import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
 import { useSnackbar } from '../../hooks/useSnackbar';
 
-const EditGenrePage = () => {
-  const { id: genreId } = useParams();
+const EditArtistPage = () => {
+  const { id: artistId } = useParams();
   const defaultValues = {
     name: '',
-    bio: '',
+    nameLatin: '',
     note: '',
   };
 
@@ -31,9 +31,9 @@ const EditGenrePage = () => {
     register,
     reset,
     formState: { isSubmitSuccessful, errors },
-  } = useForm<CreateGenreDto>({
+  } = useForm<UpdateArtistDto>({
     resolver: classValidatorResolver(
-      CreateGenreDto,
+      UpdateArtistDto,
       {},
       {
         rawValues: true,
@@ -47,58 +47,60 @@ const EditGenrePage = () => {
   const { snackbar } = useSnackbar();
 
   const {
-    mutateAsync: updateGenre,
+    mutateAsync: updateArtist,
     isLoading,
     data,
-  } = useMutation(api.updateGenre, {
+  } = useMutation(api.updateArtist, {
     onSuccess: ({ message }) => {
       reset(defaultValues);
       snackbar(message || 'Changes submitted successfully');
 
-      navigate(`/genre/${genreId}`);
+      navigate(`/artist/${artistId}`);
     },
   });
 
-  const { data: genreData, isLoading: isGenreLoading } = useQuery(
-    cacheKeys.genreKey(genreId),
-    () => api.getGenre(genreId!),
+  const { data: artistData, isLoading: isArtistLoading } = useQuery(
+    cacheKeys.artistKey(artistId),
+    () => api.getArtist(artistId!),
     {
-      enabled: !!genreId,
+      enabled: !!artistId,
     },
   );
 
   const { data: openSubmissionData, isLoading: isOpenSubmissionLoading } =
     useQuery(
-      cacheKeys.genreSubmissionsKey({
-        genreId,
+      cacheKeys.artistSubmissionsKey({
+        artistId,
         page: 1,
         status: SubmissionStatus.OPEN,
       }),
       () =>
-        api.getGenreSubmissions({
+        api.getArtistSubmissions({
           page: 1,
-          genreId,
+          artistId,
           status: SubmissionStatus.OPEN,
         }),
     );
 
   useEffect(() => {
-    if (genreData) {
+    if (artistData) {
       reset({
         ...defaultValues,
-        name: genreData.genre.name,
-        bio: genreData.genre.bio,
+        name: artistData.artist.name,
+        nameLatin: artistData.artist.nameLatin || '',
       });
     }
-  }, [genreData]);
+  }, [artistData]);
 
-  const openSubmission = openSubmissionData?.genres?.[0] || null;
+  const openSubmission = openSubmissionData?.artists?.[0] || null;
 
   return (
-    <AppPageWrapper title="Edit Genre">
+    <AppPageWrapper title="Edit Artist">
       <Container>
         <form
-          onSubmit={handleSubmit((data) => updateGenre({ id: genreId, data }))}
+          onSubmit={handleSubmit((data) =>
+            updateArtist({ id: artistId, data }),
+          )}
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
               e.preventDefault();
@@ -107,15 +109,18 @@ const EditGenrePage = () => {
         >
           <Stack gap="sm">
             <Group justify="apart" align="center" wrap>
-              <Typography size="title-lg">Edit Genre</Typography>
+              <Typography size="title-lg">Edit Artist</Typography>
               <Link to="/contributing">
                 Need help? Read the Contributing Guide.
               </Link>
             </Group>
             <Input placeholder="Name" {...register('name')} />
             <FormInputError error={errors.name} />
-            <Textarea {...register('bio')} placeholder="Bio" rows={5} />
-            <FormInputError error={errors.bio} />
+            <Input
+              placeholder="Name (Latin script)"
+              {...register('nameLatin')}
+            />
+            <FormInputError error={errors.nameLatin} />
             <Textarea
               {...register('note')}
               placeholder="Note/source"
@@ -139,4 +144,4 @@ const EditGenrePage = () => {
   );
 };
 
-export default EditGenrePage;
+export default EditArtistPage;

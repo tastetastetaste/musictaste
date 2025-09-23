@@ -80,10 +80,11 @@ const isEmptyValue = (v: any) => {
 const isPlainObject = (v: any): v is Record<string, any> =>
   v !== null && typeof v === 'object' && !Array.isArray(v);
 
+const isEmpty = (v: any) => v === null || v === undefined || v === '';
+
 const hasChanges = (original: any, updated: any): boolean => {
   if (original === updated) return false;
-  // null and undefined
-  if (original == null && updated == null) return false;
+  if (isEmpty(original) && isEmpty(updated)) return false;
   if (Array.isArray(original) && Array.isArray(updated)) {
     if (original.length !== updated.length) return true;
     return original.some((item, index) => hasChanges(item, updated[index]));

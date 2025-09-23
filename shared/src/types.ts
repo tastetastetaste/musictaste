@@ -463,6 +463,7 @@ export interface IArtistSubmission {
   user: IUserSummary;
   createdAt: string;
   votes: IArtistSubmissionVote[];
+  note: string;
 }
 
 export interface ILabelChanges {

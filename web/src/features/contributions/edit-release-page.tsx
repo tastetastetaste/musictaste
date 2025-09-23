@@ -19,7 +19,6 @@ import { Link } from '../../components/links/link';
 import { Typography } from '../../components/typography';
 import { useSnackbar } from '../../hooks/useSnackbar';
 import AppPageWrapper from '../../layout/app-page-wrapper';
-import { ON_EDIT_RELEASE } from '../../static/feedback';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
 import { AddByIdArtistDialog } from './add-by-id-artist-dialog';
@@ -174,7 +173,7 @@ const EditReleasePage = () => {
 
   useEffect(() => {
     if (isSubmitSuccessful) {
-      snackbar(ON_EDIT_RELEASE);
+      snackbar('Changes submitted successfully');
 
       navigate(`/release/${releaseId}`, { replace: true });
     }

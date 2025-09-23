@@ -54,7 +54,14 @@ const CreateArtistDialog: React.FC<{
 
   return (
     <Dialog isOpen={isOpen} onClose={onClose} title="Add Artist/Band">
-      <form onSubmit={handleSubmit(createArtist)}>
+      <form
+        onSubmit={handleSubmit(createArtist)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+          }
+        }}
+      >
         <Stack gap="sm">
           <Input placeholder="Name" {...register('name')} />
           <FormInputError error={errors.name} />

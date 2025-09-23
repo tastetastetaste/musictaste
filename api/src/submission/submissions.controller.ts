@@ -25,6 +25,7 @@ import {
   FindReleaseSubmissionsDto,
   ProcessPendingDeletionDto,
   SubmissionVoteDto,
+  UpdateArtistDto,
   UpdateGenreDto,
   UpdateReleaseDto,
 } from 'shared';
@@ -47,6 +48,21 @@ export class SubmissionsController {
   ) {
     return this.submissionsService.createArtistSubmission(
       createArtistDto,
+      user,
+    );
+  }
+
+  @Throttle({ default: { limit: 60, ttl: 1000 * 60 * 60 } })
+  @Post('artists/:artistId')
+  @UseGuards(AuthenticatedGuard)
+  updateArtist(
+    @Param('artistId') artistId: string,
+    @Body() updateArtistDto: UpdateArtistDto,
+    @CurUser() user: CurrentUserPayload,
+  ) {
+    return this.submissionsService.updateArtistSubmission(
+      artistId,
+      updateArtistDto,
       user,
     );
   }

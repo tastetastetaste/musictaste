@@ -52,6 +52,24 @@ export class ArtistsService {
     return artist;
   }
 
+  async updateArtist({
+    artistId,
+    changes: { name, nameLatin },
+  }: {
+    artistId: string;
+    changes: { name: string; nameLatin?: string };
+  }): Promise<Artist> {
+    const artist = await this.artistsRepository.findOne({
+      where: { id: artistId },
+    });
+
+    if (!artist) throw new NotFoundException();
+
+    artist.name = name;
+    artist.nameLatin = nameLatin;
+    return this.artistsRepository.save(artist);
+  }
+
   async deleteArtist(id: string) {
     return await this.artistsRepository.delete(id);
   }

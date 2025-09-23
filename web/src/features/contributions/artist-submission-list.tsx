@@ -17,6 +17,7 @@ import {
   SubmissionField,
   SubmissionItemWrapper,
 } from './submission-item';
+import { Typography } from '../../components/typography';
 
 class ArtistSubmissionListOutletContext {
   status?: SubmissionStatus;
@@ -59,6 +60,17 @@ export const ArtistSubmissionItem = ({
         showOriginal={hasOriginal}
         renderValue={(v) => <span>{v}</span>}
       />
+      {submission.note && (
+        <SubmissionField
+          label="Note"
+          originalValue={undefined}
+          changedValue={submission.note}
+          showOriginal={false}
+          renderValue={(v) => (
+            <Typography whiteSpace="pre-wrap">{v}</Typography>
+          )}
+        />
+      )}
     </SubmissionItemWrapper>
   );
 };

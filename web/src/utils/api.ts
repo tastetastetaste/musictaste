@@ -51,6 +51,7 @@ import {
   IUserTag,
   ProcessPendingDeletionDto,
   SearchType,
+  UpdateArtistDto,
   UpdateGenreDto,
   UpdateReleaseDto,
   UpdateUserContributorStatusDto,
@@ -411,6 +412,9 @@ const createArtist = (data: CreateArtistDto) =>
     .post<ICreateArtistResponse>('submissions/artists', data)
     .then((res) => res.data);
 
+const updateArtist = ({ id, data }: { id: string; data: UpdateArtistDto }) =>
+  client.post('submissions/artists/' + id, data).then((res) => res.data);
+
 const createLabel = (data: CreateLabelDto) =>
   client
     .post<ICreateLabelResponse>('submissions/labels', data)
@@ -696,6 +700,7 @@ export const api = {
   getLabel,
   getGenre,
   createArtist,
+  updateArtist,
   createLabel,
   getLanguages,
   login,

@@ -205,6 +205,10 @@ const ArtistPage = () => {
       title={artist ? artist.name : ''}
       menu={[
         {
+          label: 'Edit',
+          to: '/contributions/artists/' + artist?.id,
+        },
+        {
           label: 'History',
           to: '/history/artist/' + artist?.id,
         },

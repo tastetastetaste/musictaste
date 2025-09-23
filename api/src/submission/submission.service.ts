@@ -24,6 +24,7 @@ import {
   ReleaseType,
   SubmissionStatus,
   SubmissionType,
+  UpdateArtistDto,
   UpdateGenreDto,
   UpdateReleaseDto,
   VoteType,
@@ -125,9 +126,62 @@ export class SubmissionService {
     };
   }
 
+  async updateArtistSubmission(
+    artistId: string,
+    { name, nameLatin, note }: UpdateArtistDto,
+    user: CurrentUserPayload,
+  ) {
+    if (user.contributorStatus === ContributorStatus.NOT_A_CONTRIBUTOR)
+      throw new BadRequestException(
+        "You can't submit contributions at this time",
+      );
+
+    const artist = await this.artistsRepository.findOne({
+      where: { id: artistId },
+    });
+
+    if (!artist) throw new NotFoundException();
+
+    const exist = await this.artistSubmissionRepository.findOne({
+      where: {
+        artistId,
+        submissionStatus: SubmissionStatus.OPEN,
+      },
+    });
+
+    if (exist) {
+      throw new BadRequestException(
+        'There is already an open edit submission for this artist',
+      );
+    }
+
+    const as = new ArtistSubmission();
+    as.artistId = artistId;
+    as.changes = { name, nameLatin };
+    as.original = { name: artist.name, nameLatin: artist.nameLatin };
+    as.submissionType = SubmissionType.UPDATE;
+    as.submissionStatus = SubmissionStatus.OPEN;
+    as.userId = user.id;
+    as.note = note;
+
+    await this.artistSubmissionRepository.save(as);
+
+    return {
+      message: `Artist "${name}" is awaiting approval`,
+      artistSubmission: as,
+    };
+  }
+
   private async applyArtistSubmission(submission: ArtistSubmission) {
     if (submission.submissionType === SubmissionType.CREATE) {
       const artist = this.artistsService.create(submission.changes);
+
+      return artist;
+    } else if (submission.submissionType === SubmissionType.UPDATE) {
+      const artist = await this.artistsService.updateArtist({
+        artistId: submission.artistId,
+        changes: submission.changes,
+      });
 
       return artist;
     } else {
