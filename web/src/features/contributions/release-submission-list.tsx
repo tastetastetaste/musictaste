@@ -22,6 +22,7 @@ import {
 } from './submission-item';
 import { Typography } from '../../components/typography';
 import { ExplicitCoverArtOptions } from './add-release-page';
+import { Markdown } from '../../components/markdown';
 
 export const ReleaseSubmissionItem = ({
   submission,
@@ -143,9 +144,7 @@ export const ReleaseSubmissionItem = ({
           originalValue={undefined}
           changedValue={submission.note}
           showOriginal={false}
-          renderValue={(v) => (
-            <Typography whiteSpace="pre-wrap">{v}</Typography>
-          )}
+          renderValue={(v) => <Markdown>{v}</Markdown>}
         />
       )}
     </SubmissionItemWrapper>

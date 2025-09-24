@@ -18,6 +18,7 @@ import {
   SubmissionItemWrapper,
 } from './submission-item';
 import { Typography } from '../../components/typography';
+import { Markdown } from '../../components/markdown';
 
 class ArtistSubmissionListOutletContext {
   status?: SubmissionStatus;
@@ -66,9 +67,7 @@ export const ArtistSubmissionItem = ({
           originalValue={undefined}
           changedValue={submission.note}
           showOriginal={false}
-          renderValue={(v) => (
-            <Typography whiteSpace="pre-wrap">{v}</Typography>
-          )}
+          renderValue={(v) => <Markdown>{v}</Markdown>}
         />
       )}
     </SubmissionItemWrapper>
