@@ -17,7 +17,6 @@ const Fade = keyframes`
 `;
 
 const Container = styled.div`
-  margin-top: 10px;
   animation: ${Fade} 1s ease-out 0s;
 `;
 
@@ -40,7 +39,7 @@ export function Comment({ comment: { user, body, createdAt } }: CommentProps) {
           </Typography>
         </Group>
       </div>
-      <div css={{ margin: '10px 64px 30px' }}>
+      <div css={{ margin: '10px 13px' }}>
         <Markdown>{body}</Markdown>
       </div>
     </Container>
