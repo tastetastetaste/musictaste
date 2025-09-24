@@ -191,16 +191,18 @@ const DialogContent = ({ releaseId }: { releaseId: string }) => {
 
       {data && (
         <Fragment>
-          {data.map((rg) => (
-            <ReleaseGenreItem
-              key={rg.id}
-              releaseGenre={rg}
-              releaseId={releaseId}
-              me={me}
-              vote={vote}
-              removeVote={removeVote}
-            />
-          ))}
+          <div css={{ maxHeight: '300px', overflowY: 'auto' }}>
+            {data.map((rg) => (
+              <ReleaseGenreItem
+                key={rg.id}
+                releaseGenre={rg}
+                releaseId={releaseId}
+                me={me}
+                vote={vote}
+                removeVote={removeVote}
+              />
+            ))}
+          </div>
           <Input
             onChange={(e) => setQ(e.target.value)}
             placeholder="Search..."
@@ -235,7 +237,7 @@ const ReleaseGenreVote = ({ releaseId }: any) => {
       <IconButton title="Edit" onClick={() => setOpen(true)}>
         <IconPencil />
       </IconButton>
-      <Dialog title="Genres" isOpen={open} onClose={closeDialog}>
+      <Dialog title="Primary Genres" isOpen={open} onClose={closeDialog}>
         <DialogContent releaseId={releaseId} />
       </Dialog>
     </Fragment>
