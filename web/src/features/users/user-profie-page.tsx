@@ -179,11 +179,11 @@ const UserProfilePage = () => {
           <ResponsiveRow breakpoint="sm">
             <FlexChild grow shrink>
               {hasRatings && <Typography size="title-lg">Ratings</Typography>}
-              <UserRatingsChart userId={user.id} />
+              <UserRatingsChart userId={user.id} username={user.username} />
             </FlexChild>
             <FlexChild grow shrink>
               {hasGenres && <Typography size="title-lg">Top Genres</Typography>}
-              <UserGenresChart userId={user.id} />
+              <UserGenresChart userId={user.id} username={user.username} />
             </FlexChild>
           </ResponsiveRow>
         </FlexChild>
