@@ -186,6 +186,8 @@ export const Review: React.FC<ReviewProps> = ({
               paddingLeft: '5px',
               paddingRight: '5px',
               fontSize: '13px',
+              maxWidth: '100%',
+              overflow: 'hidden',
             }}
           >
             <Markdown>{MDString}</Markdown>

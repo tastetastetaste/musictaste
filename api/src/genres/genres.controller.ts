@@ -39,7 +39,10 @@ export class GenresController {
 
   @Delete('rg/:id')
   @UseGuards(AuthenticatedGuard)
-  removeVote(@Param('id') id: string, @CurUser('id') userId) {
-    return this.genresService.removeGenreVote({ releaseGenreId: id }, userId);
+  removeVote(@Param('id') id: string, @CurUser() user: CurrentUserPayload) {
+    if (user.contributorStatus < ContributorStatus.CONTRIBUTOR)
+      throw new UnauthorizedException();
+
+    return this.genresService.removeGenreVote({ releaseGenreId: id }, user.id);
   }
 }
