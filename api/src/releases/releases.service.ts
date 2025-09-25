@@ -417,7 +417,7 @@ export class ReleasesService {
         releaseTypes: [ReleaseType.LP, ReleaseType.Live],
       })
       .groupBy('ur.releaseId')
-      .having('COUNT(rating.id) >= 15')
+      .having('COUNT(rating.id) >= 20')
       .orderBy('AVG(rating.rating)', 'DESC', 'NULLS LAST')
       .addOrderBy('ur.releaseId', 'DESC')
       .limit(100)
