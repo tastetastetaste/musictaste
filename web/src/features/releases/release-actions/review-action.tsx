@@ -66,6 +66,13 @@ export const ReviewAction = ({ releaseId }: { releaseId: string }) => {
 
   const { entry } = useReleaseActions(releaseId);
 
+  const onClose = () => {
+    const confirmed = confirm('Are you sure you want to discard your review?');
+    if (confirmed) {
+      setShowDialog(false);
+    }
+  };
+
   return (
     <Fragment>
       <IconButton
@@ -76,11 +83,7 @@ export const ReviewAction = ({ releaseId }: { releaseId: string }) => {
       >
         <IconNote />
       </IconButton>
-      <Dialog
-        isOpen={showDialog}
-        onClose={() => setShowDialog(false)}
-        title="Review"
-      >
+      <Dialog isOpen={showDialog} onClose={onClose} title="Review">
         <ReviewForm
           releaseId={releaseId}
           onClose={() => setShowDialog(false)}
