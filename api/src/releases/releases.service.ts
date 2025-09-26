@@ -602,7 +602,7 @@ export class ReleasesService {
     } = submission.changes;
 
     if (title) _release.title = title;
-    if (titleLatin) _release.titleLatin = titleLatin;
+    _release.titleLatin = titleLatin; // allow null value
     if (date) _release.date = dayjs(date).format('YYYY-MM-DD').toString();
     if (type) _release.type = type;
     if (imagePath) _release.imagePath = imagePath;
