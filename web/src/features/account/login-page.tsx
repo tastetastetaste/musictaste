@@ -133,7 +133,7 @@ const Signup = () => {
 const LoginPage = () => {
   return (
     <AppPageWrapper title="Login">
-      <ResponsiveRow breakpoint="md">
+      <ResponsiveRow breakpoint="md" gap="lg">
         <FlexChild grow shrink>
           <Login />
         </FlexChild>

@@ -12,6 +12,7 @@ import {
   IListResponse,
   IListsResponse,
   UpdateListDto,
+  CommentEntityType,
 } from 'shared';
 import { Repository } from 'typeorm';
 import { ReleasesService } from '../releases/releases.service';
@@ -21,6 +22,7 @@ import { ListItem } from '../../db/entities/list-item.entity';
 import { ListLike } from '../../db/entities/list-like.entity';
 import { List } from '../../db/entities/list.entity';
 import { ImagesService } from '../images/images.service';
+import { CommentsService } from '../comments/comments.service';
 
 @Injectable()
 export class ListsService {
@@ -36,6 +38,7 @@ export class ListsService {
     private releasesService: ReleasesService,
     private usersService: UsersService,
     private imagesService: ImagesService,
+    private commentsService: CommentsService,
   ) {}
 
   private async getManyByIds(ids: string[]) {
@@ -54,27 +57,33 @@ export class ListsService {
       .addSelect('l.createdAt', 'createdAt')
       .addSelect('l.updatedAt', 'updatedAt')
       .addSelect('COUNT(DISTINCT like.id)', 'likesCount')
-      .addSelect('COUNT(DISTINCT comment.id)', 'commentsCount')
       .addSelect('COUNT(DISTINCT item.id)', 'listItemsCount')
       .leftJoin('l.likes', 'like')
-      .leftJoin('l.comments', 'comment')
       .leftJoin('l.items', 'item')
       .groupBy('l.id')
       .whereInIds(ids)
       .getRawMany();
 
-    const [users, covers] = await Promise.all([
+    const [users, covers, commentsCounts] = await Promise.all([
       this.usersService.getUsersByIds(lists.map((list) => list.userId)),
       Promise.all(ids.map((id) => this.getCover(id))),
+      this.commentsService.findCommentsCount(
+        CommentEntityType.LIST,
+        ids,
+      ) as any,
     ]);
 
     const listMap = new Map(lists.map((list) => [list.id, list]));
     const userMap = new Map(users.map((user) => [user.id, user]));
+    const commentsCountMap = new Map(
+      commentsCounts.map((item) => [item.entityId, item.count]),
+    );
 
     return ids.map((id, index) => ({
       ...listMap.get(id),
       user: userMap.get(listMap.get(id)?.userId),
       cover: covers[index],
+      commentsCount: commentsCountMap.get(id) || 0,
     }));
   }
 
@@ -92,20 +101,22 @@ export class ListsService {
       .addSelect('l.createdAt', 'createdAt')
       .addSelect('l.updatedAt', 'updatedAt')
       .addSelect('COUNT(DISTINCT like.id)', 'likesCount')
-      .addSelect('COUNT(DISTINCT comment.id)', 'commentsCount')
       .addSelect('COUNT(DISTINCT item.id)', 'listItemsCount')
       .leftJoin('l.likes', 'like')
-      .leftJoin('l.comments', 'comment')
       .leftJoin('l.items', 'item')
       .groupBy('l.id')
       .where('l.id = :id', { id })
       .getRawOne();
 
-    const user = await this.usersService.getUserById(list.userId);
+    const [user, commentsCounts] = await Promise.all([
+      this.usersService.getUserById(list.userId),
+      this.commentsService.findCommentsCount(CommentEntityType.LIST, id),
+    ]);
 
     return {
       ...list,
       user,
+      commentsCount: commentsCounts || 0,
     };
   }
 
@@ -137,8 +148,9 @@ export class ListsService {
   async find(
     { sortBy, page, releaseId, userId }: FindListsDto,
     currentUserId?: string,
-    pageSize = 12,
   ): Promise<IListsResponse> {
+    const pageSize = 12;
+
     const listsQB = this.listsRepository
       .createQueryBuilder('list')
       .select('list.id', 'id');
@@ -373,6 +385,12 @@ export class ListsService {
     if (!list) throw new BadRequestException();
 
     if (list.userId !== currentUserId) throw new UnauthorizedException();
+
+    // Delete list comments
+    await this.commentsService.deleteCommentsByEntity(
+      CommentEntityType.LIST,
+      id,
+    );
 
     const deleted = await this.listsRepository.delete({
       id,

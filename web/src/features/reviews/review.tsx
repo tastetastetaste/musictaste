@@ -1,7 +1,13 @@
 import { IconArrowDown, IconArrowUp, IconMessage } from '@tabler/icons-react';
 import { useMutation } from 'react-query';
 import { useNavigate } from 'react-router-dom';
-import { IEntry, IReview, IUserSummary, VoteType } from 'shared';
+import {
+  CommentEntityType,
+  IEntry,
+  IReview,
+  IUserSummary,
+  VoteType,
+} from 'shared';
 import { FlexChild } from '../../components/flex/flex-child';
 import { Group } from '../../components/flex/group';
 import { Stack } from '../../components/flex/stack';
@@ -19,9 +25,9 @@ import {
   releaseImageWidthMap,
 } from '../releases/release/shared';
 import { User } from '../users/user';
-import { ReviewComments } from './review-comments';
 import { UpdateReviewAfterVoteFu } from './update-review-after-vote';
 import { getReviewPathname } from '../../utils/get-pathname';
+import { Comments } from '../comments/comments';
 
 const ReviewActions = ({
   reviewId,
@@ -211,7 +217,9 @@ export const Review: React.FC<ReviewProps> = ({
               {updatedAt !== createdAt && ' (Edited)'}
             </Typography>
           </Group>
-          {fullPage && <ReviewComments reviewId={id} />}
+          {fullPage && (
+            <Comments entityType={CommentEntityType.REVIEW} entityId={id} />
+          )}
         </Stack>
       </FlexChild>
     </Group>

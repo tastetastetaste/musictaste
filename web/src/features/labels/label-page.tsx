@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useQuery } from 'react-query';
 import { useParams } from 'react-router-dom';
-import { FindReleasesType } from 'shared';
+import { FindReleasesType, ReportType } from 'shared';
 import { Stack } from '../../components/flex/stack';
 import { Loading } from '../../components/loading';
 import { Typography } from '../../components/typography';
@@ -64,7 +64,7 @@ const LabelPage = () => {
       )}
       <ReportDialog
         id={(data && data.label && data.label.id) || ''}
-        type="label"
+        type={ReportType.LABEL}
         isOpen={openReport}
         onClose={() => setOpenReport(false)}
       />

@@ -30,6 +30,7 @@ import { ArtistSubmissionVote } from './artist-submission-vote.entity';
 import { ReleaseSubmissionVote } from './release-submission-vote.entity';
 import { LabelSubmissionVote } from './label-submission-vote.entity';
 import { GenreSubmissionVote } from './genre-submission-vote.entity';
+import { Comment } from './comment.entity';
 
 @Entity()
 export class User extends SharedBaseEntity {
@@ -90,6 +91,9 @@ export class User extends SharedBaseEntity {
 
   @OneToMany(() => ListLike, (rl) => rl.user)
   listsLikes: ListLike[];
+
+  @OneToMany(() => Comment, (c) => c.user)
+  comments: Comment[];
 
   @OneToMany(() => UserFollowing, (uf) => uf.follower)
   following: UserFollowing[];

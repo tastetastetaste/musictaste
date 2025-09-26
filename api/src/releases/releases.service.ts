@@ -8,9 +8,9 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import dayjs from 'dayjs';
 import {
+  CommentEntityType,
   IRelease,
   IReleaseFullInfo,
-  IReleasesResponse,
   IReleaseStats,
   IReleaseWithStats,
   ITrackWithVotes,
@@ -19,6 +19,7 @@ import {
 import { In, Repository } from 'typeorm';
 import { Artist } from '../../db/entities/artist.entity';
 import { ReleaseArtist } from '../../db/entities/release-artist.entity';
+import { ReleaseGenre } from '../../db/entities/release-genre.entity';
 import { ReleaseLabel } from '../../db/entities/release-label.entity';
 import { ReleaseLanguage } from '../../db/entities/release-language.entity';
 import {
@@ -26,9 +27,9 @@ import {
   TrackChanges,
 } from '../../db/entities/release-submission.entity';
 import { Release } from '../../db/entities/release.entity';
-import { ReleaseGenre } from '../../db/entities/release-genre.entity';
 import { Track } from '../../db/entities/track.entity';
 import { UserRelease } from '../../db/entities/user-release.entity';
+import { CommentsService } from '../comments/comments.service';
 import { genId } from '../common/genId';
 import { ImagesService } from '../images/images.service';
 import { UsersService } from '../users/users.service';
@@ -57,9 +58,9 @@ export class ReleasesService {
     @InjectRepository(Track) private tracksRepository: Repository<Track>,
     @InjectRepository(ReleaseSubmission)
     private releasesSubmissions: Repository<ReleaseSubmission>,
-    @Inject(forwardRef(() => UsersService))
     private usersService: UsersService,
     private imagesService: ImagesService,
+    private commentsService: CommentsService,
   ) {}
 
   async statsLoader(ids: string[]): Promise<Record<string, IReleaseStats>> {
@@ -704,7 +705,15 @@ export class ReleasesService {
   }
 
   async deleteRelease(id: string) {
-    return await this.releasesRepository.delete(id);
+    await Promise.all([
+      this.commentsService.deleteCommentsByEntity(
+        CommentEntityType.RELEASE,
+        id,
+      ),
+      this.releasesRepository.delete(id),
+    ]);
+
+    return true;
   }
 
   private async updateTracks(releaseId: string, newTracks: TrackChanges[]) {

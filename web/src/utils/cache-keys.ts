@@ -1,4 +1,4 @@
-import { FindReleasesType, FindUsersType } from 'shared';
+import { CommentEntityType, FindReleasesType, FindUsersType } from 'shared';
 
 // ENTRY
 const entryKey = (id: string) => ['entries', id];
@@ -50,6 +50,12 @@ const reviewCommentsKey = (reviewId: string) => [
   'review',
   'comments',
   reviewId,
+];
+// COMMENTS
+const commentsKey = (entityType: CommentEntityType, entityId: string) => [
+  'comments',
+  entityType,
+  entityId,
 ];
 
 // RELEASE
@@ -276,4 +282,5 @@ export const cacheKeys = {
   musicBrainzReleaseKey,
   searchKey,
   reviewCommentsKey,
+  commentsKey,
 };

@@ -18,12 +18,14 @@ import {
 } from 'class-validator';
 import dayjs from 'dayjs';
 import {
+  CommentEntityType,
   ContributorStatus,
   EntriesSortByEnum,
   ExplicitCoverArt,
   FindReleasesType,
   FindUsersType,
   ReleaseType,
+  ReportType,
   SubmissionSortByEnum,
   SubmissionStatus,
   SupporterStatus,
@@ -576,6 +578,36 @@ export class CreateReportDto {
   @IsString()
   @MinLength(1)
   reason: string;
-  type: string;
+  @IsString()
+  @IsEnum(ReportType)
+  type: ReportType;
+  @IsString()
+  @MinLength(1)
   id: string;
+}
+
+// --- COMMENTS
+
+export class CreateCommentDto {
+  @IsString()
+  @MinLength(1)
+  body: string;
+  @IsString()
+  @MinLength(1)
+  entityId: string;
+  @Type(() => Number)
+  @IsEnum(CommentEntityType)
+  entityType: CommentEntityType;
+}
+
+export class FindCommentsDto {
+  @Type(() => Number)
+  @IsEnum(CommentEntityType)
+  entityType: CommentEntityType;
+  @IsString()
+  @MinLength(1)
+  entityId: string;
+  @Type(() => Number)
+  @IsInt()
+  page: number;
 }

@@ -9,6 +9,7 @@ import { ListItem } from '../../db/entities/list-item.entity';
 import { ListLike } from '../../db/entities/list-like.entity';
 import { List } from '../../db/entities/list.entity';
 import { ImagesModule } from '../images/images.module';
+import { CommentsModule } from '../comments/comments.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { ImagesModule } from '../images/images.module';
     ReleasesModule,
     UsersModule,
     ImagesModule,
+    CommentsModule,
   ],
   controllers: [ListsController],
   providers: [ListsService],

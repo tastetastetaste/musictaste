@@ -70,7 +70,7 @@ MusicTaste`,
     });
   }
 
-  async sendReportEmail(report: CreateReportDto) {
+  async sendReportEmail({ subject, body }: { subject: string; body: string }) {
     const isProduction =
       this.configService.get<string>('NODE_ENV') === 'production';
 
@@ -80,9 +80,9 @@ MusicTaste`,
 
     return await this.mailerService.sendMail({
       to: email,
-      subject: `Report (${report.type}: ${report.id})`,
-      text: report.reason,
-      html: `<div><p style="white-space: pre;">${report.reason}</p></div>
+      subject,
+      text: body,
+      html: `<div><p style="white-space: pre;">${body}</p></div>
           `,
     });
   }

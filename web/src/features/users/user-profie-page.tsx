@@ -1,7 +1,7 @@
 import { Fragment } from 'react';
 import { useQuery, useQueryClient } from 'react-query';
 import { useOutletContext } from 'react-router-dom';
-import { EntriesSortByEnum, IUser } from 'shared';
+import { CommentEntityType, EntriesSortByEnum, IUser } from 'shared';
 import { FlexChild } from '../../components/flex/flex-child';
 import { Grid } from '../../components/flex/grid';
 import { ResponsiveRow } from '../../components/flex/responsive-row';
@@ -20,6 +20,7 @@ import { Review } from '../reviews/review';
 import { updateReviewAfterVote_2 } from '../reviews/update-review-after-vote';
 import { UserPageOutletContext } from './user-page-wrapper';
 import { UserGenresChart, UserRatingsChart } from './user-profile-charts';
+import { Comments } from '../comments/comments';
 
 const BioSection = ({ bio }: { bio?: string | null }) =>
   bio ? <Markdown>{bio}</Markdown> : <div></div>;
@@ -28,19 +29,21 @@ const RecentlyAddedReleases: React.FC<{ userId: string; username: string }> = ({
   userId,
   username,
 }) => {
+  const NUMBER_OF_RELEASES = 8;
+
   const { data, isLoading } = useQuery(
     cacheKeys.entriesKey({
       userId,
       sortBy: EntriesSortByEnum.EntryDate,
       page: 1,
-      pageSize: 10,
+      pageSize: NUMBER_OF_RELEASES,
     }),
     () =>
       api.getEntries({
         userId,
         sortBy: EntriesSortByEnum.EntryDate,
         page: 1,
-        pageSize: 10,
+        pageSize: NUMBER_OF_RELEASES,
       }),
   );
 
@@ -48,7 +51,8 @@ const RecentlyAddedReleases: React.FC<{ userId: string; username: string }> = ({
     return <Loading />;
   }
 
-  const releases = data?.entries.length !== 0 && data?.entries.slice(0, 10);
+  const releases =
+    data?.entries.length !== 0 && data?.entries.slice(0, NUMBER_OF_RELEASES);
 
   return (
     <Fragment>
@@ -63,9 +67,9 @@ const RecentlyAddedReleases: React.FC<{ userId: string; username: string }> = ({
           >
             Recently Added
           </Link>
-          <Grid cols={[2, 5]} gap={RELEASE_GRID_GAP}>
+          <Grid cols={[2, 4]} gap={RELEASE_GRID_GAP}>
             {releases.map((ur) => (
-              <Release key={ur.id} release={ur.release!} entry={ur} size="lg" />
+              <Release key={ur.id} release={ur.release!} entry={ur} size="md" />
             ))}
           </Grid>
         </Fragment>
@@ -175,21 +179,45 @@ const UserProfilePage = () => {
           <Typography size="title-lg">About Me</Typography>
           <BioSection bio={user.bio} />
         </FlexChild>
-        <FlexChild grow shrink>
-          <ResponsiveRow breakpoint="sm">
-            <FlexChild grow shrink>
-              {hasRatings && <Typography size="title-lg">Ratings</Typography>}
-              <UserRatingsChart userId={user.id} username={user.username} />
-            </FlexChild>
-            <FlexChild grow shrink>
-              {hasGenres && <Typography size="title-lg">Top Genres</Typography>}
-              <UserGenresChart userId={user.id} username={user.username} />
-            </FlexChild>
-          </ResponsiveRow>
-        </FlexChild>
+        {hasRatings || hasGenres ? (
+          <FlexChild grow shrink>
+            <ResponsiveRow breakpoint="sm" gap="md">
+              <FlexChild grow shrink>
+                {hasRatings && <Typography size="title-lg">Ratings</Typography>}
+                <UserRatingsChart userId={user.id} username={user.username} />
+              </FlexChild>
+              <FlexChild grow shrink>
+                {hasGenres && (
+                  <Typography size="title-lg">Top Genres</Typography>
+                )}
+                <UserGenresChart userId={user.id} username={user.username} />
+              </FlexChild>
+            </ResponsiveRow>
+          </FlexChild>
+        ) : null}
       </ResponsiveRow>
       <Stack gap="lg">
-        <RecentlyAddedReleases userId={user.id} username={user.username} />
+        <ResponsiveRow breakpoint="md" gap="md">
+          {hasRatings ? (
+            <FlexChild grow={3} shrink>
+              <Stack gap="lg">
+                <RecentlyAddedReleases
+                  userId={user.id}
+                  username={user.username}
+                />
+              </Stack>
+            </FlexChild>
+          ) : null}
+          <FlexChild grow={1} shrink>
+            <Stack gap="lg">
+              <Typography size="title-lg">Shoutbox</Typography>
+              <Comments
+                entityType={CommentEntityType.SHOUTBOX}
+                entityId={user.id}
+              />
+            </Stack>
+          </FlexChild>
+        </ResponsiveRow>
         <Reviews user={user} />
         <Lists username={user.username} userId={user.id} />
       </Stack>

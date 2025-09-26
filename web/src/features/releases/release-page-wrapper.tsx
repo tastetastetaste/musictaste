@@ -3,10 +3,12 @@ import { FastAverageColor, FastAverageColorResult } from 'fast-average-color';
 import { useQuery } from 'react-query';
 import { Outlet, useParams } from 'react-router-dom';
 import {
+  CommentEntityType,
   ExplicitCoverArt,
   IReleaseCover,
   IReleaseResponse,
   IUser,
+  ReportType,
 } from 'shared';
 import { Feedback } from '../../components/feedback';
 import { FlexChild } from '../../components/flex/flex-child';
@@ -44,6 +46,7 @@ import {
   ReviewLink,
 } from './release/shared';
 import { Fragment, useState } from 'react';
+import { Comments } from '../comments/comments';
 
 const ReleaseInfo: React.FC<{
   release: any;
@@ -284,7 +287,7 @@ export const ReleasePageContainer: React.FC<{
         ''
       } Music Reviews, Music Ratings, Music Lists.`}
     >
-      <ResponsiveRow breakpoint="md">
+      <ResponsiveRow breakpoint="md" gap="lg">
         <FlexChild grow shrink basis="0">
           <Group justify="center">
             <ReleaseCover
@@ -331,13 +334,13 @@ export const ReleasePageContainer: React.FC<{
           </Stack>
         </FlexChild>
       </ResponsiveRow>
-      <ResponsiveRow breakpoint="md" reversed>
+      <ResponsiveRow breakpoint="md" gap="lg" reversed>
         <FlexChild grow>{children}</FlexChild>
         <FlexChild basis="400px">
           <div
             css={{
               position: 'relative',
-              top: mdScreen ? 0 : '-150px',
+              top: mdScreen ? '10px' : '-150px',
             }}
           >
             <Stack align={smScreen ? 'center' : 'end'} gap="lg">
@@ -349,6 +352,21 @@ export const ReleasePageContainer: React.FC<{
                 />
               )}
               <FollowingSection releaseId={id} />
+              <div
+                css={{
+                  width: '360px',
+                  maxWidth: '100%',
+                  overflow: 'hidden',
+                }}
+              >
+                <Stack gap="sm">
+                  <Typography size="title">Comments</Typography>
+                  <Comments
+                    entityType={CommentEntityType.RELEASE}
+                    entityId={id}
+                  />
+                </Stack>
+              </div>
               <ReleaseContributors contributors={contributors} />
             </Stack>
           </div>
@@ -358,7 +376,7 @@ export const ReleasePageContainer: React.FC<{
         isOpen={openReport}
         onClose={() => setOpenReport(false)}
         id={release.id}
-        type="release"
+        type={ReportType.RELEASE}
       />
     </AppPageWrapper>
   );

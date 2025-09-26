@@ -2,7 +2,7 @@ import { IconChevronDown, IconChevronRight } from '@tabler/icons-react';
 import { useState } from 'react';
 import { useQuery } from 'react-query';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { IArtistResponse, IRelease } from 'shared';
+import { IArtistResponse, IRelease, ReportType } from 'shared';
 import { Grid } from '../../components/flex/grid';
 import { Group } from '../../components/flex/group';
 import { Stack } from '../../components/flex/stack';
@@ -254,7 +254,7 @@ const ArtistPage = () => {
       )}
       <ReportDialog
         id={(data && data.artist && data.artist.id) || ''}
-        type="artist"
+        type={ReportType.ARTIST}
         isOpen={openReport}
         onClose={() => setOpenReport(false)}
       />

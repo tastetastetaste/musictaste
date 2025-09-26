@@ -30,6 +30,7 @@ import { UserFollowing } from './entities/user-following.entity';
 import { UserReleaseTag } from './entities/user-release-tag.entity';
 import { UserRelease } from './entities/user-release.entity';
 import { User } from './entities/user.entity';
+import { Comment } from './entities/comment.entity';
 import { ArtistSubmissionVote } from './entities/artist-submission-vote.entity';
 import { GenreSubmissionVote } from './entities/genre-submission-vote.entity';
 import { LabelSubmissionVote } from './entities/label-submission-vote.entity';
@@ -83,6 +84,7 @@ export const dataSourceOptions: DataSourceOptions = {
     UserReleaseTag,
     UserRelease,
     User,
+    Comment,
   ],
   migrations: ['dist/db/migration/*.js'],
   // subscribers: [],

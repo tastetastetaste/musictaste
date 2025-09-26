@@ -1,7 +1,5 @@
 export const SOMETHING_WENT_WRONG = 'Something went wrong';
 
-export const SINGUP_TO_COMMENT = 'Login or sign up to comment';
-
 export const ON_USER_RESET_PASSWORD = 'Password reset successfully';
 
 export const ON_USER_UPDATE_PASSWORD = 'Password updated successfully';

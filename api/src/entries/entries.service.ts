@@ -20,6 +20,7 @@ import {
   IUser,
   UpdateEntryDto,
   VoteType,
+  CommentEntityType,
 } from 'shared';
 import { In, Repository } from 'typeorm';
 import { Rating } from '../../db/entities/rating.entity';
@@ -36,6 +37,7 @@ import { UserRelease } from '../../db/entities/user-release.entity';
 import { ReleasesService } from '../releases/releases.service';
 import { UsersService } from '../users/users.service';
 import { UserFollowing } from '../../db/entities/user-following.entity';
+import { CommentsService } from '../comments/comments.service';
 
 @Injectable()
 export class EntriesService {
@@ -62,6 +64,7 @@ export class EntriesService {
     private userReleaseTagRepository: Repository<UserReleaseTag>,
     private releasesService: ReleasesService,
     private usersService: UsersService,
+    private commentsService: CommentsService,
   ) {}
 
   async create(
@@ -162,6 +165,10 @@ export class EntriesService {
       }
     } else if (ur.reviewId) {
       // remove review
+      await this.commentsService.deleteCommentsByEntity(
+        CommentEntityType.REVIEW,
+        ur.reviewId,
+      );
       await this.reviewsRepository.delete({ id: ur.reviewId });
       ur.review = null;
       ur.reviewId = null;
@@ -180,6 +187,15 @@ export class EntriesService {
     const ur = await this.userReleaseRepository.findOne({ where: { id } });
 
     if (ur.userId !== currentUserId) throw new UnauthorizedException();
+
+    // Delete review comments
+    if (ur.reviewId) {
+      await this.commentsService.deleteCommentsByEntity(
+        CommentEntityType.REVIEW,
+        ur.reviewId,
+      );
+    }
+
     await this.userReleaseRepository.remove(ur);
 
     return true;
@@ -595,30 +611,32 @@ export class EntriesService {
             .where('v.reviewId = r.id'),
         'netVotes',
       )
-      .addSelect(
-        (qb) =>
-          qb
-            .select('COUNT(*)')
-            .from(ReviewComment, 'c')
-            .where('c.reviewId = r.id'),
-        'commentsCount',
-      )
       .leftJoin('r.votes', 'vote')
-      .leftJoin('r.comments', 'comment')
       .whereInIds(ids)
       .groupBy('r.id')
       .getRawMany();
 
-    const votes = await this.reviewVoteRepository.find({
-      where: {
-        reviewId: In(ids),
-        userId: currentUserId,
-      },
-    });
+    const [votes, commentsCounts] = await Promise.all([
+      this.reviewVoteRepository.find({
+        where: {
+          reviewId: In(ids),
+          userId: currentUserId,
+        },
+      }),
+      this.commentsService.findCommentsCount(
+        CommentEntityType.REVIEW,
+        ids,
+      ) as any,
+    ]);
+
+    const commentsCountMap = new Map(
+      commentsCounts.map((item) => [item.entityId, item.count]),
+    );
 
     return reviews.map((r) => ({
       ...r,
       userVote: votes.find((v) => v.reviewId === r.id)?.vote,
+      commentsCount: commentsCountMap.get(r.id) || 0,
     }));
   }
 

@@ -21,6 +21,14 @@ export enum ReleaseType {
   Other = 25,
 }
 
+export enum CommentEntityType {
+  SHOUTBOX = 10,
+  REVIEW = 11,
+  LIST = 12,
+  RELEASE = 20,
+  RELEASE_TRACK = 21,
+}
+
 export enum ExplicitCoverArt {
   NUDITY = 'NUDITY',
   EXPLICIT_SEXUAL_CONTENT = 'EXPLICIT_SEXUAL_CONTENT',
@@ -87,4 +95,14 @@ export enum FindUsersType {
 export enum SubmissionSortByEnum {
   Newest = 'newest',
   Oldest = 'oldest',
+}
+
+export enum ReportType {
+  RELEASE = 'release',
+  ARTIST = 'artist',
+  LABEL = 'label',
+  USER = 'user',
+  REVIEW = 'review',
+  LIST = 'list',
+  COMMENT = 'comment',
 }

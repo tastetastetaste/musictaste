@@ -3,27 +3,28 @@ import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { RedisIoAdapter } from './adapters/redis-io.adapter';
+import { getCorsConfig } from './common/cors.config';
 
 async function bootstrap() {
-  const domain = process.env.DOMAIN;
+  const isProduction = process.env.NODE_ENV === 'production';
 
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
-    cors: {
-      credentials: true,
-      origin:
-        process.env.NODE_ENV === 'production'
-          ? ['https://' + domain, 'https://www.' + domain]
-          : ['http://localhost:4200'],
-    },
+    cors: getCorsConfig(),
   });
 
-  process.env.NODE_ENV === 'production' && app.set('trust proxy', 1);
+  isProduction && app.set('trust proxy', 1);
 
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
 
+  // Redis adapter for WebSocket
+  const redisIoAdapter = new RedisIoAdapter(app);
+  await redisIoAdapter.connectToRedis();
+  app.useWebSocketAdapter(redisIoAdapter);
+
   const config = new DocumentBuilder()
-    .setTitle('Music Taste')
-    .setDescription('Music rating')
+    .setTitle('MusicTaste')
+    .setDescription('MusicTaste')
     .setVersion('1.0')
     .build();
 

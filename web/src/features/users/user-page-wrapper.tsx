@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useMutation, useQuery } from 'react-query';
 import { Outlet, useParams } from 'react-router-dom';
-import { IUserProfileResponse } from 'shared';
+import { IUserProfileResponse, ReportType } from 'shared';
 import { Feedback } from '../../components/feedback';
 import { Stack } from '../../components/flex/stack';
 import { Loading } from '../../components/loading';
@@ -123,7 +123,7 @@ const UserPageWrapper: React.FC = () => {
           isOpen={openReport}
           onClose={() => setOpenReport(false)}
           id={data.user.id}
-          type="user"
+          type={ReportType.USER}
         />
       </AppPageWrapper>
     </UserThemeProvider>

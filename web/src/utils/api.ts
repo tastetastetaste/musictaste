@@ -60,6 +60,9 @@ import {
   UpdateUserSupporterStatusDto,
   VoteType,
   UpdateUserProfileDto,
+  ICommentsResponse,
+  FindCommentsDto,
+  CreateCommentDto,
 } from 'shared';
 
 const client = axios.create({
@@ -243,6 +246,20 @@ const getReviewComments = (reviewId: string, page: number) =>
       `entries/review/${reviewId}/comments?page=${page}`,
     )
     .then((res) => res.data);
+
+const getComments = ({ entityType, entityId, page }: FindCommentsDto) =>
+  client
+    .get<ICommentsResponse>(
+      `comments?entityType=${entityType}&entityId=${entityId}&page=${page}`,
+    )
+    .then((res) => res.data);
+
+const createComment = (data: CreateCommentDto) =>
+  client.post('comments', data).then((res) => res.data);
+
+const deleteComment = (id: string) =>
+  client.delete(`comments/${id}`).then((res) => res.data);
+
 const getUserArtists = (userId: string) =>
   client
     .get<IUserArtist[]>('entries/user/' + userId + '/artists')
@@ -722,6 +739,9 @@ export const api = {
   createReviewComment,
   removeReviewComment,
   getReviewComments,
+  getComments,
+  createComment,
+  deleteComment,
   getUserArtists,
   getUserRatingBuckets,
   getUserLabels,

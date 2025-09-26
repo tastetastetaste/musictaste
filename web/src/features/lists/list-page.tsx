@@ -13,7 +13,7 @@ import {
 import { Fragment, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { useNavigate, useParams } from 'react-router-dom';
-import { IListResponse } from 'shared';
+import { CommentEntityType, IListResponse, ReportType } from 'shared';
 import { Button } from '../../components/button';
 import { Container } from '../../components/containers/container';
 import { Feedback } from '../../components/feedback';
@@ -29,12 +29,12 @@ import { formatDate } from '../../utils/date-format';
 import { useAuth } from '../account/useAuth';
 import { User } from '../users/user';
 import DeleteListDialog from './delete-list-dialog';
-import ListComments from './list-comments';
 import ListItems from './list-items';
 import UpdateListDialog from './update-list-dialog';
 import { ReportDialog } from '../reports/report-dialog';
 import { cacheKeys } from '../../utils/cache-keys';
 import { UserThemeProvider } from '../theme/user-theme-provider';
+import { Comments } from '../comments/comments';
 
 const ListLike = ({
   likedByMe,
@@ -168,7 +168,7 @@ const ListBody = ({
         </Group>
       </Group>
       {showComments && (
-        <ListComments listId={list.id} commentsCount={list.commentsCount} />
+        <Comments entityType={CommentEntityType.LIST} entityId={list.id} />
       )}
     </Container>
   );
@@ -246,7 +246,7 @@ const ListPage = () => {
           isOpen={openReport}
           onClose={() => setOpenReport(false)}
           id={id}
-          type="list"
+          type={ReportType.LIST}
         />
       </AppPageWrapper>
     </UserThemeProvider>

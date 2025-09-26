@@ -25,6 +25,7 @@ import GenreSubmissionsList from './features/contributions/genre-submission-list
 import GenrePage from './features/genres/genre-page';
 import { Feedback } from './components/feedback';
 import AppPageWrapper from './layout/app-page-wrapper';
+import { SocketProvider } from './hooks/useSocket';
 
 const UserPageWrapper = lazy(
   () => import('./features/users/user-page-wrapper'),
@@ -213,7 +214,9 @@ const QueryProvider = ({ children }: { children: any }) => {
 const RootWrapper = () => {
   return (
     <UseAuthProvider>
-      <Outlet />
+      <SocketProvider>
+        <Outlet />
+      </SocketProvider>
     </UseAuthProvider>
   );
 };

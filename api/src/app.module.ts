@@ -27,6 +27,7 @@ import { ThrottlerStorageRedisService } from '@nest-lab/throttler-storage-redis'
 import Redis from 'ioredis';
 import { APP_GUARD } from '@nestjs/core';
 import { AdminModule } from './admin/admin.module';
+import { CommentsModule } from './comments/comments.module';
 
 @Module({
   imports: [
@@ -93,6 +94,7 @@ import { AdminModule } from './admin/admin.module';
     LanguagesModule,
     ReportsModule,
     AdminModule,
+    CommentsModule,
   ],
   controllers: [],
   providers: [

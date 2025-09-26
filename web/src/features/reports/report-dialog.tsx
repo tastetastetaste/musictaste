@@ -7,10 +7,8 @@ import { api } from '../../utils/api';
 import { Stack } from '../../components/flex/stack';
 import { useSnackbar } from '../../hooks/useSnackbar';
 import { FormInputError } from '../../components/inputs/form-input-error';
-import { CreateReportDto } from 'shared';
+import { CreateReportDto, ReportType } from 'shared';
 import { classValidatorResolver } from '@hookform/resolvers/class-validator';
-
-type ReportType = 'release' | 'artist' | 'label' | 'user' | 'review' | 'list';
 
 const ReportForm = ({
   type,
@@ -25,15 +23,7 @@ const ReportForm = ({
     handleSubmit,
     register,
     formState: { errors },
-  } = useForm<CreateReportDto>({
-    resolver: classValidatorResolver(
-      CreateReportDto,
-      {},
-      {
-        rawValues: true,
-      },
-    ),
-  });
+  } = useForm<CreateReportDto>();
 
   const { mutate, isLoading } = useMutation({
     mutationFn: api.report,

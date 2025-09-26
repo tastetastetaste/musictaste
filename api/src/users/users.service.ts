@@ -25,7 +25,6 @@ import { UserFollowing } from '../../db/entities/user-following.entity';
 import { UserRelease } from '../../db/entities/user-release.entity';
 import { User } from '../../db/entities/user.entity';
 import { ImagesService } from '../images/images.service';
-import { ReleasesService } from '../releases/releases.service';
 
 export type UserCountType =
   | 'entries'
@@ -41,8 +40,6 @@ export class UsersService {
     @InjectRepository(User) private usersRepository: Repository<User>,
     @InjectRepository(UserFollowing)
     private userFollowingRepository: Repository<UserFollowing>,
-    @Inject(forwardRef(() => ReleasesService))
-    private releasesService: ReleasesService,
     private imagesService: ImagesService,
   ) {}
 

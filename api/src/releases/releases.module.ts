@@ -13,6 +13,7 @@ import { UsersModule } from '../users/users.module';
 import { ReleasesController } from './releases.controller';
 import { ReleasesService } from './releases.service';
 import { ReleaseGenre } from '../../db/entities/release-genre.entity';
+import { CommentsModule } from '../comments/comments.module';
 
 @Module({
   imports: [
@@ -27,8 +28,9 @@ import { ReleaseGenre } from '../../db/entities/release-genre.entity';
       ReleaseSubmission,
       ReleaseGenre,
     ]),
-    forwardRef(() => UsersModule),
+    UsersModule,
     ImagesModule,
+    CommentsModule,
   ],
   controllers: [ReleasesController],
   providers: [ReleasesService],

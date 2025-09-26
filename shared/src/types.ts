@@ -1,4 +1,5 @@
 import {
+  CommentEntityType,
   ContributorStatus,
   ExplicitCoverArt,
   SupporterStatus,
@@ -201,6 +202,18 @@ export interface IEntriesResponse extends IPagination {
 
 export interface IEntryResonse {
   entry: IEntry;
+}
+
+export interface IComment {
+  id: string;
+  body: string;
+  user: IUserSummary;
+  entityType: CommentEntityType;
+  entityId: string;
+  createdAt: string;
+}
+export interface ICommentsResponse extends IPagination {
+  comments: IComment[];
 }
 
 export type SearchType = 'releases' | 'artists' | 'genres' | 'labels' | 'users';

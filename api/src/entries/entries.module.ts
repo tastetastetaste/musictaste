@@ -15,6 +15,7 @@ import { TrackVote } from '../../db/entities/track-vote.entity';
 import { Track } from '../../db/entities/track.entity';
 import { UserReleaseTag } from '../../db/entities/user-release-tag.entity';
 import { UserRelease } from '../../db/entities/user-release.entity';
+import { CommentsModule } from '../comments/comments.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { UserRelease } from '../../db/entities/user-release.entity';
     ]),
     ReleasesModule,
     UsersModule,
+    CommentsModule,
   ],
   controllers: [EntriesController],
   providers: [EntriesService],

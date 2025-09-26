@@ -12,6 +12,7 @@ import { useState } from 'react';
 import { cacheKeys } from '../../utils/cache-keys';
 import { updateReviewAfterVote } from './update-review-after-vote';
 import { UserThemeProvider } from '../theme/user-theme-provider';
+import { ReportType } from 'shared';
 
 const ReviewPage = () => {
   const { id } = useParams();
@@ -84,7 +85,7 @@ const ReviewPage = () => {
           isOpen={openReport}
           onClose={() => setOpenReport(false)}
           id={id}
-          type="review"
+          type={ReportType.REVIEW}
         />
       </AppPageWrapper>
     </UserThemeProvider>
