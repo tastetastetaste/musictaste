@@ -7,7 +7,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import {
   CreateListDto,
   FindListsDto,
-  IListCommentsResponse,
   IListItemsResponse,
   IListResponse,
   IListsResponse,
@@ -17,7 +16,6 @@ import {
 import { Repository } from 'typeorm';
 import { ReleasesService } from '../releases/releases.service';
 import { UsersService } from '../users/users.service';
-import { ListComment } from '../../db/entities/list-comment.entity';
 import { ListItem } from '../../db/entities/list-item.entity';
 import { ListLike } from '../../db/entities/list-like.entity';
 import { List } from '../../db/entities/list.entity';
@@ -33,8 +31,6 @@ export class ListsService {
 
     @InjectRepository(ListLike)
     private listLikesRepository: Repository<ListLike>,
-    @InjectRepository(ListComment)
-    private listCommentsRepository: Repository<ListComment>,
     private releasesService: ReleasesService,
     private usersService: UsersService,
     private imagesService: ImagesService,
@@ -555,63 +551,5 @@ export class ListsService {
     await this.listLikesRepository.delete({ id: like.id });
 
     return true;
-  }
-  async comment(listId: string, body: string, currentUserId: string) {
-    const list = await this.listsRepository.findOne({ where: { id: listId } });
-
-    if (!list) throw new BadRequestException();
-
-    const lc = new ListComment();
-    lc.listId = listId;
-    lc.body = body;
-    lc.userId = currentUserId;
-
-    await this.listCommentsRepository.save(lc);
-
-    return true;
-  }
-
-  async removeComment(listCommentId: string, currentUserId: string) {
-    const lc = await this.listCommentsRepository.findOne({
-      where: {
-        id: listCommentId,
-      },
-    });
-
-    if (!lc) throw new BadRequestException();
-
-    if (lc.userId !== currentUserId) throw new UnauthorizedException();
-
-    await this.listCommentsRepository.delete({ id: lc.id });
-
-    return true;
-  }
-
-  async findComments(
-    listId: string,
-    page: number,
-  ): Promise<IListCommentsResponse> {
-    const comments = await this.listCommentsRepository.find({
-      where: { listId },
-      take: 12,
-      skip: (page - 1) * 12,
-      order: { createdAt: 'DESC' },
-    });
-
-    const users = await this.usersService.getUsersByIds(
-      comments.map((c) => c.userId),
-    );
-
-    return {
-      currentItems: comments.length,
-      currentPage: 1,
-      itemsPerPage: 12,
-      totalItems: comments.length,
-      totalPages: 1,
-      comments: comments.map((c) => ({
-        ...c,
-        user: users.find((u) => u.id === c.userId),
-      })),
-    };
   }
 }

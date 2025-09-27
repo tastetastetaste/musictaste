@@ -53,13 +53,6 @@ export interface IListItem {
   release: IRelease;
 }
 
-export interface IListComment {
-  id: string;
-  body: string;
-  user: IUserSummary;
-  createdAt: string;
-}
-
 export interface IListResponse {
   list: IList & {
     likedByMe: boolean;
@@ -72,9 +65,6 @@ export interface IListsResponse extends IPagination {
 
 export interface IListItemsResponse extends IPagination {
   items: IListItem[];
-}
-export interface IListCommentsResponse extends IPagination {
-  comments: IListComment[];
 }
 
 export interface IGenreVote {
@@ -169,16 +159,6 @@ export interface IReleaseResponse {
   release: IReleaseFullInfo;
   tracks: ITrackWithVotes[];
   contributors: IUserSummary[];
-}
-
-export interface IReviewComment {
-  id: string;
-  body: string;
-  user: IUserSummary;
-  createdAt: string;
-}
-export interface IReviewCommentsResponse extends IPagination {
-  comments: IReviewComment[];
 }
 
 export interface IEntry {

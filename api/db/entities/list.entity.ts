@@ -8,7 +8,6 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { SharedBaseEntity } from '../shared/base-entity';
-import { ListComment } from './list-comment.entity';
 import { ListItem } from './list-item.entity';
 import { ListLike } from './list-like.entity';
 import { User } from './user.entity';
@@ -36,9 +35,6 @@ export class List extends SharedBaseEntity {
 
   @OneToMany(() => ListItem, (li) => li.list)
   items: ListItem[];
-
-  @OneToMany(() => ListComment, (lc) => lc.list)
-  comments: ListComment[];
 
   @OneToMany(() => ListLike, (ll) => ll.list)
   likes: ListLike[];

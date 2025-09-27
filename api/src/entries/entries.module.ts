@@ -8,7 +8,6 @@ import { Rating } from '../../db/entities/rating.entity';
 import { ReleaseArtist } from '../../db/entities/release-artist.entity';
 import { ReleaseGenre } from '../../db/entities/release-genre.entity';
 import { ReleaseLabel } from '../../db/entities/release-label.entity';
-import { ReviewComment } from '../../db/entities/review-comment.entity';
 import { ReviewVote } from '../../db/entities/review-vote.entity';
 import { Review } from '../../db/entities/review.entity';
 import { TrackVote } from '../../db/entities/track-vote.entity';
@@ -24,7 +23,6 @@ import { CommentsModule } from '../comments/comments.module';
       Rating,
       Review,
       ReviewVote,
-      ReviewComment,
       TrackVote,
       ReleaseArtist,
       ReleaseGenre,

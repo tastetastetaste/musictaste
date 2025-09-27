@@ -411,11 +411,6 @@ export class UpdateEntryDto {
   tags?: string[];
 }
 
-export class CreateReviewCommentDto {
-  reviewId: string;
-  body: string;
-}
-
 export class FindEntriesDto {
   releaseId?: string;
   userId?: string;
@@ -445,13 +440,6 @@ export class FindEntriesDto {
   @Type(() => Number)
   @IsInt()
   pageSize: number;
-}
-
-export class FindReviewCommentsDto {
-  reviewId: string;
-  @Type(() => Number)
-  @IsInt()
-  page: number;
 }
 
 export class ReviewVoteDto {

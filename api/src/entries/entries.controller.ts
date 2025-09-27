@@ -128,33 +128,6 @@ export class EntriesController {
     return this.entriesService.removeReviewVote(reviewId, userId);
   }
 
-  @Post('review/:reviewId/comments')
-  @UseGuards(AuthenticatedGuard)
-  reviewComment(
-    @Param('reviewId') reviewId: string,
-    @Body('body') body: string,
-    @CurUser('id') userId: string,
-  ) {
-    return this.entriesService.createReviewComment({ reviewId, body }, userId);
-  }
-
-  @Get('review/:reviewId/comments')
-  findComments(
-    @Param('reviewId') reviewId: string,
-    @Query('page', ParseIntPipe) page: number,
-  ) {
-    return this.entriesService.findReviewComments({ page, reviewId }, 24);
-  }
-
-  @Delete('review/:reviewId/comments')
-  @UseGuards(AuthenticatedGuard)
-  removeReviewComment(
-    @Param('reviewId') reviewId: string,
-    @CurUser('id') userId: string,
-  ) {
-    return this.entriesService.removeReviewComment(reviewId, userId);
-  }
-
   @Get('/user/:userId/artists')
   getUserArtists(@Param('userId') userId: string) {
     return this.entriesService.userEntriesArtists(userId);

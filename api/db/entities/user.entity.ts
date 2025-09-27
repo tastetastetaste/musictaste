@@ -16,12 +16,10 @@ import { ArtistSubmission } from './artist-submission.entity';
 import { SharedBaseEntity } from '../shared/base-entity';
 import { GenreSubmission } from './genre-submission.entity';
 import { LabelSubmission } from './label-submission.entity';
-import { ListComment } from './list-comment.entity';
 import { ListLike } from './list-like.entity';
 import { List } from './list.entity';
 import { ReleaseGenreVote } from './release-genre-vote.entity';
 import { ReleaseSubmission } from './release-submission.entity';
-import { ReviewComment } from './review-comment.entity';
 import { ReviewVote } from './review-vote.entity';
 import { UserFollowing } from './user-following.entity';
 import { UserReleaseTag } from './user-release-tag.entity';
@@ -80,14 +78,8 @@ export class User extends SharedBaseEntity {
   @OneToMany(() => List, (list) => list.user)
   lists: List[];
 
-  @OneToMany(() => ReviewComment, (rc) => rc.user)
-  reviewsComments: ReviewComment[];
-
   @OneToMany(() => ReviewVote, (rl) => rl.user)
   reviewsVotes: ReviewVote[];
-
-  @OneToMany(() => ListComment, (rc) => rc.user)
-  listsComments: ListComment[];
 
   @OneToMany(() => ListLike, (rl) => rl.user)
   listsLikes: ListLike[];

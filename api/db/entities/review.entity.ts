@@ -7,7 +7,6 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { SharedBaseEntity } from '../shared/base-entity';
-import { ReviewComment } from './review-comment.entity';
 import { ReviewVote } from './review-vote.entity';
 import { UserRelease } from './user-release.entity';
 
@@ -20,9 +19,6 @@ export class Review extends SharedBaseEntity {
 
   @Column('text')
   body: string;
-
-  @OneToMany(() => ReviewComment, (rc) => rc.review)
-  comments: ReviewComment[];
 
   @OneToMany(() => ReviewVote, (rc) => rc.review)
   votes: ReviewVote[];

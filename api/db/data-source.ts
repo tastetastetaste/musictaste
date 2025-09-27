@@ -9,7 +9,6 @@ import { Genre } from './entities/genre.entity';
 import { LabelSubmission } from './entities/label-submission.entity';
 import { Label } from './entities/label.entity';
 import { Language } from './entities/language.entity';
-import { ListComment } from './entities/list-comment.entity';
 import { ListItem } from './entities/list-item.entity';
 import { ListLike } from './entities/list-like.entity';
 import { List } from './entities/list.entity';
@@ -21,7 +20,6 @@ import { ReleaseLabel } from './entities/release-label.entity';
 import { ReleaseLanguage } from './entities/release-language.entity';
 import { ReleaseSubmission } from './entities/release-submission.entity';
 import { Release } from './entities/release.entity';
-import { ReviewComment } from './entities/review-comment.entity';
 import { ReviewVote } from './entities/review-vote.entity';
 import { Review } from './entities/review.entity';
 import { TrackVote } from './entities/track-vote.entity';
@@ -62,7 +60,6 @@ export const dataSourceOptions: DataSourceOptions = {
     LabelSubmissionVote,
     Label,
     Language,
-    ListComment,
     ListItem,
     ListLike,
     List,
@@ -75,7 +72,6 @@ export const dataSourceOptions: DataSourceOptions = {
     ReleaseSubmission,
     ReleaseSubmissionVote,
     Release,
-    ReviewComment,
     ReviewVote,
     Review,
     TrackVote,

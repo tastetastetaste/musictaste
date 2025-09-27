@@ -46,11 +46,6 @@ const entriesKey = (filters: {
       : []),
   ].filter(Boolean);
 
-const reviewCommentsKey = (reviewId: string) => [
-  'review',
-  'comments',
-  reviewId,
-];
 // COMMENTS
 const commentsKey = (entityType: CommentEntityType, entityId: string) => [
   'comments',
@@ -179,12 +174,6 @@ const languagesKey = () => ['languages'];
 // LISTS
 const listKey = (id: string) => ['list', id];
 const listItemsKey = (id: string, page?: number) => ['list', id, 'items', page];
-const listCommentsKey = (id: string, page?: number) => [
-  'list',
-  id,
-  'comments',
-  page,
-];
 
 const releaseListsKey = (releaseId: string, page?: number) => [
   'release',
@@ -254,7 +243,6 @@ export const cacheKeys = {
   languagesKey,
   listKey,
   listItemsKey,
-  listCommentsKey,
   releaseListsKey,
   userListsKey,
   newListsKey,
@@ -281,6 +269,5 @@ export const cacheKeys = {
   releaseGenresKey,
   musicBrainzReleaseKey,
   searchKey,
-  reviewCommentsKey,
   commentsKey,
 };

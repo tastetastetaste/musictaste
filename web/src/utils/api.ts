@@ -28,7 +28,6 @@ import {
   ILabelResponse,
   ILabelSubmissionsResponse,
   ILanguage,
-  IListCommentsResponse,
   IListItemsResponse,
   IListResponse,
   IListsResponse,
@@ -36,7 +35,6 @@ import {
   IReleaseResponse,
   IReleasesResponse,
   IReleaseSubmissionsResponse,
-  IReviewCommentsResponse,
   ISearchResponse,
   IUpdateReleaseResponse,
   IUserArtist,
@@ -228,24 +226,6 @@ const reviewVote = ({ reviewId, vote }: { reviewId: string; vote: VoteType }) =>
     .then((res) => res.data);
 const reviewRemoveVote = (reviewId: string) =>
   client.delete(`entries/review/${reviewId}/votes`).then((res) => res.data);
-const createReviewComment = ({
-  reviewId,
-  body,
-}: {
-  reviewId: string;
-  body: string;
-}) =>
-  client
-    .post(`entries/review/${reviewId}/comments`, { body })
-    .then((res) => res.data);
-const removeReviewComment = (reviewId: string) =>
-  client.delete(`entries/review/${reviewId}/comments`).then((res) => res.data);
-const getReviewComments = (reviewId: string, page: number) =>
-  client
-    .get<IReviewCommentsResponse>(
-      `entries/review/${reviewId}/comments?page=${page}`,
-    )
-    .then((res) => res.data);
 
 const getComments = ({ entityType, entityId, page }: FindCommentsDto) =>
   client
@@ -368,14 +348,6 @@ const createListLike = (id: string) =>
   client.post('lists/' + id + '/likes').then((res) => res.data);
 const removeListLike = (id: string) =>
   client.delete('lists/' + id + '/likes').then((res) => res.data);
-const createListComment = ({ id, body }: { id: string; body: string }) =>
-  client.post('lists/' + id + '/comments', { body }).then((res) => res.data);
-const removeListComment = (id: string) =>
-  client.delete('lists/' + id + '/comments').then((res) => res.data);
-const getListComments = (id: string, page: number) =>
-  client
-    .get<IListCommentsResponse>('lists/' + id + '/comments?page=' + page)
-    .then((res) => res.data);
 const getReleaseLists = (releaseId: string, page: number) =>
   client
     .get<IListsResponse>(
@@ -736,9 +708,6 @@ export const api = {
   removeEntry,
   reviewVote,
   reviewRemoveVote,
-  createReviewComment,
-  removeReviewComment,
-  getReviewComments,
   getComments,
   createComment,
   deleteComment,
@@ -763,9 +732,6 @@ export const api = {
   reorderListItems,
   createListLike,
   removeListLike,
-  createListComment,
-  removeListComment,
-  getListComments,
   getReleaseLists,
   getUserLists,
   getNewLists,

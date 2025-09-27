@@ -119,29 +119,6 @@ export class ListsController {
   removeLike(@Param('id') id: string, @CurUser('id') userId: string) {
     return this.listsService.removeLike(id, userId);
   }
-  @Post(':id/comments')
-  @UseGuards(AuthenticatedGuard)
-  comment(
-    @Param('id') id: string,
-    @Body('body') body: string,
-    @CurUser('id') userId: string,
-  ) {
-    return this.listsService.comment(id, body, userId);
-  }
-
-  @Delete(':id/comments')
-  @UseGuards(AuthenticatedGuard)
-  removeComment(@Param('id') id: string, @CurUser('id') userId: string) {
-    return this.listsService.removeComment(id, userId);
-  }
-
-  @Get(':id/comments')
-  findComments(
-    @Param('id') id: string,
-    @Query('page', ParseIntPipe) page: number,
-  ) {
-    return this.listsService.findComments(id, page || 1);
-  }
 
   @Get('release/:releaseId')
   @UseGuards(AuthenticatedGuard)

@@ -1,43 +1,38 @@
 import {
   BadRequestException,
   Injectable,
-  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
+  CommentEntityType,
   CreateEntryDto,
-  CreateReviewCommentDto,
   EntriesSortByEnum,
   FindEntriesDto,
-  FindReviewCommentsDto,
   IEntriesResponse,
   IEntry,
   IEntryResonse,
   IRelease,
   IReview,
-  IReviewCommentsResponse,
   IUser,
   UpdateEntryDto,
   VoteType,
-  CommentEntityType,
 } from 'shared';
 import { In, Repository } from 'typeorm';
 import { Rating } from '../../db/entities/rating.entity';
 import { ReleaseArtist } from '../../db/entities/release-artist.entity';
 import { ReleaseGenre } from '../../db/entities/release-genre.entity';
 import { ReleaseLabel } from '../../db/entities/release-label.entity';
-import { ReviewComment } from '../../db/entities/review-comment.entity';
 import { ReviewVote } from '../../db/entities/review-vote.entity';
 import { Review } from '../../db/entities/review.entity';
 import { TrackVote } from '../../db/entities/track-vote.entity';
 import { Track } from '../../db/entities/track.entity';
+import { UserFollowing } from '../../db/entities/user-following.entity';
 import { UserReleaseTag } from '../../db/entities/user-release-tag.entity';
 import { UserRelease } from '../../db/entities/user-release.entity';
+import { CommentsService } from '../comments/comments.service';
 import { ReleasesService } from '../releases/releases.service';
 import { UsersService } from '../users/users.service';
-import { UserFollowing } from '../../db/entities/user-following.entity';
-import { CommentsService } from '../comments/comments.service';
 
 @Injectable()
 export class EntriesService {
@@ -49,8 +44,6 @@ export class EntriesService {
     @InjectRepository(ReviewVote)
     private reviewVoteRepository: Repository<ReviewVote>,
 
-    @InjectRepository(ReviewComment)
-    private reviewCommentRepository: Repository<ReviewComment>,
     @InjectRepository(TrackVote)
     private trackVotesRepository: Repository<TrackVote>,
     @InjectRepository(ReleaseArtist)
@@ -663,71 +656,6 @@ export class EntriesService {
     await this.reviewVoteRepository.delete({ id: vote.id });
 
     return true;
-  }
-
-  async createReviewComment(
-    { reviewId, body }: CreateReviewCommentDto,
-    currentUserId,
-  ) {
-    const rc = new ReviewComment();
-
-    rc.reviewId = reviewId;
-
-    rc.body = body;
-
-    rc.userId = currentUserId;
-
-    await this.reviewCommentRepository.save(rc);
-
-    return true;
-  }
-
-  async removeReviewComment(reviewId: string, currentUserId: string) {
-    const rc = await this.reviewCommentRepository.findOne({
-      where: {
-        userId: currentUserId,
-        reviewId,
-      },
-    });
-
-    await this.reviewCommentRepository.delete({ id: rc.id });
-
-    return true;
-  }
-
-  async findReviewComments(
-    findReviewcommentsDto: FindReviewCommentsDto,
-    pageSize: number,
-  ): Promise<IReviewCommentsResponse> {
-    const page = findReviewcommentsDto.page || 1;
-
-    const [comments, totalItems] =
-      await this.reviewCommentRepository.findAndCount({
-        where: {
-          reviewId: findReviewcommentsDto.reviewId,
-        },
-        order: {
-          createdAt: 'DESC',
-        },
-        take: page * pageSize,
-        skip: (page - 1) * pageSize,
-      });
-
-    const users = await this.usersService.getUsersByIds(
-      comments.map((c) => c.userId),
-    );
-
-    return {
-      comments: comments.map((c) => ({
-        ...c,
-        user: users.find((u) => u.id === c.userId),
-      })),
-      totalItems,
-      currentPage: page,
-      currentItems: (page - 1) * pageSize + comments.length,
-      itemsPerPage: pageSize,
-      totalPages: Math.ceil(totalItems / pageSize),
-    };
   }
 
   // --- Track votes

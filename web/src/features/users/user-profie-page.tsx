@@ -161,16 +161,21 @@ const Lists: React.FC<{ username: string; userId: string }> = ({
 
 const UserProfilePage = () => {
   const { user } = useOutletContext<UserPageOutletContext>();
-  const { data: ratingBuckets } = useQuery(
+  const { data: ratingBuckets, isLoading: isLoadingRatingBuckets } = useQuery(
     cacheKeys.userRatingBucketsKey(user.id),
     () => api.getUserRatingBuckets(user.id),
   );
   const hasRatings = !!ratingBuckets && ratingBuckets.some((b) => b.count > 0);
 
-  const { data: genres } = useQuery(cacheKeys.userGenresKey(user.id), () =>
-    api.getUserGenres(user.id),
+  const { data: genres, isLoading: isLoadingGenres } = useQuery(
+    cacheKeys.userGenresKey(user.id),
+    () => api.getUserGenres(user.id),
   );
   const hasGenres = !!genres && genres.length > 0;
+
+  if (isLoadingRatingBuckets || isLoadingGenres) {
+    return <Loading />;
+  }
 
   return (
     <Fragment>
