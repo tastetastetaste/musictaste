@@ -51,7 +51,7 @@ const HomePage = lazy(() => import('./home'));
 const EmailNotConfirmedPage = lazy(
   () => import('./features/account/email-not-confirmed-page'),
 );
-const UserProfilePage = lazy(() => import('./features/users/user-profile-page'));
+const UserProfilePage = lazy(() => import('./features/users/user-profie-page'));
 const UserMusicPage = lazy(() => import('./features/users/user-music-page'));
 const UserListsPage = lazy(() => import('./features/users/user-lists-page'));
 const UserReviewsPage = lazy(
