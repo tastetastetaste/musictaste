@@ -68,7 +68,7 @@ const SettingsProfilePage = () => {
     <Container>
       <form onSubmit={handleSubmit(submit)}>
         <Stack gap="sm">
-          <Typography size="title-lg">Edit Profie</Typography>
+          <Typography size="title-lg">Edit Profile</Typography>
           <Stack>
             <label>Name</label>
             <Input placeholder="Name" {...register('name')} />
