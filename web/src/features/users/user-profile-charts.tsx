@@ -1,34 +1,50 @@
 import { useTheme } from '@emotion/react';
 import styled from '@emotion/styled';
 import Color from 'color';
-import { memo, useState } from 'react';
+import { memo, useCallback, useState } from 'react';
 import { PieChart, pieChartDefaultProps } from 'react-minimal-pie-chart';
 import { useQuery } from 'react-query';
 import { Group } from '../../components/flex/group';
 import { api } from '../../utils/api';
-import { useRatingColor } from '../ratings/useRatingColor';
 import { cacheKeys } from '../../utils/cache-keys';
 import { useNavigate } from 'react-router-dom';
 
 const StyledText = styled.text`
   font-size: 5px;
   font-family: ${({ theme }) => theme.font.family.base};
-  color: ${({ theme }) => theme.colors.background_sub};
+  color: ${({ theme }) => theme.colors.highlight};
   pointer-events: none;
 `;
+
+export const useChartColor = () => {
+  const theme = useTheme();
+
+  const getColor = useCallback(
+    (percentage: number) => {
+      if (percentage < 0) {
+        return Color(theme.colors.background_sub).hex();
+      }
+
+      return Color(theme.colors.background_sub)
+        .mix(Color(theme.colors.primary), percentage / 100)
+        .hex();
+    },
+    [theme],
+  );
+
+  return getColor;
+};
 
 const Chart = memo<{
   data: { title: string; value: number; color: string; link: string }[];
 }>(function ChartFu({ data }) {
   const [hovered, setHovered] = useState<number | undefined>(undefined);
-  const { colors } = useTheme();
   const navigate = useNavigate();
 
   return (
     <PieChart
       data={data.map((entry, i) => ({
         ...entry,
-        color: hovered === i ? colors.text : entry.color,
       }))}
       startAngle={-90}
       lengthAngle={-360}
@@ -95,7 +111,7 @@ export const UserRatingsChart: React.FC<{
     api.getUserRatingBuckets(userId),
   );
 
-  const getColor = useRatingColor();
+  const getColor = useChartColor();
 
   const ChartData = data
     ? initialData
@@ -120,7 +136,7 @@ export const UserGenresChart: React.FC<{
     api.getUserGenres(userId),
   );
 
-  const getColor = useRatingColor();
+  const getColor = useChartColor();
 
   const numberOfGenres = 20;
 
