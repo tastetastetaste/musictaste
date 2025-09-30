@@ -1,14 +1,14 @@
-import { IconHeartFilled } from '@tabler/icons-react';
+import { IconCarambolaFilled, IconHeartFilled } from '@tabler/icons-react';
 import React from 'react';
 import { Badge } from './index';
 
 interface SupporterBadgeProps {
-  size?: 'small' | 'large';
+  size?: 'sm' | 'md' | 'lg';
   className?: string;
 }
 
 export const SupporterBadge: React.FC<SupporterBadgeProps> = ({
-  size = 'small',
+  size = 'md',
   className,
 }) => {
   return (
@@ -16,9 +16,8 @@ export const SupporterBadge: React.FC<SupporterBadgeProps> = ({
       color="highlight"
       size={size}
       icon={<IconHeartFilled />}
+      label="Supporter"
       className={className}
-    >
-      Supporter
-    </Badge>
+    />
   );
 };

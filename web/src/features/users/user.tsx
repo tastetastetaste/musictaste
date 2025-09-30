@@ -7,7 +7,6 @@ import { Link } from '../../components/links/link';
 import { Stack } from '../../components/flex/stack';
 import { Typography } from '../../components/typography';
 import { SupporterBadge } from '../../components/badge/supporter-badge';
-// import { TrustedBadge } from '../../components/badge/trusted-badge';
 
 interface IUserItemProps {
   user: IUser;
@@ -53,7 +52,6 @@ export const User: React.FC<IUserItemProps> = ({
       </Link>
       <Typography color="sub">@{username}</Typography>
       {isSupporter ? <SupporterBadge /> : null}
-      {/* {isTrusted ? <TrustedBadge /> : null} */}
     </Stack>
   ) : (
     <Group gap="md" wrap>
@@ -66,7 +64,6 @@ export const User: React.FC<IUserItemProps> = ({
       </Stack>
 
       {isSupporter ? <SupporterBadge /> : null}
-      {/* {isTrusted ? <TrustedBadge /> : null} */}
     </Group>
   );
 };

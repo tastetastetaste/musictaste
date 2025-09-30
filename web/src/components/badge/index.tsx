@@ -1,11 +1,12 @@
 import styled from '@emotion/styled';
 import React from 'react';
 import { useTheme } from '@emotion/react';
+import { Tooltip } from '../popover/tooltip';
 
 interface BadgeProps {
-  children: React.ReactNode;
+  label: React.ReactNode;
   color?: 'text' | 'highlight' | 'primary';
-  size?: 'small' | 'large';
+  size?: 'sm' | 'md' | 'lg';
   icon?: React.ReactElement;
   className?: string;
 }
@@ -14,10 +15,9 @@ const StyledBadge = styled.span<{ $colorValue: string; $size: string }>`
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: ${(props) =>
-    props.$size === 'small' ? '0.25em 0.75em' : '0.5em 1em'};
+  padding: ${(props) => (props.$size === 'md' ? '0.25em 0.75em' : '0.5em 1em')};
   font-size: ${(props) =>
-    props.$size === 'small'
+    props.$size === 'md'
       ? props.theme.font.size.small
       : props.theme.font.size.body};
   font-weight: 600;
@@ -33,10 +33,22 @@ const StyledBadge = styled.span<{ $colorValue: string; $size: string }>`
   }
 `;
 
+const StyledIconBadge = styled.div<{ $colorValue: string }>`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: ${(props) => props.$colorValue};
+
+  svg {
+    width: 0.9em;
+    height: 0.9em;
+  }
+`;
+
 export const Badge: React.FC<BadgeProps> = ({
-  children,
+  label,
   color = 'text',
-  size = 'small',
+  size = 'md',
   icon,
   className,
 }) => {
@@ -57,10 +69,20 @@ export const Badge: React.FC<BadgeProps> = ({
 
   const colorValue = getColorValue(color);
 
+  if (size === 'sm') {
+    return (
+      <Tooltip content={label}>
+        <StyledIconBadge $colorValue={colorValue} className={className}>
+          {React.cloneElement(icon, { className: 'icon-badge-icon' })}
+        </StyledIconBadge>
+      </Tooltip>
+    );
+  }
+
   return (
     <StyledBadge $colorValue={colorValue} $size={size} className={className}>
       {icon && React.cloneElement(icon, { className: 'badge-icon' })}
-      {children}
+      {label}
     </StyledBadge>
   );
 };

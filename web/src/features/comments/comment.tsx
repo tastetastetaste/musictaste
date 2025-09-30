@@ -1,7 +1,7 @@
 import { keyframes } from '@emotion/react';
 import styled from '@emotion/styled';
 import { IconFlagFilled, IconTrash } from '@tabler/icons-react';
-import { IComment } from 'shared';
+import { IComment, SupporterStatus } from 'shared';
 import { FlexChild } from '../../components/flex/flex-child';
 import { Group } from '../../components/flex/group';
 import { Stack } from '../../components/flex/stack';
@@ -12,6 +12,7 @@ import { Typography } from '../../components/typography';
 import { formatRelativeTimeShort } from '../../utils/date-format';
 import { getUserPathname } from '../../utils/get-pathname';
 import { Avatar } from '../users/avatar';
+import { SupporterBadge } from '../../components/badge/supporter-badge';
 
 const Fade = keyframes`
     from {
@@ -47,11 +48,19 @@ export function Comment({
         </div>
         <FlexChild grow>
           <Stack gap="sm">
-            <Group gap="sm">
-              <Link to={getUserPathname(user.username)}>{user.name}</Link>
+            <Group gap="sm" align="center">
+              <Link
+                to={getUserPathname(user.username)}
+                highlight={user.supporter === SupporterStatus.SUPPORTER}
+              >
+                {user.name}
+              </Link>
               <Typography color="sub" size="small">
                 @{user.username}
               </Typography>
+              {user.supporter === SupporterStatus.SUPPORTER ? (
+                <SupporterBadge size="sm" />
+              ) : null}
             </Group>
             <Typography whiteSpace="pre-wrap">{body}</Typography>
           </Stack>

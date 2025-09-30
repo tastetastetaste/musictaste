@@ -4,13 +4,15 @@ import { Link as ReactRouterLink } from 'react-router-dom';
 interface LinkProps {
   size?: 'title-lg' | 'title' | 'body' | 'small';
   whiteSpace?: 'normal' | 'pre-wrap' | 'nowrap';
+  highlight?: boolean;
 }
 
 export const Link = styled(ReactRouterLink)<LinkProps>`
   cursor: pointer;
   overflow: hidden;
   text-decoration: none;
-  color: ${({ theme }) => theme.colors.primary};
+  color: ${({ theme, highlight }) =>
+    highlight ? theme.colors.highlight : theme.colors.primary};
 
   font-size: ${({ theme, size }) =>
     size === 'title-lg'
