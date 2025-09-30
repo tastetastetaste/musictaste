@@ -1,15 +1,14 @@
-import { EntriesSortByEnum } from 'shared';
 import { Fragment } from 'react';
 import { useInfiniteQuery } from 'react-query';
 import { useOutletContext } from 'react-router-dom';
-import { Group } from '../../components/flex/group';
-import { api } from '../../utils/api';
+import { EntriesSortByEnum } from 'shared';
 import { FetchMore } from '../../components/fetch-more';
+import { Group } from '../../components/flex/group';
 import { Loading } from '../../components/loading';
-import { UserRating } from '../ratings/rating';
-import { ReleasePageOutletContext } from './release-page-wrapper';
-import { User } from '../users/user';
+import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
+import { ReleasePageOutletContext } from './release-page-wrapper';
+import { UserEntry } from './user-entry';
 
 const ReleaseRatingsPage = () => {
   const { releaseId } = useOutletContext<ReleasePageOutletContext>();
@@ -25,14 +24,14 @@ const ReleaseRatingsPage = () => {
     cacheKeys.entriesKey({
       releaseId,
       pageSize: 48,
-      sortBy: EntriesSortByEnum.RatingDate,
+      sortBy: EntriesSortByEnum.EntryDate,
     }),
     async ({ pageParam = 1 }) =>
       api.getEntries({
         releaseId,
         page: pageParam,
         pageSize: 48,
-        sortBy: EntriesSortByEnum.RatingDate,
+        sortBy: EntriesSortByEnum.EntryDate,
       }),
     {
       getNextPageParam: (lastPage, pages) =>
@@ -42,19 +41,6 @@ const ReleaseRatingsPage = () => {
     },
   );
 
-  /*
-
-  page: 1
-  totalItems: 1
-  currentPage: 1
-  pageSize: 48
-  currentItems: 1
-  itemsPerPage: 48
-  totalPages: 1
-
-
-  */
-
   return (
     <Fragment>
       {isFetching && !isFetchingNextPage && <Loading />}
@@ -62,10 +48,7 @@ const ReleaseRatingsPage = () => {
         {data?.pages.map((page) => (
           <Fragment key={page.currentPage}>
             {page.entries.map((entry) => (
-              <Group gap={10} key={entry.id}>
-                <User user={entry.user!} />
-                <UserRating rating={entry.rating} />
-              </Group>
+              <UserEntry key={entry.id} entry={entry} />
             ))}
           </Fragment>
         ))}

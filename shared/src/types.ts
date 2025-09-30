@@ -174,6 +174,8 @@ export interface IEntry {
   review?: IReview | null;
   trackVotes?: ITrackVote[] | null;
   tags?: IEntryTag[] | null;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface IEntriesResponse extends IPagination {

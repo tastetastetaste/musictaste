@@ -69,7 +69,7 @@ const RecentlyAddedReleases: React.FC<{ userId: string; username: string }> = ({
           </Link>
           <Grid cols={[2, 4]} gap={RELEASE_GRID_GAP}>
             {releases.map((ur) => (
-              <Release key={ur.id} release={ur.release!} entry={ur} size="md" />
+              <Release key={ur.id} release={ur.release!} entry={ur} />
             ))}
           </Grid>
         </Fragment>

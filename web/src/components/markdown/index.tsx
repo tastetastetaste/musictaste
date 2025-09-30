@@ -96,6 +96,7 @@ const MarkdownContainer = styled.div`
   hr {
     height: 1px;
     background-color: ${({ theme }) => theme.colors.primary};
+    margin: 1em 0;
   }
 `;
 

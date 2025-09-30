@@ -1,46 +1,32 @@
 import { IEntry, IRelease, IReleaseSummary, IReleaseWithStats } from 'shared';
 import { CardContainer } from '../../../components/containers/card-container';
+import { FlexChild } from '../../../components/flex/flex-child';
 import { Group } from '../../../components/flex/group';
 import { Stack } from '../../../components/flex/stack';
-import { ReleaseActions } from '../release-actions/release-actions';
 import { Typography } from '../../../components/typography';
 import { getYearFromDate } from '../../../utils/date-format';
-import { formatReleaseType } from '../format-release-type';
-import {
-  getArtistPathname,
-  getReleasePathname,
-} from '../../../utils/get-pathname';
+import { getReleasePathname } from '../../../utils/get-pathname';
 import { AllUsersRating } from '../../ratings/rating';
-import { UserRating } from '../../ratings/rating';
+import { formatReleaseType } from '../format-release-type';
+import { ReleaseActions } from '../release-actions/release-actions';
+import { UserEntryOnRelease } from '../user-entry';
 import {
   ArtistsLinks,
   ReleaseImageLink,
   releaseImageWidthMap,
-  ReleaseImageSizeT,
   ReleaseTitleLink,
-  ReviewLink,
-  FavoriteTracks,
 } from './shared';
-import { FlexChild } from '../../../components/flex/flex-child';
 
-export interface IReleaseItemProps {
-  release: IReleaseSummary | IRelease | IReleaseWithStats;
+export interface IReleaseProps {
+  release: IRelease | IReleaseWithStats;
   entry?: IEntry;
-
-  size?: ReleaseImageSizeT;
 }
-export const Release: React.FC<IReleaseItemProps> = ({
-  release,
-  entry,
-  size = 'md',
-}) => {
-  const isUserEntry = !!entry;
 
-  const isDetailedRelease = (
-    release: IReleaseSummary | IRelease | IReleaseWithStats,
-  ): release is IRelease => {
-    return 'type' in release && 'date' in release;
-  };
+export interface IReleaseSmallProps {
+  release: IRelease;
+}
+export const Release: React.FC<IReleaseProps> = ({ release, entry }) => {
+  const isUserEntry = !!entry;
 
   const isReleaseWithStats = (
     release: IReleaseSummary | IRelease | IReleaseWithStats,
@@ -48,44 +34,15 @@ export const Release: React.FC<IReleaseItemProps> = ({
     return 'stats' in release;
   };
 
-  if (size === 'sm' || size === 'xs') {
-    return (
-      <Group gap="md">
-        <div
-          css={{
-            width: '100px',
-          }}
-        >
-          <ReleaseImageLink release={release} size="xs" />
-        </div>
-        <FlexChild grow>
-          <Stack gap="sm">
-            <ArtistsLinks artists={release.artists} />
-            <ReleaseTitleLink
-              to={getReleasePathname(release.id)}
-              title={release.title}
-              latinTitle={release.titleLatin}
-            />
-            {isDetailedRelease(release) && (
-              <Typography size="small">
-                {`${getYearFromDate(release.date)} · ${formatReleaseType(release.type)}`}
-              </Typography>
-            )}
-          </Stack>
-        </FlexChild>
-      </Group>
-    );
-  }
-
   return (
     <CardContainer
       css={{
-        maxWidth: releaseImageWidthMap[size],
+        maxWidth: releaseImageWidthMap['md'],
         width: '100%',
       }}
     >
       <Stack gap="sm">
-        <ReleaseImageLink release={release} size={size} />
+        <ReleaseImageLink release={release} size={'md'} />
         <Stack gap="sm">
           <ArtistsLinks artists={release.artists} />
           <ReleaseTitleLink
@@ -93,35 +50,54 @@ export const Release: React.FC<IReleaseItemProps> = ({
             title={release.title}
             latinTitle={release.titleLatin}
           />
-          {isDetailedRelease(release) && (
-            <>
-              <Group justify="apart" align="center">
-                {isUserEntry ? (
-                  <Group gap="sm">
-                    <UserRating rating={entry.rating} />
-                    {!!entry.reviewId && <ReviewLink entryId={entry.id} />}
-                    {entry.hasTrackVotes && (
-                      <FavoriteTracks entryId={entry.id} />
-                    )}
-                  </Group>
-                ) : isReleaseWithStats(release) &&
-                  release.stats?.ratingsCount > 0 ? (
-                  <AllUsersRating
-                    rating={release.stats.ratingsAvg}
-                    count={release.stats.ratingsCount}
-                  />
-                ) : (
-                  <div></div>
-                )}
-                <ReleaseActions id={release.id} date={release.date} />
-              </Group>
-              <Typography size="small" color="sub">
-                {`${getYearFromDate(release.date)} · ${formatReleaseType(release.type)}`}
-              </Typography>
-            </>
-          )}
+          <>
+            <Group justify="apart" align="center">
+              {isUserEntry ? (
+                <UserEntryOnRelease entry={entry} />
+              ) : isReleaseWithStats(release) &&
+                release.stats?.ratingsCount > 0 ? (
+                <AllUsersRating
+                  rating={release.stats.ratingsAvg}
+                  count={release.stats.ratingsCount}
+                />
+              ) : (
+                <div></div>
+              )}
+              <ReleaseActions id={release.id} date={release.date} />
+            </Group>
+            <Typography size="small" color="sub">
+              {`${getYearFromDate(release.date)} · ${formatReleaseType(release.type)}`}
+            </Typography>
+          </>
         </Stack>
       </Stack>
     </CardContainer>
+  );
+};
+
+export const ReleaseSmall: React.FC<IReleaseProps> = ({ release }) => {
+  return (
+    <Group gap="md">
+      <div
+        css={{
+          width: '100px',
+        }}
+      >
+        <ReleaseImageLink release={release} size="xs" />
+      </div>
+      <FlexChild grow>
+        <Stack gap="sm">
+          <ArtistsLinks artists={release.artists} />
+          <ReleaseTitleLink
+            to={getReleasePathname(release.id)}
+            title={release.title}
+            latinTitle={release.titleLatin}
+          />
+          <Typography size="small">
+            {`${getYearFromDate(release.date)} · ${formatReleaseType(release.type)}`}
+          </Typography>
+        </Stack>
+      </FlexChild>
+    </Group>
   );
 };

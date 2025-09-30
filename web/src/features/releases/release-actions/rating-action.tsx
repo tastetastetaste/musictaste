@@ -202,7 +202,7 @@ export const RatingAction: React.FC<{
         active={isRated}
         variant="solid"
       >
-        {isRated ? <UserRating rating={entry.rating} hideDate /> : <IconStar />}
+        {isRated ? <UserRating rating={entry.rating} /> : <IconStar />}
       </IconButton>
     </Popover>
   );

@@ -39,6 +39,10 @@ export const formatRelativeTimeShort = (date: string) => {
     .fromNow();
 };
 
+export const formatRelativeTime = (date: string) => {
+  return dayjs(date).fromNow();
+};
+
 export const formatDateTime = (date: string) => {
   const parsedDate = dayjs(date);
   const year = parsedDate.format('YYYY');

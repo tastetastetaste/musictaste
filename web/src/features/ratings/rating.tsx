@@ -1,14 +1,12 @@
-import { IRating } from 'shared';
-import { Group } from '../../components/flex/group';
-import { useRatingColor } from './useRatingColor';
-import {
-  formatDateTime,
-  formatRelativeTimeShort,
-} from '../../utils/date-format';
-import { FlexChild } from '../../components/flex/flex-child';
 import styled from '@emotion/styled';
+import { IRating } from 'shared';
+import { FlexChild } from '../../components/flex/flex-child';
+import { Group } from '../../components/flex/group';
 import { Stack } from '../../components/flex/stack';
+import { Tooltip } from '../../components/popover/tooltip';
 import { Typography } from '../../components/typography';
+import { formatRelativeTime } from '../../utils/date-format';
+import { useRatingColor } from './useRatingColor';
 
 const StyledRatingCircle = styled.div<{ color?: string; lg?: boolean }>`
   flex: 0 0 auto;
@@ -71,9 +69,7 @@ export const RatingValue: React.FC<{ value?: number }> = ({ value }) => {
         }}
       >
         <Stack>
-          <Typography title={rating} size="body-bold">
-            {rating}
-          </Typography>
+          <Typography size="body-bold">{rating}</Typography>
           {rated && <RatingUnderline value={value} />}
         </Stack>
       </div>
@@ -81,20 +77,18 @@ export const RatingValue: React.FC<{ value?: number }> = ({ value }) => {
   );
 };
 
-export const UserRating: React.FC<{
+interface UserRatingProps {
   rating?: IRating | null;
-  hideDate?: boolean;
-}> = ({ rating, hideDate }) => {
+}
+
+export const UserRating: React.FC<UserRatingProps> = ({ rating }) => {
   const rated = rating?.rating !== null && rating?.rating !== undefined;
 
   return rated ? (
     <Group gap="sm">
-      <RatingValue value={rating.rating} />
-      {!hideDate && rating?.updatedAt && (
-        <Typography title={formatDateTime(rating.updatedAt)}>
-          {formatRelativeTimeShort(rating.updatedAt)}
-        </Typography>
-      )}
+      <Tooltip content={`Rated ${formatRelativeTime(rating.updatedAt)}`}>
+        <RatingValue value={rating.rating} />
+      </Tooltip>
     </Group>
   ) : null;
 };

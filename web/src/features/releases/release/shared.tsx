@@ -1,31 +1,14 @@
 import styled from '@emotion/styled';
-import { IconMusicHeart, IconNote } from '@tabler/icons-react';
-import { Fragment, useState } from 'react';
-import { useQuery } from 'react-query';
-import { LinkProps, useNavigate } from 'react-router-dom';
-import {
-  ExplicitCoverArt,
-  IArtistSummary,
-  IReleaseSummary,
-  VoteType,
-} from 'shared';
-import { FlexChild } from '../../../components/flex/flex-child';
-import { Group } from '../../../components/flex/group';
-import { Stack } from '../../../components/flex/stack';
-import { IconButton } from '../../../components/icon-button';
+import { Fragment } from 'react';
+import { LinkProps } from 'react-router-dom';
+import { ExplicitCoverArt, IArtistSummary, IReleaseSummary } from 'shared';
 import { CardLink } from '../../../components/links/card-link';
 import { Link } from '../../../components/links/link';
-import { Loading } from '../../../components/loading';
-import { Popover } from '../../../components/popover';
 import { Typography } from '../../../components/typography';
-import { api } from '../../../utils/api';
 import {
   getArtistPathname,
   getReleasePathname,
-  getReviewPathname,
 } from '../../../utils/get-pathname';
-import { FavIcon, LeastFavIcon } from '../release-tracks';
-import { cacheKeys } from '../../../utils/cache-keys';
 import { useAuth } from '../../account/useAuth';
 
 export type ReleaseImageSizeT = 'lg' | 'md' | 'sm' | 'xs';
@@ -178,81 +161,5 @@ export const GenresLinks = ({
         </Fragment>
       ))}
     </Typography>
-  );
-};
-
-export const ReviewLink: React.FC<{
-  entryId: string;
-}> = ({ entryId }) => {
-  const navigate = useNavigate();
-  return (
-    <IconButton
-      title="Review"
-      onClick={() => {
-        navigate(getReviewPathname(entryId));
-      }}
-    >
-      <IconNote />
-    </IconButton>
-  );
-};
-
-const FavoriteTracksPopoverContent: React.FC<{ entryId: string }> = ({
-  entryId,
-}) => {
-  const { data, isLoading } = useQuery(cacheKeys.entryKey(entryId), () =>
-    api.getEntry(entryId),
-  );
-
-  const tracks = data?.entry?.trackVotes;
-
-  const upvotedTracks = tracks
-    ?.filter((t) => t.vote === VoteType.UP)
-    .sort((a, b) => a.track.order - b.track.order);
-  const downvotedTracks = tracks
-    ?.filter((t) => t.vote === VoteType.DOWN)
-    .sort((a, b) => a.track.order - b.track.order);
-
-  return isLoading ? (
-    <Loading />
-  ) : (
-    <Stack gap="md">
-      {upvotedTracks && upvotedTracks.length > 0 && (
-        <Group gap="sm">
-          <FlexChild shrink={0}>
-            <FavIcon />
-          </FlexChild>
-          <Typography>
-            {upvotedTracks.map((t) => t.track.title).join(', ')}
-          </Typography>
-        </Group>
-      )}
-
-      {downvotedTracks && downvotedTracks.length > 0 && (
-        <Group gap="sm">
-          <FlexChild shrink={0}>
-            <LeastFavIcon />
-          </FlexChild>
-          <Typography>
-            {downvotedTracks.map((t) => t.track.title).join(', ')}
-          </Typography>
-        </Group>
-      )}
-    </Stack>
-  );
-};
-
-export const FavoriteTracks: React.FC<{ entryId: string }> = ({ entryId }) => {
-  const [open, setOpen] = useState(false);
-  return (
-    <Popover
-      open={open}
-      onClose={() => setOpen(false)}
-      content={<FavoriteTracksPopoverContent entryId={entryId} />}
-    >
-      <IconButton title="Favorite" onClick={() => setOpen(!open)}>
-        <IconMusicHeart />
-      </IconButton>
-    </Popover>
   );
 };

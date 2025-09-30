@@ -1,13 +1,7 @@
 import { IconArrowDown, IconArrowUp, IconMessage } from '@tabler/icons-react';
 import { useMutation } from 'react-query';
 import { useNavigate } from 'react-router-dom';
-import {
-  CommentEntityType,
-  IEntry,
-  IReview,
-  IUserSummary,
-  VoteType,
-} from 'shared';
+import { CommentEntityType, IEntry, IUserSummary, VoteType } from 'shared';
 import { FlexChild } from '../../components/flex/flex-child';
 import { Group } from '../../components/flex/group';
 import { Stack } from '../../components/flex/stack';
@@ -17,34 +11,30 @@ import { Typography } from '../../components/typography';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
 import { api } from '../../utils/api';
 import { formatDate } from '../../utils/date-format';
+import { getReviewPathname } from '../../utils/get-pathname';
 import { useAuth } from '../account/useAuth';
+import { Comments } from '../comments/comments';
 import { RatingCircle } from '../ratings/rating';
-import { Release } from '../releases/release';
-import {
-  FavoriteTracks,
-  releaseImageWidthMap,
-} from '../releases/release/shared';
+import { Release, ReleaseSmall } from '../releases/release';
+import { releaseImageWidthMap } from '../releases/release/shared';
+import { FavoriteTracks } from '../releases/user-entry';
 import { User } from '../users/user';
 import { UpdateReviewAfterVoteFu } from './update-review-after-vote';
-import { getReviewPathname } from '../../utils/get-pathname';
-import { Comments } from '../comments/comments';
 
 const ReviewActions = ({
   reviewId,
   entryId,
-  countData: { netVotes, commentsCount, userVote },
   updateAfterVote,
   user,
+  entry,
 }: {
   reviewId: string;
   entryId: string;
-  countData: Pick<
-    IReview,
-    'netVotes' | 'totalVotes' | 'commentsCount' | 'userVote'
-  >;
   updateAfterVote: UpdateReviewAfterVoteFu;
   user: IUserSummary;
+  entry: IEntry;
 }) => {
+  const { netVotes, commentsCount, userVote } = entry.review;
   const { isLoggedIn } = useAuth();
 
   const navigate = useNavigate();
@@ -172,7 +162,7 @@ export const Review: React.FC<ReviewProps> = ({
             top: '80px',
           }}
         >
-          <Release release={release} size="lg" />
+          <Release release={release} />
         </div>
       )}
 
@@ -184,7 +174,7 @@ export const Review: React.FC<ReviewProps> = ({
           </Group>
 
           {!hideRelease && smallScreen && release && (
-            <Release release={release} size="sm" />
+            <ReleaseSmall release={release} />
           )}
 
           <div
@@ -197,20 +187,20 @@ export const Review: React.FC<ReviewProps> = ({
             }}
           >
             <Markdown>{MDString}</Markdown>
+            {fullPage && entry.hasTrackVotes ? (
+              <FavoriteTracks entry={entry} />
+            ) : null}
           </div>
 
           <Group justify="apart" align="center">
             <Group gap="md">
               <ReviewActions
-                countData={{ netVotes, totalVotes, commentsCount, userVote }}
+                entry={entry}
                 reviewId={id}
                 entryId={entry.id}
                 updateAfterVote={updateAfterVote}
                 user={user || userFromUserPage}
               />
-              {fullPage && entry.hasTrackVotes && (
-                <FavoriteTracks entryId={entry.id} />
-              )}
             </Group>
             <Typography color="sub">
               {formatDate(createdAt)}

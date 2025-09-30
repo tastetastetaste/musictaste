@@ -1,5 +1,5 @@
 import { useTheme } from '@emotion/react';
-import { FastAverageColor, FastAverageColorResult } from 'fast-average-color';
+import { useState } from 'react';
 import { useQuery } from 'react-query';
 import { Outlet, useParams } from 'react-router-dom';
 import {
@@ -24,29 +24,23 @@ import { SOMETHING_WENT_WRONG } from '../../static/feedback';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
 import { formatExactDate, getYearFromDate } from '../../utils/date-format';
-import { formatReleaseType } from './format-release-type';
-import {
-  getArtistPathname,
-  getGenrePathname,
-  getLabelPathname,
-} from '../../utils/get-pathname';
+import { getGenrePathname, getLabelPathname } from '../../utils/get-pathname';
 import { useAuth } from '../account/useAuth';
-import { RatingCircle, RatingValue } from '../ratings/rating';
+import { Comments } from '../comments/comments';
+import { RatingCircle } from '../ratings/rating';
 import { ReportDialog } from '../reports/report-dialog';
 import { User } from '../users/user';
+import { formatReleaseType } from './format-release-type';
 import { ReleaseActionsFullPage } from './release-actions/release-actions-full-page';
 import ReleaseGenreVote from './release-genre-vote';
 import ReleaseTracks from './release-tracks';
 import {
   ArtistsLinks,
-  FavoriteTracks,
   GenresLinks,
   hideExplicitCoverArtFn,
   LabelsLinks,
-  ReviewLink,
 } from './release/shared';
-import { Fragment, useState } from 'react';
-import { Comments } from '../comments/comments';
+import { FollowingUserEntry } from './user-entry';
 
 const ReleaseInfo: React.FC<{
   release: any;
@@ -205,16 +199,7 @@ const FollowingSection: React.FC<{
       <Stack gap="sm">
         <Typography size="title">From Following</Typography>
         <Group wrap gap={10}>
-          {data?.map((r) => (
-            <Stack gap={5} key={r.id}>
-              <User user={r.user!} avatarOnly />
-              {r.rating && <RatingValue value={r.rating.rating} />}
-              <Group gap={5}>
-                {r.reviewId && <ReviewLink entryId={r.id} />}
-                {r.hasTrackVotes && <FavoriteTracks entryId={r.id} />}
-              </Group>
-            </Stack>
-          ))}
+          {data?.map((r) => <FollowingUserEntry entry={r} />)}
         </Group>
       </Stack>
     </div>

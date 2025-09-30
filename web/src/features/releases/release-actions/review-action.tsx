@@ -67,7 +67,7 @@ export const ReviewAction = ({ releaseId }: { releaseId: string }) => {
   const { entry } = useReleaseActions(releaseId);
 
   const onClose = () => {
-    const confirmed = confirm('Are you sure you want to discard your review?');
+    const confirmed = confirm('Are you sure you want to close?');
     if (confirmed) {
       setShowDialog(false);
     }
