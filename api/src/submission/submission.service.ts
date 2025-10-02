@@ -893,7 +893,7 @@ export class SubmissionService {
         .getRawOne();
 
       closeSubmission = Number(submissionVotes.totalVotes) >= 5;
-      approveSubmission = Number(submissionVotes.netVotes) > 3;
+      approveSubmission = Number(submissionVotes.netVotes) >= 3;
     } else {
       throw new BadRequestException();
     }
