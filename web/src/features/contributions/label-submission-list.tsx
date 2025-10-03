@@ -11,7 +11,7 @@ import { Stack } from '../../components/flex/stack';
 import { Loading } from '../../components/loading';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
-import { getLabelPathname } from '../../utils/get-pathname';
+import { getLabelPath } from 'shared';
 import {
   DiscardSubmissionFn,
   SubmissionField,
@@ -38,7 +38,7 @@ export const LabelSubmissionItem = ({
   const hasOriginal = !!original;
   return (
     <SubmissionItemWrapper
-      link={submission.labelId && getLabelPathname(submission.labelId)}
+      link={submission.labelId && getLabelPath({ labelId: submission.labelId })}
       voteFn={api.labelSubmissionVote}
       hideUser={hideUser}
       discardFn={discardFn}

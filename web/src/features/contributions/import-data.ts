@@ -57,7 +57,7 @@ export const importFromMusicBrainz = async (
 
   setValue('note', values.mbid);
 
-  return `Please manually check and update these fields as needed:
+  return `Update the following fields as required:
 
 artist:
 - ${data.artists.map((a) => `${a.name}`).join('\n- ')}

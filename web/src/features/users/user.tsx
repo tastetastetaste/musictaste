@@ -1,5 +1,5 @@
 import { ContributorStatus, IUser, SupporterStatus } from 'shared';
-import { getUserPathname } from '../../utils/get-pathname';
+import { getUserPath } from 'shared';
 import { Avatar } from './avatar';
 import { CardLink } from '../../components/links/card-link';
 import { Group } from '../../components/flex/group';
@@ -20,7 +20,7 @@ export const User: React.FC<IUserItemProps> = ({
   isLarge = false,
 }) => {
   const userAvatar = isLarge ? (
-    <CardLink to={getUserPathname(username)}>
+    <CardLink to={getUserPath({ username })}>
       <img
         width="170px"
         height="170px"
@@ -34,7 +34,7 @@ export const User: React.FC<IUserItemProps> = ({
       />
     </CardLink>
   ) : (
-    <CardLink to={getUserPathname(username)}>
+    <CardLink to={getUserPath({ username })}>
       <Avatar src={image?.sm} alt={username} />
     </CardLink>
   );
@@ -47,7 +47,7 @@ export const User: React.FC<IUserItemProps> = ({
   return isLarge ? (
     <Stack align="center" justify="center" gap="md">
       {userAvatar}
-      <Link to={getUserPathname(username)} size="title">
+      <Link to={getUserPath({ username })} size="title">
         {name}
       </Link>
       <Typography color="sub">@{username}</Typography>
@@ -57,7 +57,7 @@ export const User: React.FC<IUserItemProps> = ({
     <Group gap="md" wrap>
       {userAvatar}
       <Stack gap="sm">
-        <Link to={getUserPathname(username)}>{name}</Link>
+        <Link to={getUserPath({ username })}>{name}</Link>
         <Typography color="sub" size="small">
           @{username}
         </Typography>

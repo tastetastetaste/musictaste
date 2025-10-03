@@ -1,7 +1,7 @@
 import { CreateArtistDto } from 'shared';
 import { api } from '../../utils/api';
 import { useMutation, useQueryClient } from 'react-query';
-import { getArtistPathname } from '../../utils/get-pathname';
+import { getArtistPath } from 'shared';
 import { Dialog } from '../../components/dialog';
 import { Button } from '../../components/button';
 import { Input } from '../../components/inputs/input';
@@ -78,9 +78,9 @@ const CreateArtistDialog: React.FC<{
       <div>
         {data?.message && <Typography>{data.message}</Typography>}
         {data?.artist && (
-          <Link to={getArtistPathname(data.artist.id)}>
+          <Link to={getArtistPath({ artistId: data.artist.id })}>
             {' '}
-            {getArtistPathname(data.artist.id)}
+            {getArtistPath({ artistId: data.artist.id })}
           </Link>
         )}
       </div>

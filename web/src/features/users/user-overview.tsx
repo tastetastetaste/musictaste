@@ -17,7 +17,7 @@ import { Navigation } from '../../components/nav';
 import { useAuth } from '../account/useAuth';
 import { useHover } from '../../hooks/useHover';
 import { Typography } from '../../components/typography';
-import { getUserPathname } from '../../utils/get-pathname';
+import { getUserPath } from 'shared';
 import { cacheKeys } from '../../utils/cache-keys';
 import { SupporterBadge } from '../../components/badge/supporter-badge';
 
@@ -166,36 +166,36 @@ export const UserOverview: React.FC<OverviewSectionProps> = ({
       <Navigation
         links={[
           {
-            to: `${getUserPathname(username)}`,
+            to: `${getUserPath({ username })}`,
             asPath: '/[username]',
             label: 'Profile',
           },
           {
-            to: `${getUserPathname(username)}/music`,
+            to: `${getUserPath({ username })}/music`,
             asPath: '/[username]/music',
             label: 'Music',
             count: entriesCount || undefined,
           },
           {
-            to: `${getUserPathname(username)}/reviews`,
+            to: `${getUserPath({ username })}/reviews`,
             asPath: '/[username]/reviews',
             label: 'Reviews',
             count: reviewsCount || undefined,
           },
           {
-            to: `${getUserPathname(username)}/lists`,
+            to: `${getUserPath({ username })}/lists`,
             asPath: '/[username]/lists',
             label: 'Lists',
             count: listsCount || undefined,
           },
           {
-            to: `${getUserPathname(username)}/followers`,
+            to: `${getUserPath({ username })}/followers`,
             asPath: '/[username]/followers',
             label: 'Followers',
             count: followersCount || undefined,
           },
           {
-            to: `${getUserPathname(username)}/following`,
+            to: `${getUserPath({ username })}/following`,
             asPath: '/[username]/following',
             label: 'Following',
             count: followingCount || undefined,

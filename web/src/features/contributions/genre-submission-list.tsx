@@ -11,7 +11,6 @@ import { Stack } from '../../components/flex/stack';
 import { Loading } from '../../components/loading';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
-// import { getGenrePathname } from '../../utils/get-pathname';
 import { SubmissionField, SubmissionItemWrapper } from './submission-item';
 import { Typography } from '../../components/typography';
 import { Markdown } from '../../components/markdown';
@@ -34,7 +33,6 @@ export const GenreSubmissionItem = ({
   const hasOriginal = !!original;
   return (
     <SubmissionItemWrapper
-      // link={submission.genreId && getGenrePathname(submission.genreId)}
       voteFn={api.genreSubmissionVote}
       hideUser={hideUser}
       submission={submission}

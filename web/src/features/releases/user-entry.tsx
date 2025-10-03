@@ -1,4 +1,4 @@
-import { IEntry, VoteType } from 'shared';
+import { getReviewPath, IEntry, VoteType } from 'shared';
 import { Group } from '../../components/flex/group';
 import { User } from '../users/user';
 import { RatingValue, UserRating } from '../ratings/rating';
@@ -13,7 +13,6 @@ import { FlexChild } from '../../components/flex/flex-child';
 import { FavIcon, LeastFavIcon } from './release-tracks';
 import { useNavigate } from 'react-router-dom';
 import { IconButton } from '../../components/icon-button';
-import { getReviewPathname } from '../../utils/get-pathname';
 import { IconMusicHeart, IconNote } from '@tabler/icons-react';
 import { useQuery } from 'react-query';
 import { cacheKeys } from '../../utils/cache-keys';
@@ -71,7 +70,7 @@ export const ReviewLink: React.FC<{
     <IconButton
       title="Review"
       onClick={() => {
-        navigate(getReviewPathname(entryId));
+        navigate(getReviewPath({ entryId }));
       }}
     >
       <IconNote />

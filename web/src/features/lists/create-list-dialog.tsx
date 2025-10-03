@@ -1,5 +1,5 @@
 import { classValidatorResolver } from '@hookform/resolvers/class-validator';
-import { CreateListDto } from 'shared';
+import { CreateListDto, getListPath } from 'shared';
 import { api } from '../../utils/api';
 import { Controller, useForm } from 'react-hook-form';
 import { useMutation, useQueryClient } from 'react-query';
@@ -10,7 +10,6 @@ import { Stack } from '../../components/flex/stack';
 import { Textarea } from '../../components/inputs/textarea';
 import { Input } from '../../components/inputs/input';
 import { useAuth } from '../account/useAuth';
-import { getListPathname } from '../../utils/get-pathname';
 import { Checkbox } from '../../components/inputs/checkbox';
 import { FormInputError } from '../../components/inputs/form-input-error';
 import { cacheKeys } from '../../utils/cache-keys';
@@ -46,7 +45,7 @@ const CreateListForm = ({ redirect = false, closeDialog }: any) => {
     closeDialog();
     redirect &&
       data.data &&
-      navigate(getListPathname(data.data?.createList.id));
+      navigate(getListPath({ listId: data.data?.createList.id }));
   };
 
   return (

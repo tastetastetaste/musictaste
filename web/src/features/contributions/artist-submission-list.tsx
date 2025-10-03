@@ -11,7 +11,7 @@ import { Stack } from '../../components/flex/stack';
 import { Loading } from '../../components/loading';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
-import { getArtistPathname } from '../../utils/get-pathname';
+import { getArtistPath } from 'shared';
 import {
   DiscardSubmissionFn,
   SubmissionField,
@@ -40,7 +40,9 @@ export const ArtistSubmissionItem = ({
   const hasOriginal = !!original;
   return (
     <SubmissionItemWrapper
-      link={submission.artistId && getArtistPathname(submission.artistId)}
+      link={
+        submission.artistId && getArtistPath({ artistId: submission.artistId })
+      }
       voteFn={api.artistSubmissionVote}
       hideUser={hideUser}
       discardFn={discardFn}

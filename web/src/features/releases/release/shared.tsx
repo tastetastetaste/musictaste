@@ -5,10 +5,7 @@ import { ExplicitCoverArt, IArtistSummary, IReleaseSummary } from 'shared';
 import { CardLink } from '../../../components/links/card-link';
 import { Link } from '../../../components/links/link';
 import { Typography } from '../../../components/typography';
-import {
-  getArtistPathname,
-  getReleasePathname,
-} from '../../../utils/get-pathname';
+import { getArtistPath, getReleasePath } from 'shared';
 import { useAuth } from '../../account/useAuth';
 
 export type ReleaseImageSizeT = 'lg' | 'md' | 'sm' | 'xs';
@@ -70,7 +67,7 @@ export const ReleaseImageLink: React.FC<ReleaseImageLinkProps> = ({
   const hideExplicitCoverArt = hideExplicitCoverArtFn(explicitCoverArt);
 
   return (
-    <CardLink to={getReleasePathname(id)}>
+    <CardLink to={getReleasePath({ releaseId: id })}>
       <StyledReleaseImageContainer size={size}>
         <StyledReleaseImage
           src={
@@ -117,7 +114,7 @@ export const ArtistsLinks = ({ artists }: { artists: IArtistSummary[] }) => {
       {artists.map(({ id, name, nameLatin }, i) => (
         <Fragment key={id}>
           {i > 0 && ', '}
-          <Link to={getArtistPathname(id)}>
+          <Link to={getArtistPath({ artistId: id })}>
             {name}{' '}
             {nameLatin ? (
               <span css={{ fontStyle: 'italic' }}>[{nameLatin}]</span>

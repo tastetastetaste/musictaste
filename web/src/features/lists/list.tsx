@@ -12,9 +12,8 @@ import { Stack } from '../../components/flex/stack';
 import { CardLink } from '../../components/links/card-link';
 import { Link } from '../../components/links/link';
 import { Typography } from '../../components/typography';
-import { getListPathname } from '../../utils/get-pathname';
 import { User } from '../users/user';
-import { IListReleaseCover } from 'shared';
+import { getListPath, IListReleaseCover } from 'shared';
 import { hideExplicitCoverArtFn } from '../releases/release/shared';
 
 const StyledListThumb = styled.div`
@@ -54,7 +53,7 @@ export interface ListProps {
 }
 
 export function List({ list, withoutUser }: ListProps) {
-  const linkTo = getListPathname(list.id);
+  const linkTo = getListPath({ listId: list.id });
   const linkState = {
     user: list.user,
   };

@@ -3,7 +3,7 @@ import MarkdownToJsx from 'markdown-to-jsx';
 import { Link } from 'react-router-dom';
 import { SITE_DOMAIN } from '../../static/site-info';
 
-const MarkdownContainer = styled.div`
+const MarkdownContainer = styled.div<{ variant?: 'default' | 'compact' }>`
   h1,
   h2,
   h3,
@@ -42,7 +42,7 @@ const MarkdownContainer = styled.div`
   }
 
   p {
-    margin: 1em 0;
+    margin: ${({ variant }) => (variant === 'compact' ? '0' : '1em 0')};
     overflow-wrap: break-word;
     word-wrap: break-word;
     -ms-word-break: break-all;
@@ -71,7 +71,8 @@ const MarkdownContainer = styled.div`
       opacity: 0.75;
     }
 
-    margin: 1rem 0px 0px 0.5rem;
+    margin: ${({ variant }) =>
+      variant === 'compact' ? '0 0 0 0.5rem' : '1rem 0px 0px 0.5rem'};
     padding-left: 1rem;
     position: relative;
     display: block;
@@ -115,11 +116,15 @@ const MDLink = styled(Link)`
 
 export interface MarkdownProps {
   children: string;
+  variant?: 'default' | 'compact';
 }
 
-export function Markdown({ children: child }: MarkdownProps) {
+export function Markdown({
+  children: child,
+  variant = 'default',
+}: MarkdownProps) {
   return (
-    <MarkdownContainer>
+    <MarkdownContainer variant={variant}>
       <MarkdownToJsx
         options={{
           disableParsingRawHTML: true,

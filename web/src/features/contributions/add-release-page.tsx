@@ -17,7 +17,7 @@ import { Link } from '../../components/links/link';
 import { Typography } from '../../components/typography';
 import AppPageWrapper from '../../layout/app-page-wrapper';
 import { api } from '../../utils/api';
-import { getReleasePathname } from '../../utils/get-pathname';
+import { getReleasePath } from 'shared';
 import CreateArtistDialog from './create-artist-dialog';
 import CreateLabelDialog from './create-label-dialog';
 import { importFromMusicBrainz } from './import-data';
@@ -293,9 +293,9 @@ const AddReleasePage = () => {
         <div>
           {data?.message && <Typography>{data.message}</Typography>}
           {data?.release && (
-            <Link to={getReleasePathname(data.release.id)}>
+            <Link to={getReleasePath({ releaseId: data.release.id })}>
               {' '}
-              {getReleasePathname(data.release.id)}
+              {getReleasePath({ releaseId: data.release.id })}
             </Link>
           )}
         </div>

@@ -1,8 +1,8 @@
 import { IconMessage, IconTrash } from '@tabler/icons-react';
-import { IListItem, IRelease, UpdateListDto } from 'shared';
 import { Fragment, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation } from 'react-query';
+import { getReleasePath, IListItem, IRelease } from 'shared';
 import { Button } from '../../components/button';
 import { CardContainer } from '../../components/containers/card-container';
 import { FlexChild } from '../../components/flex/flex-child';
@@ -10,18 +10,13 @@ import { Group } from '../../components/flex/group';
 import { Stack } from '../../components/flex/stack';
 import { IconButton } from '../../components/icon-button';
 import { Textarea } from '../../components/inputs/textarea';
+import { Typography } from '../../components/typography';
 import { api } from '../../utils/api';
 import {
   ArtistsLinks,
   ReleaseImageLink,
   ReleaseTitleLink,
 } from '../releases/release/shared';
-import { Typography } from '../../components/typography';
-import {
-  getArtistPathname,
-  getReleasePathname,
-} from '../../utils/get-pathname';
-import { classValidatorResolver } from '@hookform/resolvers/class-validator';
 
 const EditNoteForm = ({
   listId,
@@ -112,7 +107,7 @@ export const EditListItem: React.FC<
               <Stack gap="sm">
                 <ArtistsLinks artists={release.artists} />
                 <ReleaseTitleLink
-                  to={getReleasePathname(release.id)}
+                  to={getReleasePath({ releaseId: release.id })}
                   title={release.title}
                   latinTitle={release.titleLatin}
                 />

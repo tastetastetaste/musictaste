@@ -24,7 +24,7 @@ import { SOMETHING_WENT_WRONG } from '../../static/feedback';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
 import { formatExactDate, getYearFromDate } from '../../utils/date-format';
-import { getGenrePathname, getLabelPathname } from '../../utils/get-pathname';
+import { getGenrePath, getLabelPath } from 'shared';
 import { useAuth } from '../account/useAuth';
 import { Comments } from '../comments/comments';
 import { RatingCircle } from '../ratings/rating';
@@ -115,7 +115,7 @@ const ReleaseInfo: React.FC<{
           <LabelsLinks
             links={labels.map((a) => ({
               label: a.name,
-              href: getLabelPathname(a.id),
+              href: getLabelPath({ labelId: a.id }),
             }))}
           />
         </Group>
@@ -134,7 +134,7 @@ const ReleaseInfo: React.FC<{
         <GenresLinks
           links={genres.map((a) => ({
             label: a.name,
-            href: getGenrePathname(a.id),
+            href: getGenrePath({ genreId: a.id }),
           }))}
         />
         {isLoggedIn && <ReleaseGenreVote releaseId={releaseId} />}

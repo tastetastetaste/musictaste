@@ -9,7 +9,7 @@ import { useMutation, useQueryClient } from 'react-query';
 import { useNavigate } from 'react-router-dom';
 import { Avatar } from '../../features/users/avatar';
 import { useAuth } from '../../features/account/useAuth';
-import { getUserPathname } from '../../utils/get-pathname';
+import { getUserPath } from 'shared';
 import { Menu } from '../../components/menu';
 import { Link } from '../../components/links/link';
 
@@ -30,7 +30,7 @@ const UserMenu = () => {
   const avatarMenuItems = me
     ? [
         {
-          to: getUserPathname(me.username),
+          to: getUserPath({ username: me.username }),
           label: 'Profile',
           icon: IconUser,
         },

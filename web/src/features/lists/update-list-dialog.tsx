@@ -1,5 +1,5 @@
 import { classValidatorResolver } from '@hookform/resolvers/class-validator';
-import { UpdateListDto } from 'shared';
+import { getListPath, UpdateListDto } from 'shared';
 import { api } from '../../utils/api';
 import { useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -10,7 +10,6 @@ import { Dialog } from '../../components/dialog';
 import { Stack } from '../../components/flex/stack';
 import { Textarea } from '../../components/inputs/textarea';
 import { Input } from '../../components/inputs/input';
-import { getListPathname } from '../../utils/get-pathname';
 import { Checkbox } from '../../components/inputs/checkbox';
 import { FormInputError } from '../../components/inputs/form-input-error';
 import { cacheKeys } from '../../utils/cache-keys';
@@ -56,7 +55,7 @@ const UpdateListForm: React.FC<{
     closeDialog();
     redirect &&
       data.data &&
-      navigate(getListPathname(data.data?.updateList.id));
+      navigate(getListPath({ listId: data.data?.updateList.id }));
   };
 
   useEffect(() => {

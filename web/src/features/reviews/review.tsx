@@ -1,7 +1,13 @@
 import { IconArrowDown, IconArrowUp, IconMessage } from '@tabler/icons-react';
 import { useMutation } from 'react-query';
 import { useNavigate } from 'react-router-dom';
-import { CommentEntityType, IEntry, IUserSummary, VoteType } from 'shared';
+import {
+  CommentEntityType,
+  getReviewPath,
+  IEntry,
+  IUserSummary,
+  VoteType,
+} from 'shared';
 import { FlexChild } from '../../components/flex/flex-child';
 import { Group } from '../../components/flex/group';
 import { Stack } from '../../components/flex/stack';
@@ -11,7 +17,6 @@ import { Typography } from '../../components/typography';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
 import { api } from '../../utils/api';
 import { formatDate } from '../../utils/date-format';
-import { getReviewPathname } from '../../utils/get-pathname';
 import { useAuth } from '../account/useAuth';
 import { Comments } from '../comments/comments';
 import { RatingCircle } from '../ratings/rating';
@@ -49,7 +54,7 @@ const ReviewActions = ({
     updateAfterVote(reviewId, vote);
   };
 
-  const linkTo = getReviewPathname(entryId);
+  const linkTo = getReviewPath({ entryId });
   const linkState = {
     user,
   };

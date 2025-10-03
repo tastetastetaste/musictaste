@@ -5,7 +5,7 @@ import { Group } from '../../../components/flex/group';
 import { Stack } from '../../../components/flex/stack';
 import { Typography } from '../../../components/typography';
 import { getYearFromDate } from '../../../utils/date-format';
-import { getReleasePathname } from '../../../utils/get-pathname';
+import { getReleasePath } from 'shared';
 import { AllUsersRating } from '../../ratings/rating';
 import { formatReleaseType } from '../format-release-type';
 import { ReleaseActions } from '../release-actions/release-actions';
@@ -46,7 +46,7 @@ export const Release: React.FC<IReleaseProps> = ({ release, entry }) => {
         <Stack gap="sm">
           <ArtistsLinks artists={release.artists} />
           <ReleaseTitleLink
-            to={getReleasePathname(release.id)}
+            to={getReleasePath({ releaseId: release.id })}
             title={release.title}
             latinTitle={release.titleLatin}
           />
@@ -89,7 +89,7 @@ export const ReleaseSmall: React.FC<IReleaseProps> = ({ release }) => {
         <Stack gap="sm">
           <ArtistsLinks artists={release.artists} />
           <ReleaseTitleLink
-            to={getReleasePathname(release.id)}
+            to={getReleasePath({ releaseId: release.id })}
             title={release.title}
             latinTitle={release.titleLatin}
           />

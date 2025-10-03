@@ -12,7 +12,7 @@ import { Loading } from '../../components/loading';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
 import { formatReleaseType } from '../releases/format-release-type';
-import { getReleasePathname } from '../../utils/get-pathname';
+import { getReleasePath } from 'shared';
 import {
   DiscardSubmissionFn,
   ImagePreview,
@@ -38,7 +38,10 @@ export const ReleaseSubmissionItem = ({
 
   return (
     <SubmissionItemWrapper
-      link={submission.releaseId && getReleasePathname(submission.releaseId)}
+      link={
+        submission.releaseId &&
+        getReleasePath({ releaseId: submission.releaseId })
+      }
       voteFn={api.releaseSubmissionVote}
       hideUser={hideUser}
       submission={submission}

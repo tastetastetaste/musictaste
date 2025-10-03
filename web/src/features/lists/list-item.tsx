@@ -11,10 +11,7 @@ import {
 import { Typography } from '../../components/typography';
 import { getYearFromDate } from '../../utils/date-format';
 import { formatReleaseType } from '../releases/format-release-type';
-import {
-  getArtistPathname,
-  getReleasePathname,
-} from '../../utils/get-pathname';
+import { getArtistPath, getReleasePath } from 'shared';
 import { ReleaseActions } from '../releases/release-actions/release-actions';
 import { Markdown } from '../../components/markdown';
 
@@ -56,7 +53,7 @@ export const ListItem: React.FC<IListItemProps> = ({
           <Stack gap="sm">
             <ArtistsLinks artists={release.artists} />
             <ReleaseTitleLink
-              to={getReleasePathname(release.id)}
+              to={getReleasePath({ releaseId: release.id })}
               title={release.title}
               latinTitle={release.titleLatin}
             />

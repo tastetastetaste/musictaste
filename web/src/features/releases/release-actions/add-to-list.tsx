@@ -14,10 +14,10 @@ import { Link } from '../../../components/links/link';
 import { Loading } from '../../../components/loading';
 import { Popover } from '../../../components/popover';
 import { api } from '../../../utils/api';
-import { getListPathname } from '../../../utils/get-pathname';
 import { useAuth } from '../../account/useAuth';
 import { CreateListDialog } from '../../lists/create-list-dialog';
 import { cacheKeys } from '../../../utils/cache-keys';
+import { getListPath } from 'shared';
 
 export const AddToListPopoverContent = ({
   releaseId,
@@ -98,7 +98,7 @@ export const AddToListPopoverContent = ({
           <Fragment key={page.currentPage}>
             {page.lists.map((list) => (
               <Group justify="apart" align="center" key={list.id}>
-                <Link to={getListPathname(list.id)}>{list.title}</Link>
+                <Link to={getListPath({ listId: list.id })}>{list.title}</Link>
                 {inLists?.some((li) => li.listId === list.id) ? (
                   <IconButton
                     title="Remove"

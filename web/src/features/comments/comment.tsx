@@ -10,9 +10,10 @@ import { CardLink } from '../../components/links/card-link';
 import { Link } from '../../components/links/link';
 import { Typography } from '../../components/typography';
 import { formatRelativeTimeShort } from '../../utils/date-format';
-import { getUserPathname } from '../../utils/get-pathname';
+import { getUserPath } from 'shared';
 import { Avatar } from '../users/avatar';
 import { SupporterBadge } from '../../components/badge/supporter-badge';
+import { Markdown } from '../../components/markdown';
 
 const Fade = keyframes`
     from {
@@ -42,7 +43,7 @@ export function Comment({
     <Container>
       <Group gap="md" align="center">
         <div css={{ alignSelf: 'flex-start' }}>
-          <CardLink to={getUserPathname(user.username)}>
+          <CardLink to={getUserPath({ username: user.username })}>
             <Avatar src={user.image?.sm} alt={user.username} />
           </CardLink>
         </div>
@@ -50,7 +51,7 @@ export function Comment({
           <Stack gap="sm">
             <Group gap="sm" align="center">
               <Link
-                to={getUserPathname(user.username)}
+                to={getUserPath({ username: user.username })}
                 highlight={user.supporter === SupporterStatus.SUPPORTER}
               >
                 {user.name}
@@ -62,7 +63,7 @@ export function Comment({
                 <SupporterBadge size="sm" />
               ) : null}
             </Group>
-            <Typography whiteSpace="pre-wrap">{body}</Typography>
+            <Markdown variant="compact">{body}</Markdown>
           </Stack>
         </FlexChild>
         <Typography size="small">

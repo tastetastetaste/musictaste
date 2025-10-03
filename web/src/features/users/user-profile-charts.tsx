@@ -10,7 +10,7 @@ import { cacheKeys } from '../../utils/cache-keys';
 import { useNavigate } from 'react-router-dom';
 
 const StyledText = styled.text`
-  font-size: 5px;
+  font-size: 3px;
   font-family: ${({ theme }) => theme.font.family.base};
   color: ${({ theme }) => theme.colors.highlight};
   pointer-events: none;
