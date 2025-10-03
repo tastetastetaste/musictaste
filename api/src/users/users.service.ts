@@ -9,6 +9,8 @@ import {
   UpdateUserThemeDto,
   IUserSummary,
   SupporterStatus,
+  getUserPath,
+  NotificationType,
 } from 'shared';
 import {
   BadRequestException,
@@ -25,6 +27,7 @@ import { UserFollowing } from '../../db/entities/user-following.entity';
 import { UserRelease } from '../../db/entities/user-release.entity';
 import { User } from '../../db/entities/user.entity';
 import { ImagesService } from '../images/images.service';
+import { NotificationsService } from '../notifications/notifications.service';
 
 export type UserCountType =
   | 'entries'
@@ -41,6 +44,8 @@ export class UsersService {
     @InjectRepository(UserFollowing)
     private userFollowingRepository: Repository<UserFollowing>,
     private imagesService: ImagesService,
+    @Inject(forwardRef(() => NotificationsService))
+    private notificationsService: NotificationsService,
   ) {}
 
   async getUserStats(id: string): Promise<IUserStats> {
@@ -288,6 +293,13 @@ export class UsersService {
   async follow(id: string, currentUserId: string) {
     if (id === currentUserId) throw new BadRequestException();
 
+    const user = await this.usersRepository.findOne({
+      where: { id },
+      select: ['username'],
+    });
+
+    if (!user) throw new NotFoundException();
+
     const check = await this.userFollowingRepository.findOne({
       where: {
         followerId: currentUserId,
@@ -302,6 +314,14 @@ export class UsersService {
     _uf.followingId = id;
 
     await this.userFollowingRepository.save(_uf);
+
+    await this.notificationsService.createNotification({
+      userId: currentUserId,
+      notifyId: id,
+      message: `followed you`,
+      link: getUserPath({ username: user.username }),
+      notificationType: NotificationType.FOLLOW,
+    });
 
     return true;
   }

@@ -7,11 +7,15 @@ import { InjectRepository } from '@nestjs/typeorm';
 import {
   CommentEntityType,
   CreateCommentDto,
+  EntityType,
   FindCommentsDto,
   ICommentsResponse,
+  NotificationType,
 } from 'shared';
 import { Repository } from 'typeorm';
 import { Comment } from '../../db/entities/comment.entity';
+import { EntitiesService } from '../entities/entities.service';
+import { NotificationsService } from '../notifications/notifications.service';
 import { UsersService } from '../users/users.service';
 import { CommentsGateway } from './comments.gateway';
 
@@ -22,15 +26,22 @@ export class CommentsService {
     private commentsRepository: Repository<Comment>,
     private usersService: UsersService,
     private commentsGateway: CommentsGateway,
+    private notificationsService: NotificationsService,
+    private entitiesService: EntitiesService,
   ) {}
 
   async create(
     createCommentDto: CreateCommentDto,
     userId: string,
   ): Promise<Comment> {
+    const { mentionedUsers, updatedText } =
+      await this.notificationsService.extractMentionedUsers(
+        createCommentDto.body.trim(),
+      );
+
     const comment = this.commentsRepository.create({
       ...createCommentDto,
-      body: createCommentDto.body.trim(),
+      body: updatedText,
       user: { id: userId },
     });
 
@@ -42,6 +53,50 @@ export class CommentsService {
       ...savedComment,
       user,
     });
+
+    const path = await this.entitiesService.getEntityPath(
+      savedComment.entityType as unknown as EntityType,
+      savedComment.entityId,
+    );
+
+    const entityOwnerId = await this.entitiesService.getEntityOwnerId(
+      savedComment.entityType as unknown as EntityType,
+      savedComment.entityId,
+    );
+
+    const entityName = this.entitiesService.getEntityName(
+      savedComment.entityType as unknown as EntityType,
+    );
+
+    if (entityOwnerId && entityOwnerId !== userId) {
+      await this.notificationsService.createNotification({
+        userId,
+        notifyId: entityOwnerId,
+        message: `commented on your ${entityName.toLowerCase()}`,
+        link: path,
+        notificationType: NotificationType.COMMENT,
+      });
+    }
+
+    // avoid spam
+    if (mentionedUsers.length < 5) {
+      for (const mentionedUser of mentionedUsers) {
+        const notifyId =
+          await this.entitiesService.getUserIdByUsername(mentionedUser);
+
+        if (notifyId === userId) continue;
+
+        if (notifyId === entityOwnerId) continue;
+
+        await this.notificationsService.createNotification({
+          userId,
+          notifyId,
+          message: `mentioned you in a ${entityName.toLowerCase()} comment`,
+          link: path,
+          notificationType: NotificationType.MENTION,
+        });
+      }
+    }
 
     return savedComment;
   }
@@ -60,9 +115,9 @@ export class CommentsService {
       take: pageSize,
     });
 
-    const users = await this.usersService.getUsersByIds(
-      comments.map((c) => c.userId),
-    );
+    const uniqueUserIds = [...new Set(comments.map((c) => c.userId))];
+
+    const users = await this.usersService.getUsersByIds(uniqueUserIds);
 
     const usersMap = new Map(users.map((u) => [u.id, u]));
 

@@ -26,6 +26,7 @@ import GenrePage from './features/genres/genre-page';
 import { Feedback } from './components/feedback';
 import AppPageWrapper from './layout/app-page-wrapper';
 import { SocketProvider } from './hooks/useSocket';
+import { NotificationProvider } from './hooks/useNotifications';
 
 const UserPageWrapper = lazy(
   () => import('./features/users/user-page-wrapper'),
@@ -51,7 +52,9 @@ const HomePage = lazy(() => import('./home'));
 const EmailNotConfirmedPage = lazy(
   () => import('./features/account/email-not-confirmed-page'),
 );
-const UserProfilePage = lazy(() => import('./features/users/user-profile-page'));
+const UserProfilePage = lazy(
+  () => import('./features/users/user-profile-page'),
+);
 const UserMusicPage = lazy(() => import('./features/users/user-music-page'));
 const UserListsPage = lazy(() => import('./features/users/user-lists-page'));
 const UserReviewsPage = lazy(
@@ -215,7 +218,9 @@ const RootWrapper = () => {
   return (
     <UseAuthProvider>
       <SocketProvider>
-        <Outlet />
+        <NotificationProvider>
+          <Outlet />
+        </NotificationProvider>
       </SocketProvider>
     </UseAuthProvider>
   );

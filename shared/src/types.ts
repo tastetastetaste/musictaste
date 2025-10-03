@@ -2,6 +2,7 @@ import {
   CommentEntityType,
   ContributorStatus,
   ExplicitCoverArt,
+  NotificationType,
   SupporterStatus,
   VoteType,
 } from './enums';
@@ -196,6 +197,20 @@ export interface IComment {
 }
 export interface ICommentsResponse extends IPagination {
   comments: IComment[];
+}
+
+export interface INotification {
+  id: string;
+  user: IUserSummary;
+  notificationType: NotificationType;
+  message: string;
+  link?: string;
+  read: boolean;
+  createdAt: string;
+}
+
+export interface INotificationsResponse extends IPagination {
+  notifications: INotification[];
 }
 
 export type SearchType = 'releases' | 'artists' | 'genres' | 'labels' | 'users';

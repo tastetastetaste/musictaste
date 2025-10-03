@@ -1,4 +1,10 @@
-import { Fragment, useEffect, useState } from 'react';
+import {
+  Fragment,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from 'react';
 import { useForm } from 'react-hook-form';
 import { useInfiniteQuery, useMutation, useQueryClient } from 'react-query';
 import { CommentEntityType, FindCommentsDto, ReportType } from 'shared';
@@ -20,11 +26,16 @@ import Comment from './comment';
 const CreateCommentForm = ({
   entityType,
   entityId,
+  replyTo,
+  onFinish,
 }: {
   entityType: CommentEntityType;
   entityId: string;
+  replyTo?: string;
+  onFinish?: () => void;
 }) => {
   const { snackbar } = useSnackbar();
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const { mutateAsync, isLoading } = useMutation(api.createComment);
   const {
@@ -37,6 +48,21 @@ const CreateCommentForm = ({
       body: '',
     },
   });
+
+  const { ref, ...rest } = register('body');
+
+  useImperativeHandle(ref, () => textareaRef.current);
+
+  useEffect(() => {
+    if (replyTo && textareaRef.current) {
+      const text = `@${replyTo} `;
+      const textLength = text.length;
+      textareaRef.current.value = text;
+      textareaRef.current.focus();
+      // Position cursor at the end of the text
+      textareaRef.current.setSelectionRange(textLength, textLength);
+    }
+  }, [replyTo, textareaRef]);
 
   const submit = async (data: any) => {
     if (!data.body.trim()) {
@@ -51,6 +77,8 @@ const CreateCommentForm = ({
         entityId,
       });
       reset();
+
+      onFinish();
     } catch (error) {
       snackbar('Failed to create comment', { isError: true });
     }
@@ -67,7 +95,8 @@ const CreateCommentForm = ({
     <form onSubmit={handleSubmit(submit)}>
       <Stack gap="sm">
         <Textarea
-          {...register('body', { required: true })}
+          {...rest}
+          ref={textareaRef}
           placeholder="Say something..."
           onKeyDown={handleKeyDown}
         />
@@ -91,6 +120,7 @@ export const Comments = ({
   const { snackbar } = useSnackbar();
 
   const [openReportComment, setOpenReportComment] = useState<string>(null);
+  const [replyTo, setReplyTo] = useState<string | null>(null);
 
   const roomId = `${entityType}:${entityId}`;
 
@@ -183,7 +213,12 @@ export const Comments = ({
   return (
     <Stack gap="md">
       {isLoggedIn ? (
-        <CreateCommentForm entityType={entityType} entityId={entityId} />
+        <CreateCommentForm
+          entityType={entityType}
+          entityId={entityId}
+          replyTo={replyTo}
+          onFinish={() => setReplyTo(null)}
+        />
       ) : (
         <div css={{ padding: '32px 0' }}>
           <Group justify="center">
@@ -207,6 +242,11 @@ export const Comments = ({
                 onRemove={
                   isLoggedIn && me?.id === comment.user.id
                     ? () => handleRemove(comment.id)
+                    : null
+                }
+                onReply={
+                  isLoggedIn && me?.id !== comment.user.id
+                    ? () => setReplyTo(comment.user.username)
                     : null
                 }
               />

@@ -53,6 +53,11 @@ const commentsKey = (entityType: CommentEntityType, entityId: string) => [
   entityId,
 ];
 
+// NOTIFICATIONS
+const notificationsKey = (page?: number) =>
+  ['notifications', page].filter(Boolean);
+const unreadNotificationsCountKey = () => ['notifications', 'unread-count'];
+
 // RELEASE
 const releaseKey = (id: string) => ['releases', id];
 
@@ -270,4 +275,6 @@ export const cacheKeys = {
   musicBrainzReleaseKey,
   searchKey,
   commentsKey,
+  notificationsKey,
+  unreadNotificationsCountKey,
 };

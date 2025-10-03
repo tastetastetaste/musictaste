@@ -28,6 +28,8 @@ import Redis from 'ioredis';
 import { APP_GUARD } from '@nestjs/core';
 import { AdminModule } from './admin/admin.module';
 import { CommentsModule } from './comments/comments.module';
+import { NotificationsModule } from './notifications/notifications.module';
+import { EntitiesModule } from './entities/entities.module';
 
 @Module({
   imports: [
@@ -95,6 +97,8 @@ import { CommentsModule } from './comments/comments.module';
     ReportsModule,
     AdminModule,
     CommentsModule,
+    NotificationsModule,
+    EntitiesModule,
   ],
   controllers: [],
   providers: [

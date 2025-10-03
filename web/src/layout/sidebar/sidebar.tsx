@@ -5,6 +5,7 @@ import { useOnClickOutside } from '../../hooks/useOnClickOutside';
 import { Group } from '../../components/flex/group';
 import { IconButton } from '../../components/icon-button';
 import { IconX } from '@tabler/icons-react';
+import { Typography } from '../../components/typography';
 
 const Overlay = styled.div`
   position: fixed;
@@ -26,7 +27,7 @@ const SidabarBox = styled.div<{ position: 'left' | 'right' }>`
   width: clamp(200px, 320px, 100%);
   max-width: calc(100% - 36px);
   height: 100%;
-  padding: 30px 40px 0px;
+  padding: 25px 25px 0px;
   z-index: 2001;
   top: 0;
   ${({ position }) => (position === 'left' ? 'left: 0;' : 'right: 0;')};
@@ -39,6 +40,7 @@ export interface SidebarProps {
   onClose: any;
   children: JSX.Element;
   position?: 'left' | 'right';
+  title?: string;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -46,6 +48,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   isOpen,
   onClose,
   position = 'left',
+  title,
 }) => {
   const ref = useRef<any>();
 
@@ -56,11 +59,24 @@ export const Sidebar: React.FC<SidebarProps> = ({
   return ReactDOM.createPortal(
     <Overlay>
       <SidabarBox ref={ref} position={position}>
-        <Group justify="end">
-          <IconButton title="close" onClick={onClose}>
-            <IconX />
-          </IconButton>
-        </Group>
+        <div css={{ paddingBottom: '20px' }}>
+          {title ? (
+            <Group justify="apart">
+              <Typography size="title">{title}</Typography>
+              <Group>
+                <IconButton title="close" onClick={onClose}>
+                  <IconX />
+                </IconButton>
+              </Group>
+            </Group>
+          ) : (
+            <Group justify={position === 'left' ? 'end' : 'start'}>
+              <IconButton title="close" onClick={onClose}>
+                <IconX />
+              </IconButton>
+            </Group>
+          )}
+        </div>
         <div
           style={{
             height: '80%',

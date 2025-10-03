@@ -21,14 +21,6 @@ export enum ReleaseType {
   Other = 25,
 }
 
-export enum CommentEntityType {
-  SHOUTBOX = 10,
-  REVIEW = 11,
-  LIST = 12,
-  RELEASE = 20,
-  RELEASE_TRACK = 21,
-}
-
 export enum ExplicitCoverArt {
   NUDITY = 'NUDITY',
   EXPLICIT_SEXUAL_CONTENT = 'EXPLICIT_SEXUAL_CONTENT',
@@ -105,4 +97,31 @@ export enum ReportType {
   REVIEW = 'review',
   LIST = 'list',
   COMMENT = 'comment',
+}
+
+// Entities
+export enum EntityType {
+  USER = 10,
+  REVIEW = 11,
+  LIST = 12,
+  RELEASE = 20,
+  RELEASE_TRACK = 21,
+}
+
+// Comments
+
+export enum CommentEntityType {
+  SHOUTBOX = EntityType.USER,
+  REVIEW = EntityType.REVIEW,
+  LIST = EntityType.LIST,
+  RELEASE = EntityType.RELEASE,
+  RELEASE_TRACK = EntityType.RELEASE_TRACK,
+}
+
+// Notifications
+
+export enum NotificationType {
+  FOLLOW = 10,
+  COMMENT = 20,
+  MENTION = 30,
 }

@@ -1,6 +1,10 @@
 import { keyframes } from '@emotion/react';
 import styled from '@emotion/styled';
-import { IconFlagFilled, IconTrash } from '@tabler/icons-react';
+import {
+  IconFlagFilled,
+  IconTrash,
+  IconArrowBackUp,
+} from '@tabler/icons-react';
 import { IComment, SupporterStatus } from 'shared';
 import { FlexChild } from '../../components/flex/flex-child';
 import { Group } from '../../components/flex/group';
@@ -32,12 +36,14 @@ export interface CommentProps {
   comment: IComment;
   onReport: () => void | null;
   onRemove?: () => void | null;
+  onReply?: () => void | null;
 }
 
 export function Comment({
   comment: { user, body, createdAt },
   onReport,
   onRemove,
+  onReply,
 }: CommentProps) {
   return (
     <Container>
@@ -62,6 +68,11 @@ export function Comment({
               {user.supporter === SupporterStatus.SUPPORTER ? (
                 <SupporterBadge size="sm" />
               ) : null}
+              {onReply && (
+                <IconButton onClick={onReply} title="Reply">
+                  <IconArrowBackUp size={16} />
+                </IconButton>
+              )}
             </Group>
             <Markdown variant="compact">{body}</Markdown>
           </Stack>

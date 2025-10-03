@@ -124,7 +124,7 @@ const AppSidebar = () => {
       <IconButton onClick={() => setOpen(true)} title="sidebar">
         <IconMenu2 />
       </IconButton>
-      <Sidebar isOpen={open} onClose={() => setOpen(false)}>
+      <Sidebar isOpen={open} onClose={() => setOpen(false)} title="Menu">
         <SidebarContent
           closeSidebar={() => setOpen(false)}
           onOpenContactDialog={() => setOpenContactDialog(true)}

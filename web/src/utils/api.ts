@@ -61,6 +61,7 @@ import {
   ICommentsResponse,
   FindCommentsDto,
   CreateCommentDto,
+  INotificationsResponse,
 } from 'shared';
 
 const client = axios.create({
@@ -239,6 +240,19 @@ const createComment = (data: CreateCommentDto) =>
 
 const deleteComment = (id: string) =>
   client.delete(`comments/${id}`).then((res) => res.data);
+
+const getNotifications = (page: number) =>
+  client
+    .get<INotificationsResponse>(`notifications?page=${page}`)
+    .then((res) => res.data);
+
+const getUnreadNotificationsCount = () =>
+  client
+    .get<{ count: number }>('notifications/unread-count')
+    .then((res) => res.data);
+
+const markAllAsRead = () =>
+  client.post('notifications/mark-all-read').then((res) => res.data);
 
 const getUserArtists = (userId: string) =>
   client
@@ -711,6 +725,9 @@ export const api = {
   getComments,
   createComment,
   deleteComment,
+  getNotifications,
+  getUnreadNotificationsCount,
+  markAllAsRead,
   getUserArtists,
   getUserRatingBuckets,
   getUserLabels,

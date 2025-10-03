@@ -8,6 +8,8 @@ import { CONTENT_MAX_WIDTH, CONTENT_PADDING } from './shared';
 import { useTheme } from '@emotion/react';
 import { IconButton } from '../../components/icon-button';
 import { useNavigate } from 'react-router-dom';
+import Notifications from './notifications';
+import { useAuth } from '../../features/account/useAuth';
 
 const StyledHeader = styled.header`
   width: 100%;
@@ -59,6 +61,7 @@ const HomeLink = () => {
 };
 
 const AppHeader = memo(function AppHeaderFu() {
+  const { isLoading, me } = useAuth();
   return (
     <div
       css={{
@@ -80,7 +83,10 @@ const AppHeader = memo(function AppHeaderFu() {
             <AppSidebar />
             <QuickSearch />
           </Group>
-          <UserMenu />
+          <Group gap="sm">
+            {isLoading ? null : me ? <Notifications /> : null}
+            <UserMenu />
+          </Group>
         </StyledHeaderContent>
       </StyledHeader>
     </div>

@@ -29,6 +29,7 @@ import { ReleaseSubmissionVote } from './release-submission-vote.entity';
 import { LabelSubmissionVote } from './label-submission-vote.entity';
 import { GenreSubmissionVote } from './genre-submission-vote.entity';
 import { Comment } from './comment.entity';
+import { Notification } from './notification.entity';
 
 @Entity()
 export class User extends SharedBaseEntity {
@@ -86,6 +87,13 @@ export class User extends SharedBaseEntity {
 
   @OneToMany(() => Comment, (c) => c.user)
   comments: Comment[];
+
+  // Notifications
+  @OneToMany(() => Notification, (n) => n.user)
+  sentNotifications: Notification[];
+
+  @OneToMany(() => Notification, (n) => n.notify)
+  notifications: Notification[];
 
   @OneToMany(() => UserFollowing, (uf) => uf.follower)
   following: UserFollowing[];
