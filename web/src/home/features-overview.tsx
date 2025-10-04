@@ -6,10 +6,10 @@ import {
   IconPalette,
   IconPlaylistAdd,
   IconPlus,
-  IconShieldCheck,
   IconStar,
   IconTags,
   IconUsers,
+  IconUsersGroup,
 } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/button';
@@ -84,9 +84,9 @@ function FeaturesOverview() {
       desc: 'Follow people and see their activity on release pages.',
     },
     {
-      icon: <IconDatabasePlus />,
-      title: 'Contribute Music Data',
-      desc: 'Add artists, labels, releases, and vote on genres.',
+      icon: <IconUsersGroup />,
+      title: 'Community',
+      desc: 'Engage in real-time discussions, mention users, and receive notifications.',
     },
     {
       icon: <IconPalette />,
@@ -94,14 +94,14 @@ function FeaturesOverview() {
       desc: 'Pick from multiple theme presets or customize all colors of the website to your liking.',
     },
     {
+      icon: <IconDatabasePlus />,
+      title: 'Contribute Music Data',
+      desc: 'Add artists, labels, releases, and vote on genres.',
+    },
+    {
       icon: <IconBrandOpenSource />,
       title: 'Open Source',
       desc: 'Report bugs, request features, track issues, and join discussions on GitHub to help shape the future of the platform.',
-    },
-    {
-      icon: <IconShieldCheck />,
-      title: 'No Ads or Tracking',
-      desc: 'Enjoy a clean, privacy‑respecting experience.',
     },
     {
       icon: <IconPlus />,
