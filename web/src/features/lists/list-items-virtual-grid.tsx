@@ -47,7 +47,7 @@ export const ListItemsVirtualGrid: React.FC<{
           const inx = getRowIndexes(n, itemsPerRow, currentItems);
 
           return (
-            <Group justify="start">
+            <Group justify="start" align="start">
               {inx.map((i) => {
                 const page = Math.floor(i / itemsPerPage);
 

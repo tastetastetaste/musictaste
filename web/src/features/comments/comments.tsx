@@ -254,7 +254,7 @@ export const Comments = ({
           </Fragment>
         ))
       ) : (
-        <Feedback message="There are no comments" />
+        <Feedback message="No comments yet" />
       )}
       {!isFetching && hasNextPage && (
         <FetchMoreOnClick handleFetchMore={fetchNextPage} />

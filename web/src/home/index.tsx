@@ -15,7 +15,9 @@ import { updateReviewAfterVote_2 } from '../features/reviews/update-review-after
 import AppPageWrapper from '../layout/app-page-wrapper';
 import { api } from '../utils/api';
 import { cacheKeys } from '../utils/cache-keys';
-import Support from './support';
+// import Support from './support';
+import { Loading } from '../components/loading';
+import { Fragment } from 'react';
 
 const HomePage = () => {
   const queryClient = useQueryClient();
@@ -36,7 +38,10 @@ const HomePage = () => {
     }),
   );
 
-  const { data: newPopularReleasesData } = useQuery(
+  const {
+    data: newPopularReleasesData,
+    isLoading: isLoadingNewPopularReleases,
+  } = useQuery(
     cacheKeys.releasesKey({
       type: FindReleasesType.NewPopular,
       page: 1,
@@ -73,54 +78,65 @@ const HomePage = () => {
         <Link to="/releases/new" size="title-lg">
           New Releases
         </Link>
-        <Grid cols={[2, 6]} gap={RELEASE_GRID_GAP}>
-          {newReleases &&
-            newReleases.map((r) => <Release key={r.id} release={r} />)}
-        </Grid>
-        <Stack gap="lg">
-          <Link to="/reviews/top" size="title-lg">
-            Top Recent Reviews
-          </Link>
-          {reviews && reviews.length === 0 && (
-            <Feedback message="No recent reviews" />
-          )}
-          {reviews &&
-            reviews.map((entry) => (
-              <Review
-                key={entry.id}
-                entry={entry}
-                updateAfterVote={(id, vote) =>
-                  updateReviewAfterVote_2({
-                    id,
-                    vote,
-                    cacheKey: reviewsCacheKey,
-                    queryClient,
-                  })
-                }
-              />
-            ))}
-        </Stack>
-        <Stack gap="lg">
-          <Link to="/lists/new" size="title-lg">
-            Latest Lists
-          </Link>
-          {lists && lists.length === 0 && <Feedback message="No lists yet" />}
-          <Grid cols={[1, 2, 3]} gap={LIST_GRID_PADDING}>
-            {lists &&
-              (lists.length > 6 ? lists.slice(0, 6) : lists).map((list) => (
-                <List key={list.id} list={list} />
-              ))}
+        {isLoadingNewPopularReleases ? (
+          <Loading />
+        ) : (
+          <Grid cols={[2, 6]} gap={RELEASE_GRID_GAP}>
+            {newReleases &&
+              newReleases.map((r) => <Release key={r.id} release={r} />)}
           </Grid>
-        </Stack>
-        <Link to="/releases/recently-added" size="title-lg">
-          Recently Added
-        </Link>
-        <Grid cols={[2, 6]} gap={RELEASE_GRID_GAP}>
-          {recentlyAddedReleases &&
-            recentlyAddedReleases.map((r) => (
-              <Release key={r.id} release={r} />
-            ))}
-        </Grid>
+        )}
+        {/* avoid layout shift */}
+        {!isLoadingNewPopularReleases ? (
+          <Fragment>
+            <Stack gap="lg">
+              <Link to="/reviews/top" size="title-lg">
+                Top Recent Reviews
+              </Link>
+              {reviews && reviews.length === 0 && (
+                <Feedback message="No recent reviews" />
+              )}
+              {reviews &&
+                reviews.map((entry) => (
+                  <Review
+                    key={entry.id}
+                    entry={entry}
+                    updateAfterVote={(id, vote) =>
+                      updateReviewAfterVote_2({
+                        id,
+                        vote,
+                        cacheKey: reviewsCacheKey,
+                        queryClient,
+                      })
+                    }
+                  />
+                ))}
+            </Stack>
+            <Stack gap="lg">
+              <Link to="/lists/new" size="title-lg">
+                Latest Lists
+              </Link>
+              {lists && lists.length === 0 && (
+                <Feedback message="No lists yet" />
+              )}
+              <Grid cols={[1, 2, 3]} gap={LIST_GRID_PADDING}>
+                {lists &&
+                  (lists.length > 6 ? lists.slice(0, 6) : lists).map((list) => (
+                    <List key={list.id} list={list} />
+                  ))}
+              </Grid>
+            </Stack>
+            <Link to="/releases/recently-added" size="title-lg">
+              Recently Added
+            </Link>
+            <Grid cols={[2, 6]} gap={RELEASE_GRID_GAP}>
+              {recentlyAddedReleases &&
+                recentlyAddedReleases.map((r) => (
+                  <Release key={r.id} release={r} />
+                ))}
+            </Grid>
+          </Fragment>
+        ) : null}
       </Stack>
       {/* <Support /> */}
     </AppPageWrapper>
