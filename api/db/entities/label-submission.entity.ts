@@ -1,4 +1,4 @@
-import { IsString } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 import { SubmissionStatus, SubmissionType } from 'shared';
 import {
   Column,
@@ -16,6 +16,10 @@ import { User } from './user.entity';
 export class LabelChanges {
   @IsString()
   name: string;
+
+  @IsString()
+  @IsOptional()
+  nameLatin?: string;
 }
 
 @Entity()

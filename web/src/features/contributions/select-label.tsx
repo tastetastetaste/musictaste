@@ -45,9 +45,9 @@ export const SelectLabel = forwardRef(
         isMulti={true}
         options={
           data?.labels &&
-          data.labels.map(({ id, name }) => ({
+          data.labels.map(({ id, name, nameLatin }) => ({
             value: id,
-            label: name,
+            label: name + (nameLatin ? ` (${nameLatin})` : ''),
           }))
         }
         placeholder="Label"

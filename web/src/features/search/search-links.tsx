@@ -21,7 +21,14 @@ export const ArtistSearchLink = ({ artist }: { artist: IArtistSummary }) => (
 );
 
 export const LabelSearchLink = ({ label }: { label: IArtistSummary }) => (
-  <Link to={getLabelPath({ labelId: label.id })}>{label.name}</Link>
+  <Link to={getLabelPath({ labelId: label.id })}>
+    {label.name}{' '}
+    {label.nameLatin ? (
+      <span css={{ fontStyle: 'italic' }}>[{label.nameLatin}]</span>
+    ) : (
+      ''
+    )}
+  </Link>
 );
 
 export const GenreSearchLink = ({ genre }: { genre: IArtistSummary }) => (

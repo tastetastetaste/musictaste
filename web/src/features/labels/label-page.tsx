@@ -35,6 +35,10 @@ const LabelPage = () => {
           to: '/history/label/' + label?.id,
         },
         {
+          label: 'Edit',
+          to: '/contributions/labels/' + label?.id,
+        },
+        {
           label: 'Report',
           action: () => setOpenReport(true),
         },
@@ -56,6 +60,9 @@ const LabelPage = () => {
             <Typography size="title-xl" as="h1">
               {label.name}
             </Typography>
+            {label.nameLatin && (
+              <Typography size="title-lg">{label.nameLatin}</Typography>
+            )}
           </div>
           <ReleasesListRenderer type={FindReleasesType.New} labelId={id} />
         </Stack>

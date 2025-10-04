@@ -27,6 +27,7 @@ import {
   SubmissionVoteDto,
   UpdateArtistDto,
   UpdateGenreDto,
+  UpdateLabelDto,
   UpdateReleaseDto,
 } from 'shared';
 import { AuthenticatedGuard } from '../auth/Authenticated.guard';
@@ -75,6 +76,21 @@ export class SubmissionsController {
     @CurUser() user: CurrentUserPayload,
   ) {
     return this.submissionsService.createLabelSubmission(createLabelDto, user);
+  }
+
+  @Throttle({ default: { limit: 60, ttl: 1000 * 60 * 60 } })
+  @Post('labels/:labelId')
+  @UseGuards(AuthenticatedGuard)
+  updateLabel(
+    @Param('labelId') labelId: string,
+    @Body() updateLabelDto: UpdateLabelDto,
+    @CurUser() user: CurrentUserPayload,
+  ) {
+    return this.submissionsService.updateLabelSubmission(
+      labelId,
+      updateLabelDto,
+      user,
+    );
   }
 
   @Throttle({ default: { limit: 20, ttl: 1000 * 60 * 60 } })

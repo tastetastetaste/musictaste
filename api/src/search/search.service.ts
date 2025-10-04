@@ -75,9 +75,12 @@ export class SearchService {
       type.includes('labels')
         ? this.labelsRepository
             .createQueryBuilder('label')
-            .select(['label.id', 'label.name'])
+            .select(['label.id', 'label.name', 'label.nameLatin'])
             .where('label.name ilike :name', {
               name: `${q}%`,
+            })
+            .orWhere('label.nameLatin ilike :nameLatin', {
+              nameLatin: `${q}%`,
             })
             .take(take)
             .skip(skip)

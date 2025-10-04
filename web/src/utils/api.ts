@@ -62,6 +62,7 @@ import {
   FindCommentsDto,
   CreateCommentDto,
   INotificationsResponse,
+  UpdateLabelDto,
 } from 'shared';
 
 const client = axios.create({
@@ -423,6 +424,9 @@ const createLabel = (data: CreateLabelDto) =>
     .post<ICreateLabelResponse>('submissions/labels', data)
     .then((res) => res.data);
 
+const updateLabel = ({ id, data }: { id: string; data: UpdateLabelDto }) =>
+  client.post('submissions/labels/' + id, data).then((res) => res.data);
+
 const createRelease = (data: CreateReleaseDto) =>
   client
     .post<ICreateReleaseResponse>('submissions/releases', data, {
@@ -705,6 +709,7 @@ export const api = {
   createArtist,
   updateArtist,
   createLabel,
+  updateLabel,
   getLanguages,
   login,
   signup,

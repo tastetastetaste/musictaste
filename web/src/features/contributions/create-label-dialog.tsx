@@ -20,6 +20,7 @@ const CreateLabelDialog: React.FC<{
 
   const defaultValues = {
     name: '',
+    nameLatin: '',
   };
   const {
     handleSubmit,
@@ -57,6 +58,11 @@ const CreateLabelDialog: React.FC<{
         <Stack gap="sm">
           <Input placeholder="Name" {...register('name')} />
           <FormInputError error={errors.name} />
+          <Input
+            placeholder="English / Latin-script name (if applicable)"
+            {...register('nameLatin')}
+          />
+          <FormInputError error={errors.nameLatin} />
           <Button variant="main" type="submit" disabled={isLoading}>
             Submit
           </Button>

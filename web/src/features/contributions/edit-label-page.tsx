@@ -1,0 +1,145 @@
+import { classValidatorResolver } from '@hookform/resolvers/class-validator';
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { useMutation, useQuery } from 'react-query';
+import { useNavigate, useParams } from 'react-router-dom';
+import { UpdateLabelDto, SubmissionStatus } from 'shared';
+import { Button } from '../../components/button';
+import { Container } from '../../components/containers/container';
+import { Group } from '../../components/flex/group';
+import { Stack } from '../../components/flex/stack';
+import { FormInputError } from '../../components/inputs/form-input-error';
+import { Input } from '../../components/inputs/input';
+import { Textarea } from '../../components/inputs/textarea';
+import { Link } from '../../components/links/link';
+import { Typography } from '../../components/typography';
+import AppPageWrapper from '../../layout/app-page-wrapper';
+import { api } from '../../utils/api';
+import { cacheKeys } from '../../utils/cache-keys';
+import { useSnackbar } from '../../hooks/useSnackbar';
+
+const EditLabelPage = () => {
+  const { id: labelId } = useParams();
+  const defaultValues = {
+    name: '',
+    nameLatin: '',
+    note: '',
+  };
+
+  const {
+    handleSubmit,
+    register,
+    reset,
+    formState: { isSubmitSuccessful, errors },
+  } = useForm<UpdateLabelDto>({
+    resolver: classValidatorResolver(
+      UpdateLabelDto,
+      {},
+      {
+        rawValues: true,
+      },
+    ),
+    defaultValues,
+  });
+
+  const navigate = useNavigate();
+
+  const { snackbar } = useSnackbar();
+
+  const {
+    mutateAsync: updateLabel,
+    isLoading,
+    data,
+  } = useMutation(api.updateLabel, {
+    onSuccess: ({ message }) => {
+      reset(defaultValues);
+      snackbar(message || 'Changes submitted successfully');
+
+      navigate(`/label/${labelId}`);
+    },
+  });
+
+  const { data: labelData, isLoading: isLabelLoading } = useQuery(
+    cacheKeys.labelKey(labelId),
+    () => api.getLabel(labelId!),
+    {
+      enabled: !!labelId,
+    },
+  );
+
+  const { data: openSubmissionData, isLoading: isOpenSubmissionLoading } =
+    useQuery(
+      cacheKeys.labelSubmissionsKey({
+        labelId,
+        page: 1,
+        status: SubmissionStatus.OPEN,
+      }),
+      () =>
+        api.getLabelSubmissions({
+          page: 1,
+          labelId,
+          status: SubmissionStatus.OPEN,
+        }),
+    );
+
+  useEffect(() => {
+    if (labelData) {
+      reset({
+        ...defaultValues,
+        name: labelData.label.name,
+        nameLatin: labelData.label.nameLatin || '',
+      });
+    }
+  }, [labelData]);
+
+  const openSubmission = openSubmissionData?.labels?.[0] || null;
+
+  return (
+    <AppPageWrapper title="Edit Label">
+      <Container>
+        <form
+          onSubmit={handleSubmit((data) => updateLabel({ id: labelId, data }))}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+            }
+          }}
+        >
+          <Stack gap="sm">
+            <Group justify="apart" align="center" wrap>
+              <Typography size="title-lg">Edit Label</Typography>
+              <Link to="/contributing">
+                Need help? Read the Contributing Guide.
+              </Link>
+            </Group>
+            <Input placeholder="Name" {...register('name')} />
+            <FormInputError error={errors.name} />
+            <Input
+              placeholder="Name (Latin script)"
+              {...register('nameLatin')}
+            />
+            <FormInputError error={errors.nameLatin} />
+            <Textarea
+              {...register('note')}
+              placeholder="Note/source"
+              rows={5}
+            />
+            <FormInputError error={errors.note} />
+            <Button
+              variant="main"
+              type="submit"
+              disabled={
+                isLoading || isOpenSubmissionLoading || !!openSubmission
+              }
+            >
+              Submit
+            </Button>
+          </Stack>
+        </form>
+        <div>{data?.message && <Typography>{data.message}</Typography>}</div>
+      </Container>
+    </AppPageWrapper>
+  );
+};
+
+export default EditLabelPage;

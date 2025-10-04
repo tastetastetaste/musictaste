@@ -17,6 +17,7 @@ import {
   SubmissionField,
   SubmissionItemWrapper,
 } from './submission-item';
+import { Markdown } from '../../components/markdown';
 
 class LabelSubmissionListOutletContext {
   status?: SubmissionStatus;
@@ -52,6 +53,22 @@ export const LabelSubmissionItem = ({
         showOriginal={hasOriginal}
         renderValue={(v) => <span>{v}</span>}
       />
+      <SubmissionField
+        label="Name (Latin)"
+        originalValue={original?.nameLatin}
+        changedValue={changes?.nameLatin}
+        showOriginal={hasOriginal}
+        renderValue={(v) => <span>{v}</span>}
+      />
+      {submission.note && (
+        <SubmissionField
+          label="Note"
+          originalValue={undefined}
+          changedValue={submission.note}
+          showOriginal={false}
+          renderValue={(v) => <Markdown>{v}</Markdown>}
+        />
+      )}
     </SubmissionItemWrapper>
   );
 };

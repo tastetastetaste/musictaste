@@ -1,7 +1,13 @@
 import styled from '@emotion/styled';
 import { Fragment } from 'react';
 import { LinkProps } from 'react-router-dom';
-import { ExplicitCoverArt, IArtistSummary, IReleaseSummary } from 'shared';
+import {
+  ExplicitCoverArt,
+  getLabelPath,
+  IArtistSummary,
+  ILabelSummary,
+  IReleaseSummary,
+} from 'shared';
 import { CardLink } from '../../../components/links/card-link';
 import { Link } from '../../../components/links/link';
 import { Typography } from '../../../components/typography';
@@ -128,22 +134,26 @@ export const ArtistsLinks = ({ artists }: { artists: IArtistSummary[] }) => {
   );
 };
 
-export const LabelsLinks = ({
-  links,
-}: {
-  links: { label: string; href: string }[];
-}) => {
+export const LabelsLinks = ({ labels }: { labels: ILabelSummary[] }) => {
   return (
     <Typography color="sub">
-      {links.map(({ label, href }, i) => (
-        <Fragment key={href}>
+      {labels.map(({ id, name, nameLatin }, i) => (
+        <Fragment key={id}>
           {i > 0 && ', '}
-          <Link to={href}>{label}</Link>
+          <Link to={getLabelPath({ labelId: id })}>
+            {name}{' '}
+            {nameLatin ? (
+              <span css={{ fontStyle: 'italic' }}>[{nameLatin}]</span>
+            ) : (
+              ''
+            )}
+          </Link>
         </Fragment>
       ))}
     </Typography>
   );
 };
+
 export const GenresLinks = ({
   links,
 }: {

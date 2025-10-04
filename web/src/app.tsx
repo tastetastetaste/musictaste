@@ -128,6 +128,9 @@ const ReleaseRatingsPage = lazy(
 const EditArtistPage = lazy(
   () => import('./features/contributions/edit-artist-page'),
 );
+const EditLabelPage = lazy(
+  () => import('./features/contributions/edit-label-page'),
+);
 const AddReleasePage = lazy(
   () => import('./features/contributions/add-release-page'),
 );
@@ -644,6 +647,16 @@ const router = createBrowserRouter([
           <AuthRequiredPage>
             <Suspense fallback={<Fallback />}>
               <EditArtistPage />
+            </Suspense>
+          </AuthRequiredPage>
+        ),
+      },
+      {
+        path: 'contributions/labels/:id',
+        element: (
+          <AuthRequiredPage>
+            <Suspense fallback={<Fallback />}>
+              <EditLabelPage />
             </Suspense>
           </AuthRequiredPage>
         ),

@@ -210,6 +210,24 @@ export class CreateLabelDto {
   @IsString()
   @MinLength(1)
   name: string;
+
+  @IsString()
+  @IsOptional()
+  nameLatin?: string;
+}
+
+export class UpdateLabelDto {
+  @IsString()
+  @MinLength(1)
+  name: string;
+
+  @IsString()
+  @IsOptional()
+  nameLatin?: string;
+
+  @IsString()
+  @MinLength(1)
+  note: string;
 }
 
 export class CreateGenreDto {

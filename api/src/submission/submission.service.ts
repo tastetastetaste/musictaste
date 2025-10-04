@@ -26,6 +26,7 @@ import {
   SubmissionType,
   UpdateArtistDto,
   UpdateGenreDto,
+  UpdateLabelDto,
   UpdateReleaseDto,
   VoteType,
 } from 'shared';
@@ -192,7 +193,7 @@ export class SubmissionService {
   // --- LABELS
 
   async createLabelSubmission(
-    { name }: CreateLabelDto,
+    { name, nameLatin }: CreateLabelDto,
     user: CurrentUserPayload,
   ) {
     if (user.contributorStatus === ContributorStatus.NOT_A_CONTRIBUTOR)
@@ -200,7 +201,7 @@ export class SubmissionService {
         "You can't submit contributions at this time",
       );
     const labelSubmission = new LabelSubmission();
-    labelSubmission.changes = { name };
+    labelSubmission.changes = { name, nameLatin };
     labelSubmission.submissionType = SubmissionType.CREATE;
     labelSubmission.submissionStatus =
       user.contributorStatus >= ContributorStatus.EDITOR
@@ -224,9 +225,63 @@ export class SubmissionService {
     };
   }
 
+  async updateLabelSubmission(
+    labelId: string,
+    { name, nameLatin, note }: UpdateLabelDto,
+    user: CurrentUserPayload,
+  ) {
+    if (user.contributorStatus === ContributorStatus.NOT_A_CONTRIBUTOR)
+      throw new BadRequestException(
+        "You can't submit contributions at this time",
+      );
+
+    const label = await this.labelsRepository.findOne({
+      where: { id: labelId },
+    });
+
+    if (!label) throw new NotFoundException();
+
+    const exist = await this.labelSubmissionRepository.findOne({
+      where: {
+        labelId,
+        submissionStatus: SubmissionStatus.OPEN,
+      },
+    });
+
+    if (exist) {
+      throw new BadRequestException(
+        'There is already an open edit submission for this label',
+      );
+    }
+
+    const as = new LabelSubmission();
+    as.labelId = labelId;
+    as.changes = { name, nameLatin };
+    as.original = { name: label.name, nameLatin: label.nameLatin };
+    as.submissionType = SubmissionType.UPDATE;
+    as.submissionStatus = SubmissionStatus.OPEN;
+    as.userId = user.id;
+    as.note = note;
+
+    await this.labelSubmissionRepository.save(as);
+
+    return {
+      message: `Label "${name}" is awaiting approval`,
+      labelSubmission: as,
+    };
+  }
+
   private async applyLabelSubmission(submission: LabelSubmission) {
     if (submission.submissionType === SubmissionType.CREATE) {
+      console.log('create label submission', submission.changes);
       const label = await this.labelsService.createLabel(submission.changes);
+
+      return label;
+    } else if (submission.submissionType === SubmissionType.UPDATE) {
+      const label = await this.labelsService.updateLabel({
+        labelId: submission.labelId,
+        changes: submission.changes,
+      });
 
       return label;
     } else {

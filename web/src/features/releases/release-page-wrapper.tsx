@@ -112,12 +112,7 @@ const ReleaseInfo: React.FC<{
           </Typography>
           {/* <Typography>{labelStr}</Typography> */}
 
-          <LabelsLinks
-            links={labels.map((a) => ({
-              label: a.name,
-              href: getLabelPath({ labelId: a.id }),
-            }))}
-          />
+          <LabelsLinks labels={labels} />
         </Group>
       ) : null}
       <Group gap={5}>

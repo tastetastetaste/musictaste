@@ -8,6 +8,9 @@ export class Label extends SharedBaseEntity {
   @Column()
   name: string;
 
+  @Column({ nullable: true })
+  nameLatin?: string;
+
   @OneToMany(() => ReleaseLabel, (rl) => rl.label)
   releaseConnection: Promise<ReleaseLabel[]>;
 
