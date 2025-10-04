@@ -269,11 +269,11 @@ export class UsersService {
     );
 
     if (currentUser.username !== updateUserProfileInput.username) {
-    // Update username in all user sessions
-    await this.redisService.updateUserSessionsUsername(
+      // Update username in all user sessions
+      await this.redisService.updateUserSessionsUsername(
         currentUser.id,
-      updateUserProfileInput.username,
-    );
+        updateUserProfileInput.username,
+      );
     }
     return true;
   }
@@ -304,15 +304,8 @@ export class UsersService {
     return true;
   }
 
-  async follow(id: string, currentUserId: string) {
+  async follow(id: string, currentUserId: string, currentUserUsername: string) {
     if (id === currentUserId) throw new BadRequestException();
-
-    const user = await this.usersRepository.findOne({
-      where: { id },
-      select: ['username'],
-    });
-
-    if (!user) throw new NotFoundException();
 
     const check = await this.userFollowingRepository.findOne({
       where: {
@@ -333,7 +326,7 @@ export class UsersService {
       userId: currentUserId,
       notifyId: id,
       message: `followed you`,
-      link: getUserPath({ username: user.username }),
+      link: getUserPath({ username: currentUserUsername }),
       notificationType: NotificationType.FOLLOW,
     });
 

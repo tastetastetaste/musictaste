@@ -89,8 +89,12 @@ export class UsersController {
   }
   @Post(':id/following')
   @UseGuards(AuthenticatedGuard)
-  follow(@Param('id') id: string, @CurUser('id') currentUserId: string) {
-    return this.usersService.follow(id, currentUserId);
+  follow(
+    @Param('id') id: string,
+    @CurUser('id') currentUserId: string,
+    @CurUser('username') currentUserUsername: string,
+  ) {
+    return this.usersService.follow(id, currentUserId, currentUserUsername);
   }
   @Delete(':id/following')
   @UseGuards(AuthenticatedGuard)
