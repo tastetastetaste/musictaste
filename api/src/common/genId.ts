@@ -1,5 +1,5 @@
 import { nanoid } from 'nanoid';
 
 export const genId = () => {
-  return nanoid(12);
+  return nanoid(13);
 };

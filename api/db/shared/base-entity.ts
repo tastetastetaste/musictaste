@@ -1,5 +1,5 @@
-import { nanoid } from 'nanoid';
 import { BeforeInsert, PrimaryColumn } from 'typeorm';
+import { genId } from '../../src/common/genId';
 
 export abstract class SharedBaseEntity {
   @PrimaryColumn()
@@ -7,6 +7,6 @@ export abstract class SharedBaseEntity {
 
   @BeforeInsert()
   beforeInsert() {
-    this.id = nanoid(12);
+    this.id = genId();
   }
 }
