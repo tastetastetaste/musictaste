@@ -77,4 +77,61 @@ export class RedisService {
 
     await multi.exec();
   }
+
+  async updateUserSessionsField(userId: string, field: string, value: string) {
+    const sessionKey = `${this.userSessionIdPrefix}${userId}`;
+    const sessionIds = await this.client.lrange(sessionKey, 0, -1);
+
+    if (sessionIds.length === 0) {
+      return;
+    }
+
+    const multi = this.client.multi();
+
+    sessionIds.forEach((sessionId) => {
+      const sessionDataKey = `${this.userSessionPrefix}${sessionId}`;
+      // Get session data
+      multi.get(sessionDataKey);
+    });
+
+    const results = await multi.exec();
+
+    if (!results) return;
+
+    const updateMulti = this.client.multi();
+
+    sessionIds.forEach((sessionId, index) => {
+      const sessionDataKey = `${this.userSessionPrefix}${sessionId}`;
+      const sessionData = results[index][1] as string;
+
+      if (sessionData) {
+        try {
+          const parsedSession = JSON.parse(sessionData);
+          if (parsedSession.passport?.user) {
+            parsedSession.passport.user[field] = value;
+            updateMulti.set(sessionDataKey, JSON.stringify(parsedSession));
+          }
+        } catch (error) {
+          // Skip
+        }
+      }
+    });
+
+    await updateMulti.exec();
+  }
+
+  async updateUserSessionsUsername(userId: string, newUsername: string) {
+    return this.updateUserSessionsField(userId, 'username', newUsername);
+  }
+
+  async updateUserSessionsContributorStatus(
+    userId: string,
+    newContributorStatus: string,
+  ) {
+    return this.updateUserSessionsField(
+      userId,
+      'contributorStatus',
+      newContributorStatus,
+    );
+  }
 }

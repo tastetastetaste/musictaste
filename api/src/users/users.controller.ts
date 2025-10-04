@@ -103,10 +103,10 @@ export class UsersController {
   updateProfile(
     @Param('id') id: string,
     @Body() updateUserProfileDto: UpdateUserProfileDto,
-    @CurUser('id') currentUserId: string,
+    @CurUser() currentUser: CurrentUserPayload,
   ) {
-    if (id !== currentUserId) throw new UnauthorizedException();
-    return this.usersService.updateProfile(id, updateUserProfileDto);
+    if (id !== currentUser.id) throw new UnauthorizedException();
+    return this.usersService.updateProfile(currentUser, updateUserProfileDto);
   }
 
   @Patch(':id/update-preferences')

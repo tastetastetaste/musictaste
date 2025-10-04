@@ -28,6 +28,8 @@ import { UserRelease } from '../../db/entities/user-release.entity';
 import { User } from '../../db/entities/user.entity';
 import { ImagesService } from '../images/images.service';
 import { NotificationsService } from '../notifications/notifications.service';
+import { RedisService } from '../redis/redis.service';
+import { CurrentUserPayload } from '../auth/session.serializer';
 
 export type UserCountType =
   | 'entries'
@@ -46,6 +48,7 @@ export class UsersService {
     private imagesService: ImagesService,
     @Inject(forwardRef(() => NotificationsService))
     private notificationsService: NotificationsService,
+    private redisService: RedisService,
   ) {}
 
   async getUserStats(id: string): Promise<IUserStats> {
@@ -255,12 +258,23 @@ export class UsersService {
   }
 
   async updateProfile(
-    id: string,
+    currentUser: CurrentUserPayload,
     updateUserProfileInput: UpdateUserProfileDto,
   ) {
     updateUserProfileInput.username =
       updateUserProfileInput.username.toLowerCase();
-    await this.usersRepository.update({ id }, updateUserProfileInput);
+    await this.usersRepository.update(
+      { id: currentUser.id },
+      updateUserProfileInput,
+    );
+
+    if (currentUser.username !== updateUserProfileInput.username) {
+    // Update username in all user sessions
+    await this.redisService.updateUserSessionsUsername(
+        currentUser.id,
+      updateUserProfileInput.username,
+    );
+    }
     return true;
   }
 

@@ -25,7 +25,11 @@ export class AdminService {
       contributorStatus: status,
     });
 
-    await this.redisService.removeUserSessions(userId);
+    // Update contributorStatus in all user sessions
+    await this.redisService.updateUserSessionsContributorStatus(
+      userId,
+      status.toString(),
+    );
 
     return true;
   }
