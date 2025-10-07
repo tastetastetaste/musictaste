@@ -48,7 +48,7 @@ const NotificationItem = ({
           <Link to={getUserPath({ username: notification.user.username })}>
             <Avatar
               alt={notification.user.username}
-              src={notification.user.image.sm}
+              src={notification.user.image?.sm}
             />
           </Link>
         </FlexChild>
