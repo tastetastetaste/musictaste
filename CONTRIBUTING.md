@@ -2,11 +2,15 @@
 
 ### Table of Contents
 
-- [Overview](#overview)
-- [Getting Started](#getting-started)
-- [Useful Tips](#useful-tips)
-- [Commit Message Guidelines](#pull-request-naming--commit-message-guidelines)
-- [Questions](#questions)
+- [Contributing](#contributing)
+  - [Table of Contents](#table-of-contents)
+  - [Overview](#overview)
+  - [Getting Started](#getting-started)
+    - [Using GitHub](#using-github)
+    - [Setting up local development environment](#setting-up-local-development-environment)
+  - [Useful Tips](#useful-tips)
+  - [Pull Request Naming \& Commit Message Guidelines](#pull-request-naming--commit-message-guidelines)
+  - [Questions](#questions)
 
 ## Overview
 
@@ -51,42 +55,65 @@ You can either make changes directly on GitHub or set up the project locally.
 
 ### Setting up local development environment
 
-1. Ensure that you have the following installed on your system:
+1. **Install basic requirements:**
 
-   - PostgreSQL
-   - Redis
+   Ensure that you have the following installed on your system:
+
    - Node.js
    - pnpm
 
-2. Fork and Clone the Repository
+2. **Fork and Clone the Repository**
 
    - Fork the repository on GitHub
    - Clone the forked repository to your local machine
 
-3. **Set up environment variables:**
+3. **Set up database services:**
+
+   You can either install PostgreSQL and Redis locally or use the provided Docker Compose setup for easier development.
+
+   **Option A: Using Docker (Recommended)**
+
+   A Docker Compose definition is available at `/api/docker-compose.yml` that includes PostgreSQL, Redis, Minio (local S3 storage), and Mailpit (local SMTP server).
+
+   ```bash
+   docker compose -f api/docker-compose.yml up -d
+   ```
+
+   To stop the services:
+
+   ```bash
+   docker compose -f api/docker-compose.yml down
+   ```
+
+   **Option B: Local installation**
+
+   Install and configure PostgreSQL and Redis on your system.
+
+4. **Set up environment variables:**
 
    - Copy `/api/.env.example` to `/api/.env`.
    - Fill in the environment variables with your configuration.
+   - If you're using the Docker Compose setup, the default values are already configured.
 
-4. **Install dependencies:**
+5. **Install dependencies:**
 
    ```bash
    pnpm install
    ```
 
-5. **Build shared packages:**
+6. **Build shared packages:**
 
    ```bash
    pnpm build
    ```
 
-6. **Start the server in development mode:**
+7. **Start the API server in development mode:**
 
    ```bash
    pnpm api dev
    ```
 
-7. **Start the web application in development mode:**
+8. **Start the web application in development mode:**
 
    ```bash
    pnpm web dev
