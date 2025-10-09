@@ -3,6 +3,7 @@ import {
   ArrayMinSize,
   IsArray,
   IsEmail,
+  IsEmpty,
   IsEnum,
   IsInt,
   IsNumber,
@@ -13,6 +14,7 @@ import {
   Min,
   MinLength,
   registerDecorator,
+  ValidateIf,
   ValidateNested,
   ValidationOptions,
 } from 'class-validator';
@@ -99,11 +101,18 @@ class TrackDto {
   durationMs?: number;
 }
 
+const latinCharactersOnlyRegex = /^[a-zA-Z0-9\s\-'.]*$/;
+
 export class CreateReleaseDto {
   @IsString()
   @MinLength(1)
   title: string;
 
+  @ValidateIf((o) => latinCharactersOnlyRegex.test(o.title))
+  @IsEmpty({
+    message:
+      'Latin title should only be used when the original title contains non-Latin characters',
+  })
   @IsString()
   @IsOptional()
   titleLatin?: string;
@@ -147,6 +156,11 @@ export class UpdateReleaseDto {
   @MinLength(1)
   title: string;
 
+  @ValidateIf((o) => latinCharactersOnlyRegex.test(o.title))
+  @IsEmpty({
+    message:
+      'Latin title should only be used when the original title contains non-Latin characters',
+  })
   @IsString()
   @IsOptional()
   titleLatin?: string;
@@ -188,6 +202,11 @@ export class CreateArtistDto {
   @MinLength(1)
   name: string;
 
+  @ValidateIf((o) => latinCharactersOnlyRegex.test(o.name))
+  @IsEmpty({
+    message:
+      'Latin name should only be used when the original name contains non-Latin characters',
+  })
   @IsString()
   @IsOptional()
   nameLatin?: string;
@@ -198,6 +217,11 @@ export class UpdateArtistDto {
   @MinLength(1)
   name: string;
 
+  @ValidateIf((o) => latinCharactersOnlyRegex.test(o.name))
+  @IsEmpty({
+    message:
+      'Latin name should only be used when the original name contains non-Latin characters',
+  })
   @IsString()
   @IsOptional()
   nameLatin?: string;
@@ -212,6 +236,11 @@ export class CreateLabelDto {
   @MinLength(1)
   name: string;
 
+  @ValidateIf((o) => latinCharactersOnlyRegex.test(o.name))
+  @IsEmpty({
+    message:
+      'Latin name should only be used when the original name contains non-Latin characters',
+  })
   @IsString()
   @IsOptional()
   nameLatin?: string;
@@ -222,6 +251,11 @@ export class UpdateLabelDto {
   @MinLength(1)
   name: string;
 
+  @ValidateIf((o) => latinCharactersOnlyRegex.test(o.name))
+  @IsEmpty({
+    message:
+      'Latin name should only be used when the original name contains non-Latin characters',
+  })
   @IsString()
   @IsOptional()
   nameLatin?: string;
