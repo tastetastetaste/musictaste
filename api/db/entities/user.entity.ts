@@ -11,6 +11,7 @@ import {
   ExplicitCoverArt,
   SupporterStatus,
   UpdateUserThemeDto,
+  AccountStatus,
 } from 'shared';
 import { ArtistSubmission } from './artist-submission.entity';
 import { SharedBaseEntity } from '../shared/base-entity';
@@ -55,8 +56,12 @@ export class User extends SharedBaseEntity {
   @Column('int', { default: ContributorStatus.CONTRIBUTOR })
   contributorStatus: ContributorStatus;
 
+  // Deprecated
   @Column('boolean', { default: false })
   confirmed: boolean;
+
+  @Column('int', { default: AccountStatus.NOT_CONFIRMED })
+  accountStatus: AccountStatus;
 
   @Column('simple-array', { nullable: true })
   allowExplicitCoverArt?: ExplicitCoverArt[];

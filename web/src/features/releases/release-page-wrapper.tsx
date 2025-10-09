@@ -5,9 +5,10 @@ import { Outlet, useParams } from 'react-router-dom';
 import {
   CommentEntityType,
   ExplicitCoverArt,
+  getGenrePath,
   IReleaseCover,
   IReleaseResponse,
-  IUser,
+  IUserSummary,
   ReportType,
 } from 'shared';
 import { Feedback } from '../../components/feedback';
@@ -24,7 +25,6 @@ import { SOMETHING_WENT_WRONG } from '../../static/feedback';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
 import { formatExactDate, getYearFromDate } from '../../utils/date-format';
-import { getGenrePath, getLabelPath } from 'shared';
 import { useAuth } from '../account/useAuth';
 import { Comments } from '../comments/comments';
 import { RatingCircle } from '../ratings/rating';
@@ -201,7 +201,11 @@ const FollowingSection: React.FC<{
   );
 };
 
-const ReleaseContributors = ({ contributors }: { contributors: IUser[] }) => {
+const ReleaseContributors = ({
+  contributors,
+}: {
+  contributors: IUserSummary[];
+}) => {
   return (
     <div
       css={{

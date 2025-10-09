@@ -5,6 +5,7 @@ import { useAuth } from './useAuth';
 import AppPageWrapper from '../../layout/app-page-wrapper';
 import { Container } from '../../components/containers/container';
 import { CONTACT_EMAIL, SITE_NAME } from '../../static/site-info';
+import { AccountStatus } from 'shared';
 
 const message = `# Welcome to ${SITE_NAME}!
 Thank you for signing up and becoming a member.
@@ -19,7 +20,7 @@ const EmailNotConfirmedPage = () => {
 
   const navigate = useNavigate();
   useEffect(() => {
-    if (me && me.confirmed) {
+    if (me && me.accountStatus === AccountStatus.CONFIRMED) {
       navigate('/', { replace: true });
     }
   }, [me, navigate]);

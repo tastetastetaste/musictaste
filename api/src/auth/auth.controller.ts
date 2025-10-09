@@ -12,9 +12,9 @@ import {
 import { AuthService } from './auth.service';
 import { AuthenticatedGuard } from './Authenticated.guard';
 import { LocalAuthGuard } from './local-auth.guard';
-import { LoginDto, SignupDto } from 'shared';
-import { RedisService } from '../redis/redis.service';
+import { LoginDto, SignupDto, AccountStatus } from 'shared';
 import { Throttle } from '@nestjs/throttler';
+import { RedisService } from '../redis/redis.service';
 
 @Controller('auth')
 export class AuthController {
@@ -55,11 +55,10 @@ export class AuthController {
     const userId = await this.authService.confirmEmail(token);
 
     if (userId) {
-      if (req.session.passport?.user) {
-        req.session.passport.user.confirmed = true;
-      } else {
-        this.redisService.removeUserSessions(userId);
-      }
+      this.redisService.updateUserSessionsAccountStatus(
+        userId,
+        AccountStatus.CONFIRMED,
+      );
 
       return true;
     }

@@ -1,14 +1,13 @@
 import { ThemeProvider, useTheme } from '@emotion/react';
-import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { IUser } from 'shared';
+import { IUserSummary } from 'shared';
 
 export const UserThemeProvider = ({
   children,
   user,
 }: {
   children: React.ReactNode;
-  user: IUser;
+  user: IUserSummary;
 }) => {
   const theme = useTheme();
   // use location state to avoid flashing while loading

@@ -56,6 +56,8 @@ import {
   UpdateUserPreferencesDto,
   UpdateUserThemeDto,
   UpdateUserSupporterStatusDto,
+  UpdateAccountStatusDto,
+  SendNotificationDto,
   VoteType,
   UpdateUserProfileDto,
   ICommentsResponse,
@@ -696,6 +698,12 @@ const updateUserContributorStatus = (data: UpdateUserContributorStatusDto) =>
 const updateUserSupporterStatus = (data: UpdateUserSupporterStatusDto) =>
   client.patch('admin/user/supporter-status', data).then((res) => res.data);
 
+const updateAccountStatus = (data: UpdateAccountStatusDto) =>
+  client.patch('admin/user/account-status', data).then((res) => res.data);
+
+const sendNotification = (data: SendNotificationDto) =>
+  client.post('admin/user/notification', data).then((res) => res.data);
+
 const findUsers = (type: FindUsersType) => {
   return client
     .get<IUsersResponse>(`users?${type ? `type=${type}` : ''}`)
@@ -799,5 +807,7 @@ export const api = {
   report,
   updateUserContributorStatus,
   updateUserSupporterStatus,
+  updateAccountStatus,
+  sendNotification,
   findUsers,
 };

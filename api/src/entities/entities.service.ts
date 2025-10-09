@@ -12,6 +12,13 @@ import { List } from '../../db/entities/list.entity';
 import { Release } from '../../db/entities/release.entity';
 import { UserRelease } from '../../db/entities/user-release.entity';
 import { User } from '../../db/entities/user.entity';
+import { UserReleaseTag } from '../../db/entities/user-release-tag.entity';
+import { ReviewVote } from '../../db/entities/review-vote.entity';
+import { ListLike } from '../../db/entities/list-like.entity';
+import { Comment } from '../../db/entities/comment.entity';
+import { Notification } from '../../db/entities/notification.entity';
+import { UserFollowing } from '../../db/entities/user-following.entity';
+import { ReleaseGenreVote } from '../../db/entities/release-genre-vote.entity';
 
 @Injectable()
 export class EntitiesService {
@@ -24,6 +31,20 @@ export class EntitiesService {
     private listsRepository: Repository<List>,
     @InjectRepository(Release)
     private releasesRepository: Repository<Release>,
+    @InjectRepository(UserReleaseTag)
+    private userReleaseTagRepository: Repository<UserReleaseTag>,
+    @InjectRepository(ReviewVote)
+    private reviewVoteRepository: Repository<ReviewVote>,
+    @InjectRepository(ListLike)
+    private listLikeRepository: Repository<ListLike>,
+    @InjectRepository(Comment)
+    private commentRepository: Repository<Comment>,
+    @InjectRepository(Notification)
+    private notificationRepository: Repository<Notification>,
+    @InjectRepository(UserFollowing)
+    private userFollowingRepository: Repository<UserFollowing>,
+    @InjectRepository(ReleaseGenreVote)
+    private releaseGenreVoteRepository: Repository<ReleaseGenreVote>,
   ) {}
 
   async getEntityOwnerId(
@@ -111,5 +132,28 @@ export class EntitiesService {
       select: ['id'],
     });
     return user ? user.id : null;
+  }
+
+  // Removes all associated data with a user account (except for submissions and submission votes).
+  async removeUserData(userId: string): Promise<void> {
+    await this.userReleasesRepository.delete({ userId });
+
+    await this.userReleaseTagRepository.delete({ userId });
+
+    await this.listsRepository.delete({ userId });
+
+    await this.reviewVoteRepository.delete({ userId });
+
+    await this.listLikeRepository.delete({ userId });
+
+    await this.commentRepository.delete({ userId });
+
+    await this.notificationRepository.delete({ userId });
+    await this.notificationRepository.delete({ notifyId: userId });
+
+    await this.userFollowingRepository.delete({ followerId: userId });
+    await this.userFollowingRepository.delete({ followingId: userId });
+
+    await this.releaseGenreVoteRepository.delete({ userId });
   }
 }

@@ -78,7 +78,7 @@ export class RedisService {
     await multi.exec();
   }
 
-  async updateUserSessionsField(userId: string, field: string, value: string) {
+  async updateUserSessionsField(userId: string, field: string, value: any) {
     const sessionKey = `${this.userSessionIdPrefix}${userId}`;
     const sessionIds = await this.client.lrange(sessionKey, 0, -1);
 
@@ -126,12 +126,16 @@ export class RedisService {
 
   async updateUserSessionsContributorStatus(
     userId: string,
-    newContributorStatus: string,
+    newContributorStatus: number,
   ) {
     return this.updateUserSessionsField(
       userId,
       'contributorStatus',
       newContributorStatus,
     );
+  }
+
+  async updateUserSessionsAccountStatus(userId: string, newStatus: number) {
+    return this.updateUserSessionsField(userId, 'accountStatus', newStatus);
   }
 }

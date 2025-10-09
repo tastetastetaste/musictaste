@@ -3,9 +3,16 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../../db/entities/user.entity';
 import { RedisService } from '../redis/redis.service';
+import { EntitiesService } from '../entities/entities.service';
+import { NotificationsService } from '../notifications/notifications.service';
 import {
   UpdateUserContributorStatusDto,
   UpdateUserSupporterStatusDto,
+  UpdateAccountStatusDto,
+  SendNotificationDto,
+  NotificationType,
+  AccountStatus,
+  SupporterStatus,
 } from 'shared';
 
 @Injectable()
@@ -14,6 +21,8 @@ export class AdminService {
     @InjectRepository(User)
     private userRepository: Repository<User>,
     private redisService: RedisService,
+    private entitiesService: EntitiesService,
+    private notificationsService: NotificationsService,
   ) {}
 
   async updateUserContributorStatus(
@@ -26,10 +35,7 @@ export class AdminService {
     });
 
     // Update contributorStatus in all user sessions
-    await this.redisService.updateUserSessionsContributorStatus(
-      userId,
-      status.toString(),
-    );
+    await this.redisService.updateUserSessionsContributorStatus(userId, status);
 
     return true;
   }
@@ -45,6 +51,48 @@ export class AdminService {
     });
 
     // await this.redisService.removeUserSessions(userId);
+
+    return true;
+  }
+
+  async updateAccountStatus(updateAccountStatusDto: UpdateAccountStatusDto) {
+    const { userId, status } = updateAccountStatusDto;
+
+    const updateData: Partial<User> = {
+      accountStatus: status,
+    };
+
+    if (status === AccountStatus.BANNED || status === AccountStatus.DELETED) {
+      await this.entitiesService.removeUserData(userId);
+      await this.redisService.removeUserSessions(userId);
+      updateData.imagePath = null;
+      updateData.bio = null;
+      updateData.allowExplicitCoverArt = null;
+      updateData.supporter = SupporterStatus.NOT_A_SUPPORTER;
+      updateData.supporterStartDate = null;
+      updateData.theme = null;
+    } else {
+      await this.redisService.updateUserSessionsAccountStatus(userId, status);
+    }
+
+    await this.userRepository.update(userId, updateData);
+
+    return true;
+  }
+
+  async sendNotification(
+    sendNotificationDto: SendNotificationDto,
+    senderId: string,
+  ) {
+    const { userId, message, link } = sendNotificationDto;
+
+    await this.notificationsService.createNotification({
+      userId: senderId,
+      notifyId: userId,
+      notificationType: NotificationType.OTHER,
+      message,
+      link,
+    });
 
     return true;
   }

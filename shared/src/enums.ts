@@ -3,6 +3,14 @@ export enum VoteType {
   UP = 1,
 }
 
+export enum AccountStatus {
+  NOT_CONFIRMED = 10,
+  CONFIRMED = 20,
+  WARNED = 50,
+  BANNED = 80,
+  DELETED = 100,
+}
+
 export enum ReleaseType {
   LP = 1,
   EP = 2,
@@ -121,6 +129,7 @@ export enum CommentEntityType {
 // Notifications
 
 export enum NotificationType {
+  OTHER = 0,
   FOLLOW = 10,
   COMMENT = 20,
   MENTION = 30,

@@ -1,6 +1,7 @@
 import {
   Controller,
   Patch,
+  Post,
   Body,
   UseGuards,
   UnauthorizedException,
@@ -13,6 +14,8 @@ import {
   ContributorStatus,
   UpdateUserContributorStatusDto,
   UpdateUserSupporterStatusDto,
+  UpdateAccountStatusDto,
+  SendNotificationDto,
 } from 'shared';
 
 @Controller('admin')
@@ -47,5 +50,31 @@ export class AdminController {
     return this.adminService.updateUserSupporterStatus(
       updateUserSupporterStatusDto,
     );
+  }
+
+  @Patch('user/account-status')
+  @UseGuards(AuthenticatedGuard)
+  updateAccountStatus(
+    @Body() updateAccountStatusDto: UpdateAccountStatusDto,
+    @CurUser() user: CurrentUserPayload,
+  ) {
+    if (user.contributorStatus !== ContributorStatus.ADMIN) {
+      throw new UnauthorizedException();
+    }
+
+    return this.adminService.updateAccountStatus(updateAccountStatusDto);
+  }
+
+  @Post('user/notification')
+  @UseGuards(AuthenticatedGuard)
+  sendNotification(
+    @Body() sendNotificationDto: SendNotificationDto,
+    @CurUser() user: CurrentUserPayload,
+  ) {
+    if (user.contributorStatus !== ContributorStatus.ADMIN) {
+      throw new UnauthorizedException();
+    }
+
+    return this.adminService.sendNotification(sendNotificationDto, user.id);
   }
 }

@@ -1,18 +1,4 @@
 import {
-  IUser,
-  IUserStats,
-  UpdateUserProfileDto,
-  UpdateUserPreferencesDto,
-  ContributorStatus,
-  FindUsersType,
-  IUsersResponse,
-  UpdateUserThemeDto,
-  IUserSummary,
-  SupporterStatus,
-  getUserPath,
-  NotificationType,
-} from 'shared';
-import {
   BadRequestException,
   forwardRef,
   Inject,
@@ -21,15 +7,30 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import {
+  ContributorStatus,
+  ExplicitCoverArt,
+  FindUsersType,
+  getUserPath,
+  IUser,
+  IUsersResponse,
+  IUserStats,
+  IUserSummary,
+  NotificationType,
+  SupporterStatus,
+  UpdateUserPreferencesDto,
+  UpdateUserProfileDto,
+  UpdateUserThemeDto,
+} from 'shared';
 import { In, Repository } from 'typeorm';
 import { List } from '../../db/entities/list.entity';
 import { UserFollowing } from '../../db/entities/user-following.entity';
 import { UserRelease } from '../../db/entities/user-release.entity';
 import { User } from '../../db/entities/user.entity';
+import { CurrentUserPayload } from '../auth/session.serializer';
 import { ImagesService } from '../images/images.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { RedisService } from '../redis/redis.service';
-import { CurrentUserPayload } from '../auth/session.serializer';
 
 export type UserCountType =
   | 'entries'
@@ -109,7 +110,9 @@ export class UsersService {
     return result;
   }
 
-  async getCurrentUserById(id: string): Promise<IUser> {
+  async getCurrentUserById(
+    id: string,
+  ): Promise<IUser & { allowExplicitCoverArt?: ExplicitCoverArt[] }> {
     const user = await this.usersRepository.findOne({
       select: [
         'id',
@@ -120,6 +123,7 @@ export class UsersService {
         'imagePath',
         'contributorStatus',
         'supporter',
+        'accountStatus',
         'allowExplicitCoverArt',
       ],
       where: {
@@ -130,6 +134,7 @@ export class UsersService {
     return {
       ...user,
       image: this.imagesService.getUserImage(user.imagePath),
+      allowExplicitCoverArt: user.allowExplicitCoverArt,
     };
   }
   async getUserById(id: string): Promise<IUser> {
@@ -143,6 +148,7 @@ export class UsersService {
         'imagePath',
         'contributorStatus',
         'supporter',
+        'accountStatus',
       ],
       where: {
         id,
@@ -195,6 +201,7 @@ export class UsersService {
         'imagePath',
         'contributorStatus',
         'supporter',
+        'accountStatus',
       ],
       where: {
         username: username.toLowerCase(),

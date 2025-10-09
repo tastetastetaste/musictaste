@@ -10,7 +10,7 @@ import { RedisService } from '../redis/redis.service';
 import { MailService } from '../mail/mail.service';
 import { nanoid } from 'nanoid';
 import { ConfigService } from '@nestjs/config';
-import { LoginDto, SignupDto } from 'shared';
+import { AccountStatus, LoginDto, SignupDto } from 'shared';
 import { User } from '../../db/entities/user.entity';
 
 @Injectable()
@@ -32,13 +32,22 @@ export class AuthService {
         'name',
         'contributorStatus',
         'supporter',
-        'confirmed',
+        'accountStatus',
       ],
     });
 
     if (!user) {
       throw new UnauthorizedException('Could not find user with that email');
     }
+
+    if (user.accountStatus === AccountStatus.BANNED) {
+      throw new UnauthorizedException('Account is banned');
+    }
+
+    if (user.accountStatus === AccountStatus.DELETED) {
+      throw new UnauthorizedException('Account is deleted');
+    }
+
     const valid = await bcrypt.compare(password, user.password);
 
     if (!valid) {
@@ -101,7 +110,7 @@ export class AuthService {
     await this.usersRepository
       .createQueryBuilder()
       .update(User)
-      .set({ confirmed: true })
+      .set({ accountStatus: AccountStatus.CONFIRMED })
       .where('id = :id', { id: userId })
       .execute();
 

@@ -29,6 +29,7 @@ import {
   SubmissionSortByEnum,
   SubmissionStatus,
   SupporterStatus,
+  AccountStatus,
   VoteType,
 } from './enums';
 
@@ -349,6 +350,25 @@ export class UpdateUserSupporterStatusDto {
   @Type(() => Number)
   @IsEnum(SupporterStatus)
   supporter: SupporterStatus;
+}
+
+export class UpdateAccountStatusDto {
+  @IsString()
+  userId: string;
+  @Type(() => Number)
+  @IsEnum(AccountStatus)
+  status: AccountStatus;
+}
+
+export class SendNotificationDto {
+  @IsString()
+  userId: string;
+  @IsString()
+  @MinLength(1)
+  message: string;
+  @IsOptional()
+  @IsString()
+  link?: string;
 }
 
 export class FindUsersDto {

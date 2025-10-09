@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ISearchResponse } from 'shared';
+import { AccountStatus, ISearchResponse } from 'shared';
 import { Repository } from 'typeorm';
 import { Artist } from '../../db/entities/artist.entity';
 import { Genre } from '../../db/entities/genre.entity';
@@ -107,12 +107,14 @@ export class SearchService {
               'u.imagePath',
               'u.supporter',
               'u.contributorStatus',
+              'u.accountStatus',
             ])
-            .where('u.username ilike :username', {
+            .where('(u.username ilike :username OR u.name ilike :name)', {
               username: `${q}%`,
-            })
-            .orWhere('u.name ilike :name', {
               name: `${q}%`,
+            })
+            .andWhere('u.accountStatus NOT IN (:...excludedStatuses)', {
+              excludedStatuses: [AccountStatus.BANNED, AccountStatus.DELETED],
             })
             .take(take)
             .skip(skip)

@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { PassportSerializer } from '@nestjs/passport';
-import { ContributorStatus } from 'shared';
+import { ContributorStatus, AccountStatus } from 'shared';
 import { User } from '../../db/entities/user.entity';
 
 export class CurrentUserPayload {
   id: string;
   username: string;
-  confirmed: boolean;
+  accountStatus: AccountStatus;
   contributorStatus: ContributorStatus;
 }
 
@@ -22,7 +22,7 @@ export class SessionSerializer extends PassportSerializer {
     done(null, {
       id: user.id,
       username: user.username,
-      confirmed: user.confirmed,
+      accountStatus: user.accountStatus,
       contributorStatus: user.contributorStatus,
     });
   }

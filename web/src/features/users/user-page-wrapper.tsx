@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useMutation, useQuery } from 'react-query';
 import { Outlet, useParams } from 'react-router-dom';
-import { IUserProfileResponse, ReportType } from 'shared';
+import { AccountStatus, IUserProfileResponse, ReportType } from 'shared';
 import { Feedback } from '../../components/feedback';
 import { Stack } from '../../components/flex/stack';
 import { Loading } from '../../components/loading';
@@ -13,6 +13,7 @@ import { useAuth } from '../account/useAuth';
 import { ReportDialog } from '../reports/report-dialog';
 import { UserThemeProvider } from '../theme/user-theme-provider';
 import { UserOverview } from './user-overview';
+import { Typography } from '../../components/typography';
 
 export type UserPageOutletContext = {
   isUserMyself: boolean;
@@ -39,6 +40,14 @@ const UserPageWrapper: React.FC = () => {
 
   const { mutate: updateSupporterStatusMutation } = useMutation(
     api.updateUserSupporterStatus,
+  );
+
+  const { mutate: updateAccountStatusMutation } = useMutation(
+    api.updateAccountStatus,
+  );
+
+  const { mutate: sendNotificationMutation } = useMutation(
+    api.sendNotification,
   );
 
   const updateContributorStatus = () => {
@@ -71,6 +80,44 @@ const UserPageWrapper: React.FC = () => {
         {
           onSuccess: () => {
             alert('Updated');
+          },
+        },
+      );
+    }
+  };
+
+  const updateAccountStatus = () => {
+    const status = prompt(
+      '10=Not Confirmed, 20=Confirmed, 50=Warned, 80=Banned, 100=Deleted',
+    );
+    if (status) {
+      updateAccountStatusMutation(
+        {
+          userId: data.user.id,
+          status: parseInt(status),
+        },
+        {
+          onSuccess: () => {
+            alert('Updated');
+          },
+        },
+      );
+    }
+  };
+
+  const sendNotification = () => {
+    const message = prompt('Notification message:');
+    if (message) {
+      const link = prompt('Link:');
+      sendNotificationMutation(
+        {
+          userId: data.user.id,
+          message,
+          link,
+        },
+        {
+          onSuccess: () => {
+            alert('Notification sent');
           },
         },
       );
@@ -110,14 +157,32 @@ const UserPageWrapper: React.FC = () => {
                   label: 'Supporter Status',
                   action: updateSupporterStatus,
                 },
+                {
+                  label: 'Account Status',
+                  action: updateAccountStatus,
+                },
+                {
+                  label: 'Send Notification',
+                  action: sendNotification,
+                },
               ]
             : []),
         ]}
         image={data.user.image?.md}
       >
         <Stack>
-          <UserOverview user={data} isUserMyself={isUserMyself} />
-          <Outlet context={{ ...data, isUserMyself }} />
+          <UserOverview
+            user={data}
+            isUserMyself={isUserMyself}
+            accountStatus={data.user.accountStatus}
+          />
+          {data.user.accountStatus === AccountStatus.DELETED ? (
+            <Typography>This account has been deleted.</Typography>
+          ) : data.user.accountStatus === AccountStatus.BANNED ? (
+            <Typography>This account has been banned.</Typography>
+          ) : (
+            <Outlet context={{ ...data, isUserMyself }} />
+          )}
         </Stack>
         <ReportDialog
           isOpen={openReport}

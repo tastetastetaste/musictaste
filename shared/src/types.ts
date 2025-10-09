@@ -4,6 +4,7 @@ import {
   ExplicitCoverArt,
   NotificationType,
   SupporterStatus,
+  AccountStatus,
   VoteType,
 } from './enums';
 
@@ -258,6 +259,7 @@ export interface IUser {
   theme?: IUserTheme;
   supporter: SupporterStatus;
   contributorStatus: ContributorStatus;
+  accountStatus: AccountStatus;
 }
 
 export interface IUserImage {
@@ -267,10 +269,11 @@ export interface IUserImage {
 }
 
 export interface ICurrentUserResponse {
-  user: IUser & {
-    confirmed: boolean;
-    allowExplicitCoverArt?: ExplicitCoverArt[];
-  };
+  user:
+    | (IUser & {
+        allowExplicitCoverArt?: ExplicitCoverArt[];
+      })
+    | null;
 }
 
 export interface IUsersResponse {

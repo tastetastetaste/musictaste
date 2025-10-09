@@ -3,11 +3,7 @@ import {
   IconUserMinus,
   IconUserPlus,
 } from '@tabler/icons-react';
-import {
-  ContributorStatus,
-  IUserProfileResponse,
-  SupporterStatus,
-} from 'shared';
+import { AccountStatus, IUserProfileResponse, SupporterStatus } from 'shared';
 import { api } from '../../utils/api';
 import { useMutation, useQueryClient } from 'react-query';
 import { Group } from '../../components/flex/group';
@@ -93,6 +89,7 @@ const ImageSize = 230;
 interface OverviewSectionProps {
   user: IUserProfileResponse;
   isUserMyself: boolean;
+  accountStatus: AccountStatus;
 }
 
 export const UserOverview: React.FC<OverviewSectionProps> = ({
@@ -110,6 +107,7 @@ export const UserOverview: React.FC<OverviewSectionProps> = ({
     },
   },
   isUserMyself,
+  accountStatus,
 }) => {
   const { isLoggedIn } = useAuth();
   return (
@@ -151,7 +149,10 @@ export const UserOverview: React.FC<OverviewSectionProps> = ({
               <SupporterBadge size="lg" />
             ) : null}
           </Group>
-          {isLoggedIn && !isUserMyself && (
+          {accountStatus !== AccountStatus.DELETED &&
+          accountStatus !== AccountStatus.BANNED &&
+          isLoggedIn &&
+          !isUserMyself ? (
             <Group align="center">
               <FollowAction
                 userId={id}
@@ -159,49 +160,52 @@ export const UserOverview: React.FC<OverviewSectionProps> = ({
                 following={following}
               />
             </Group>
-          )}
+          ) : null}
           {followedBy && <Typography>Follows you</Typography>}
         </Stack>
       </Group>
-      <Navigation
-        links={[
-          {
-            to: `${getUserPath({ username })}`,
-            asPath: '/[username]',
-            label: 'Profile',
-          },
-          {
-            to: `${getUserPath({ username })}/music`,
-            asPath: '/[username]/music',
-            label: 'Music',
-            count: entriesCount || undefined,
-          },
-          {
-            to: `${getUserPath({ username })}/reviews`,
-            asPath: '/[username]/reviews',
-            label: 'Reviews',
-            count: reviewsCount || undefined,
-          },
-          {
-            to: `${getUserPath({ username })}/lists`,
-            asPath: '/[username]/lists',
-            label: 'Lists',
-            count: listsCount || undefined,
-          },
-          {
-            to: `${getUserPath({ username })}/followers`,
-            asPath: '/[username]/followers',
-            label: 'Followers',
-            count: followersCount || undefined,
-          },
-          {
-            to: `${getUserPath({ username })}/following`,
-            asPath: '/[username]/following',
-            label: 'Following',
-            count: followingCount || undefined,
-          },
-        ]}
-      />
+      {accountStatus !== AccountStatus.DELETED &&
+        accountStatus !== AccountStatus.BANNED && (
+          <Navigation
+            links={[
+              {
+                to: `${getUserPath({ username })}`,
+                asPath: '/[username]',
+                label: 'Profile',
+              },
+              {
+                to: `${getUserPath({ username })}/music`,
+                asPath: '/[username]/music',
+                label: 'Music',
+                count: entriesCount || undefined,
+              },
+              {
+                to: `${getUserPath({ username })}/reviews`,
+                asPath: '/[username]/reviews',
+                label: 'Reviews',
+                count: reviewsCount || undefined,
+              },
+              {
+                to: `${getUserPath({ username })}/lists`,
+                asPath: '/[username]/lists',
+                label: 'Lists',
+                count: listsCount || undefined,
+              },
+              {
+                to: `${getUserPath({ username })}/followers`,
+                asPath: '/[username]/followers',
+                label: 'Followers',
+                count: followersCount || undefined,
+              },
+              {
+                to: `${getUserPath({ username })}/following`,
+                asPath: '/[username]/following',
+                label: 'Following',
+                count: followingCount || undefined,
+              },
+            ]}
+          />
+        )}
     </Stack>
   );
 };

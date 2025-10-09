@@ -40,14 +40,10 @@ export class UsersController {
         user: null,
       };
 
-    const u = await this.usersService.getCurrentUserById(currentUser.id);
+    const user = await this.usersService.getCurrentUserById(currentUser.id);
 
     return {
-      user: {
-        ...u,
-        confirmed: currentUser.confirmed,
-        contributorStatus: currentUser.contributorStatus,
-      },
+      user,
     };
   }
 

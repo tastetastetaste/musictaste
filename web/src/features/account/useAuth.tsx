@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect } from 'react';
 import { useQuery } from 'react-query';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { ContributorStatus, ICurrentUserResponse } from 'shared';
+import { ContributorStatus, ICurrentUserResponse, AccountStatus } from 'shared';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
 
@@ -41,7 +41,11 @@ export const UseAuthProvider: React.FC<{
 
   const user = data?.user;
   useEffect(() => {
-    if (user && !user.confirmed && pathname !== '/confirm') {
+    if (
+      user &&
+      user.accountStatus === AccountStatus.NOT_CONFIRMED &&
+      pathname !== '/confirm'
+    ) {
       navigate('/confirm');
     }
   }, [navigate, pathname, user]);

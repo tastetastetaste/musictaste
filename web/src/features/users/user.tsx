@@ -1,4 +1,4 @@
-import { ContributorStatus, IUser, SupporterStatus } from 'shared';
+import { ContributorStatus, IUserSummary, SupporterStatus } from 'shared';
 import { getUserPath } from 'shared';
 import { Avatar } from './avatar';
 import { CardLink } from '../../components/links/card-link';
@@ -9,7 +9,7 @@ import { Typography } from '../../components/typography';
 import { SupporterBadge } from '../../components/badge/supporter-badge';
 
 interface IUserItemProps {
-  user: IUser;
+  user: IUserSummary;
   avatarOnly?: boolean;
   isLarge?: boolean;
 }
