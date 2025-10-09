@@ -27,6 +27,7 @@ import { Feedback } from './components/feedback';
 import AppPageWrapper from './layout/app-page-wrapper';
 import { SocketProvider } from './hooks/useSocket';
 import { NotificationProvider } from './hooks/useNotifications';
+import RulesPage from './docs/rules';
 
 const UserPageWrapper = lazy(
   () => import('./features/users/user-page-wrapper'),
@@ -989,6 +990,14 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<Fallback />}>
             <ContributingPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'rules',
+        element: (
+          <Suspense fallback={<Fallback />}>
+            <RulesPage />
           </Suspense>
         ),
       },

@@ -43,6 +43,7 @@ const SidebarContent = ({
     { to: '/lists/new', label: 'Lists', exact: false },
     { to: '/theme', label: 'Theme', exact: true },
     { to: '/contributing', label: 'Contributing', exact: true },
+    { to: '/rules', label: 'Rules', exact: true },
   ];
 
   if (canVoteOnSubmissions) {
