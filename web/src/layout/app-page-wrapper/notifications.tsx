@@ -45,7 +45,10 @@ const NotificationItem = ({
     >
       <Group gap="md" align="center">
         <FlexChild basis="50px" grow={0} shrink={0}>
-          <Link to={getUserPath({ username: notification.user.username })}>
+          <Link
+            to={getUserPath({ username: notification.user.username })}
+            onClick={(e) => e.stopPropagation()}
+          >
             <Avatar
               alt={notification.user.username}
               src={notification.user.image?.sm}
@@ -53,7 +56,10 @@ const NotificationItem = ({
           </Link>
         </FlexChild>
         <Typography>
-          <Link to={getUserPath({ username: notification.user.username })}>
+          <Link
+            to={getUserPath({ username: notification.user.username })}
+            onClick={(e) => e.stopPropagation()}
+          >
             {notification.user.name}
           </Link>{' '}
           {notification.message}{' '}
@@ -124,7 +130,7 @@ const NotificationsSidebarContent = ({ onClose }: { onClose: () => void }) => {
   useEffect(() => {
     return () => {
       // mark all as read on unmount
-      if (!unreadCountIsFetching && unreadCount.count) markAllAsRead();
+      if (!unreadCountIsFetching && unreadCount?.count) markAllAsRead();
     };
   }, [unreadCount, unreadCountIsFetching]);
 
