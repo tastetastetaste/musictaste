@@ -78,11 +78,13 @@ export class CommentsService {
       });
     }
 
-    // avoid spam
-    if (mentionedUsers.length < 5) {
+    // max 50 mentions
+    if (mentionedUsers.length < 50) {
       for (const mentionedUser of mentionedUsers) {
         const notifyId =
           await this.entitiesService.getUserIdByUsername(mentionedUser);
+
+        if (!notifyId) continue;
 
         if (notifyId === userId) continue;
 

@@ -52,6 +52,11 @@ export class NotificationsService {
         mentionedUsers: [],
       };
     }
+
+    // mentions without duplicates
+    const mentionedUsers = Array.from(
+      new Set(mentions.map((mention) => mention.replace('@', ''))),
+    );
     return {
       // replace mentions with markdown relative links e.g. @username -> [@username](/username)
       updatedText: text.replace(
@@ -59,7 +64,7 @@ export class NotificationsService {
         (mention) =>
           `[${mention}](${getUserPath({ username: mention.replace('@', '') })})`,
       ),
-      mentionedUsers: mentions.map((mention) => mention.replace('@', '')),
+      mentionedUsers,
     };
   }
 
