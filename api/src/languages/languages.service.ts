@@ -11,7 +11,11 @@ export class LanguagesService {
   ) {}
 
   async getAll() {
-    const languages = await this.langugaeRepository.find();
+    const languages = await this.langugaeRepository.find({
+      order: {
+        name: 'ASC',
+      },
+    });
 
     return { languages };
   }
