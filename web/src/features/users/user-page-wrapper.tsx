@@ -143,10 +143,14 @@ const UserPageWrapper: React.FC = () => {
             label: 'Contributions',
             to: `/${data.user.username}/contributions/releases`,
           },
-          {
-            label: 'Report',
-            action: () => setOpenReport(true),
-          },
+          ...(!isUserMyself
+            ? [
+                {
+                  label: 'Report',
+                  action: () => setOpenReport(true),
+                },
+              ]
+            : []),
           ...(isAdmin
             ? [
                 {
