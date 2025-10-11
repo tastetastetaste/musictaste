@@ -22,20 +22,20 @@ import {
   SITE_NAME,
   TWITTER_URL,
 } from '../../static/site-info';
-import { Sidebar } from './sidebar';
+import { Sidebar } from '../../components/sidebar';
 import { useAuth } from '../../features/account/useAuth';
 import { Markdown } from '../../components/markdown';
+import { useNavigate } from 'react-router-dom';
 
 const SidebarContent = ({
   closeSidebar,
-  onOpenSupportDialog,
   onOpenContactDialog,
 }: {
   closeSidebar: any;
-  onOpenSupportDialog: any;
   onOpenContactDialog: any;
 }) => {
   const { canVoteOnSubmissions } = useAuth();
+  const navigate = useNavigate();
   const links = [
     { to: '/', label: 'Home', exact: true },
     { to: '/releases/new', label: 'Releases', exact: false },
@@ -92,7 +92,7 @@ const SidebarContent = ({
             </IconButton>
           </Group>
           <Button onClick={onOpenContactDialog}>Contact</Button>
-          <Button onClick={onOpenSupportDialog} variant="highlight">
+          <Button onClick={() => navigate('/support-us')} variant="highlight">
             Support us
           </Button>
 
@@ -118,7 +118,6 @@ const SidebarContent = ({
 const AppSidebar = () => {
   const [open, setOpen] = useState(false);
   const [openContactDialog, setOpenContactDialog] = useState(false);
-  const [openSupportDialog, setOpenSupportDialog] = useState(false);
 
   return (
     <Fragment>
@@ -129,7 +128,6 @@ const AppSidebar = () => {
         <SidebarContent
           closeSidebar={() => setOpen(false)}
           onOpenContactDialog={() => setOpenContactDialog(true)}
-          onOpenSupportDialog={() => setOpenSupportDialog(true)}
         />
       </Sidebar>
       <Dialog
@@ -141,28 +139,6 @@ const AppSidebar = () => {
         We're always happy to hear from you!
         <Button onClick={() => window.open(`mailto:${CONTACT_EMAIL}`)}>
           {CONTACT_EMAIL}
-        </Button>
-      </Dialog>
-      <Dialog
-        isOpen={openSupportDialog}
-        onClose={() => setOpenSupportDialog(false)}
-        title="Thank you for considering supporting MusicTaste!"
-      >
-        <Markdown>
-          {`Your donation will allow us to put more time, effort, and resources into this project. You will also be making the website better for everyone!
-
-You will get the following for one year:
-- Supporter badge
-- The ability to specify custom profile theme colors that appear on your profile and in your full page reviews and lists
-- More supporter only features as they are added
-
-Donations are made through our Ko-fi page`}
-        </Markdown>
-        <Button
-          onClick={() => window.open(KOFI_LINK, '_blank')}
-          variant="highlight"
-        >
-          Donate
         </Button>
       </Dialog>
     </Fragment>

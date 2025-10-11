@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
 import { memo } from 'react';
 import { Group } from '../../components/flex/group';
-import AppSidebar from '../sidebar';
+import AppSidebar from '../app-sidebar';
 import UserMenu from './user-menu';
 import { QuickSearch } from '../../features/search/quick-search';
 import { CONTENT_MAX_WIDTH, CONTENT_PADDING } from './shared';

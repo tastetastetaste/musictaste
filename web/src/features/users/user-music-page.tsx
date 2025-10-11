@@ -9,7 +9,7 @@ import { Group } from '../../components/flex/group';
 import { Stack } from '../../components/flex/stack';
 import { Loading } from '../../components/loading';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
-import { Sidebar } from '../../layout/sidebar/sidebar';
+import { Sidebar } from '../../components/sidebar';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
 import UserMusicFilters from './user-music-filters';

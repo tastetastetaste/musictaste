@@ -165,6 +165,9 @@ const ConfirmEmailPage = lazy(
 );
 const SearchUserPage = lazy(() => import('./features/search/search-user-page'));
 const ContributingPage = lazy(() => import('./docs/contributing'));
+const SupportUsPage = lazy(
+  () => import('./features/supporters/support-us-page'),
+);
 
 const ReleaseSubmissionsList = lazy(
   () => import('./features/contributions/release-submission-list'),
@@ -998,6 +1001,14 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<Fallback />}>
             <RulesPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'support-us',
+        element: (
+          <Suspense fallback={<Fallback />}>
+            <SupportUsPage />
           </Suspense>
         ),
       },

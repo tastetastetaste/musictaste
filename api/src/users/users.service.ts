@@ -362,7 +362,7 @@ export class UsersService {
     if (type === FindUsersType.Supporter) {
       qb.where('u.supporter = :supporter', {
         supporter: SupporterStatus.SUPPORTER,
-      }).orderBy('u.createdAt', 'DESC');
+      }).orderBy('u.supporterStartDate', 'DESC');
     } else if (type === FindUsersType.Trusted) {
       qb.where('u.contributorStatus = :status', {
         status: ContributorStatus.TRUSTED_CONTRIBUTOR,

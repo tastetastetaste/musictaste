@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient } from 'react-query';
-import { EntriesSortByEnum, FindReleasesType } from 'shared';
+import { EntriesSortByEnum, FindReleasesType, SupporterStatus } from 'shared';
 import { Feedback } from '../components/feedback';
 import { Grid } from '../components/flex/grid';
 import { Stack } from '../components/flex/stack';
@@ -15,7 +15,7 @@ import { updateReviewAfterVote_2 } from '../features/reviews/update-review-after
 import AppPageWrapper from '../layout/app-page-wrapper';
 import { api } from '../utils/api';
 import { cacheKeys } from '../utils/cache-keys';
-// import Support from './support';
+import Support from '../features/supporters/support';
 import { Loading } from '../components/loading';
 import { Fragment } from 'react';
 
@@ -86,9 +86,10 @@ const HomePage = () => {
               newReleases.map((r) => <Release key={r.id} release={r} />)}
           </Grid>
         )}
-        {/* avoid layout shift */}
+        {/* minimize layout shift */}
         {!isLoadingNewPopularReleases ? (
           <Fragment>
+            <Support />
             <Stack gap="lg">
               <Link to="/reviews/top" size="title-lg">
                 Top Recent Reviews
@@ -138,7 +139,6 @@ const HomePage = () => {
           </Fragment>
         ) : null}
       </Stack>
-      {/* <Support /> */}
     </AppPageWrapper>
   );
 };

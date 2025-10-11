@@ -20,7 +20,7 @@ import { useNotifications } from '../../hooks/useNotifications';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
 import { Stack } from '../../components/flex/stack';
-import { Sidebar } from '../sidebar/sidebar';
+import { Sidebar } from '../../components/sidebar';
 import { IconButton } from '../../components/icon-button';
 import { formatRelativeTimeShort } from '../../utils/date-format';
 

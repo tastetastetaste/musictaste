@@ -2,10 +2,10 @@ import styled from '@emotion/styled';
 import { useRef } from 'react';
 import ReactDOM from 'react-dom';
 import { useOnClickOutside } from '../../hooks/useOnClickOutside';
-import { Group } from '../../components/flex/group';
-import { IconButton } from '../../components/icon-button';
+import { Group } from '../flex/group';
+import { IconButton } from '../icon-button';
 import { IconX } from '@tabler/icons-react';
-import { Typography } from '../../components/typography';
+import { Typography } from '../typography';
 
 const Overlay = styled.div`
   position: fixed;
