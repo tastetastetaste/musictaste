@@ -2,6 +2,7 @@ import { classValidatorResolver } from '@hookform/resolvers/class-validator';
 import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useMutation } from 'react-query';
+import { useNavigate } from 'react-router-dom';
 import { CreateReleaseDto, ExplicitCoverArt, getReleasePath } from 'shared';
 import { Button } from '../../components/button';
 import { Container } from '../../components/containers/container';
@@ -49,6 +50,8 @@ export interface CreateReleaseFormValues extends CreateReleaseDto {
   languages: { label: string; value: string }[];
 }
 const AddReleasePage = () => {
+  const navigate = useNavigate();
+
   const [importMessage, setImportMessage] = useState('');
   const [importLoading, setImportLoading] = useState(false);
 
@@ -119,11 +122,22 @@ const AddReleasePage = () => {
     setImportLoading(false);
   };
 
+  const handleCreateRelease = async (data: CreateReleaseFormValues) => {
+    try {
+      const releaseRes = await createRelease(data);
+
+      // Redirect to the release page
+      navigate(getReleasePath({ releaseId: releaseRes.release.id }));
+    } catch (error) {
+      setImportMessage('Error creating release');
+    }
+  };
+
   return (
     <AppPageWrapper title="Add Release">
       <Container>
         <form
-          onSubmit={handleSubmit((data) => createRelease(data))}
+          onSubmit={handleSubmit((data) => handleCreateRelease(data))}
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
               e.preventDefault();
