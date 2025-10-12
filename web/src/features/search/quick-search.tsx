@@ -1,6 +1,7 @@
 import styled from '@emotion/styled';
 import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useDebounce } from '../../hooks/useDebounce';
 import { useOnClickOutside } from '../../hooks/useOnClickOutside';
 import { QuickSearchResult } from './quick-search-result';
 import { SearchInput } from './search-input';
@@ -17,6 +18,8 @@ export const QuickSearch = () => {
   const [value, setValue] = useState('');
   const [focus, setFocus] = useState(false);
   const navigate = useNavigate();
+
+  const debouncedValue = useDebounce(value, 150);
 
   useOnClickOutside(containerRef, () => setFocus(false));
 
@@ -46,8 +49,8 @@ export const QuickSearch = () => {
         onFocus={() => setFocus(true)}
       />
       <div>
-        {focus && value.length !== 0 && (
-          <QuickSearchResult value={value} done={done} />
+        {focus && debouncedValue.length !== 0 && (
+          <QuickSearchResult value={debouncedValue} done={done} />
         )}
       </div>
     </StyledSearch>

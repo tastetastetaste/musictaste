@@ -1,11 +1,11 @@
 import styled from '@emotion/styled';
 import { useQuery } from 'react-query';
 import { Stack } from '../../components/flex/stack';
-import { api } from '../../utils/api';
 import { Loading } from '../../components/loading';
 import { Typography } from '../../components/typography';
-import { ArtistSearchLink, ReleaseSearchLink } from './search-links';
+import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
+import { ArtistSearchLink, ReleaseSearchLink } from './search-links';
 
 const StyledSearchResultContainer = styled.div`
   position: absolute;
