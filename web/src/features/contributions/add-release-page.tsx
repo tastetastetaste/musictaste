@@ -2,11 +2,12 @@ import { classValidatorResolver } from '@hookform/resolvers/class-validator';
 import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useMutation } from 'react-query';
-import { CreateReleaseDto, ExplicitCoverArt } from 'shared';
+import { CreateReleaseDto, ExplicitCoverArt, getReleasePath } from 'shared';
 import { Button } from '../../components/button';
 import { Container } from '../../components/containers/container';
 import { Feedback } from '../../components/feedback';
 import { FlexChild } from '../../components/flex/flex-child';
+import { Group } from '../../components/flex/group';
 import { Stack } from '../../components/flex/stack';
 import { Dropzone } from '../../components/inputs/dropzone';
 import { FormInputError } from '../../components/inputs/form-input-error';
@@ -17,7 +18,8 @@ import { Link } from '../../components/links/link';
 import { Typography } from '../../components/typography';
 import AppPageWrapper from '../../layout/app-page-wrapper';
 import { api } from '../../utils/api';
-import { getReleasePath } from 'shared';
+import { AddByIdArtistDialog } from './add-by-id-artist-dialog';
+import { AddByIdLabelDialog } from './add-by-id-label-dialog';
 import CreateArtistDialog from './create-artist-dialog';
 import CreateLabelDialog from './create-label-dialog';
 import { importFromMusicBrainz } from './import-data';
@@ -26,9 +28,6 @@ import { SelectArtist } from './select-artist';
 import { SelectLabel } from './select-label';
 import { SelectLanguage } from './select-language';
 import { ReleaseTypeOptions } from './shared';
-import { Group } from '../../components/flex/group';
-import { AddByIdArtistDialog } from './add-by-id-artist-dialog';
-import { AddByIdLabelDialog } from './add-by-id-label-dialog';
 
 export const ExplicitCoverArtOptions = [
   { value: ExplicitCoverArt.NUDITY, label: 'Nudity' },
@@ -109,10 +108,14 @@ const AddReleasePage = () => {
   }, [isSubmitSuccessful]);
 
   const mbImport = async () => {
-    setImportLoading(true);
-    setImportMessage('');
-    const message = await importFromMusicBrainz(getValues(), setValue);
-    setImportMessage(message);
+    try {
+      setImportLoading(true);
+      setImportMessage('');
+      const message = await importFromMusicBrainz(getValues(), setValue);
+      setImportMessage(message);
+    } catch (error) {
+      setImportMessage('Error importing from MusicBrainz');
+    }
     setImportLoading(false);
   };
 
