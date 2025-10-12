@@ -1,10 +1,10 @@
+import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { Injectable } from '@nestjs/common';
-import { nanoid } from 'nanoid';
-import sharp from 'sharp';
-import axios from 'axios';
 import { ConfigService } from '@nestjs/config';
+import axios from 'axios';
+import { nanoid } from 'nanoid';
 import { IReleaseCover, IUserImage } from 'shared';
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import sharp from 'sharp';
 
 export type Upload = { buffer: Buffer; mimetype: string };
 
@@ -23,6 +23,7 @@ export class ImagesService {
         secretAccessKey: this.configService.get('AWS_SECRET_ACCESS_KEY'),
       },
       region: this.configService.get('AWS_REGION'),
+      endpoint: this.configService.get('AWS_ENDPOINT'),
     });
   }
 
