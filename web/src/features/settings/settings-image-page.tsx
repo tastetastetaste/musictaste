@@ -1,16 +1,16 @@
-import { api } from '../../utils/api';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Controller, useForm } from 'react-hook-form';
-import { useMutation, useQueryClient } from 'react-query';
 import { useOutletContext } from 'react-router-dom';
 import { Button } from '../../components/button';
 import { Container } from '../../components/containers/container';
 import { Stack } from '../../components/flex/stack';
-import { useSnackbar } from '../../hooks/useSnackbar';
 import { Dropzone } from '../../components/inputs/dropzone';
-import { IMAGE_UPLOADED_SUCCESS } from '../../static/feedback';
 import { Typography } from '../../components/typography';
-import { SettingsPageOutletContext } from './settings-page-wrapper';
+import { useSnackbar } from '../../hooks/useSnackbar';
+import { IMAGE_UPLOADED_SUCCESS } from '../../static/feedback';
+import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
+import { SettingsPageOutletContext } from './settings-page-wrapper';
 
 const SettingsImagePage = () => {
   const { user } = useOutletContext<SettingsPageOutletContext>();

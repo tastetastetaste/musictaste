@@ -1,14 +1,14 @@
-import { useInfiniteQuery, useQuery } from 'react-query';
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
+import { Feedback } from '../../components/feedback';
 import { FetchMore } from '../../components/fetch-more';
 import { Loading } from '../../components/loading';
 import AppPageWrapper from '../../layout/app-page-wrapper';
 import { SOMETHING_WENT_WRONG } from '../../static/feedback';
 import { api } from '../../utils/api';
-import { Feedback } from '../../components/feedback';
+import { cacheKeys } from '../../utils/cache-keys';
 import { useAuth } from '../account/useAuth';
 import DraggableList from './draggable-list';
-import { cacheKeys } from '../../utils/cache-keys';
 
 const EditListPage = () => {
   const { id } = useParams();

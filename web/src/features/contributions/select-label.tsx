@@ -1,8 +1,8 @@
-import { api } from '../../utils/api';
+import { useQuery } from '@tanstack/react-query';
 import { forwardRef, useState } from 'react';
 import { ControllerRenderProps } from 'react-hook-form';
-import { useQuery } from 'react-query';
 import { Select } from '../../components/inputs/select';
+import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
 
 export const SelectLabel = forwardRef(

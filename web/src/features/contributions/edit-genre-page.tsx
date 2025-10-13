@@ -1,7 +1,7 @@
 import { classValidatorResolver } from '@hookform/resolvers/class-validator';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { useMutation, useQuery } from 'react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 import { CreateGenreDto, SubmissionStatus } from 'shared';
 import { Button } from '../../components/button';
@@ -13,10 +13,10 @@ import { Input } from '../../components/inputs/input';
 import { Textarea } from '../../components/inputs/textarea';
 import { Link } from '../../components/links/link';
 import { Typography } from '../../components/typography';
+import { useSnackbar } from '../../hooks/useSnackbar';
 import AppPageWrapper from '../../layout/app-page-wrapper';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
-import { useSnackbar } from '../../hooks/useSnackbar';
 
 const EditGenrePage = () => {
   const { id: genreId } = useParams();

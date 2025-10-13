@@ -1,23 +1,23 @@
-import { useQuery, useQueryClient } from 'react-query';
-import { EntriesSortByEnum, FindReleasesType, SupporterStatus } from 'shared';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { Fragment } from 'react';
+import { EntriesSortByEnum, FindReleasesType } from 'shared';
 import { Feedback } from '../components/feedback';
 import { Grid } from '../components/flex/grid';
 import { Stack } from '../components/flex/stack';
 import { Link } from '../components/links/link';
+import { Loading } from '../components/loading';
 import { useAuth } from '../features/account/useAuth';
-import FeaturesOverview from './features-overview';
 import { List } from '../features/lists/list';
 import { LIST_GRID_PADDING } from '../features/lists/lists-list-renderer';
 import { Release } from '../features/releases/release';
 import { RELEASE_GRID_GAP } from '../features/releases/releases-virtual-grid';
 import { Review } from '../features/reviews/review';
 import { updateReviewAfterVote_2 } from '../features/reviews/update-review-after-vote';
+import Support from '../features/supporters/support';
 import AppPageWrapper from '../layout/app-page-wrapper';
 import { api } from '../utils/api';
 import { cacheKeys } from '../utils/cache-keys';
-import Support from '../features/supporters/support';
-import { Loading } from '../components/loading';
-import { Fragment } from 'react';
+import FeaturesOverview from './features-overview';
 
 const HomePage = () => {
   const queryClient = useQueryClient();

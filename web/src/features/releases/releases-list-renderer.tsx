@@ -1,10 +1,10 @@
-import { api } from '../../utils/api';
-import { useInfiniteQuery } from 'react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
+import { FindReleasesType } from 'shared';
 import { Feedback } from '../../components/feedback';
 import { Loading } from '../../components/loading';
-import { ReleasesVirtualGrid } from './releases-virtual-grid';
+import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
-import { FindReleasesType } from 'shared';
+import { ReleasesVirtualGrid } from './releases-virtual-grid';
 
 export interface ReleasesListRendererProps {
   type: FindReleasesType;

@@ -1,13 +1,13 @@
-import { api } from '../../utils/api';
-import { useMutation, useQueryClient } from 'react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../../components/button';
 import { Dialog } from '../../components/dialog';
 import { Group } from '../../components/flex/group';
 import { Stack } from '../../components/flex/stack';
 import { Loading } from '../../components/loading';
-import { useAuth } from '../account/useAuth';
+import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
+import { useAuth } from '../account/useAuth';
 
 const DeleteList = ({ list, closeDialog }: any) => {
   const navigate = useNavigate();

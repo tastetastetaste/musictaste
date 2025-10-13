@@ -1,4 +1,9 @@
 import {
+  useInfiniteQuery,
+  useMutation,
+  useQueryClient,
+} from '@tanstack/react-query';
+import {
   Fragment,
   useEffect,
   useImperativeHandle,
@@ -6,7 +11,6 @@ import {
   useState,
 } from 'react';
 import { useForm } from 'react-hook-form';
-import { useInfiniteQuery, useMutation, useQueryClient } from 'react-query';
 import { CommentEntityType, FindCommentsDto, ReportType } from 'shared';
 import { Button } from '../../components/button';
 import { Feedback } from '../../components/feedback';

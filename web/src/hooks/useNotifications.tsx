@@ -1,10 +1,10 @@
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { createContext, useContext, useEffect } from 'react';
-import { useQuery, useQueryClient } from 'react-query';
 import { useAuth } from '../features/account/useAuth';
 import { api } from '../utils/api';
 import { cacheKeys } from '../utils/cache-keys';
-import { useSocket } from './useSocket';
 import { useSnackbar } from './useSnackbar';
+import { useSocket } from './useSocket';
 
 const NotificationContext = createContext<{ unreadCount: number }>(null);
 

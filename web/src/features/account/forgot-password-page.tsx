@@ -1,12 +1,12 @@
-import { api } from '../../utils/api';
+import { useMutation } from '@tanstack/react-query';
 import { Fragment, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useMutation } from 'react-query';
 import { Button } from '../../components/button';
 import { Container } from '../../components/containers/container';
 import { Stack } from '../../components/flex/stack';
 import { Input } from '../../components/inputs/input';
 import AppPageWrapper from '../../layout/app-page-wrapper';
+import { api } from '../../utils/api';
 
 const ForgotPasswordPage = () => {
   const [emailSent, setEmailSent] = useState(false);

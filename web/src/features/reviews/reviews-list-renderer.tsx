@@ -1,12 +1,12 @@
+import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import { EntriesSortByEnum, IUserSummary } from 'shared';
-import { api } from '../../utils/api';
-import { useInfiniteQuery, useQueryClient } from 'react-query';
 import { Feedback } from '../../components/feedback';
 import { FetchMore } from '../../components/fetch-more';
-import { Loading } from '../../components/loading';
-import { Review } from './review';
 import { Stack } from '../../components/flex/stack';
+import { Loading } from '../../components/loading';
+import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
+import { Review } from './review';
 import { updateReviewAfterVote_3 } from './update-review-after-vote';
 
 export interface ReviewsListRendererProps {

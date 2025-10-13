@@ -1,10 +1,11 @@
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
-import { useMutation, useQuery } from 'react-query';
 import { Outlet, useParams } from 'react-router-dom';
 import { AccountStatus, IUserProfileResponse, ReportType } from 'shared';
 import { Feedback } from '../../components/feedback';
 import { Stack } from '../../components/flex/stack';
 import { Loading } from '../../components/loading';
+import { Typography } from '../../components/typography';
 import AppPageWrapper from '../../layout/app-page-wrapper';
 import { SOMETHING_WENT_WRONG } from '../../static/feedback';
 import { api } from '../../utils/api';
@@ -13,7 +14,6 @@ import { useAuth } from '../account/useAuth';
 import { ReportDialog } from '../reports/report-dialog';
 import { UserThemeProvider } from '../theme/user-theme-provider';
 import { UserOverview } from './user-overview';
-import { Typography } from '../../components/typography';
 
 export type UserPageOutletContext = {
   isUserMyself: boolean;

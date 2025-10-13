@@ -1,26 +1,26 @@
+import styled from '@emotion/styled';
+import { IconMusicHeart, IconNote } from '@tabler/icons-react';
+import { useQuery } from '@tanstack/react-query';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { getReviewPath, IEntry, VoteType } from 'shared';
+import { FlexChild } from '../../components/flex/flex-child';
 import { Group } from '../../components/flex/group';
-import { User } from '../users/user';
-import { RatingValue, UserRating } from '../ratings/rating';
+import { Stack } from '../../components/flex/stack';
+import { IconButton } from '../../components/icon-button';
+import { Loading } from '../../components/loading';
+import { Popover } from '../../components/popover';
 import { Tooltip } from '../../components/popover/tooltip';
+import { Typography } from '../../components/typography';
+import { api } from '../../utils/api';
+import { cacheKeys } from '../../utils/cache-keys';
 import {
   formatRelativeTime,
   formatRelativeTimeShort,
 } from '../../utils/date-format';
-import { Typography } from '../../components/typography';
-import { Stack } from '../../components/flex/stack';
-import { FlexChild } from '../../components/flex/flex-child';
+import { UserRating } from '../ratings/rating';
+import { User } from '../users/user';
 import { FavIcon, LeastFavIcon } from './release-tracks';
-import { useNavigate } from 'react-router-dom';
-import { IconButton } from '../../components/icon-button';
-import { IconMusicHeart, IconNote } from '@tabler/icons-react';
-import { useQuery } from 'react-query';
-import { cacheKeys } from '../../utils/cache-keys';
-import { api } from '../../utils/api';
-import { Loading } from '../../components/loading';
-import { useState } from 'react';
-import { Popover } from '../../components/popover';
-import styled from '@emotion/styled';
 
 export const UserEntry = ({ entry }: { entry: IEntry }) => {
   return (

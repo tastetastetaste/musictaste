@@ -1,12 +1,12 @@
-import { IListItemsResponse } from 'shared';
-import { InfiniteData } from 'react-query';
+import { InfiniteData } from '@tanstack/react-query';
 import { Virtuoso } from 'react-virtuoso';
-import { useMediaQuery } from '../../hooks/useMediaQuery';
+import { IListItemsResponse } from 'shared';
 import { Group } from '../../components/flex/group';
-import { Release } from '../releases/release';
-import { getRowIndexes } from '../users/user-music-virtual-grid';
-import { RELEASE_GRID_PADDING } from '../releases/releases-virtual-grid';
 import { Typography } from '../../components/typography';
+import { useMediaQuery } from '../../hooks/useMediaQuery';
+import { Release } from '../releases/release';
+import { RELEASE_GRID_PADDING } from '../releases/releases-virtual-grid';
+import { getRowIndexes } from '../users/user-music-virtual-grid';
 
 export const ListItemsVirtualGrid: React.FC<{
   data: InfiniteData<IListItemsResponse>;

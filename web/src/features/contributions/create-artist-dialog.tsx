@@ -1,17 +1,16 @@
-import { CreateArtistDto } from 'shared';
-import { api } from '../../utils/api';
-import { useMutation, useQueryClient } from 'react-query';
-import { getArtistPath } from 'shared';
-import { Dialog } from '../../components/dialog';
-import { Button } from '../../components/button';
-import { Input } from '../../components/inputs/input';
-import { useForm } from 'react-hook-form';
-import { Stack } from '../../components/flex/stack';
 import { classValidatorResolver } from '@hookform/resolvers/class-validator';
-import { Typography } from '../../components/typography';
-import { Link } from '../../components/links/link';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { CreateArtistDto, getArtistPath } from 'shared';
+import { Button } from '../../components/button';
+import { Dialog } from '../../components/dialog';
+import { Stack } from '../../components/flex/stack';
 import { FormInputError } from '../../components/inputs/form-input-error';
+import { Input } from '../../components/inputs/input';
+import { Link } from '../../components/links/link';
+import { Typography } from '../../components/typography';
+import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
 
 const CreateArtistDialog: React.FC<{

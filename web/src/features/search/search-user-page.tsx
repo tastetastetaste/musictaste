@@ -1,10 +1,10 @@
-import { api } from '../../utils/api';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useOutletContext } from 'react-router-dom';
 import { Stack } from '../../components/flex/stack';
+import { api } from '../../utils/api';
+import { cacheKeys } from '../../utils/cache-keys';
 import { User } from '../users/user';
 import { SearchPageOutletContext } from './search-page-wrapper';
-import { cacheKeys } from '../../utils/cache-keys';
 
 const SearchUser = ({ q }: { q: string }) => {
   const { data, isLoading, refetch } = useQuery(

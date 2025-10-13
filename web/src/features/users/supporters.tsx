@@ -1,12 +1,11 @@
-import { useQuery } from 'react-query';
-import { api } from '../../utils/api';
-import { User } from './user';
-import { Stack } from '../../components/flex/stack';
-import { Typography } from '../../components/typography';
+import { useQuery } from '@tanstack/react-query';
 import { FindUsersType } from 'shared';
-import { cacheKeys } from '../../utils/cache-keys';
-import { Group } from '../../components/flex/group';
+import { Stack } from '../../components/flex/stack';
 import { Loading } from '../../components/loading';
+import { Typography } from '../../components/typography';
+import { api } from '../../utils/api';
+import { cacheKeys } from '../../utils/cache-keys';
+import { User } from './user';
 export const Supporters: React.FC = () => {
   const { data, isLoading } = useQuery(
     cacheKeys.findUsersKey(FindUsersType.Supporter),

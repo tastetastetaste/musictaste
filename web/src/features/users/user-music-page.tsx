@@ -1,6 +1,6 @@
 import { IconAdjustmentsHorizontal } from '@tabler/icons-react';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { useState } from 'react';
-import { useInfiniteQuery } from 'react-query';
 import { useOutletContext, useSearchParams } from 'react-router-dom';
 import { EntriesSortByEnum } from 'shared';
 import { Button } from '../../components/button';
@@ -8,8 +8,8 @@ import { Feedback } from '../../components/feedback';
 import { Group } from '../../components/flex/group';
 import { Stack } from '../../components/flex/stack';
 import { Loading } from '../../components/loading';
-import { useMediaQuery } from '../../hooks/useMediaQuery';
 import { Sidebar } from '../../components/sidebar';
+import { useMediaQuery } from '../../hooks/useMediaQuery';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
 import UserMusicFilters from './user-music-filters';

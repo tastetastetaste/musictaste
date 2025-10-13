@@ -1,4 +1,4 @@
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
 import { FindReleasesType } from 'shared';
 import { Stack } from '../../components/flex/stack';

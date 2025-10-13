@@ -1,7 +1,7 @@
 import { classValidatorResolver } from '@hookform/resolvers/class-validator';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { Controller, useForm, useWatch } from 'react-hook-form';
-import { useMutation, useQueryClient } from 'react-query';
 import { useOutletContext } from 'react-router-dom';
 import { UpdateUserPreferencesDto } from 'shared';
 import { Button } from '../../components/button';

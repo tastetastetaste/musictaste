@@ -1,4 +1,4 @@
-import { useMutation } from 'react-query';
+import { useMutation } from '@tanstack/react-query';
 import { Button } from '../../components/button';
 import { Container } from '../../components/containers/container';
 import { Group } from '../../components/flex/group';

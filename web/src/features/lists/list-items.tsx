@@ -1,10 +1,10 @@
-import { api } from '../../utils/api';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { Fragment } from 'react';
-import { useInfiniteQuery } from 'react-query';
 import { Loading } from '../../components/loading';
+import { api } from '../../utils/api';
+import { cacheKeys } from '../../utils/cache-keys';
 import { ListItemsVirtualGrid } from './list-items-virtual-grid';
 import { ListItemsVirtualList } from './list-items-virtual-list';
-import { cacheKeys } from '../../utils/cache-keys';
 
 const ListItems: React.FC<{
   id: string;

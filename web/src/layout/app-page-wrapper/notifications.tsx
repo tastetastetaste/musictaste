@@ -1,27 +1,27 @@
 import { IconBellFilled } from '@tabler/icons-react';
-import { Fragment, useEffect, useState } from 'react';
 import {
   useInfiniteQuery,
   useMutation,
   useQuery,
   useQueryClient,
-} from 'react-query';
+} from '@tanstack/react-query';
+import { Fragment, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getUserPath, INotification } from 'shared';
 import { Button } from '../../components/button';
 import { Feedback } from '../../components/feedback';
 import { FlexChild } from '../../components/flex/flex-child';
 import { Group } from '../../components/flex/group';
+import { Stack } from '../../components/flex/stack';
+import { IconButton } from '../../components/icon-button';
 import { Link } from '../../components/links/link';
 import { Loading } from '../../components/loading';
+import { Sidebar } from '../../components/sidebar';
 import { Typography } from '../../components/typography';
 import { Avatar } from '../../features/users/avatar';
 import { useNotifications } from '../../hooks/useNotifications';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
-import { Stack } from '../../components/flex/stack';
-import { Sidebar } from '../../components/sidebar';
-import { IconButton } from '../../components/icon-button';
 import { formatRelativeTimeShort } from '../../utils/date-format';
 
 const NotificationItem = ({

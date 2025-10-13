@@ -1,5 +1,5 @@
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { Fragment } from 'react';
-import { useInfiniteQuery } from 'react-query';
 import { useOutletContext } from 'react-router-dom';
 import { EntriesSortByEnum } from 'shared';
 import { FetchMore } from '../../components/fetch-more';

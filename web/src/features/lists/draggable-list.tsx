@@ -1,6 +1,5 @@
 import styled from '@emotion/styled';
-import { IListItem } from 'shared';
-import { api } from '../../utils/api';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Fragment, memo, useEffect, useState } from 'react';
 import {
   DragDropContext,
@@ -9,13 +8,14 @@ import {
   Droppable,
   DropResult,
 } from 'react-beautiful-dnd';
-import { useMutation, useQueryClient } from 'react-query';
-import { Group } from '../../components/flex/group';
-import { EditListItem } from './edit-list-item';
-import { SOMETHING_WENT_WRONG } from '../../static/feedback';
-import { useSnackbar } from '../../hooks/useSnackbar';
+import { IListItem } from 'shared';
 import { Button } from '../../components/button';
+import { Group } from '../../components/flex/group';
+import { useSnackbar } from '../../hooks/useSnackbar';
+import { SOMETHING_WENT_WRONG } from '../../static/feedback';
+import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
+import { EditListItem } from './edit-list-item';
 
 export type RemoveItemFu = (index: number) => void;
 

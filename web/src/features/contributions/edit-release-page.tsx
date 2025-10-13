@@ -1,7 +1,7 @@
 import { classValidatorResolver } from '@hookform/resolvers/class-validator';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { useMutation, useQuery } from 'react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 import { SubmissionStatus, UpdateReleaseDto } from 'shared';
 import { Button } from '../../components/button';
@@ -23,6 +23,7 @@ import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
 import { AddByIdArtistDialog } from './add-by-id-artist-dialog';
 import { AddByIdLabelDialog } from './add-by-id-label-dialog';
+import { ExplicitCoverArtOptions } from './add-release-page';
 import CreateArtistDialog from './create-artist-dialog';
 import CreateLabelDialog from './create-label-dialog';
 import { importFromMusicBrainz } from './import-data';
@@ -31,7 +32,6 @@ import { SelectArtist } from './select-artist';
 import { SelectLabel } from './select-label';
 import { SelectLanguage } from './select-language';
 import { ReleaseTypeOptions } from './shared';
-import { ExplicitCoverArtOptions } from './add-release-page';
 
 export interface EditReleaseFormValues extends UpdateReleaseDto {
   mbid: string;

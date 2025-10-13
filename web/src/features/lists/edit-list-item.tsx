@@ -1,7 +1,7 @@
 import { IconMessage, IconTrash } from '@tabler/icons-react';
+import { useMutation } from '@tanstack/react-query';
 import { Fragment, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useMutation } from 'react-query';
 import { getReleasePath, IListItem, IRelease } from 'shared';
 import { Button } from '../../components/button';
 import { CardContainer } from '../../components/containers/card-container';

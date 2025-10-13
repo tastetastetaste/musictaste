@@ -1,14 +1,14 @@
-import { api } from '../../utils/api';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
-import { useMutation, useQueryClient } from 'react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Button } from '../../components/button';
-import { useSnackbar } from '../../hooks/useSnackbar';
-import { Input } from '../../components/inputs/input';
-import { ON_USER_RESET_PASSWORD } from '../../static/feedback';
-import AppPageWrapper from '../../layout/app-page-wrapper';
-import { Stack } from '../../components/flex/stack';
 import { Container } from '../../components/containers/container';
+import { Stack } from '../../components/flex/stack';
+import { Input } from '../../components/inputs/input';
+import { useSnackbar } from '../../hooks/useSnackbar';
+import AppPageWrapper from '../../layout/app-page-wrapper';
+import { ON_USER_RESET_PASSWORD } from '../../static/feedback';
+import { api } from '../../utils/api';
 
 const ResetPasswordPage = () => {
   const { snackbar } = useSnackbar();

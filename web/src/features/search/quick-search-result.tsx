@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { Stack } from '../../components/flex/stack';
 import { Loading } from '../../components/loading';
 import { Typography } from '../../components/typography';

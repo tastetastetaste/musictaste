@@ -1,14 +1,14 @@
-import { api } from '../../utils/api';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
-import { useQueryClient, useQuery } from 'react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Group } from '../../components/flex/group';
 import { Loading } from '../../components/loading';
-import {
-  USER_EMAIL_CONFIRMED,
-  SOMETHING_WENT_WRONG,
-} from '../../static/feedback';
 import { useSnackbar } from '../../hooks/useSnackbar';
+import {
+  SOMETHING_WENT_WRONG,
+  USER_EMAIL_CONFIRMED,
+} from '../../static/feedback';
+import { api } from '../../utils/api';
 
 const ValidateEmailPage = () => {
   const { snackbar } = useSnackbar();

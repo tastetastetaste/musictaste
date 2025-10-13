@@ -1,20 +1,20 @@
 import { classValidatorResolver } from '@hookform/resolvers/class-validator';
-import { UpdateUserProfileDto } from 'shared';
-import { api } from '../../utils/api';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { useMutation, useQueryClient } from 'react-query';
 import { useOutletContext } from 'react-router-dom';
+import { UpdateUserProfileDto } from 'shared';
 import { Button } from '../../components/button';
 import { Container } from '../../components/containers/container';
 import { Stack } from '../../components/flex/stack';
-import { useSnackbar } from '../../hooks/useSnackbar';
-import { Textarea } from '../../components/inputs/textarea';
-import { Input } from '../../components/inputs/input';
-import { SettingsPageOutletContext } from './settings-page-wrapper';
-import { Typography } from '../../components/typography';
 import { FormInputError } from '../../components/inputs/form-input-error';
+import { Input } from '../../components/inputs/input';
+import { Textarea } from '../../components/inputs/textarea';
+import { Typography } from '../../components/typography';
+import { useSnackbar } from '../../hooks/useSnackbar';
+import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
+import { SettingsPageOutletContext } from './settings-page-wrapper';
 
 const SettingsProfilePage = () => {
   const { user } = useOutletContext<SettingsPageOutletContext>();

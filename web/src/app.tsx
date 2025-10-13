@@ -1,10 +1,10 @@
-import { Fragment, lazy, Suspense, useEffect } from 'react';
 import {
   QueryClient,
   QueryClientProvider,
   QueryErrorResetBoundary,
-} from 'react-query';
-import { ReactQueryDevtools } from 'react-query/devtools';
+} from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { Fragment, lazy, Suspense, useEffect } from 'react';
 import {
   createBrowserRouter,
   Navigate,
@@ -13,21 +13,21 @@ import {
   useRouteError,
 } from 'react-router-dom';
 import { Button } from './components/button';
+import { Feedback } from './components/feedback';
 import { Stack } from './components/flex/stack';
 import { Loading as Fallback, Loading } from './components/loading';
+import RulesPage from './docs/rules';
 import { useAuth, UseAuthProvider } from './features/account/useAuth';
-import { SnackbarProvider, useSnackbar } from './hooks/useSnackbar';
-import { AUTH_REQUIRED_PAGE, SOMETHING_WENT_WRONG } from './static/feedback';
-import { ThemeProvider } from './features/theme/useTheme';
-import NotFoundPage from './layout/not-found-page';
-import { ScreenSizeProvider } from './hooks/useMediaQuery';
 import GenreSubmissionsList from './features/contributions/genre-submission-list';
 import GenrePage from './features/genres/genre-page';
-import { Feedback } from './components/feedback';
-import AppPageWrapper from './layout/app-page-wrapper';
-import { SocketProvider } from './hooks/useSocket';
+import { ThemeProvider } from './features/theme/useTheme';
+import { ScreenSizeProvider } from './hooks/useMediaQuery';
 import { NotificationProvider } from './hooks/useNotifications';
-import RulesPage from './docs/rules';
+import { SnackbarProvider, useSnackbar } from './hooks/useSnackbar';
+import { SocketProvider } from './hooks/useSocket';
+import AppPageWrapper from './layout/app-page-wrapper';
+import NotFoundPage from './layout/not-found-page';
+import { AUTH_REQUIRED_PAGE, SOMETHING_WENT_WRONG } from './static/feedback';
 
 const UserPageWrapper = lazy(
   () => import('./features/users/user-page-wrapper'),

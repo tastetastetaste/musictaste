@@ -1,17 +1,17 @@
 import { classValidatorResolver } from '@hookform/resolvers/class-validator';
-import { getListPath, UpdateListDto } from 'shared';
-import { api } from '../../utils/api';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { useMutation, useQueryClient } from 'react-query';
 import { useNavigate } from 'react-router-dom';
+import { getListPath, UpdateListDto } from 'shared';
 import { Button } from '../../components/button';
 import { Dialog } from '../../components/dialog';
 import { Stack } from '../../components/flex/stack';
-import { Textarea } from '../../components/inputs/textarea';
-import { Input } from '../../components/inputs/input';
 import { Checkbox } from '../../components/inputs/checkbox';
 import { FormInputError } from '../../components/inputs/form-input-error';
+import { Input } from '../../components/inputs/input';
+import { Textarea } from '../../components/inputs/textarea';
+import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
 
 type ListToUpdate = any;

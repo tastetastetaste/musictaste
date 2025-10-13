@@ -1,11 +1,11 @@
-import { api } from '../../utils/api';
+import { useQuery } from '@tanstack/react-query';
 import { Fragment } from 'react';
-import { useQuery } from 'react-query';
 import { useOutletContext } from 'react-router-dom';
 import { Stack } from '../../components/flex/stack';
+import { api } from '../../utils/api';
+import { cacheKeys } from '../../utils/cache-keys';
 import { GenreSearchLink } from './search-links';
 import { SearchPageOutletContext } from './search-page-wrapper';
-import { cacheKeys } from '../../utils/cache-keys';
 
 export const SearchGenre = ({ q }: { q: string }) => {
   const { data, isLoading, refetch } = useQuery(
