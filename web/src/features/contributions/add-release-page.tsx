@@ -124,10 +124,7 @@ const AddReleasePage = () => {
 
   const handleCreateRelease = async (data: CreateReleaseFormValues) => {
     try {
-      const releaseRes = await createRelease(data);
-
-      // Redirect to the release page
-      navigate(getReleasePath({ releaseId: releaseRes.release.id }));
+      await createRelease(data);
     } catch (error) {
       setImportMessage('Error creating release');
     }
