@@ -125,7 +125,7 @@ const forgotPasswordChange = ({
     .post('auth/forgot-password-change', {
       json: { password: newPassword, token },
     })
-    .json();
+    .json<any>();
 
 const updatePassword = (data: {
   id: string;
@@ -206,7 +206,7 @@ const createEntry = (data: {
   rating?: number;
   review?: string;
   tags?: string[];
-}) => client.post('entries', { json: data }).json();
+}) => client.post('entries', { json: data }).json<any>();
 const updateEntry = ({
   id,
   ...rest
@@ -215,14 +215,16 @@ const updateEntry = ({
   rating?: number;
   review?: string;
   tags?: string[];
-}) => client.patch('entries/' + id, { json: rest }).json();
+}) => client.patch('entries/' + id, { json: rest }).json<any>();
 const removeEntry = (id: string) =>
   client.delete('entries/' + id).json<boolean>();
 
 const reviewVote = ({ reviewId, vote }: { reviewId: string; vote: VoteType }) =>
-  client.post(`entries/review/${reviewId}/votes`, { json: { vote } }).json();
+  client
+    .post(`entries/review/${reviewId}/votes`, { json: { vote } })
+    .json<any>();
 const reviewRemoveVote = (reviewId: string) =>
-  client.delete(`entries/review/${reviewId}/votes`).json();
+  client.delete(`entries/review/${reviewId}/votes`).json<any>();
 
 const getComments = ({ entityType, entityId, page }: FindCommentsDto) =>
   client
@@ -230,9 +232,10 @@ const getComments = ({ entityType, entityId, page }: FindCommentsDto) =>
     .json<ICommentsResponse>();
 
 const createComment = (data: CreateCommentDto) =>
-  client.post('comments', { json: data }).json();
+  client.post('comments', { json: data }).json<any>();
 
-const deleteComment = (id: string) => client.delete(`comments/${id}`).json();
+const deleteComment = (id: string) =>
+  client.delete(`comments/${id}`).json<any>();
 
 const getNotifications = (page: number) =>
   client.get(`notifications?page=${page}`).json<INotificationsResponse>();
@@ -240,7 +243,8 @@ const getNotifications = (page: number) =>
 const getUnreadNotificationsCount = () =>
   client.get('notifications/unread-count').json<{ count: number }>();
 
-const markAllAsRead = () => client.post('notifications/mark-all-read').json();
+const markAllAsRead = () =>
+  client.post('notifications/mark-all-read').json<any>();
 
 const getUserArtists = (userId: string) =>
   client.get('entries/user/' + userId + '/artists').json<IUserArtist[]>();
@@ -259,11 +263,11 @@ const getUserTags = (userId: string) =>
   client.get('entries/user/' + userId + '/tags').json<IUserTag[]>();
 
 const createUserTag = (tag: string) =>
-  client.post('entries/user/tags', { json: { tag } }).json();
+  client.post('entries/user/tags', { json: { tag } }).json<any>();
 const updateUserTag = ({ tagId, tag }: { tagId: string; tag: string }) =>
-  client.patch('entries/user/tags/' + tagId, { json: { tag } }).json();
+  client.patch('entries/user/tags/' + tagId, { json: { tag } }).json<any>();
 const deleteUserTag = (tagId: string) =>
-  client.delete('entries/user/tags/' + tagId).json();
+  client.delete('entries/user/tags/' + tagId).json<any>();
 
 const trackVote = ({
   releaseId,
@@ -273,7 +277,10 @@ const trackVote = ({
   releaseId: string;
   trackId: string;
   vote: VoteType;
-}) => client.post(`entries/track/${releaseId}/${trackId}`, { json: { vote } });
+}) =>
+  client
+    .post(`entries/track/${releaseId}/${trackId}`, { json: { vote } })
+    .json<any>();
 
 const removeTrackVote = ({
   releaseId,
@@ -281,7 +288,7 @@ const removeTrackVote = ({
 }: {
   releaseId: string;
   trackId: string;
-}) => client.delete(`entries/track/${releaseId}/${trackId}`);
+}) => client.delete(`entries/track/${releaseId}/${trackId}`).json<any>();
 
 // ----------------
 //     LISTS
@@ -291,7 +298,7 @@ const createList = (data: {
   description?: string;
   grid: boolean;
   ranked: boolean;
-}) => client.post('lists', { json: data }).json();
+}) => client.post('lists', { json: data }).json<any>();
 const updateList = ({
   id,
   ...data
@@ -301,16 +308,16 @@ const updateList = ({
   description?: string;
   grid: boolean;
   ranked: boolean;
-}) => client.patch('lists/' + id, { json: data }).json();
+}) => client.patch('lists/' + id, { json: data }).json<any>();
 
 const getList = (id: string) => client.get('lists/' + id).json<IListResponse>();
 const publishList = (id: string) =>
-  client.patch('lists/' + id + '/publish').json();
-const deleteList = (id: string) => client.delete('lists/' + id).json();
+  client.patch('lists/' + id + '/publish').json<any>();
+const deleteList = (id: string) => client.delete('lists/' + id).json<any>();
 const getListItems = (id: string, page: number) =>
   client.get('lists/' + id + '/items?page=' + page).json<IListItemsResponse>();
 const addToList = ({ id, releaseId }: { id: string; releaseId: string }) =>
-  client.post('lists/' + id + '/items', { json: { releaseId } }).json();
+  client.post('lists/' + id + '/items', { json: { releaseId } }).json<any>();
 const editListItem = ({
   id,
   itemId,
@@ -320,20 +327,22 @@ const editListItem = ({
   itemId: string;
   note: string;
 }) =>
-  client.patch('lists/' + id + '/items/' + itemId, { json: { note } }).json();
+  client
+    .patch('lists/' + id + '/items/' + itemId, { json: { note } })
+    .json<any>();
 const removeFromList = ({ id, itemId }: { id: string; itemId: string }) =>
-  client.delete('lists/' + id + '/items/' + itemId).json();
+  client.delete('lists/' + id + '/items/' + itemId).json<any>();
 const reorderListItems = ({
   id,
   items,
 }: {
   id: string;
   items: { id: string; index: number }[];
-}) => client.patch('lists/' + id + '/items', { json: { items } }).json();
+}) => client.patch('lists/' + id + '/items', { json: { items } }).json<any>();
 const createListLike = (id: string) =>
-  client.post('lists/' + id + '/likes').json();
+  client.post('lists/' + id + '/likes').json<any>();
 const removeListLike = (id: string) =>
-  client.delete('lists/' + id + '/likes').json();
+  client.delete('lists/' + id + '/likes').json<any>();
 const getReleaseLists = (releaseId: string, page: number) =>
   client
     .get('/lists?sortBy=new&releaseId=' + releaseId + '&page=' + page)
@@ -380,7 +389,7 @@ const createArtist = (data: CreateArtistDto) =>
     .json<ICreateArtistResponse>();
 
 const updateArtist = ({ id, data }: { id: string; data: UpdateArtistDto }) =>
-  client.post('submissions/artists/' + id, { json: data }).json();
+  client.post('submissions/artists/' + id, { json: data }).json<any>();
 
 const createLabel = (data: CreateLabelDto) =>
   client
@@ -388,7 +397,7 @@ const createLabel = (data: CreateLabelDto) =>
     .json<ICreateLabelResponse>();
 
 const updateLabel = ({ id, data }: { id: string; data: UpdateLabelDto }) =>
-  client.post('submissions/labels/' + id, { json: data }).json();
+  client.post('submissions/labels/' + id, { json: data }).json<any>();
 
 const createRelease = (data: CreateReleaseDto) =>
   client
@@ -400,10 +409,10 @@ const updateRelease = ({ id, data }: { id: string; data: UpdateReleaseDto }) =>
     .json<IUpdateReleaseResponse>();
 
 const createGenre = (data: CreateGenreDto) =>
-  client.post('submissions/genres', { json: data }).json();
+  client.post('submissions/genres', { json: data }).json<any>();
 
 const updateGenre = ({ id, data }: { id: string; data: UpdateGenreDto }) =>
-  client.post('submissions/genres/' + id, { json: data }).json();
+  client.post('submissions/genres/' + id, { json: data }).json<any>();
 
 const getReleaseSubmissions = ({
   page,
@@ -464,16 +473,18 @@ const getGenreSubmissions = ({
     .json<IGenreSubmissionsResponse>();
 
 const discardMyReleaseSubmission = (submissionId: string) =>
-  client.delete('submissions/releases/' + submissionId).json();
+  client.delete('submissions/releases/' + submissionId).json<void>();
 
 const discardMyLabelSubmission = (submissionId: string) =>
-  client.delete('submissions/labels/' + submissionId).json();
+  client.delete('submissions/labels/' + submissionId).json<void>();
 
 const discardMyArtistSubmission = (submissionId: string) =>
-  client.delete('submissions/artists/' + submissionId).json();
+  client.delete('submissions/artists/' + submissionId).json<void>();
 
 const processPendingDeletion = (data: ProcessPendingDeletionDto) =>
-  client.post('submissions/process-pending-deletion', { json: data }).json();
+  client
+    .post('submissions/process-pending-deletion', { json: data })
+    .json<any>();
 
 const releaseSubmissionVote = ({
   submissionId,
@@ -484,7 +495,7 @@ const releaseSubmissionVote = ({
 }) =>
   client
     .patch('submissions/releases/vote/' + submissionId, { json: { vote } })
-    .json();
+    .json<any>();
 
 const labelSubmissionVote = ({
   submissionId,
@@ -495,7 +506,7 @@ const labelSubmissionVote = ({
 }) =>
   client
     .patch('submissions/labels/vote/' + submissionId, { json: { vote } })
-    .json();
+    .json<any>();
 
 const artistSubmissionVote = ({
   submissionId,
@@ -506,7 +517,7 @@ const artistSubmissionVote = ({
 }) =>
   client
     .patch('submissions/artists/vote/' + submissionId, { json: { vote } })
-    .json();
+    .json<any>();
 
 const genreSubmissionVote = ({
   submissionId,
@@ -517,7 +528,7 @@ const genreSubmissionVote = ({
 }) =>
   client
     .patch('submissions/genres/vote/' + submissionId, { json: { vote } })
-    .json();
+    .json<any>();
 
 const getUserContributionsStats = (userId: string) =>
   client
@@ -530,10 +541,10 @@ const getReleaseGenres = (releaseId: string) =>
   client.get('genres/release/' + releaseId).json<IReleaseGenre[]>();
 
 const createReleaseGenreVote = (data: CreateGenreVoteDto) =>
-  client.post('genres/rg', { json: data }).json();
+  client.post('genres/rg', { json: data }).json<any>();
 
 const removeReleaseGenreVote = ({ id }: { id: string }) =>
-  client.delete('genres/rg/' + id).json();
+  client.delete('genres/rg/' + id).json<any>();
 
 // ----------------
 //     AUTOFILL
@@ -588,47 +599,50 @@ const updateProfile = ({
 }: {
   id: string;
 } & UpdateUserProfileDto) =>
-  client.patch('users/' + id + '/update-profile', { json: data }).json();
+  client.patch('users/' + id + '/update-profile', { json: data }).json<any>();
 const updatePreferences = ({
   id,
   ...data
 }: {
   id: string;
 } & UpdateUserPreferencesDto) =>
-  client.patch('users/' + id + '/update-preferences', { json: data }).json();
+  client
+    .patch('users/' + id + '/update-preferences', { json: data })
+    .json<any>();
 const updateImage = ({ id, image }: { id: string; image }) =>
   client
     .patch('users/' + id + '/update-image', { body: image as FormData })
-    .json();
+    .json<any>();
 const updateTheme = ({
   id,
   theme,
 }: {
   id: string;
   theme: UpdateUserThemeDto;
-}) => client.patch('users/' + id + '/update-theme', { json: theme }).json();
+}) =>
+  client.patch('users/' + id + '/update-theme', { json: theme }).json<any>();
 const follow = ({ id }: { id: string }) =>
-  client.post('users/' + id + '/following').json();
+  client.post('users/' + id + '/following').json<any>();
 const unFollow = ({ id }: { id: string }) =>
-  client.delete('users/' + id + '/following').json();
+  client.delete('users/' + id + '/following').json<any>();
 
 const report = (report: CreateReportDto) =>
-  client.post('reports', { json: report }).json();
+  client.post('reports', { json: report }).json<any>();
 
 // ----------------
 //     ADMIN
 // ----------------
 const updateUserContributorStatus = (data: UpdateUserContributorStatusDto) =>
-  client.patch('admin/user/contributor-status', { json: data }).json();
+  client.patch('admin/user/contributor-status', { json: data }).json<any>();
 
 const updateUserSupporterStatus = (data: UpdateUserSupporterStatusDto) =>
-  client.patch('admin/user/supporter-status', { json: data }).json();
+  client.patch('admin/user/supporter-status', { json: data }).json<any>();
 
 const updateAccountStatus = (data: UpdateAccountStatusDto) =>
-  client.patch('admin/user/account-status', { json: data }).json();
+  client.patch('admin/user/account-status', { json: data }).json<any>();
 
 const sendNotification = (data: SendNotificationDto) =>
-  client.post('admin/user/notification', { json: data }).json();
+  client.post('admin/user/notification', { json: data }).json<any>();
 
 const findUsers = (type: FindUsersType) => {
   return client
