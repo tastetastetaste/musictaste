@@ -1,6 +1,7 @@
-import axios from 'axios';
+import ky from 'ky';
 import {
   CreateArtistDto,
+  CreateCommentDto,
   CreateGenreDto,
   CreateGenreVoteDto,
   CreateLabelDto,
@@ -8,6 +9,7 @@ import {
   CreateReportDto,
   EntriesSortByEnum,
   FindArtistSubmissionsDto,
+  FindCommentsDto,
   FindGenreSubmissionsDto,
   FindLabelSubmissionsDto,
   FindReleasesType,
@@ -16,6 +18,7 @@ import {
   IArtistResponse,
   IArtistSubmissionsResponse,
   IAutofillRelease,
+  ICommentsResponse,
   ICreateArtistResponse,
   ICreateLabelResponse,
   ICreateReleaseResponse,
@@ -31,6 +34,7 @@ import {
   IListItemsResponse,
   IListResponse,
   IListsResponse,
+  INotificationsResponse,
   IReleaseGenre,
   IReleaseResponse,
   IReleasesResponse,
@@ -49,73 +53,66 @@ import {
   IUserTag,
   ProcessPendingDeletionDto,
   SearchType,
+  SendNotificationDto,
+  UpdateAccountStatusDto,
   UpdateArtistDto,
   UpdateGenreDto,
+  UpdateLabelDto,
   UpdateReleaseDto,
   UpdateUserContributorStatusDto,
   UpdateUserPreferencesDto,
-  UpdateUserThemeDto,
-  UpdateUserSupporterStatusDto,
-  UpdateAccountStatusDto,
-  SendNotificationDto,
-  VoteType,
   UpdateUserProfileDto,
-  ICommentsResponse,
-  FindCommentsDto,
-  CreateCommentDto,
-  INotificationsResponse,
-  UpdateLabelDto,
+  UpdateUserSupporterStatusDto,
+  UpdateUserThemeDto,
+  VoteType,
 } from 'shared';
 
-const client = axios.create({
-  baseURL:
+const client = ky.create({
+  prefixUrl:
     // @ts-expect-error ...
     import.meta.env.PROD
       ? 'https://api.musictaste.xyz'
       : 'http://localhost:4000/',
-  withCredentials: true,
+  credentials: 'include',
 });
 
 // ----------------
 //     ARTIST
 // ----------------
 const getArtist = (id: string) =>
-  client.get<IArtistResponse>('artists/' + id).then((res) => res.data);
+  client.get('artists/' + id).json<IArtistResponse>();
 
 // ----------------
 //     LABEL
 // ----------------
 const getLabel = (id: string) =>
-  client.get<ILabelResponse>('labels/' + id).then((res) => res.data);
+  client.get('labels/' + id).json<ILabelResponse>();
 
 // ----------------
 //     GENRE
 // ----------------
 const getGenre = (id: string) =>
-  client.get<IGenreResponse>('genres/' + id).then((res) => res.data);
+  client.get('genres/' + id).json<IGenreResponse>();
 
 // ----------------
 //     LANGUAGE
 // ----------------
 const getLanguages = () =>
-  client.get<{ languages: ILanguage[] }>('languages').then((res) => res.data);
+  client.get('languages').json<{ languages: ILanguage[] }>();
 
 // ----------------
 //     AUTH
 // ----------------
 const login = (data: { email: string; password: string }) =>
-  client.post<boolean>('auth/login', data).then((res) => res.data);
+  client.post('auth/login', { json: data }).json<boolean>();
 
 const signup = (data: { username: string; password: string; email: string }) =>
-  client.post<boolean>('auth/signup', data).then((res) => res.data);
-const logout = () =>
-  client.post<boolean>('auth/logout').then((res) => res.data);
+  client.post('auth/signup', { json: data }).json<boolean>();
+const logout = () => client.post('auth/logout').json<boolean>();
 const confirmEmail = (token: string) =>
-  client.get<boolean>('auth/confirm/' + token).then((res) => res.data);
+  client.get('auth/confirm/' + token).json<boolean>();
 const forgotPassword = (email: string) =>
-  client
-    .post<boolean>('auth/forgot-password', { email })
-    .then((res) => res.data);
+  client.post('auth/forgot-password', { json: { email } }).json<boolean>();
 
 const forgotPasswordChange = ({
   token,
@@ -125,14 +122,16 @@ const forgotPasswordChange = ({
   newPassword: string;
 }) =>
   client
-    .post('auth/forgot-password-change', { password: newPassword, token })
-    .then((res) => res.data);
+    .post('auth/forgot-password-change', {
+      json: { password: newPassword, token },
+    })
+    .json();
 
 const updatePassword = (data: {
   id: string;
   oldPassword: string;
   newPassword: string;
-}) => client.put<boolean>('auth/update-password', data).then((res) => res.data);
+}) => client.put('auth/update-password', { json: data }).json<boolean>();
 
 // ----------------
 //     ENTRIES
@@ -176,7 +175,7 @@ const getEntries = ({
   pageSize: number;
 }) => {
   return client
-    .get<IEntriesResponse>(
+    .get(
       `entries?sortBy=${sortBy}&page=${page}&pageSize=${pageSize}${
         releaseId ? '&releaseId=' + releaseId : ''
       }${userId ? '&userId=' + userId : ''}${
@@ -189,29 +188,25 @@ const getEntries = ({
         type ? '&type=' + type : ''
       }`,
     )
-    .then((res) => res.data);
+    .json<IEntriesResponse>();
 };
 
 const getEntry = (id: string) => {
-  return client.get<IEntryResonse>(`entries/${id}`).then((res) => res.data);
+  return client.get(`entries/${id}`).json<IEntryResonse>();
 };
 
 const getMyReleaseEntry = (releaseId: string) => {
-  return client
-    .get<IEntryResonse>(`entries/release/${releaseId}/me`)
-    .then((res) => res.data);
+  return client.get(`entries/release/${releaseId}/me`).json<IEntryResonse>();
 };
 
 const getFollowingEntries = (releaseId: string) =>
-  client
-    .get<IEntry[]>(`entries/release/${releaseId}/following`)
-    .then((res) => res.data);
+  client.get(`entries/release/${releaseId}/following`).json<IEntry[]>();
 const createEntry = (data: {
   releaseId: string;
   rating?: number;
   review?: string;
   tags?: string[];
-}) => client.post('entries', data).then((res) => res.data);
+}) => client.post('entries', { json: data }).json();
 const updateEntry = ({
   id,
   ...rest
@@ -220,75 +215,55 @@ const updateEntry = ({
   rating?: number;
   review?: string;
   tags?: string[];
-}) => client.patch('entries/' + id, rest).then((res) => res.data);
+}) => client.patch('entries/' + id, { json: rest }).json();
 const removeEntry = (id: string) =>
-  client.delete<boolean>('entries/' + id).then((res) => res.data);
+  client.delete('entries/' + id).json<boolean>();
 
 const reviewVote = ({ reviewId, vote }: { reviewId: string; vote: VoteType }) =>
-  client
-    .post(`entries/review/${reviewId}/votes`, { vote })
-    .then((res) => res.data);
+  client.post(`entries/review/${reviewId}/votes`, { json: { vote } }).json();
 const reviewRemoveVote = (reviewId: string) =>
-  client.delete(`entries/review/${reviewId}/votes`).then((res) => res.data);
+  client.delete(`entries/review/${reviewId}/votes`).json();
 
 const getComments = ({ entityType, entityId, page }: FindCommentsDto) =>
   client
-    .get<ICommentsResponse>(
-      `comments?entityType=${entityType}&entityId=${entityId}&page=${page}`,
-    )
-    .then((res) => res.data);
+    .get(`comments?entityType=${entityType}&entityId=${entityId}&page=${page}`)
+    .json<ICommentsResponse>();
 
 const createComment = (data: CreateCommentDto) =>
-  client.post('comments', data).then((res) => res.data);
+  client.post('comments', { json: data }).json();
 
-const deleteComment = (id: string) =>
-  client.delete(`comments/${id}`).then((res) => res.data);
+const deleteComment = (id: string) => client.delete(`comments/${id}`).json();
 
 const getNotifications = (page: number) =>
-  client
-    .get<INotificationsResponse>(`notifications?page=${page}`)
-    .then((res) => res.data);
+  client.get(`notifications?page=${page}`).json<INotificationsResponse>();
 
 const getUnreadNotificationsCount = () =>
-  client
-    .get<{ count: number }>('notifications/unread-count')
-    .then((res) => res.data);
+  client.get('notifications/unread-count').json<{ count: number }>();
 
-const markAllAsRead = () =>
-  client.post('notifications/mark-all-read').then((res) => res.data);
+const markAllAsRead = () => client.post('notifications/mark-all-read').json();
 
 const getUserArtists = (userId: string) =>
-  client
-    .get<IUserArtist[]>('entries/user/' + userId + '/artists')
-    .then((res) => res.data);
+  client.get('entries/user/' + userId + '/artists').json<IUserArtist[]>();
 const getUserRatingBuckets = (userId: string) =>
-  client
-    .get<IUserRatingBucket[]>('entries/user/' + userId + '/ratings')
-    .then((res) => res.data);
+  client.get('entries/user/' + userId + '/ratings').json<IUserRatingBucket[]>();
 const getUserLabels = (userId: string) =>
-  client
-    .get<IUserLabel[]>('entries/user/' + userId + '/labels')
-    .then((res) => res.data);
+  client.get('entries/user/' + userId + '/labels').json<IUserLabel[]>();
 
 const getUserGenres = (userId: string) =>
-  client
-    .get<IUserGenre[]>('entries/user/' + userId + '/genres')
-    .then((res) => res.data);
+  client.get('entries/user/' + userId + '/genres').json<IUserGenre[]>();
 const getUserReleaseDates = (userId: string) =>
   client
-    .get<IUserReleaseDate[]>('entries/user/' + userId + '/release-date')
-    .then((res) => res.data);
+    .get('entries/user/' + userId + '/release-date')
+    .json<IUserReleaseDate[]>();
 const getUserTags = (userId: string) =>
-  client
-    .get<IUserTag[]>('entries/user/' + userId + '/tags')
-    .then((res) => res.data);
+  client.get('entries/user/' + userId + '/tags').json<IUserTag[]>();
 
 const createUserTag = (tag: string) =>
-  client.post('entries/user/tags', { tag }).then((res) => res.data);
+  client.post('entries/user/tags', { json: { tag } }).json();
 const updateUserTag = ({ tagId, tag }: { tagId: string; tag: string }) =>
-  client.patch('entries/user/tags/' + tagId, { tag }).then((res) => res.data);
+  client.patch('entries/user/tags/' + tagId, { json: { tag } }).json();
 const deleteUserTag = (tagId: string) =>
-  client.delete('entries/user/tags/' + tagId).then((res) => res.data);
+  client.delete('entries/user/tags/' + tagId).json();
 
 const trackVote = ({
   releaseId,
@@ -298,7 +273,7 @@ const trackVote = ({
   releaseId: string;
   trackId: string;
   vote: VoteType;
-}) => client.post(`entries/track/${releaseId}/${trackId}`, { vote });
+}) => client.post(`entries/track/${releaseId}/${trackId}`, { json: { vote } });
 
 const removeTrackVote = ({
   releaseId,
@@ -316,7 +291,7 @@ const createList = (data: {
   description?: string;
   grid: boolean;
   ranked: boolean;
-}) => client.post('lists', data).then((res) => res.data);
+}) => client.post('lists', { json: data }).json();
 const updateList = ({
   id,
   ...data
@@ -326,20 +301,16 @@ const updateList = ({
   description?: string;
   grid: boolean;
   ranked: boolean;
-}) => client.patch('lists/' + id, data).then((res) => res.data);
+}) => client.patch('lists/' + id, { json: data }).json();
 
-const getList = (id: string) =>
-  client.get<IListResponse>('lists/' + id).then((res) => res.data);
+const getList = (id: string) => client.get('lists/' + id).json<IListResponse>();
 const publishList = (id: string) =>
-  client.patch('lists/' + id + '/publish').then((res) => res.data);
-const deleteList = (id: string) =>
-  client.delete('lists/' + id).then((res) => res.data);
+  client.patch('lists/' + id + '/publish').json();
+const deleteList = (id: string) => client.delete('lists/' + id).json();
 const getListItems = (id: string, page: number) =>
-  client
-    .get<IListItemsResponse>('lists/' + id + '/items?page=' + page)
-    .then((res) => res.data);
+  client.get('lists/' + id + '/items?page=' + page).json<IListItemsResponse>();
 const addToList = ({ id, releaseId }: { id: string; releaseId: string }) =>
-  client.post('lists/' + id + '/items', { releaseId }).then((res) => res.data);
+  client.post('lists/' + id + '/items', { json: { releaseId } }).json();
 const editListItem = ({
   id,
   itemId,
@@ -349,53 +320,43 @@ const editListItem = ({
   itemId: string;
   note: string;
 }) =>
-  client
-    .patch('lists/' + id + '/items/' + itemId, { note })
-    .then((res) => res.data);
+  client.patch('lists/' + id + '/items/' + itemId, { json: { note } }).json();
 const removeFromList = ({ id, itemId }: { id: string; itemId: string }) =>
-  client.delete('lists/' + id + '/items/' + itemId).then((res) => res.data);
+  client.delete('lists/' + id + '/items/' + itemId).json();
 const reorderListItems = ({
   id,
   items,
 }: {
   id: string;
   items: { id: string; index: number }[];
-}) => client.patch('lists/' + id + '/items', { items }).then((res) => res.data);
+}) => client.patch('lists/' + id + '/items', { json: { items } }).json();
 const createListLike = (id: string) =>
-  client.post('lists/' + id + '/likes').then((res) => res.data);
+  client.post('lists/' + id + '/likes').json();
 const removeListLike = (id: string) =>
-  client.delete('lists/' + id + '/likes').then((res) => res.data);
+  client.delete('lists/' + id + '/likes').json();
 const getReleaseLists = (releaseId: string, page: number) =>
   client
-    .get<IListsResponse>(
-      '/lists?sortBy=new&releaseId=' + releaseId + '&page=' + page,
-    )
-    .then((res) => res.data);
+    .get('/lists?sortBy=new&releaseId=' + releaseId + '&page=' + page)
+    .json<IListsResponse>();
 const getUserLists = (userId: string, page: number) =>
   client
-    .get<IListsResponse>(
-      'lists?sortBy=updatedDate&userId=' + userId + '&page=' + page,
-    )
-    .then((res) => res.data);
+    .get('lists?sortBy=updatedDate&userId=' + userId + '&page=' + page)
+    .json<IListsResponse>();
 const getNewLists = (page: number) =>
-  client
-    .get<IListsResponse>('lists?sortBy=new&page=' + page)
-    .then((res) => res.data);
+  client.get('lists?sortBy=new&page=' + page).json<IListsResponse>();
 const getPopularLists = (page: number) =>
-  client
-    .get<IListsResponse>('lists?sortBy=popular&page=' + page)
-    .then((res) => res.data);
+  client.get('lists?sortBy=popular&page=' + page).json<IListsResponse>();
 
 const getReleaseInMyLists = (releaseId: string) =>
   client
-    .get<{ listId: string; itemId: string }[]>('lists/release/' + releaseId)
-    .then((res) => res.data);
+    .get('lists/release/' + releaseId)
+    .json<{ listId: string; itemId: string }[]>();
 
 // ----------------
 //     RELEASES
 // ----------------
 const getRelease = (id: string) =>
-  client.get<IReleaseResponse>('releases/' + id).then((res) => res.data);
+  client.get('releases/' + id).json<IReleaseResponse>();
 
 const getReleases = (
   type: FindReleasesType,
@@ -405,52 +366,44 @@ const getReleases = (
   labelId?: string,
 ) =>
   client
-    .get<IReleasesResponse>(
+    .get(
       `releases?type=${type}&page=${page}${pageSize ? `&pageSize=${pageSize}` : ''}${genreId ? `&genreId=${genreId}` : ''}${labelId ? `&labelId=${labelId}` : ''}`,
     )
-    .then((res) => res.data);
+    .json<IReleasesResponse>();
 
 // ----------------
 //     SUBMISSIONS
 // ----------------
 const createArtist = (data: CreateArtistDto) =>
   client
-    .post<ICreateArtistResponse>('submissions/artists', data)
-    .then((res) => res.data);
+    .post('submissions/artists', { json: data })
+    .json<ICreateArtistResponse>();
 
 const updateArtist = ({ id, data }: { id: string; data: UpdateArtistDto }) =>
-  client.post('submissions/artists/' + id, data).then((res) => res.data);
+  client.post('submissions/artists/' + id, { json: data }).json();
 
 const createLabel = (data: CreateLabelDto) =>
   client
-    .post<ICreateLabelResponse>('submissions/labels', data)
-    .then((res) => res.data);
+    .post('submissions/labels', { json: data })
+    .json<ICreateLabelResponse>();
 
 const updateLabel = ({ id, data }: { id: string; data: UpdateLabelDto }) =>
-  client.post('submissions/labels/' + id, data).then((res) => res.data);
+  client.post('submissions/labels/' + id, { json: data }).json();
 
 const createRelease = (data: CreateReleaseDto) =>
   client
-    .post<ICreateReleaseResponse>('submissions/releases', data, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    })
-    .then((res) => res.data);
+    .post('submissions/releases', { body: data as unknown as FormData })
+    .json<ICreateReleaseResponse>();
 const updateRelease = ({ id, data }: { id: string; data: UpdateReleaseDto }) =>
   client
-    .post<IUpdateReleaseResponse>('submissions/releases/' + id, data, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    })
-    .then((res) => res.data);
+    .post('submissions/releases/' + id, { body: data as unknown as FormData })
+    .json<IUpdateReleaseResponse>();
 
 const createGenre = (data: CreateGenreDto) =>
-  client.post('submissions/genres', data).then((res) => res.data);
+  client.post('submissions/genres', { json: data }).json();
 
 const updateGenre = ({ id, data }: { id: string; data: UpdateGenreDto }) =>
-  client.post('submissions/genres/' + id, data).then((res) => res.data);
+  client.post('submissions/genres/' + id, { json: data }).json();
 
 const getReleaseSubmissions = ({
   page,
@@ -460,12 +413,12 @@ const getReleaseSubmissions = ({
   sortBy,
 }: FindReleaseSubmissionsDto) =>
   client
-    .get<IReleaseSubmissionsResponse>(
+    .get(
       `submissions/releases?page=${page}${status ? '&status=' + status : ''}${
         releaseId ? '&releaseId=' + releaseId : ''
       }${userId ? '&userId=' + userId : ''}${sortBy ? '&sortBy=' + sortBy : ''}`,
     )
-    .then((res) => res.data);
+    .json<IReleaseSubmissionsResponse>();
 const getArtistSubmissions = ({
   page,
   status,
@@ -474,12 +427,12 @@ const getArtistSubmissions = ({
   sortBy,
 }: FindArtistSubmissionsDto) =>
   client
-    .get<IArtistSubmissionsResponse>(
+    .get(
       `submissions/artists?page=${page}${status ? '&status=' + status : ''}${
         artistId ? '&artistId=' + artistId : ''
       }${userId ? '&userId=' + userId : ''}${sortBy ? '&sortBy=' + sortBy : ''}`,
     )
-    .then((res) => res.data);
+    .json<IArtistSubmissionsResponse>();
 const getLabelSubmissions = ({
   page,
   status,
@@ -488,12 +441,12 @@ const getLabelSubmissions = ({
   sortBy,
 }: FindLabelSubmissionsDto) =>
   client
-    .get<ILabelSubmissionsResponse>(
+    .get(
       `submissions/labels?page=${page}${status ? '&status=' + status : ''}${
         labelId ? '&labelId=' + labelId : ''
       }${userId ? '&userId=' + userId : ''}${sortBy ? '&sortBy=' + sortBy : ''}`,
     )
-    .then((res) => res.data);
+    .json<ILabelSubmissionsResponse>();
 
 const getGenreSubmissions = ({
   page,
@@ -503,26 +456,24 @@ const getGenreSubmissions = ({
   sortBy,
 }: FindGenreSubmissionsDto) =>
   client
-    .get<IGenreSubmissionsResponse>(
+    .get(
       `submissions/genres?page=${page}${status ? '&status=' + status : ''}${
         genreId ? '&genreId=' + genreId : ''
       }${userId ? '&userId=' + userId : ''}${sortBy ? '&sortBy=' + sortBy : ''}`,
     )
-    .then((res) => res.data);
+    .json<IGenreSubmissionsResponse>();
 
 const discardMyReleaseSubmission = (submissionId: string) =>
-  client.delete('submissions/releases/' + submissionId).then((res) => res.data);
+  client.delete('submissions/releases/' + submissionId).json();
 
 const discardMyLabelSubmission = (submissionId: string) =>
-  client.delete('submissions/labels/' + submissionId).then((res) => res.data);
+  client.delete('submissions/labels/' + submissionId).json();
 
 const discardMyArtistSubmission = (submissionId: string) =>
-  client.delete('submissions/artists/' + submissionId).then((res) => res.data);
+  client.delete('submissions/artists/' + submissionId).json();
 
 const processPendingDeletion = (data: ProcessPendingDeletionDto) =>
-  client
-    .post('submissions/process-pending-deletion', data)
-    .then((res) => res.data);
+  client.post('submissions/process-pending-deletion', { json: data }).json();
 
 const releaseSubmissionVote = ({
   submissionId,
@@ -532,8 +483,8 @@ const releaseSubmissionVote = ({
   vote: VoteType;
 }) =>
   client
-    .patch('submissions/releases/vote/' + submissionId, { vote })
-    .then((res) => res.data);
+    .patch('submissions/releases/vote/' + submissionId, { json: { vote } })
+    .json();
 
 const labelSubmissionVote = ({
   submissionId,
@@ -543,8 +494,8 @@ const labelSubmissionVote = ({
   vote: VoteType;
 }) =>
   client
-    .patch('submissions/labels/vote/' + submissionId, { vote })
-    .then((res) => res.data);
+    .patch('submissions/labels/vote/' + submissionId, { json: { vote } })
+    .json();
 
 const artistSubmissionVote = ({
   submissionId,
@@ -554,8 +505,8 @@ const artistSubmissionVote = ({
   vote: VoteType;
 }) =>
   client
-    .patch('submissions/artists/vote/' + submissionId, { vote })
-    .then((res) => res.data);
+    .patch('submissions/artists/vote/' + submissionId, { json: { vote } })
+    .json();
 
 const genreSubmissionVote = ({
   submissionId,
@@ -565,41 +516,33 @@ const genreSubmissionVote = ({
   vote: VoteType;
 }) =>
   client
-    .patch('submissions/genres/vote/' + submissionId, { vote })
-    .then((res) => res.data);
+    .patch('submissions/genres/vote/' + submissionId, { json: { vote } })
+    .json();
 
 const getUserContributionsStats = (userId: string) =>
   client
-    .get<IUserContributionsStatsResponse>(
-      'submissions/user-contributions/' + userId,
-    )
-    .then((res) => res.data);
+    .get('submissions/user-contributions/' + userId)
+    .json<IUserContributionsStatsResponse>();
 // ----------------
 //     GENRES
 // ----------------
 const getReleaseGenres = (releaseId: string) =>
-  client
-    .get<IReleaseGenre[]>('genres/release/' + releaseId)
-    .then((res) => res.data);
+  client.get('genres/release/' + releaseId).json<IReleaseGenre[]>();
 
 const createReleaseGenreVote = (data: CreateGenreVoteDto) =>
-  client.post('genres/rg', data).then((res) => res.data);
+  client.post('genres/rg', { json: data }).json();
 
 const removeReleaseGenreVote = ({ id }: { id: string }) =>
-  client.delete('genres/rg/' + id).then((res) => res.data);
+  client.delete('genres/rg/' + id).json();
 
 // ----------------
 //     AUTOFILL
 // ----------------
 const getSpotifyRelease = (id: string) =>
-  client
-    .get<IAutofillRelease>('autofill/spotify/' + id)
-    .then((res) => res.data);
+  client.get('autofill/spotify/' + id).json<IAutofillRelease>();
 
 const getMusicBrainzRelease = (id: string) =>
-  client
-    .get<IAutofillRelease>('autofill/musicbrainz/' + id)
-    .then((res) => res.data);
+  client.get('autofill/musicbrainz/' + id).json<IAutofillRelease>();
 
 // ----------------
 //     SEARCH
@@ -616,7 +559,7 @@ const search = ({
   pageSize: number;
 }) => {
   return client
-    .get<ISearchResponse>(
+    .get(
       'search?q=' +
         encodeURIComponent(q) +
         '&type=' +
@@ -626,88 +569,71 @@ const search = ({
         '&pageSize=' +
         pageSize,
     )
-    .then((res) => res.data);
+    .json<ISearchResponse>();
 };
 // ----------------
 //     USERS
 // ----------------
 const getCurrentUser = () =>
-  client.get<ICurrentUserResponse>('users/me').then((res) => res.data);
+  client.get('users/me').json<ICurrentUserResponse>();
 const getUserProfile = (username: string) =>
-  client
-    .get<IUserProfileResponse>('users/username/' + username)
-    .then((res) => res.data);
+  client.get('users/username/' + username).json<IUserProfileResponse>();
 const getUserFollowers = (id: string) =>
-  client
-    .get<IUserFollowsResponse>('users/' + id + '/followers/')
-    .then((res) => res.data);
+  client.get('users/' + id + '/followers/').json<IUserFollowsResponse>();
 const getUserFollowing = (id: string) =>
-  client
-    .get<IUserFollowsResponse>('users/' + id + '/following/')
-    .then((res) => res.data);
+  client.get('users/' + id + '/following/').json<IUserFollowsResponse>();
 const updateProfile = ({
   id,
   ...data
 }: {
   id: string;
 } & UpdateUserProfileDto) =>
-  client.patch('users/' + id + '/update-profile', data).then((res) => res.data);
+  client.patch('users/' + id + '/update-profile', { json: data }).json();
 const updatePreferences = ({
   id,
   ...data
 }: {
   id: string;
 } & UpdateUserPreferencesDto) =>
-  client
-    .patch('users/' + id + '/update-preferences', data)
-    .then((res) => res.data);
+  client.patch('users/' + id + '/update-preferences', { json: data }).json();
 const updateImage = ({ id, image }: { id: string; image }) =>
   client
-    .patch(
-      'users/' + id + '/update-image',
-      { image },
-      {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      },
-    )
-    .then((res) => res.data);
+    .patch('users/' + id + '/update-image', { body: image as FormData })
+    .json();
 const updateTheme = ({
   id,
   theme,
 }: {
   id: string;
   theme: UpdateUserThemeDto;
-}) =>
-  client.patch('users/' + id + '/update-theme', theme).then((res) => res.data);
+}) => client.patch('users/' + id + '/update-theme', { json: theme }).json();
 const follow = ({ id }: { id: string }) =>
-  client.post('users/' + id + '/following').then((res) => res.data);
+  client.post('users/' + id + '/following').json();
 const unFollow = ({ id }: { id: string }) =>
-  client.delete('users/' + id + '/following').then((res) => res.data);
+  client.delete('users/' + id + '/following').json();
 
 const report = (report: CreateReportDto) =>
-  client.post('reports', report).then((res) => res.data);
+  client.post('reports', { json: report }).json();
 
 // ----------------
 //     ADMIN
 // ----------------
 const updateUserContributorStatus = (data: UpdateUserContributorStatusDto) =>
-  client.patch('admin/user/contributor-status', data).then((res) => res.data);
+  client.patch('admin/user/contributor-status', { json: data }).json();
 
 const updateUserSupporterStatus = (data: UpdateUserSupporterStatusDto) =>
-  client.patch('admin/user/supporter-status', data).then((res) => res.data);
+  client.patch('admin/user/supporter-status', { json: data }).json();
 
 const updateAccountStatus = (data: UpdateAccountStatusDto) =>
-  client.patch('admin/user/account-status', data).then((res) => res.data);
+  client.patch('admin/user/account-status', { json: data }).json();
 
 const sendNotification = (data: SendNotificationDto) =>
-  client.post('admin/user/notification', data).then((res) => res.data);
+  client.post('admin/user/notification', { json: data }).json();
 
 const findUsers = (type: FindUsersType) => {
   return client
-    .get<IUsersResponse>(`users?${type ? `type=${type}` : ''}`)
-    .then((res) => res.data);
+    .get(`users?${type ? `type=${type}` : ''}`)
+    .json<IUsersResponse>();
 };
 
 export const api = {
