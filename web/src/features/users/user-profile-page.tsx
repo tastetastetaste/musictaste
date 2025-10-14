@@ -1,5 +1,5 @@
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Fragment } from 'react';
-import { useQuery, useQueryClient } from 'react-query';
 import { useOutletContext } from 'react-router-dom';
 import { CommentEntityType, EntriesSortByEnum, IUser } from 'shared';
 import { FlexChild } from '../../components/flex/flex-child';
@@ -12,6 +12,7 @@ import { Markdown } from '../../components/markdown';
 import { Typography } from '../../components/typography';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
+import { Comments } from '../comments/comments';
 import { List } from '../lists/list';
 import { LIST_GRID_PADDING } from '../lists/lists-list-renderer';
 import { Release } from '../releases/release';
@@ -20,7 +21,6 @@ import { Review } from '../reviews/review';
 import { updateReviewAfterVote_2 } from '../reviews/update-review-after-vote';
 import { UserPageOutletContext } from './user-page-wrapper';
 import { UserGenresChart, UserRatingsChart } from './user-profile-charts';
-import { Comments } from '../comments/comments';
 
 const BioSection = ({ bio }: { bio?: string | null }) =>
   bio ? <Markdown>{bio}</Markdown> : <div></div>;

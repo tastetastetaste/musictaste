@@ -1,11 +1,11 @@
+import { useMutation } from '@tanstack/react-query';
 import { useState } from 'react';
-import { useMutation } from 'react-query';
-import { api } from '../../utils/api';
-import { Dialog } from '../../components/dialog';
 import { Button } from '../../components/button';
-import { Input } from '../../components/inputs/input';
+import { Dialog } from '../../components/dialog';
 import { Stack } from '../../components/flex/stack';
 import { FormInputError } from '../../components/inputs/form-input-error';
+import { Input } from '../../components/inputs/input';
+import { api } from '../../utils/api';
 
 interface AddByIdLabelDialogProps {
   isOpen: boolean;

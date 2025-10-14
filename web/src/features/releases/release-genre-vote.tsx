@@ -3,8 +3,8 @@ import {
   IconArrowBigUp,
   IconPencil,
 } from '@tabler/icons-react';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { Fragment, useState } from 'react';
-import { useMutation, useQuery } from 'react-query';
 import { IGenreSummary, IReleaseGenre, VoteType } from 'shared';
 import { Dialog } from '../../components/dialog';
 import { Group } from '../../components/flex/group';
@@ -12,9 +12,9 @@ import { IconButton } from '../../components/icon-button';
 import { Input } from '../../components/inputs/input';
 import { Loading } from '../../components/loading';
 import { api } from '../../utils/api';
+import { cacheKeys } from '../../utils/cache-keys';
 import { useAuth } from '../account/useAuth';
 import { User } from '../users/user';
-import { cacheKeys } from '../../utils/cache-keys';
 
 type VoteFuT = typeof api.createReleaseGenreVote;
 type RemoveVoteFuT = typeof api.removeReleaseGenreVote;

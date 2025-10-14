@@ -1,5 +1,5 @@
 import { IconArrowDown, IconArrowUp, IconMessage } from '@tabler/icons-react';
-import { useMutation } from 'react-query';
+import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import {
   CommentEntityType,

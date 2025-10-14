@@ -1,18 +1,18 @@
-import { useMutation, useQuery, useQueryClient } from 'react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { ReportType } from 'shared';
+import { Feedback } from '../../components/feedback';
 import { Loading } from '../../components/loading';
 import AppPageWrapper from '../../layout/app-page-wrapper';
 import { SOMETHING_WENT_WRONG } from '../../static/feedback';
 import { api } from '../../utils/api';
-import { Feedback } from '../../components/feedback';
-import { useAuth } from '../account/useAuth';
-import { Review } from './review';
-import { ReportDialog } from '../reports/report-dialog';
-import { useState } from 'react';
 import { cacheKeys } from '../../utils/cache-keys';
-import { updateReviewAfterVote } from './update-review-after-vote';
+import { useAuth } from '../account/useAuth';
+import { ReportDialog } from '../reports/report-dialog';
 import { UserThemeProvider } from '../theme/user-theme-provider';
-import { ReportType } from 'shared';
+import { Review } from './review';
+import { updateReviewAfterVote } from './update-review-after-vote';
 
 const ReviewPage = () => {
   const { id } = useParams();

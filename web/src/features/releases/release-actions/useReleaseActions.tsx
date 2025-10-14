@@ -1,4 +1,4 @@
-import { useQueryClient, useMutation, useQuery } from 'react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { IEntryResonse, UpdateEntryDto, VoteType } from 'shared';
 import { api } from '../../../utils/api';
 import { cacheKeys } from '../../../utils/cache-keys';

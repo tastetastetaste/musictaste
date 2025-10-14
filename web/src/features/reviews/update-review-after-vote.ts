@@ -1,4 +1,4 @@
-import { QueryClient, InfiniteData } from 'react-query';
+import { InfiniteData, QueryClient } from '@tanstack/react-query';
 import { IEntriesResponse, IEntryResonse, IReview, VoteType } from 'shared';
 
 export type UpdateReviewAfterVoteFu = (

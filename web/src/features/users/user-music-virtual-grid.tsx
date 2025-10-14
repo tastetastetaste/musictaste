@@ -1,6 +1,6 @@
-import { IEntriesResponse } from 'shared';
-import { InfiniteData } from 'react-query';
+import { InfiniteData } from '@tanstack/react-query';
 import { Virtuoso } from 'react-virtuoso';
+import { IEntriesResponse } from 'shared';
 import { Group } from '../../components/flex/group';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
 import { Release } from '../releases/release';

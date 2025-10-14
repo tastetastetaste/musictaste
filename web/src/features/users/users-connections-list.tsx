@@ -1,9 +1,9 @@
-import { api } from '../../utils/api';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { Group } from '../../components/flex/group';
 import { Loading } from '../../components/loading';
-import { User } from './user';
+import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
+import { User } from './user';
 
 export interface UserConnectionsListProps {
   connectionType: 'following' | 'followers';

@@ -1,11 +1,12 @@
 import { IconMinus, IconPlaylistAdd, IconPlus } from '@tabler/icons-react';
-import { Fragment, useState } from 'react';
 import {
   useInfiniteQuery,
   useMutation,
   useQuery,
   useQueryClient,
-} from 'react-query';
+} from '@tanstack/react-query';
+import { Fragment, useState } from 'react';
+import { getListPath } from 'shared';
 import { Button } from '../../../components/button';
 import { FetchMore } from '../../../components/fetch-more';
 import { Group } from '../../../components/flex/group';
@@ -14,10 +15,9 @@ import { Link } from '../../../components/links/link';
 import { Loading } from '../../../components/loading';
 import { Popover } from '../../../components/popover';
 import { api } from '../../../utils/api';
+import { cacheKeys } from '../../../utils/cache-keys';
 import { useAuth } from '../../account/useAuth';
 import { CreateListDialog } from '../../lists/create-list-dialog';
-import { cacheKeys } from '../../../utils/cache-keys';
-import { getListPath } from 'shared';
 
 export const AddToListPopoverContent = ({
   releaseId,

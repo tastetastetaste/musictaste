@@ -4,14 +4,14 @@ import {
   IconSettings,
   IconUser,
 } from '@tabler/icons-react';
-import { api } from '../../utils/api';
-import { useMutation, useQueryClient } from 'react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { Avatar } from '../../features/users/avatar';
-import { useAuth } from '../../features/account/useAuth';
 import { getUserPath } from 'shared';
-import { Menu } from '../../components/menu';
 import { Link } from '../../components/links/link';
+import { Menu } from '../../components/menu';
+import { useAuth } from '../../features/account/useAuth';
+import { Avatar } from '../../features/users/avatar';
+import { api } from '../../utils/api';
 
 const UserMenu = () => {
   const { isLoading, me } = useAuth();

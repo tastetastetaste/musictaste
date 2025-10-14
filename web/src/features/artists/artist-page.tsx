@@ -1,6 +1,6 @@
 import { IconChevronDown, IconChevronRight } from '@tabler/icons-react';
+import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
-import { useQuery } from 'react-query';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { IArtistResponse, IRelease, ReportType } from 'shared';
 import { Grid } from '../../components/flex/grid';

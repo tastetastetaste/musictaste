@@ -1,21 +1,21 @@
 import styled from '@emotion/styled';
 import { IconPencil, IconPlus, IconTags } from '@tabler/icons-react';
-import { IEntryTag } from 'shared';
-import { api } from '../../../utils/api';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Fragment, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useMutation, useQuery, useQueryClient } from 'react-query';
+import { IEntryTag } from 'shared';
 import { Button } from '../../../components/button';
 import { Dialog } from '../../../components/dialog';
 import { Group } from '../../../components/flex/group';
 import { Stack } from '../../../components/flex/stack';
 import { IconButton } from '../../../components/icon-button';
-import { Popover } from '../../../components/popover';
 import { Input } from '../../../components/inputs/input';
 import { Loading } from '../../../components/loading';
+import { Popover } from '../../../components/popover';
+import { api } from '../../../utils/api';
+import { cacheKeys } from '../../../utils/cache-keys';
 import { useAuth } from '../../account/useAuth';
 import { useReleaseActions } from './useReleaseActions';
-import { cacheKeys } from '../../../utils/cache-keys';
 
 const StyledTagButton = styled.button<{ $active: boolean }>`
   border-radius: ${({ theme }) => theme.border_radius.base};

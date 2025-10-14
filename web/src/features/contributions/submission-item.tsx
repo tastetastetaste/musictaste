@@ -1,7 +1,7 @@
 import { useTheme } from '@emotion/react';
 import { IconArrowBigDown, IconArrowBigUp } from '@tabler/icons-react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import React, { Fragment } from 'react';
-import { useMutation, useQueryClient } from 'react-query';
 import {
   IArtistSubmission,
   IGenreSubmission,

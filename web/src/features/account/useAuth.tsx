@@ -1,7 +1,7 @@
+import { useQuery } from '@tanstack/react-query';
 import { createContext, useContext, useEffect } from 'react';
-import { useQuery } from 'react-query';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { ContributorStatus, ICurrentUserResponse, AccountStatus } from 'shared';
+import { AccountStatus, ContributorStatus, ICurrentUserResponse } from 'shared';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
 

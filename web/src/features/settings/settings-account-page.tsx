@@ -1,15 +1,15 @@
-import { api } from '../../utils/api';
+import { useMutation } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
-import { useMutation } from 'react-query';
 import { useOutletContext } from 'react-router-dom';
 import { Button } from '../../components/button';
 import { Container } from '../../components/containers/container';
-import { useSnackbar } from '../../hooks/useSnackbar';
-import { Input } from '../../components/inputs/input';
-import { ON_USER_UPDATE_PASSWORD } from '../../static/feedback';
-import { SettingsPageOutletContext } from './settings-page-wrapper';
 import { Stack } from '../../components/flex/stack';
+import { Input } from '../../components/inputs/input';
 import { Typography } from '../../components/typography';
+import { useSnackbar } from '../../hooks/useSnackbar';
+import { ON_USER_UPDATE_PASSWORD } from '../../static/feedback';
+import { api } from '../../utils/api';
+import { SettingsPageOutletContext } from './settings-page-wrapper';
 
 const SettingsAccountPage = () => {
   const { user } = useOutletContext<SettingsPageOutletContext>();

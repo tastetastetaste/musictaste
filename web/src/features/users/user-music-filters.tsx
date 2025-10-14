@@ -1,7 +1,7 @@
 import { useTheme } from '@emotion/react';
 import { IconDisc, IconFilter, IconSortDescending } from '@tabler/icons-react';
+import { useQuery } from '@tanstack/react-query';
 import { Fragment, useEffect, useState } from 'react';
-import { useQuery } from 'react-query';
 import { useSearchParams } from 'react-router-dom';
 import { EntriesSortByEnum, ReleaseType } from 'shared';
 import { Dropdown } from '../../components/dropdown';

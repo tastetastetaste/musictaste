@@ -1,19 +1,19 @@
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { Fragment } from 'react';
-import { useInfiniteQuery } from 'react-query';
 import { useOutletContext } from 'react-router-dom';
 import {
   IGenreSubmission,
-  SubmissionStatus,
   SubmissionSortByEnum,
+  SubmissionStatus,
 } from 'shared';
 import { FetchMore } from '../../components/fetch-more';
 import { Stack } from '../../components/flex/stack';
 import { Loading } from '../../components/loading';
+import { Markdown } from '../../components/markdown';
+import { Typography } from '../../components/typography';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
 import { SubmissionField, SubmissionItemWrapper } from './submission-item';
-import { Typography } from '../../components/typography';
-import { Markdown } from '../../components/markdown';
 
 class GenreSubmissionListOutletContext {
   status?: SubmissionStatus;

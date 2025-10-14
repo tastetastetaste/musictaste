@@ -1,15 +1,15 @@
-import { CreateLabelDto } from 'shared';
-import { api } from '../../utils/api';
-import { useMutation, useQueryClient } from 'react-query';
-import { Dialog } from '../../components/dialog';
-import { useForm } from 'react-hook-form';
 import { classValidatorResolver } from '@hookform/resolvers/class-validator';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { CreateLabelDto } from 'shared';
+import { Button } from '../../components/button';
+import { Dialog } from '../../components/dialog';
 import { Stack } from '../../components/flex/stack';
+import { FormInputError } from '../../components/inputs/form-input-error';
 import { Input } from '../../components/inputs/input';
 import { Typography } from '../../components/typography';
-import { Button } from '../../components/button';
-import { useEffect } from 'react';
-import { FormInputError } from '../../components/inputs/form-input-error';
+import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
 
 const CreateLabelDialog: React.FC<{

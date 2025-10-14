@@ -1,24 +1,23 @@
+import { useInfiniteQuery, useMutation } from '@tanstack/react-query';
 import { Fragment } from 'react';
-import { useInfiniteQuery, useMutation } from 'react-query';
 import { useOutletContext } from 'react-router-dom';
 import {
+  getArtistPath,
   IArtistSubmission,
-  SubmissionStatus,
   SubmissionSortByEnum,
+  SubmissionStatus,
 } from 'shared';
 import { FetchMore } from '../../components/fetch-more';
 import { Stack } from '../../components/flex/stack';
 import { Loading } from '../../components/loading';
+import { Markdown } from '../../components/markdown';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
-import { getArtistPath } from 'shared';
 import {
   DiscardSubmissionFn,
   SubmissionField,
   SubmissionItemWrapper,
 } from './submission-item';
-import { Typography } from '../../components/typography';
-import { Markdown } from '../../components/markdown';
 
 class ArtistSubmissionListOutletContext {
   status?: SubmissionStatus;

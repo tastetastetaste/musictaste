@@ -10,8 +10,8 @@ import {
   IconStarFilled,
   IconTransform,
 } from '@tabler/icons-react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Fragment, useState } from 'react';
-import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { useNavigate, useParams } from 'react-router-dom';
 import { CommentEntityType, IListResponse, ReportType } from 'shared';
 import { Button } from '../../components/button';
@@ -25,16 +25,16 @@ import { Typography } from '../../components/typography';
 import AppPageWrapper from '../../layout/app-page-wrapper';
 import { SOMETHING_WENT_WRONG } from '../../static/feedback';
 import { api } from '../../utils/api';
+import { cacheKeys } from '../../utils/cache-keys';
 import { formatDate } from '../../utils/date-format';
 import { useAuth } from '../account/useAuth';
+import { Comments } from '../comments/comments';
+import { ReportDialog } from '../reports/report-dialog';
+import { UserThemeProvider } from '../theme/user-theme-provider';
 import { User } from '../users/user';
 import DeleteListDialog from './delete-list-dialog';
 import ListItems from './list-items';
 import UpdateListDialog from './update-list-dialog';
-import { ReportDialog } from '../reports/report-dialog';
-import { cacheKeys } from '../../utils/cache-keys';
-import { UserThemeProvider } from '../theme/user-theme-provider';
-import { Comments } from '../comments/comments';
 
 const ListLike = ({
   likedByMe,

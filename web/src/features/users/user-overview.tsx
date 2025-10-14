@@ -3,19 +3,23 @@ import {
   IconUserMinus,
   IconUserPlus,
 } from '@tabler/icons-react';
-import { AccountStatus, IUserProfileResponse, SupporterStatus } from 'shared';
-import { api } from '../../utils/api';
-import { useMutation, useQueryClient } from 'react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import {
+  AccountStatus,
+  getUserPath,
+  IUserProfileResponse,
+  SupporterStatus,
+} from 'shared';
+import { SupporterBadge } from '../../components/badge/supporter-badge';
 import { Group } from '../../components/flex/group';
 import { Stack } from '../../components/flex/stack';
 import { IconButton } from '../../components/icon-button';
 import { Navigation } from '../../components/nav';
-import { useAuth } from '../account/useAuth';
-import { useHover } from '../../hooks/useHover';
 import { Typography } from '../../components/typography';
-import { getUserPath } from 'shared';
+import { useHover } from '../../hooks/useHover';
+import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
-import { SupporterBadge } from '../../components/badge/supporter-badge';
+import { useAuth } from '../account/useAuth';
 
 const FollowAction = ({
   userId,

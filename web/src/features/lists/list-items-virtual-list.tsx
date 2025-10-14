@@ -1,7 +1,7 @@
-import { IListItemsResponse } from 'shared';
-import { InfiniteData } from 'react-query';
+import { InfiniteData } from '@tanstack/react-query';
 import ReactVirtualizedAutoSizer from 'react-virtualized-auto-sizer';
 import { Virtuoso } from 'react-virtuoso';
+import { IListItemsResponse } from 'shared';
 import { ListItem } from './list-item';
 
 const Header = ({ context: { children } }: any) => {

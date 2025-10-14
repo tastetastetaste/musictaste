@@ -1,13 +1,13 @@
 import { useTheme } from '@emotion/react';
 import styled from '@emotion/styled';
+import { useQuery } from '@tanstack/react-query';
 import Color from 'color';
 import { memo, useCallback, useState } from 'react';
 import { PieChart, pieChartDefaultProps } from 'react-minimal-pie-chart';
-import { useQuery } from 'react-query';
+import { useNavigate } from 'react-router-dom';
 import { Group } from '../../components/flex/group';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
-import { useNavigate } from 'react-router-dom';
 
 const StyledText = styled.text`
   font-size: 3px;

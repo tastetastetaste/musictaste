@@ -1,18 +1,20 @@
+import { useInfiniteQuery, useMutation } from '@tanstack/react-query';
 import { Fragment } from 'react';
-import { useInfiniteQuery, useMutation } from 'react-query';
 import { useOutletContext } from 'react-router-dom';
 import {
+  getReleasePath,
   IReleaseSubmission,
-  SubmissionStatus,
   SubmissionSortByEnum,
+  SubmissionStatus,
 } from 'shared';
 import { FetchMore } from '../../components/fetch-more';
 import { Stack } from '../../components/flex/stack';
 import { Loading } from '../../components/loading';
+import { Markdown } from '../../components/markdown';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
 import { formatReleaseType } from '../releases/format-release-type';
-import { getReleasePath } from 'shared';
+import { ExplicitCoverArtOptions } from './add-release-page';
 import {
   DiscardSubmissionFn,
   ImagePreview,
@@ -20,9 +22,6 @@ import {
   SubmissionItemWrapper,
   TracksComparisonField,
 } from './submission-item';
-import { Typography } from '../../components/typography';
-import { ExplicitCoverArtOptions } from './add-release-page';
-import { Markdown } from '../../components/markdown';
 
 export const ReleaseSubmissionItem = ({
   submission,
