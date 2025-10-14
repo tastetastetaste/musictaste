@@ -1,7 +1,6 @@
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import axios from 'axios';
 import { nanoid } from 'nanoid';
 import { IReleaseCover, IUserImage } from 'shared';
 import sharp from 'sharp';
@@ -78,8 +77,9 @@ export class ImagesService {
           ? 'u-dev'
           : 'r-dev';
 
-    const response = await axios.get(url, { responseType: 'arraybuffer' });
-    const buffer = Buffer.from(response.data, 'binary');
+    const response = await fetch(url);
+    const arrayBuffer = await response.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
 
     const id = nanoid(11);
     const sizes = imageFor === 'user' ? this.userSizes : this.releaseSizes;
