@@ -1,10 +1,10 @@
 import {
+  AccountStatus,
   CommentEntityType,
   ContributorStatus,
   ExplicitCoverArt,
   NotificationType,
   SupporterStatus,
-  AccountStatus,
   VoteType,
 } from './enums';
 
@@ -566,4 +566,84 @@ export interface IAutofillRelease {
   type: string;
   date: string;
   tracks: any;
+}
+
+// API Response Interfaces
+export interface ICreateEntryResponse {
+  data: {
+    createEntry: boolean;
+  };
+}
+
+export interface IUpdateEntryResponse {
+  data: {
+    updateEntry: boolean;
+  };
+}
+
+export interface ICreateListResponse {
+  data: {
+    createList: IList;
+  };
+}
+
+export interface IUpdateListResponse {
+  data: {
+    updateList: IList;
+  };
+}
+
+export interface ITrackVoteResponse {
+  data: {
+    trackVote: {
+      trackId: string;
+      vote: VoteType;
+    };
+  };
+}
+
+export interface ICreateReleaseGenreVoteResponse {
+  data: {
+    createReleaseGenreVote: boolean;
+  };
+}
+
+export interface IRemoveReleaseGenreVoteResponse {
+  data: {
+    removeReleaseGenreVote: boolean;
+  };
+}
+
+export interface ICreateGenreSubmissionResponse {
+  message: string;
+  genreSubmission: IGenreSubmission;
+}
+
+export interface IUpdateGenreSubmissionResponse {
+  message: string;
+  genreSubmission: IGenreSubmission;
+}
+
+export interface ICreateArtistSubmissionResponse {
+  message: string;
+  artistSubmission: IArtistSubmission;
+}
+
+export interface IUpdateArtistSubmissionResponse {
+  message: string;
+  artistSubmission: IArtistSubmission;
+}
+
+export interface ICreateLabelSubmissionResponse {
+  message: string;
+  labelSubmission: ILabelSubmission;
+}
+
+export interface IUpdateLabelSubmissionResponse {
+  message: string;
+  labelSubmission: ILabelSubmission;
+}
+
+export interface IReportResponse {
+  message: string;
 }

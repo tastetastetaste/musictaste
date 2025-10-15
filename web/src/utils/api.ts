@@ -20,6 +20,7 @@ import {
   IAutofillRelease,
   ICommentsResponse,
   ICreateArtistResponse,
+  ICreateGenreSubmissionResponse,
   ICreateLabelResponse,
   ICreateReleaseResponse,
   ICurrentUserResponse,
@@ -39,7 +40,11 @@ import {
   IReleaseResponse,
   IReleasesResponse,
   IReleaseSubmissionsResponse,
+  IReportResponse,
   ISearchResponse,
+  IUpdateArtistSubmissionResponse,
+  IUpdateGenreSubmissionResponse,
+  IUpdateLabelSubmissionResponse,
   IUpdateReleaseResponse,
   IUserArtist,
   IUserContributionsStatsResponse,
@@ -394,7 +399,7 @@ const createArtist = (data: CreateArtistDto) =>
 const updateArtist = ({ id, data }: { id: string; data: UpdateArtistDto }) =>
   client
     .post('submissions/artists/' + id, { json: data })
-    .json<{ message: string; artistSubmission: any }>();
+    .json<IUpdateArtistSubmissionResponse>();
 
 const createLabel = (data: CreateLabelDto) =>
   client
@@ -404,7 +409,7 @@ const createLabel = (data: CreateLabelDto) =>
 const updateLabel = ({ id, data }: { id: string; data: UpdateLabelDto }) =>
   client
     .post('submissions/labels/' + id, { json: data })
-    .json<{ message: string; labelSubmission: any }>();
+    .json<IUpdateLabelSubmissionResponse>();
 
 const createRelease = (data: CreateReleaseDto) =>
   client
@@ -418,12 +423,12 @@ const updateRelease = ({ id, data }: { id: string; data: UpdateReleaseDto }) =>
 const createGenre = (data: CreateGenreDto) =>
   client
     .post('submissions/genres', { json: data })
-    .json<{ message: string; genreSubmission: any }>();
+    .json<ICreateGenreSubmissionResponse>();
 
 const updateGenre = ({ id, data }: { id: string; data: UpdateGenreDto }) =>
   client
     .post('submissions/genres/' + id, { json: data })
-    .json<{ message: string; genreSubmission: any }>();
+    .json<IUpdateGenreSubmissionResponse>();
 
 const getReleaseSubmissions = ({
   page,
@@ -642,7 +647,7 @@ const unFollow = ({ id }: { id: string }) =>
   client.delete('users/' + id + '/following').json<boolean>();
 
 const report = (report: CreateReportDto) =>
-  client.post('reports', { json: report }).json<{ message: string }>();
+  client.post('reports', { json: report }).json<IReportResponse>();
 
 // ----------------
 //     ADMIN
