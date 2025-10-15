@@ -112,7 +112,7 @@ export const useReleaseActions = (releaseId: string) => {
   };
 
   const { mutateAsync: trackVote } = useMutation(api.trackVote, {
-    onSuccess: ({ data: newTrackVote }) => {
+    onSuccess: (newTrackVote) => {
       // update the entry
       qc.setQueryData<IEntryResonse>(cacheKeys.myReleaseEntryKey(releaseId), {
         entry: {
