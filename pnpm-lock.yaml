@@ -71,9 +71,6 @@ importers:
       '@socket.io/redis-adapter':
         specifier: ^8.0.1
         version: 8.3.0(socket.io-adapter@2.5.5)
-      axios:
-        specifier: ^1.7.2
-        version: 1.7.2
       bcryptjs:
         specifier: ^2.4.3
         version: 2.4.3
@@ -225,9 +222,6 @@ importers:
 
   shared:
     dependencies:
-      axios:
-        specifier: ^1.7.2
-        version: 1.7.2
       class-transformer:
         specifier: ^0.5.1
         version: 0.5.1
@@ -271,15 +265,15 @@ importers:
       '@tanstack/react-query-devtools':
         specifier: ^4.41.0
         version: 4.41.0(@tanstack/react-query@4.41.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      axios:
-        specifier: ^1.7.2
-        version: 1.7.2
       color:
         specifier: ^4.2.3
         version: 4.2.3
       dayjs:
         specifier: ^1.11.11
         version: 1.11.11
+      ky:
+        specifier: ^1.12.0
+        version: 1.12.0
       markdown-to-jsx:
         specifier: ^7.4.7
         version: 7.4.7(react@18.3.1)
@@ -2378,9 +2372,6 @@ packages:
     resolution: {integrity: sha512-7prDjvt9HmqiZ0cl5CRjtS84sEyhsHP2coDkaZKRKVfCDo9s7iw7ChVmar78Gu9pC4SoR/28wFu/G5JJhTnqEg==}
     engines: {node: '>=4'}
 
-  axios@1.7.2:
-    resolution: {integrity: sha512-2A8QhOMrbomlDuiLeK9XibIBzuHeRcqqNOHp0Cyp5EoJ1IFDh+XZH3A6BkXtv0K4gFGCI0Y4BM7B1wOEi0Rmgw==}
-
   babel-jest@29.7.0:
     resolution: {integrity: sha512-BrvGY3xZSwEcCzKvKsCi2GgHqDqsYkOP4/by5xCgIwGXQxIEh+8ew3gmrE1y7XRR6LHZIj6yLYnUi/mm2KXKBg==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
@@ -3443,15 +3434,6 @@ packages:
   flatted@3.3.1:
     resolution: {integrity: sha512-X8cqMLLie7KsNUDSdzeN8FYK9rEt4Dt67OsG/DNGnYTSDBG4uFAJFBnUeiV+zCVAvwFy56IjM9sH51jVaEhNxw==}
 
-  follow-redirects@1.15.6:
-    resolution: {integrity: sha512-wWN62YITEaOpSK584EZXJafH1AGpO8RVgElfkuXbTOrPX4fIfOyEpW/CsiNd8JdYrAoOvafRTOEnvsO++qCqFA==}
-    engines: {node: '>=4.0'}
-    peerDependencies:
-      debug: '*'
-    peerDependenciesMeta:
-      debug:
-        optional: true
-
   foreground-child@3.1.1:
     resolution: {integrity: sha512-TMKDUnIte6bfb5nWv7V/caI169OHgvwjb7V4WkeUvbQQdjr5rWKqHFiKWb/fcOwB+CzBT+qbWjvj+DVwRskpIg==}
     engines: {node: '>=14'}
@@ -4254,8 +4236,8 @@ packages:
     resolution: {integrity: sha512-eTIzlVOSUR+JxdDFepEYcBMtZ9Qqdef+rnzWdRZuMbOywu5tO2w2N7rqjoANZ5k9vywhL6Br1VRjUIgTQx4E8w==}
     engines: {node: '>=6'}
 
-  ky@1.7.2:
-    resolution: {integrity: sha512-OzIvbHKKDpi60TnF9t7UUVAF1B4mcqc02z5PIvrm08Wyb+yOcz63GRvEuVxNT18a9E1SrNouhB4W2NNLeD7Ykg==}
+  ky@1.12.0:
+    resolution: {integrity: sha512-YRLmSUHCwOJRBMArtqMRLOmO7fewn3yOoui6aB8ERkRVXupa0UiaQaKbIXteMt4jUElhbdqTMsLFHs8APxxUoQ==}
     engines: {node: '>=18'}
 
   latest-version@9.0.0:
@@ -9071,14 +9053,6 @@ snapshots:
 
   attr-accept@2.2.2: {}
 
-  axios@1.7.2:
-    dependencies:
-      follow-redirects: 1.15.6
-      form-data: 4.0.0
-      proxy-from-env: 1.1.0
-    transitivePeerDependencies:
-      - debug
-
   babel-jest@29.7.0(@babel/core@7.24.6):
     dependencies:
       '@babel/core': 7.24.6
@@ -10349,8 +10323,6 @@ snapshots:
 
   flatted@3.3.1: {}
 
-  follow-redirects@1.15.6: {}
-
   foreground-child@3.1.1:
     dependencies:
       cross-spawn: 7.0.3
@@ -11427,7 +11399,7 @@ snapshots:
 
   kleur@3.0.3: {}
 
-  ky@1.7.2: {}
+  ky@1.12.0: {}
 
   latest-version@9.0.0:
     dependencies:
@@ -12299,7 +12271,7 @@ snapshots:
 
   package-json@10.0.1:
     dependencies:
-      ky: 1.7.2
+      ky: 1.12.0
       registry-auth-token: 5.0.2
       registry-url: 6.0.1
       semver: 7.6.2

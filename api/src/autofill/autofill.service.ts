@@ -1,9 +1,8 @@
-import { IAutofillRelease } from 'shared';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import axios from 'axios';
 import dayjs from 'dayjs';
 import { ITrack, MusicBrainzApi } from 'musicbrainz-api';
+import { IAutofillRelease } from 'shared';
 
 @Injectable()
 export class AutofillService {
@@ -21,9 +20,9 @@ export class AutofillService {
     try {
       cover = await Promise.race([
         new Promise<string>((res, rej) => {
-          axios
-            .get('https://coverartarchive.org/release/' + mbid)
-            .then(({ data }) => {
+          fetch('https://coverartarchive.org/release/' + mbid)
+            .then((response) => response.json())
+            .then((data: any) => {
               if (data.images && data.images.length !== 0) {
                 const img = data['images'].filter((i: any) =>
                   i.types.includes('Front'),
