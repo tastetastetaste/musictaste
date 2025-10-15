@@ -627,10 +627,13 @@ const updatePreferences = ({
   client
     .patch('users/' + id + '/update-preferences', { json: data })
     .json<boolean>();
-const updateImage = ({ id, image }: { id: string; image }) =>
-  client
-    .patch('users/' + id + '/update-image', { body: image as FormData })
+const updateImage = ({ id, image }: { id: string; image: File }) => {
+  const formData = new FormData();
+  formData.append('image', image);
+  return client
+    .patch('users/' + id + '/update-image', { body: formData })
     .json<boolean>();
+};
 const updateTheme = ({
   id,
   theme,
