@@ -27,7 +27,6 @@
     "react-helmet": "^6.1.0",
     "react-hook-form": "^7.51.5",
     "react-minimal-pie-chart": "^8.4.0",
-    "react-query": "^3.39.3",
     "react-range": "^1.8.14",
     "react-router-dom": "^6.23.1",
     "react-select": "^5.8.0",
