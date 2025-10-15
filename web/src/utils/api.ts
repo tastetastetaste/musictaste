@@ -71,6 +71,7 @@ import {
   UpdateUserThemeDto,
   VoteType,
 } from 'shared';
+import { buildFormData } from './build-form-data';
 
 const client = ky.create({
   prefixUrl:
@@ -413,11 +414,11 @@ const updateLabel = ({ id, data }: { id: string; data: UpdateLabelDto }) =>
 
 const createRelease = (data: CreateReleaseDto) =>
   client
-    .post('submissions/releases', { body: data as unknown as FormData })
+    .post('submissions/releases', { body: buildFormData(data) })
     .json<ICreateReleaseResponse>();
 const updateRelease = ({ id, data }: { id: string; data: UpdateReleaseDto }) =>
   client
-    .post('submissions/releases/' + id, { body: data as unknown as FormData })
+    .post('submissions/releases/' + id, { body: buildFormData(data) })
     .json<IUpdateReleaseResponse>();
 
 const createGenre = (data: CreateGenreDto) =>
@@ -628,10 +629,8 @@ const updatePreferences = ({
     .patch('users/' + id + '/update-preferences', { json: data })
     .json<boolean>();
 const updateImage = ({ id, image }: { id: string; image: File }) => {
-  const formData = new FormData();
-  formData.append('image', image);
   return client
-    .patch('users/' + id + '/update-image', { body: formData })
+    .patch('users/' + id + '/update-image', { body: buildFormData({ image }) })
     .json<boolean>();
 };
 const updateTheme = ({
