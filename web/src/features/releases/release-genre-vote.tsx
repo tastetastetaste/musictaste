@@ -161,7 +161,11 @@ const DialogContent = ({ releaseId }: { releaseId: string }) => {
     api.getReleaseGenres(releaseId),
   );
 
-  const { data: searchData, isLoading } = useQuery(
+  const {
+    data: searchData,
+    isLoading,
+    fetchStatus,
+  } = useQuery(
     cacheKeys.searchKey({
       q: q!,
       type: ['genres'],
@@ -207,7 +211,7 @@ const DialogContent = ({ releaseId }: { releaseId: string }) => {
             onChange={(e) => setQ(e.target.value)}
             placeholder="Search..."
           />
-          {isLoading && <Loading />}
+          {isLoading && fetchStatus !== 'idle' && <Loading />}
           {searchData?.genres &&
             searchData.genres
               .filter((sg) => !data.some((rg) => sg.id === rg.genre.id))

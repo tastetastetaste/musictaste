@@ -16,7 +16,7 @@ export const SelectArtist = forwardRef(
   ) => {
     const [query, setQuery] = useState('');
 
-    const { data, isLoading, refetch } = useQuery(
+    const { data, isLoading, refetch, fetchStatus } = useQuery(
       cacheKeys.searchKey({
         q: query!,
         type: ['artists'],
@@ -41,7 +41,7 @@ export const SelectArtist = forwardRef(
           onChange(selected);
           updateArtistsIds(selected.map((option) => option.value));
         }}
-        isLoading={isLoading}
+        isLoading={isLoading && fetchStatus !== 'idle'}
         isMulti={true}
         options={
           data?.artists &&
