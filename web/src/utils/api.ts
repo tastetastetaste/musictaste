@@ -80,6 +80,7 @@ const client = ky.create({
       ? 'https://api.musictaste.xyz'
       : 'http://localhost:4000/',
   credentials: 'include',
+  timeout: false,
 });
 
 // ----------------
