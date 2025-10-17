@@ -22,6 +22,8 @@ import { Button } from '../../components/button';
 import { FlexChild } from '../../components/flex/flex-child';
 import { cacheKeys } from '../../utils/cache-keys';
 import { User } from '../users/user';
+import { Typography } from '../../components/typography';
+import { formatDateTime } from '../../utils/date-format';
 
 const FieldContainer = styled.div`
   display: flex;
@@ -417,21 +419,24 @@ export const SubmissionItemWrapper = ({
             </Button>
           )}
       </Group>
-      <Group>
-        {submission.votes.map((v) => (
-          <Group>
-            <User user={v.user} avatarOnly />
-            {v.type === VoteType.UP ? (
-              <IconArrowBigUp
-                css={({ colors }) => ({ color: colors.highlight })}
-              />
-            ) : (
-              <IconArrowBigDown
-                css={({ colors }) => ({ color: colors.error })}
-              />
-            )}
-          </Group>
-        ))}
+      <Group justify="apart">
+        <Group>
+          {submission.votes.map((v) => (
+            <Fragment>
+              <User user={v.user} avatarOnly />
+              {v.type === VoteType.UP ? (
+                <IconArrowBigUp
+                  css={({ colors }) => ({ color: colors.highlight })}
+                />
+              ) : (
+                <IconArrowBigDown
+                  css={({ colors }) => ({ color: colors.error })}
+                />
+              )}
+            </Fragment>
+          ))}
+        </Group>
+        <Typography>{formatDateTime(submission.createdAt)}</Typography>
       </Group>
     </div>
   );
