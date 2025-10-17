@@ -26,9 +26,9 @@ const MergePage = () => {
     register,
     handleSubmit,
     watch,
-    setValue,
     control,
     formState: { errors },
+    reset,
   } = useForm<MergeFormData>({
     defaultValues: {
       entityType: 'artist',
@@ -45,7 +45,6 @@ const MergePage = () => {
 
   const onSubmit = async (data: MergeFormData) => {
     try {
-      console.log('onSubmit', data);
       const result = await mergeEntities({
         entityType: data.entityType,
         mergeFromId: data.mergeFromId,
@@ -55,8 +54,8 @@ const MergePage = () => {
       alert(
         `Successfully merged ${result.mergedFrom} into ${result.mergedInto}`,
       );
-      setValue('mergeFromId', '');
-      setValue('mergeIntoId', '');
+
+      reset();
     } catch (error) {
       alert('Error merging entities');
     }
@@ -69,8 +68,7 @@ const MergePage = () => {
           <Stack gap="md">
             <Typography size="title-lg">Merge Entities</Typography>
             <Typography size="body">
-              This will merge one entity into another, moving all related data
-              and deleting the source entity.
+              This will move all related data and delete the source entity.
             </Typography>
 
             <div>

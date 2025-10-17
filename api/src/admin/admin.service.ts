@@ -108,7 +108,6 @@ export class AdminService {
     mergeFromId: string,
     mergeIntoId: string,
   ) {
-    console.log('mergeEntities', entityType, mergeFromId, mergeIntoId);
     switch (entityType) {
       case 'artist':
         return this.artistsService.mergeArtists(mergeFromId, mergeIntoId);
