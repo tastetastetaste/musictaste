@@ -14,6 +14,7 @@ import { ReleasesController } from './releases.controller';
 import { ReleasesService } from './releases.service';
 import { ReleaseGenre } from '../../db/entities/release-genre.entity';
 import { CommentsModule } from '../comments/comments.module';
+import { EntitiesModule } from '../entities/entities.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { CommentsModule } from '../comments/comments.module';
     UsersModule,
     ImagesModule,
     CommentsModule,
+    EntitiesModule,
   ],
   controllers: [ReleasesController],
   providers: [ReleasesService],

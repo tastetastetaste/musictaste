@@ -5,6 +5,9 @@ import { User } from '../../db/entities/user.entity';
 import { RedisService } from '../redis/redis.service';
 import { EntitiesService } from '../entities/entities.service';
 import { NotificationsService } from '../notifications/notifications.service';
+import { ArtistsService } from '../artists/artists.service';
+import { ReleasesService } from '../releases/releases.service';
+import { LabelsService } from '../labels/labels.service';
 import {
   UpdateUserContributorStatusDto,
   UpdateUserSupporterStatusDto,
@@ -23,6 +26,9 @@ export class AdminService {
     private redisService: RedisService,
     private entitiesService: EntitiesService,
     private notificationsService: NotificationsService,
+    private artistsService: ArtistsService,
+    private releasesService: ReleasesService,
+    private labelsService: LabelsService,
   ) {}
 
   async updateUserContributorStatus(
@@ -95,5 +101,23 @@ export class AdminService {
     });
 
     return true;
+  }
+
+  async mergeEntities(
+    entityType: 'artist' | 'release' | 'label',
+    mergeFromId: string,
+    mergeIntoId: string,
+  ) {
+    console.log('mergeEntities', entityType, mergeFromId, mergeIntoId);
+    switch (entityType) {
+      case 'artist':
+        return this.artistsService.mergeArtists(mergeFromId, mergeIntoId);
+      case 'release':
+        return this.releasesService.mergeReleases(mergeFromId, mergeIntoId);
+      case 'label':
+        return this.labelsService.mergeLabels(mergeFromId, mergeIntoId);
+      default:
+        throw new Error('Invalid entity type');
+    }
   }
 }

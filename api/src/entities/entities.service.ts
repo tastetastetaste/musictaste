@@ -1,24 +1,32 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
+  CommentEntityType,
   EntityType,
   getListPath,
   getReleasePath,
   getReviewPath,
   getUserPath,
+  SubmissionStatus,
 } from 'shared';
 import { Repository } from 'typeorm';
+import { ArtistSubmission } from '../../db/entities/artist-submission.entity';
+import { Comment } from '../../db/entities/comment.entity';
+import { LabelSubmission } from '../../db/entities/label-submission.entity';
+import { ListItem } from '../../db/entities/list-item.entity';
+import { ListLike } from '../../db/entities/list-like.entity';
 import { List } from '../../db/entities/list.entity';
+import { Notification } from '../../db/entities/notification.entity';
+import { ReleaseGenreVote } from '../../db/entities/release-genre-vote.entity';
+import { ReleaseSubmission } from '../../db/entities/release-submission.entity';
 import { Release } from '../../db/entities/release.entity';
+import { ReviewVote } from '../../db/entities/review-vote.entity';
+import { TrackVote } from '../../db/entities/track-vote.entity';
+import { Track } from '../../db/entities/track.entity';
+import { UserFollowing } from '../../db/entities/user-following.entity';
+import { UserReleaseTag } from '../../db/entities/user-release-tag.entity';
 import { UserRelease } from '../../db/entities/user-release.entity';
 import { User } from '../../db/entities/user.entity';
-import { UserReleaseTag } from '../../db/entities/user-release-tag.entity';
-import { ReviewVote } from '../../db/entities/review-vote.entity';
-import { ListLike } from '../../db/entities/list-like.entity';
-import { Comment } from '../../db/entities/comment.entity';
-import { Notification } from '../../db/entities/notification.entity';
-import { UserFollowing } from '../../db/entities/user-following.entity';
-import { ReleaseGenreVote } from '../../db/entities/release-genre-vote.entity';
 
 @Injectable()
 export class EntitiesService {
@@ -29,6 +37,8 @@ export class EntitiesService {
     private userReleasesRepository: Repository<UserRelease>,
     @InjectRepository(List)
     private listsRepository: Repository<List>,
+    @InjectRepository(ListItem)
+    private listItemsRepository: Repository<ListItem>,
     @InjectRepository(Release)
     private releasesRepository: Repository<Release>,
     @InjectRepository(UserReleaseTag)
@@ -45,6 +55,16 @@ export class EntitiesService {
     private userFollowingRepository: Repository<UserFollowing>,
     @InjectRepository(ReleaseGenreVote)
     private releaseGenreVoteRepository: Repository<ReleaseGenreVote>,
+    @InjectRepository(ArtistSubmission)
+    private artistSubmissionRepository: Repository<ArtistSubmission>,
+    @InjectRepository(ReleaseSubmission)
+    private releaseSubmissionRepository: Repository<ReleaseSubmission>,
+    @InjectRepository(LabelSubmission)
+    private labelSubmissionRepository: Repository<LabelSubmission>,
+    @InjectRepository(Track)
+    private tracksRepository: Repository<Track>,
+    @InjectRepository(TrackVote)
+    private trackVotesRepository: Repository<TrackVote>,
   ) {}
 
   async getEntityOwnerId(
@@ -155,5 +175,169 @@ export class EntitiesService {
     await this.userFollowingRepository.delete({ followingId: userId });
 
     await this.releaseGenreVoteRepository.delete({ userId });
+  }
+
+  async mergeReleaseActivities(
+    mergeFromReleaseId: string,
+    mergeIntoReleaseId: string,
+  ): Promise<void> {
+    // Move user releases
+    await this.mergeUserReleases(mergeFromReleaseId, mergeIntoReleaseId);
+
+    // Move comments
+    await this.commentRepository.update(
+      { entityId: mergeFromReleaseId, entityType: CommentEntityType.RELEASE },
+      { entityId: mergeIntoReleaseId },
+    );
+
+    // Move list items
+    await this.mergeListItems(mergeFromReleaseId, mergeIntoReleaseId);
+
+    // Move track votes
+    await this.mergeTrackVotes(mergeFromReleaseId, mergeIntoReleaseId);
+  }
+
+  private async mergeUserReleases(
+    mergeFromReleaseId: string,
+    mergeIntoReleaseId: string,
+  ): Promise<void> {
+    // Find users who have both releases
+    const conflictingUsers = await this.userReleasesRepository
+      .createQueryBuilder('ur1')
+      .select('ur1.userId')
+      .innerJoin('user_release', 'ur2', 'ur2.userId = ur1.userId')
+      .where('ur1.releaseId = :fromId', { fromId: mergeFromReleaseId })
+      .andWhere('ur2.releaseId = :toId', { toId: mergeIntoReleaseId })
+      .getMany();
+
+    const conflictingUserIds = conflictingUsers.map((ur) => ur.userId);
+
+    // Delete conflicting user releases
+    if (conflictingUserIds.length > 0) {
+      await this.userReleasesRepository
+        .createQueryBuilder()
+        .delete()
+        .where('releaseId = :releaseId', { releaseId: mergeFromReleaseId })
+        .andWhere('userId IN (:...userIds)', { userIds: conflictingUserIds })
+        .execute();
+    }
+
+    // Update user releases
+    await this.userReleasesRepository.update(
+      { releaseId: mergeFromReleaseId },
+      { releaseId: mergeIntoReleaseId },
+    );
+  }
+
+  private async mergeListItems(
+    mergeFromReleaseId: string,
+    mergeIntoReleaseId: string,
+  ): Promise<void> {
+    // Find lists that have both releases
+    const conflictingLists = await this.listItemsRepository
+      .createQueryBuilder('li1')
+      .select('li1.listId')
+      .innerJoin('list_item', 'li2', 'li2.listId = li1.listId')
+      .where('li1.releaseId = :fromId', { fromId: mergeFromReleaseId })
+      .andWhere('li2.releaseId = :toId', { toId: mergeIntoReleaseId })
+      .getMany();
+
+    const conflictingListIds = conflictingLists.map((li) => li.listId);
+
+    // Delete conflicting list items
+    if (conflictingListIds.length > 0) {
+      await this.listItemsRepository
+        .createQueryBuilder()
+        .delete()
+        .where('releaseId = :releaseId', { releaseId: mergeFromReleaseId })
+        .andWhere('listId IN (:...listIds)', { listIds: conflictingListIds })
+        .execute();
+    }
+
+    // Update list items
+    await this.listItemsRepository.update(
+      { releaseId: mergeFromReleaseId },
+      { releaseId: mergeIntoReleaseId },
+    );
+  }
+
+  private async mergeTrackVotes(
+    mergeFromReleaseId: string,
+    mergeIntoReleaseId: string,
+  ): Promise<void> {
+    const fromTracks = await this.tracksRepository.find({
+      where: { releaseId: mergeFromReleaseId },
+      order: { order: 'ASC' },
+    });
+    const intoTracks = await this.tracksRepository.find({
+      where: { releaseId: mergeIntoReleaseId },
+      order: { order: 'ASC' },
+    });
+
+    for (let i = 0; i < fromTracks.length; i++) {
+      if (intoTracks[i]) {
+        try {
+          await this.trackVotesRepository.update(
+            { trackId: fromTracks[i].id },
+            { trackId: intoTracks[i].id },
+          );
+        } catch (error) {
+          // Assume error is due to unique constraint
+          // Delete vote or leave it to be deleted by cascade
+        }
+      } else {
+        await this.trackVotesRepository.delete({ trackId: fromTracks[i].id });
+      }
+    }
+  }
+
+  async mergeArtistActivities(
+    mergeFromArtistId: string,
+    mergeIntoArtistId: string,
+  ): Promise<void> {
+    await this.releasesRepository
+      .createQueryBuilder()
+      .update('release_artist')
+      .set({ artistId: mergeIntoArtistId })
+      .where('artistId = :mergeFromId', { mergeFromId: mergeFromArtistId })
+      .execute();
+  }
+
+  async mergeLabelActivities(
+    mergeFromLabelId: string,
+    mergeIntoLabelId: string,
+  ): Promise<void> {
+    await this.releasesRepository
+      .createQueryBuilder()
+      .update('release_label')
+      .set({ labelId: mergeIntoLabelId })
+      .where('labelId = :mergeFromId', { mergeFromId: mergeFromLabelId })
+      .execute();
+  }
+
+  async disapproveSubmissionsForEntity(
+    entityType: 'artist' | 'release' | 'label',
+    entityId: string,
+  ): Promise<void> {
+    switch (entityType) {
+      case 'artist':
+        await this.artistSubmissionRepository.update(
+          { artistId: entityId },
+          { submissionStatus: SubmissionStatus.DISAPPROVED },
+        );
+        break;
+      case 'release':
+        await this.releaseSubmissionRepository.update(
+          { releaseId: entityId },
+          { submissionStatus: SubmissionStatus.DISAPPROVED },
+        );
+        break;
+      case 'label':
+        await this.labelSubmissionRepository.update(
+          { labelId: entityId },
+          { submissionStatus: SubmissionStatus.DISAPPROVED },
+        );
+        break;
+    }
   }
 }

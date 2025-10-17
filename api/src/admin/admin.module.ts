@@ -6,6 +6,9 @@ import { User } from '../../db/entities/user.entity';
 import { RedisModule } from '../redis/redis.module';
 import { EntitiesModule } from '../entities/entities.module';
 import { NotificationsModule } from '../notifications/notifications.module';
+import { ArtistsModule } from '../artists/artists.module';
+import { ReleasesModule } from '../releases/releases.module';
+import { LabelsModule } from '../labels/labels.module';
 
 @Module({
   imports: [
@@ -13,6 +16,9 @@ import { NotificationsModule } from '../notifications/notifications.module';
     RedisModule,
     EntitiesModule,
     NotificationsModule,
+    ArtistsModule,
+    ReleasesModule,
+    LabelsModule,
   ],
   controllers: [AdminController],
   providers: [AdminService],

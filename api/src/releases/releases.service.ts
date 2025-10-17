@@ -1,6 +1,4 @@
 import {
-  forwardRef,
-  Inject,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -31,6 +29,7 @@ import { Track } from '../../db/entities/track.entity';
 import { UserRelease } from '../../db/entities/user-release.entity';
 import { CommentsService } from '../comments/comments.service';
 import { genId } from '../common/genId';
+import { EntitiesService } from '../entities/entities.service';
 import { ImagesService } from '../images/images.service';
 import { UsersService } from '../users/users.service';
 
@@ -61,6 +60,7 @@ export class ReleasesService {
     private usersService: UsersService,
     private imagesService: ImagesService,
     private commentsService: CommentsService,
+    private entitiesService: EntitiesService,
   ) {}
 
   async statsLoader(ids: string[]): Promise<Record<string, IReleaseStats>> {
@@ -798,5 +798,32 @@ export class ReleasesService {
     );
 
     return { addedIds, removedIds };
+  }
+
+  async mergeReleases(mergeFromId: string, mergeIntoId: string) {
+    const mergeFrom = await this.releasesRepository.findOne({
+      where: { id: mergeFromId },
+    });
+    const mergeInto = await this.releasesRepository.findOne({
+      where: { id: mergeIntoId },
+    });
+
+    if (!mergeFrom || !mergeInto) {
+      throw new Error('One or both releases not found');
+    }
+
+    await this.entitiesService.mergeReleaseActivities(mergeFromId, mergeIntoId);
+
+    await this.entitiesService.disapproveSubmissionsForEntity(
+      'release',
+      mergeFromId,
+    );
+
+    await this.releasesRepository.delete(mergeFromId);
+
+    return {
+      mergedFrom: mergeFrom.title,
+      mergedInto: mergeInto.title,
+    };
   }
 }

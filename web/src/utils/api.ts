@@ -672,6 +672,15 @@ const findUsers = (type: FindUsersType) => {
     .json<IUsersResponse>();
 };
 
+const mergeEntities = (data: {
+  entityType: 'artist' | 'release' | 'label';
+  mergeFromId: string;
+  mergeIntoId: string;
+}) =>
+  client
+    .post('admin/merge', { json: data })
+    .json<{ mergedFrom: string; mergedInto: string }>();
+
 export const api = {
   getArtist,
   getLabel,
@@ -772,4 +781,5 @@ export const api = {
   updateAccountStatus,
   sendNotification,
   findUsers,
+  mergeEntities,
 };

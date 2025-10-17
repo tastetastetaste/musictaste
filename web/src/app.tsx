@@ -187,6 +187,8 @@ const PendingDeletionsPage = lazy(
   () => import('./features/contributions/pending-deletions-page'),
 );
 
+const MergePage = lazy(() => import('./features/contributions/merge-page'));
+
 const ThemePage = lazy(() => import('./features/theme/theme-page'));
 
 const QueryProvider = ({ children }: { children: any }) => {
@@ -268,6 +270,17 @@ const AuthRequiredPage = ({ children }: { children: React.ReactNode }) => {
         <Feedback message={AUTH_REQUIRED_PAGE} />
       </AppPageWrapper>
     );
+  }
+  return children;
+};
+
+const AdminRequiredPage = ({ children }: { children: React.ReactNode }) => {
+  const { isLoading, isLoggedIn, isAdmin } = useAuth();
+
+  if (isLoading) return <Loading />;
+
+  if (!isLoggedIn || !isAdmin) {
+    return <NotFoundPage />;
   }
   return children;
 };
@@ -708,11 +721,21 @@ const router = createBrowserRouter([
       {
         path: 'contributions/pending-deletions',
         element: (
-          <AuthRequiredPage>
+          <AdminRequiredPage>
             <Suspense fallback={<Fallback />}>
               <PendingDeletionsPage />
             </Suspense>
-          </AuthRequiredPage>
+          </AdminRequiredPage>
+        ),
+      },
+      {
+        path: 'contributions/merge',
+        element: (
+          <AdminRequiredPage>
+            <Suspense fallback={<Fallback />}>
+              <MergePage />
+            </Suspense>
+          </AdminRequiredPage>
         ),
       },
       {

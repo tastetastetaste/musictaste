@@ -77,4 +77,26 @@ export class AdminController {
 
     return this.adminService.sendNotification(sendNotificationDto, user.id);
   }
+
+  @Post('merge')
+  @UseGuards(AuthenticatedGuard)
+  mergeEntities(
+    @Body()
+    body: {
+      entityType: 'artist' | 'release' | 'label';
+      mergeFromId: string;
+      mergeIntoId: string;
+    },
+    @CurUser() user: CurrentUserPayload,
+  ) {
+    if (user.contributorStatus !== ContributorStatus.ADMIN) {
+      throw new UnauthorizedException();
+    }
+
+    return this.adminService.mergeEntities(
+      body.entityType,
+      body.mergeFromId,
+      body.mergeIntoId,
+    );
+  }
 }

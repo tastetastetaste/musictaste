@@ -1,8 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateLabelDto, UpdateLabelDto, ILabelResponse } from 'shared';
+import { CreateLabelDto, ILabelResponse } from 'shared';
 import { Repository } from 'typeorm';
 import { Label } from '../../db/entities/label.entity';
+import { EntitiesService } from '../entities/entities.service';
 import { ReleaseLabel } from '../../db/entities/release-label.entity';
 
 @Injectable()
@@ -12,6 +13,7 @@ export class LabelsService {
     private labelRepository: Repository<Label>,
     @InjectRepository(ReleaseLabel)
     private releaseLabelRepository: Repository<ReleaseLabel>,
+    private entitiesService: EntitiesService,
   ) {}
 
   async findOne(id: string): Promise<ILabelResponse> {
@@ -52,5 +54,32 @@ export class LabelsService {
 
   async deleteLabel(id: string) {
     return await this.labelRepository.delete(id);
+  }
+
+  async mergeLabels(mergeFromId: string, mergeIntoId: string) {
+    const mergeFrom = await this.labelRepository.findOne({
+      where: { id: mergeFromId },
+    });
+    const mergeInto = await this.labelRepository.findOne({
+      where: { id: mergeIntoId },
+    });
+
+    if (!mergeFrom || !mergeInto) {
+      throw new Error('One or both labels not found');
+    }
+
+    await this.entitiesService.mergeLabelActivities(mergeFromId, mergeIntoId);
+
+    await this.entitiesService.disapproveSubmissionsForEntity(
+      'label',
+      mergeFromId,
+    );
+
+    await this.labelRepository.delete(mergeFromId);
+
+    return {
+      mergedFrom: mergeFrom.name,
+      mergedInto: mergeInto.name,
+    };
   }
 }
