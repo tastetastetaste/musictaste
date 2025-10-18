@@ -22,6 +22,7 @@ import ReviewsListRenderer from '../features/reviews/reviews-list-renderer';
 import { useOnScreen } from '../hooks/useOnScreen';
 
 const ROOT_MARGIN = '50px';
+const SECTION_MIN_HEIGHT = '500px';
 
 const TopReviewsSection = () => {
   const { ref, isIntersecting } = useOnScreen(ROOT_MARGIN);
@@ -48,7 +49,7 @@ const TopReviewsSection = () => {
   );
   const reviews = reviewsData?.entries;
   return (
-    <div ref={ref}>
+    <div ref={ref} css={{ minHeight: SECTION_MIN_HEIGHT }}>
       <Stack gap="lg">
         <Link to="/reviews/top" size="title-lg">
           Top Recent Reviews
@@ -87,7 +88,7 @@ const LatestListsSection = () => {
   );
   const lists = listsData?.lists;
   return (
-    <div ref={ref}>
+    <div ref={ref} css={{ minHeight: SECTION_MIN_HEIGHT }}>
       <Stack gap="lg">
         <Link to="/lists/new" size="title-lg">
           Latest Lists
@@ -119,7 +120,7 @@ const RecentlyAddedReleasesSection = () => {
   );
   const recentlyAddedReleases = recentlyAddedReleasesData?.releases;
   return (
-    <div ref={ref}>
+    <div ref={ref} css={{ minHeight: SECTION_MIN_HEIGHT }}>
       <Stack gap="lg">
         <Link to="/releases/recently-added" size="title-lg">
           Recently Added
@@ -138,7 +139,7 @@ const RecentlyAddedReleasesSection = () => {
 const RecentReviewsSection = () => {
   const { ref, isIntersecting } = useOnScreen(ROOT_MARGIN);
   return (
-    <div ref={ref}>
+    <div ref={ref} css={{ minHeight: SECTION_MIN_HEIGHT }}>
       <Stack gap="lg">
         <Link to="/reviews/recent" size="title-lg">
           Recent Reviews
