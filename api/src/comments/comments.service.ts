@@ -148,6 +148,9 @@ export class CommentsService {
     entityIds: string | string[],
   ): Promise<number | { entityId: string; count: number }[]> {
     if (Array.isArray(entityIds)) {
+      if (entityIds.length === 0) {
+        return [];
+      }
       const results = await this.commentsRepository
         .createQueryBuilder('comment')
         .select('comment.entityId', 'entityId')

@@ -26,15 +26,19 @@ class ArtistSubmissionListOutletContext {
   sortBy?: SubmissionSortByEnum;
 }
 
+interface ArtistSubmissionItemProps {
+  submission: IArtistSubmission;
+  hideUser?: boolean;
+  discardFn?: DiscardSubmissionFn;
+  fullPage?: boolean;
+}
+
 export const ArtistSubmissionItem = ({
   submission,
   hideUser,
   discardFn,
-}: {
-  submission: IArtistSubmission;
-  hideUser?: boolean;
-  discardFn?: DiscardSubmissionFn;
-}) => {
+  fullPage,
+}: ArtistSubmissionItemProps) => {
   const { original, changes } = submission;
   const hasOriginal = !!original;
   return (
@@ -47,6 +51,7 @@ export const ArtistSubmissionItem = ({
       discardFn={discardFn}
       submission={submission}
       submissionType="artist"
+      fullPage={fullPage}
     >
       <SubmissionField
         label="Name"

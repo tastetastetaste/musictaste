@@ -23,15 +23,19 @@ import {
   TracksComparisonField,
 } from './submission-item';
 
+interface ReleaseSubmissionItemProps {
+  submission: IReleaseSubmission;
+  hideUser?: boolean;
+  discardFn?: DiscardSubmissionFn;
+  fullPage?: boolean;
+}
+
 export const ReleaseSubmissionItem = ({
   submission,
   hideUser,
   discardFn,
-}: {
-  submission: IReleaseSubmission;
-  hideUser?: boolean;
-  discardFn?: DiscardSubmissionFn;
-}) => {
+  fullPage,
+}: ReleaseSubmissionItemProps) => {
   const { original, changes } = submission;
   const hasOriginal = !!original;
 
@@ -46,6 +50,7 @@ export const ReleaseSubmissionItem = ({
       submission={submission}
       discardFn={discardFn}
       submissionType="release"
+      fullPage={fullPage}
     >
       <SubmissionField
         label="Title"

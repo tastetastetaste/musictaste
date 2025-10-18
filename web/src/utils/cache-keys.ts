@@ -159,6 +159,26 @@ const genreSubmissionsKey = (filters?: {
       ]
     : ['genreSubmissions'];
 
+const releaseSubmissionByIdKey = (submissionId: string) => [
+  'releaseSubmissions',
+  submissionId,
+];
+
+const artistSubmissionByIdKey = (submissionId: string) => [
+  'artistSubmissions',
+  submissionId,
+];
+
+const labelSubmissionByIdKey = (submissionId: string) => [
+  'labelSubmissions',
+  submissionId,
+];
+
+const genreSubmissionByIdKey = (submissionId: string) => [
+  'genreSubmissions',
+  submissionId,
+];
+
 const userContributionsStatsKey = (userId: string) => [
   'userContributionsStats',
   userId,
@@ -260,6 +280,10 @@ export const cacheKeys = {
   artistSubmissionsKey,
   labelSubmissionsKey,
   genreSubmissionsKey,
+  releaseSubmissionByIdKey,
+  artistSubmissionByIdKey,
+  labelSubmissionByIdKey,
+  genreSubmissionByIdKey,
   userContributionsStatsKey,
   currentUserKey,
   findUsersKey,

@@ -452,6 +452,7 @@ export interface IReleaseSubmission {
   createdAt: string;
   note: string;
   votes: IReleaseSubmissionVote[];
+  commentsCount?: number;
 }
 
 export interface IArtistChanges {
@@ -479,6 +480,7 @@ export interface IArtistSubmission {
   createdAt: string;
   votes: IArtistSubmissionVote[];
   note: string;
+  commentsCount?: number;
 }
 
 export interface ILabelChanges {
@@ -506,6 +508,7 @@ export interface ILabelSubmission {
   createdAt: string;
   votes: ILabelSubmissionVote[];
   note: string;
+  commentsCount?: number;
 }
 
 export interface IGenreChanges {
@@ -533,6 +536,7 @@ export interface IGenreSubmission {
   createdAt: string;
   note: string;
   votes: IGenreSubmissionVote[];
+  commentsCount?: number;
 }
 export interface IReleaseSubmissionsResponse extends IPagination {
   releases: IReleaseSubmission[];

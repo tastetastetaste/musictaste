@@ -16,6 +16,7 @@ import {
   FindReleaseSubmissionsDto,
   FindUsersType,
   IArtistResponse,
+  IArtistSubmission,
   IArtistSubmissionsResponse,
   IAutofillRelease,
   ICommentsResponse,
@@ -28,8 +29,10 @@ import {
   IEntry,
   IEntryResonse,
   IGenreResponse,
+  IGenreSubmission,
   IGenreSubmissionsResponse,
   ILabelResponse,
+  ILabelSubmission,
   ILabelSubmissionsResponse,
   ILanguage,
   IListItemsResponse,
@@ -39,6 +42,7 @@ import {
   IReleaseGenre,
   IReleaseResponse,
   IReleasesResponse,
+  IReleaseSubmission,
   IReleaseSubmissionsResponse,
   IReportResponse,
   ISearchResponse,
@@ -490,6 +494,18 @@ const getGenreSubmissions = ({
     )
     .json<IGenreSubmissionsResponse>();
 
+const getReleaseSubmissionById = (submissionId: string) =>
+  client.get('submissions/release/' + submissionId).json<IReleaseSubmission>();
+
+const getArtistSubmissionById = (submissionId: string) =>
+  client.get('submissions/artist/' + submissionId).json<IArtistSubmission>();
+
+const getLabelSubmissionById = (submissionId: string) =>
+  client.get('submissions/label/' + submissionId).json<ILabelSubmission>();
+
+const getGenreSubmissionById = (submissionId: string) =>
+  client.get('submissions/genre/' + submissionId).json<IGenreSubmission>();
+
 const discardMyReleaseSubmission = (submissionId: string) =>
   client.delete('submissions/releases/' + submissionId).json<void>();
 
@@ -749,6 +765,10 @@ export const api = {
   getArtistSubmissions,
   getLabelSubmissions,
   getGenreSubmissions,
+  getReleaseSubmissionById,
+  getArtistSubmissionById,
+  getLabelSubmissionById,
+  getGenreSubmissionById,
   discardMyArtistSubmission,
   discardMyLabelSubmission,
   discardMyReleaseSubmission,

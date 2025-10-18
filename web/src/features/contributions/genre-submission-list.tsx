@@ -22,13 +22,17 @@ class GenreSubmissionListOutletContext {
   sortBy?: SubmissionSortByEnum;
 }
 
+interface GenreSubmissionItemProps {
+  submission: IGenreSubmission;
+  hideUser?: boolean;
+  fullPage?: boolean;
+}
+
 export const GenreSubmissionItem = ({
   submission,
   hideUser,
-}: {
-  submission: IGenreSubmission;
-  hideUser?: boolean;
-}) => {
+  fullPage,
+}: GenreSubmissionItemProps) => {
   const { original, changes } = submission;
   const hasOriginal = !!original;
   return (
@@ -37,6 +41,7 @@ export const GenreSubmissionItem = ({
       hideUser={hideUser}
       submission={submission}
       submissionType="genre"
+      fullPage={fullPage}
     >
       <SubmissionField
         label="Name"

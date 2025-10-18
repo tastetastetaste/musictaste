@@ -7,6 +7,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import dayjs from 'dayjs';
 import {
+  CommentEntityType,
   ContributorStatus,
   CreateArtistDto,
   CreateGenreDto,
@@ -52,6 +53,7 @@ import { GenreSubmissionVote } from '../../db/entities/genre-submission-vote.ent
 import { GenresService } from '../genres/genres.service';
 import { SubmissionSortByEnum } from 'shared';
 import { Genre } from '../../db/entities/genre.entity';
+import { CommentsService } from '../comments/comments.service';
 
 @Injectable()
 export class SubmissionService {
@@ -90,6 +92,7 @@ export class SubmissionService {
     private labelsService: LabelsService,
     private artistsService: ArtistsService,
     private genresService: GenresService,
+    private commentsService: CommentsService,
   ) {}
 
   // --- ARTISTS
@@ -273,7 +276,6 @@ export class SubmissionService {
 
   private async applyLabelSubmission(submission: LabelSubmission) {
     if (submission.submissionType === SubmissionType.CREATE) {
-      console.log('create label submission', submission.changes);
       const label = await this.labelsService.createLabel(submission.changes);
 
       return label;
@@ -978,34 +980,10 @@ export class SubmissionService {
 
   // --- Query submissions
 
-  async getReleaseSubmissions({
-    status,
-    releaseId,
-    userId,
-    page,
-    sortBy,
-  }: FindReleaseSubmissionsDto): Promise<IReleaseSubmissionsResponse> {
-    const pageSize = 24;
-    const where: any = {};
-
-    if (status) where.submissionStatus = status;
-    if (releaseId) where.releaseId = releaseId;
-    if (userId) where.userId = userId;
-
-    const [rss, totalItems] =
-      await this.releaseSubmissionRepository.findAndCount({
-        where,
-        relations: ['votes'],
-        order: {
-          createdAt: sortBy === SubmissionSortByEnum.Oldest ? 'ASC' : 'DESC',
-        },
-        take: pageSize,
-        skip: (page - 1) * pageSize,
-      });
-
+  async buildReleaseSubmission(submissions: ReleaseSubmission[]) {
     const allArtistIds = [
       ...new Set(
-        rss.flatMap((rs) => [
+        submissions.flatMap((rs) => [
           ...(rs.changes.artistsIds || []),
           ...(rs.original?.artistsIds || []),
         ]),
@@ -1014,7 +992,7 @@ export class SubmissionService {
 
     const allLabelIds = [
       ...new Set(
-        rss.flatMap((rs) => [
+        submissions.flatMap((rs) => [
           ...(rs.changes.labelsIds || []),
           ...(rs.original?.labelsIds || []),
         ]),
@@ -1023,7 +1001,7 @@ export class SubmissionService {
 
     const allLanguageIds = [
       ...new Set(
-        rss.flatMap((rs) => [
+        submissions.flatMap((rs) => [
           ...(rs.changes.languagesIds || []),
           ...(rs.original?.languagesIds || []),
         ]),
@@ -1032,8 +1010,10 @@ export class SubmissionService {
 
     const uniqueUserIds = [
       ...new Set([
-        ...rss.map((rs) => rs.userId),
-        ...rss.flatMap((rs) => rs.votes?.map((vote) => vote.userId) || []),
+        ...submissions.map((rs) => rs.userId),
+        ...submissions.flatMap(
+          (rs) => rs.votes?.map((vote) => vote.userId) || [],
+        ),
       ]),
     ];
 
@@ -1048,7 +1028,7 @@ export class SubmissionService {
       ids?.map((id) => source.find((e) => e.id === id)).filter(Boolean) || [];
 
     return {
-      releases: rss.map((rs) => {
+      releases: submissions.map((rs) => {
         const changes = {
           ...rs.changes,
           type: ReleaseType[rs.changes.type],
@@ -1091,6 +1071,49 @@ export class SubmissionService {
             })) || [],
         };
       }),
+    };
+  }
+  async getReleaseSubmissions({
+    status,
+    releaseId,
+    userId,
+    page,
+    sortBy,
+  }: FindReleaseSubmissionsDto): Promise<IReleaseSubmissionsResponse> {
+    const pageSize = 24;
+    const where: any = {};
+
+    if (status) where.submissionStatus = status;
+    if (releaseId) where.releaseId = releaseId;
+    if (userId) where.userId = userId;
+
+    const [rss, totalItems] =
+      await this.releaseSubmissionRepository.findAndCount({
+        where,
+        relations: ['votes'],
+        order: {
+          createdAt: sortBy === SubmissionSortByEnum.Oldest ? 'ASC' : 'DESC',
+        },
+        take: pageSize,
+        skip: (page - 1) * pageSize,
+      });
+
+    const { releases } = await this.buildReleaseSubmission(rss);
+
+    const commentsCount = (await this.commentsService.findCommentsCount(
+      CommentEntityType.RELEASE_SUBMISSION,
+      rss.map((rs) => rs.id),
+    )) as any[];
+
+    const commentsCountMap = new Map(
+      commentsCount.map((item) => [item.entityId, item.count]),
+    );
+
+    return {
+      releases: releases.map((rs) => ({
+        ...rs,
+        commentsCount: commentsCountMap.get(rs.id) || 0,
+      })),
       totalItems,
       currentPage: page,
       currentItems: (page - 1) * pageSize + rss.length,
@@ -1099,6 +1122,18 @@ export class SubmissionService {
     };
   }
 
+  async getReleaseSubmissionById(submissionId: string) {
+    const rs = await this.releaseSubmissionRepository.findOne({
+      where: { id: submissionId },
+      relations: ['votes'],
+    });
+
+    if (!rs) throw new NotFoundException();
+
+    const { releases } = await this.buildReleaseSubmission([rs]);
+
+    return releases[0];
+  }
   async getArtistSubmissions({
     page,
     status,
@@ -1133,6 +1168,15 @@ export class SubmissionService {
 
     const users = await this.usersService.getUsersByIds(uniqueUserIds);
 
+    const commentsCount = (await this.commentsService.findCommentsCount(
+      CommentEntityType.ARTIST_SUBMISSION,
+      rss.map((rs) => rs.id),
+    )) as any[];
+
+    const commentsCountMap = new Map(
+      commentsCount.map((item) => [item.entityId, item.count]),
+    );
+
     return {
       artists: rss.map(({ ...rs }) => ({
         ...rs,
@@ -1145,12 +1189,41 @@ export class SubmissionService {
             user: users.find((u) => u.id === vote.userId),
             createdAt: vote.createdAt,
           })) || [],
+        commentsCount: commentsCountMap.get(rs.id) || 0,
       })),
       totalItems,
       currentPage: page,
       currentItems: (page - 1) * pageSize + rss.length,
       itemsPerPage: pageSize,
       totalPages: Math.ceil(totalItems / pageSize),
+    };
+  }
+
+  async getArtistSubmissionById(submissionId: string) {
+    const rs = await this.artistSubmissionRepository.findOne({
+      where: { id: submissionId },
+      relations: ['votes'],
+    });
+
+    if (!rs) throw new NotFoundException();
+
+    const uniqueUserIds = [
+      ...new Set([rs.userId, ...rs.votes?.map((vote) => vote.userId)]),
+    ];
+
+    const users = await this.usersService.getUsersByIds(uniqueUserIds);
+
+    return {
+      ...rs,
+      user: users.find((u) => u.id === rs.userId),
+      votes:
+        rs.votes?.map((vote) => ({
+          id: vote.id,
+          type: vote.type,
+          userId: vote.userId,
+          user: users.find((u) => u.id === vote.userId),
+          createdAt: vote.createdAt,
+        })) || [],
     };
   }
 
@@ -1189,6 +1262,14 @@ export class SubmissionService {
 
     const users = await this.usersService.getUsersByIds(uniqueUserIds);
 
+    const commentsCount = (await this.commentsService.findCommentsCount(
+      CommentEntityType.LABEL_SUBMISSION,
+      rss.map((rs) => rs.id),
+    )) as any[];
+
+    const commentsCountMap = new Map(
+      commentsCount.map((item) => [item.entityId, item.count]),
+    );
     return {
       labels: rss.map(({ ...rs }) => ({
         ...rs,
@@ -1201,6 +1282,7 @@ export class SubmissionService {
             user: users.find((u) => u.id === vote.userId),
             createdAt: vote.createdAt,
           })) || [],
+        commentsCount: commentsCountMap.get(rs.id) || 0,
       })),
       totalItems,
       currentPage: page,
@@ -1210,6 +1292,33 @@ export class SubmissionService {
     };
   }
 
+  async getLabelSubmissionById(submissionId: string) {
+    const rs = await this.labelSubmissionRepository.findOne({
+      where: { id: submissionId },
+      relations: ['votes'],
+    });
+
+    if (!rs) throw new NotFoundException();
+
+    const uniqueUserIds = [
+      ...new Set([rs.userId, ...rs.votes?.map((vote) => vote.userId)]),
+    ];
+
+    const users = await this.usersService.getUsersByIds(uniqueUserIds);
+
+    return {
+      ...rs,
+      user: users.find((u) => u.id === rs.userId),
+      votes:
+        rs.votes?.map((vote) => ({
+          id: vote.id,
+          type: vote.type,
+          userId: vote.userId,
+          user: users.find((u) => u.id === vote.userId),
+          createdAt: vote.createdAt,
+        })) || [],
+    };
+  }
   async getGenreSubmissions({
     page,
     status,
@@ -1245,6 +1354,15 @@ export class SubmissionService {
 
     const users = await this.usersService.getUsersByIds(uniqueUserIds);
 
+    const commentsCount = (await this.commentsService.findCommentsCount(
+      CommentEntityType.GENRE_SUBMISSION,
+      rss.map((rs) => rs.id),
+    )) as any[];
+
+    const commentsCountMap = new Map(
+      commentsCount.map((item) => [item.entityId, item.count]),
+    );
+
     return {
       genres: rss.map(({ ...rs }) => ({
         ...rs,
@@ -1257,12 +1375,41 @@ export class SubmissionService {
             user: users.find((u) => u.id === vote.userId),
             createdAt: vote.createdAt,
           })) || [],
+        commentsCount: commentsCountMap.get(rs.id) || 0,
       })),
       totalItems,
       currentPage: page,
       currentItems: (page - 1) * pageSize + rss.length,
       itemsPerPage: pageSize,
       totalPages: Math.ceil(totalItems / pageSize),
+    };
+  }
+
+  async getGenreSubmissionById(submissionId: string) {
+    const rs = await this.genreSubmissionRepository.findOne({
+      where: { id: submissionId },
+      relations: ['votes'],
+    });
+
+    if (!rs) throw new NotFoundException();
+
+    const uniqueUserIds = [
+      ...new Set([rs.userId, ...rs.votes?.map((vote) => vote.userId)]),
+    ];
+
+    const users = await this.usersService.getUsersByIds(uniqueUserIds);
+
+    return {
+      ...rs,
+      user: users.find((u) => u.id === rs.userId),
+      votes:
+        rs.votes?.map((vote) => ({
+          id: vote.id,
+          type: vote.type,
+          userId: vote.userId,
+          user: users.find((u) => u.id === vote.userId),
+          createdAt: vote.createdAt,
+        })) || [],
     };
   }
 

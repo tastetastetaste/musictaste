@@ -3,6 +3,10 @@ import { IconArrowBigDown, IconArrowBigUp } from '@tabler/icons-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import React, { Fragment } from 'react';
 import {
+  getArtistSubmissionPath,
+  getGenreSubmissionPath,
+  getLabelSubmissionPath,
+  getReleaseSubmissionPath,
   IArtistSubmission,
   IGenreSubmission,
   ILabelSubmission,
@@ -24,6 +28,7 @@ import { cacheKeys } from '../../utils/cache-keys';
 import { User } from '../users/user';
 import { Typography } from '../../components/typography';
 import { formatDateTime } from '../../utils/date-format';
+import { Stack } from '../../components/flex/stack';
 
 const FieldContainer = styled.div`
   display: flex;
@@ -323,6 +328,7 @@ export const SubmissionItemWrapper = ({
   hideUser,
   submission,
   submissionType,
+  fullPage,
 }: {
   children: React.ReactElement | React.ReactElement[];
   link?: string;
@@ -335,6 +341,7 @@ export const SubmissionItemWrapper = ({
     | IReleaseSubmission
     | IGenreSubmission;
   submissionType: 'artist' | 'label' | 'release' | 'genre';
+  fullPage?: boolean;
 }) => {
   const { colors } = useTheme();
   const { me } = useAuth();
@@ -362,6 +369,17 @@ export const SubmissionItemWrapper = ({
     }
   };
 
+  const submissionLink =
+    submissionType === 'release'
+      ? getReleaseSubmissionPath({ releaseSubmissionId: submission.id })
+      : submissionType === 'artist'
+        ? getArtistSubmissionPath({ artistSubmissionId: submission.id })
+        : submissionType === 'label'
+          ? getLabelSubmissionPath({ labelSubmissionId: submission.id })
+          : submissionType === 'genre'
+            ? getGenreSubmissionPath({ genreSubmissionId: submission.id })
+            : null;
+
   return (
     <div
       css={(theme) => ({
@@ -380,7 +398,7 @@ export const SubmissionItemWrapper = ({
       )}
       <div>{children}</div>
       <Group justify="apart" wrap>
-        <Group align="center">
+        <Group align="center" gap="md">
           {!submission.votes.some((v) => v.userId === me.id) && (
             <SubmissionActions
               id={submission.id}
@@ -411,32 +429,41 @@ export const SubmissionItemWrapper = ({
           </div>
         </Group>
         {!hideUser && <User user={submission.user} />}
-        {submissionType !== 'genre' &&
-          me?.id === submission.user.id &&
-          dayjs().diff(submission.createdAt, 'hour') < 1 && (
-            <Button danger onClick={handleDiscard}>
-              Discard
-            </Button>
-          )}
       </Group>
       <Group justify="apart">
-        <Group>
-          {submission.votes.map((v) => (
-            <Fragment>
-              <User user={v.user} avatarOnly />
-              {v.type === VoteType.UP ? (
-                <IconArrowBigUp
-                  css={({ colors }) => ({ color: colors.highlight })}
-                />
-              ) : (
-                <IconArrowBigDown
-                  css={({ colors }) => ({ color: colors.error })}
-                />
-              )}
-            </Fragment>
-          ))}
+        <Stack>
+          <Group wrap>
+            {submission.votes.map((v) => (
+              <Fragment>
+                <User user={v.user} avatarOnly />
+                {v.type === VoteType.UP ? (
+                  <IconArrowBigUp
+                    css={({ colors }) => ({ color: colors.highlight })}
+                  />
+                ) : (
+                  <IconArrowBigDown
+                    css={({ colors }) => ({ color: colors.error })}
+                  />
+                )}
+              </Fragment>
+            ))}
+          </Group>
+          {!fullPage ? (
+            <Link to={submissionLink}>
+              Comments ({submission.commentsCount})
+            </Link>
+          ) : null}
+        </Stack>
+        <Group gap="md">
+          <Typography>{formatDateTime(submission.createdAt)}</Typography>
+          {submissionType !== 'genre' &&
+            me?.id === submission.user.id &&
+            dayjs().diff(submission.createdAt, 'hour') < 1 && (
+              <Button danger onClick={handleDiscard}>
+                Discard
+              </Button>
+            )}
         </Group>
-        <Typography>{formatDateTime(submission.createdAt)}</Typography>
       </Group>
     </div>
   );

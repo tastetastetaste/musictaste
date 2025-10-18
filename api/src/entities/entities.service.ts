@@ -3,8 +3,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 import {
   CommentEntityType,
   EntityType,
+  getArtistSubmissionPath,
+  getGenreSubmissionPath,
+  getLabelSubmissionPath,
   getListPath,
   getReleasePath,
+  getReleaseSubmissionPath,
   getReviewPath,
   getUserPath,
   SubmissionStatus,
@@ -27,6 +31,7 @@ import { UserFollowing } from '../../db/entities/user-following.entity';
 import { UserReleaseTag } from '../../db/entities/user-release-tag.entity';
 import { UserRelease } from '../../db/entities/user-release.entity';
 import { User } from '../../db/entities/user.entity';
+import { GenreSubmission } from '../../db/entities/genre-submission.entity';
 
 @Injectable()
 export class EntitiesService {
@@ -61,6 +66,8 @@ export class EntitiesService {
     private releaseSubmissionRepository: Repository<ReleaseSubmission>,
     @InjectRepository(LabelSubmission)
     private labelSubmissionRepository: Repository<LabelSubmission>,
+    @InjectRepository(GenreSubmission)
+    private genreSubmissionRepository: Repository<GenreSubmission>,
     @InjectRepository(Track)
     private tracksRepository: Repository<Track>,
     @InjectRepository(TrackVote)
@@ -84,10 +91,35 @@ export class EntitiesService {
         return entry ? entry.userId : null;
       case EntityType.LIST:
         const list = await this.listsRepository.findOne({
-          select: ['id', 'userId'],
+          select: ['userId'],
           where: { id: entityId },
         });
         return list ? list.userId : null;
+      case EntityType.ARTIST_SUBMISSION:
+        const artistSubmission = await this.artistSubmissionRepository.findOne({
+          select: ['userId'],
+          where: { id: entityId },
+        });
+        return artistSubmission ? artistSubmission.userId : null;
+      case EntityType.RELEASE_SUBMISSION:
+        const releaseSubmission =
+          await this.releaseSubmissionRepository.findOne({
+            select: ['userId'],
+            where: { id: entityId },
+          });
+        return releaseSubmission ? releaseSubmission.userId : null;
+      case EntityType.LABEL_SUBMISSION:
+        const labelSubmission = await this.labelSubmissionRepository.findOne({
+          select: ['userId'],
+          where: { id: entityId },
+        });
+        return labelSubmission ? labelSubmission.userId : null;
+      case EntityType.GENRE_SUBMISSION:
+        const genreSubmission = await this.genreSubmissionRepository.findOne({
+          select: ['userId'],
+          where: { id: entityId },
+        });
+        return genreSubmission ? genreSubmission.userId : null;
       default:
         return null;
     }
@@ -108,6 +140,14 @@ export class EntitiesService {
         return getListPath({ listId: entityId });
       case EntityType.RELEASE:
         return getReleasePath({ releaseId: entityId });
+      case EntityType.ARTIST_SUBMISSION:
+        return getArtistSubmissionPath({ artistSubmissionId: entityId });
+      case EntityType.RELEASE_SUBMISSION:
+        return getReleaseSubmissionPath({ releaseSubmissionId: entityId });
+      case EntityType.LABEL_SUBMISSION:
+        return getLabelSubmissionPath({ labelSubmissionId: entityId });
+      case EntityType.GENRE_SUBMISSION:
+        return getGenreSubmissionPath({ genreSubmissionId: entityId });
       default:
         return null;
     }
@@ -125,6 +165,14 @@ export class EntitiesService {
         return 'Release';
       case EntityType.RELEASE_TRACK:
         return 'Release Track';
+      case EntityType.ARTIST_SUBMISSION:
+        return 'Artist Contribution';
+      case EntityType.RELEASE_SUBMISSION:
+        return 'Release Contribution';
+      case EntityType.LABEL_SUBMISSION:
+        return 'Label Contribution';
+      case EntityType.GENRE_SUBMISSION:
+        return 'Genre Contribution';
       default:
         return null;
     }

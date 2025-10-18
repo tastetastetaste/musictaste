@@ -19,6 +19,7 @@ import { LabelSubmission } from '../../db/entities/label-submission.entity';
 import { Track } from '../../db/entities/track.entity';
 import { ListItem } from '../../db/entities/list-item.entity';
 import { TrackVote } from '../../db/entities/track-vote.entity';
+import { GenreSubmission } from '../../db/entities/genre-submission.entity';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { TrackVote } from '../../db/entities/track-vote.entity';
       ArtistSubmission,
       ReleaseSubmission,
       LabelSubmission,
+      GenreSubmission,
       Track,
       TrackVote,
     ]),

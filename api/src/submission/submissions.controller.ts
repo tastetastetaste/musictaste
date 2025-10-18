@@ -295,6 +295,30 @@ export class SubmissionsController {
     return this.submissionsService.getGenreSubmissions(query);
   }
 
+  @Get('release/:submissionId')
+  @UseGuards(AuthenticatedGuard)
+  getReleaseSubmissionById(@Param('submissionId') submissionId: string) {
+    return this.submissionsService.getReleaseSubmissionById(submissionId);
+  }
+
+  @Get('artist/:submissionId')
+  @UseGuards(AuthenticatedGuard)
+  getArtistSubmissionById(@Param('submissionId') submissionId: string) {
+    return this.submissionsService.getArtistSubmissionById(submissionId);
+  }
+
+  @Get('label/:submissionId')
+  @UseGuards(AuthenticatedGuard)
+  getLabelSubmissionById(@Param('submissionId') submissionId: string) {
+    return this.submissionsService.getLabelSubmissionById(submissionId);
+  }
+
+  @Get('genre/:submissionId')
+  @UseGuards(AuthenticatedGuard)
+  getGenreSubmissionById(@Param('submissionId') submissionId: string) {
+    return this.submissionsService.getGenreSubmissionById(submissionId);
+  }
+
   @Get('user-contributions/:userId')
   @UseGuards(AuthenticatedGuard)
   getUserContributions(@Param('userId') userId: string) {

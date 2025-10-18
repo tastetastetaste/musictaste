@@ -189,6 +189,19 @@ const PendingDeletionsPage = lazy(
 
 const MergePage = lazy(() => import('./features/contributions/merge-page'));
 
+const ReleaseSubmissionPage = lazy(
+  () => import('./features/contributions/release-submission-page'),
+);
+const ArtistSubmissionPage = lazy(
+  () => import('./features/contributions/artist-submission-page'),
+);
+const LabelSubmissionPage = lazy(
+  () => import('./features/contributions/label-submission-page'),
+);
+const GenreSubmissionPage = lazy(
+  () => import('./features/contributions/genre-submission-page'),
+);
+
 const ThemePage = lazy(() => import('./features/theme/theme-page'));
 
 const QueryProvider = ({ children }: { children: any }) => {
@@ -736,6 +749,46 @@ const router = createBrowserRouter([
               <MergePage />
             </Suspense>
           </AdminRequiredPage>
+        ),
+      },
+      {
+        path: 'contributions/release/:submissionId',
+        element: (
+          <AuthRequiredPage>
+            <Suspense fallback={<Fallback />}>
+              <ReleaseSubmissionPage />
+            </Suspense>
+          </AuthRequiredPage>
+        ),
+      },
+      {
+        path: 'contributions/artist/:submissionId',
+        element: (
+          <AuthRequiredPage>
+            <Suspense fallback={<Fallback />}>
+              <ArtistSubmissionPage />
+            </Suspense>
+          </AuthRequiredPage>
+        ),
+      },
+      {
+        path: 'contributions/label/:submissionId',
+        element: (
+          <AuthRequiredPage>
+            <Suspense fallback={<Fallback />}>
+              <LabelSubmissionPage />
+            </Suspense>
+          </AuthRequiredPage>
+        ),
+      },
+      {
+        path: 'contributions/genre/:submissionId',
+        element: (
+          <AuthRequiredPage>
+            <Suspense fallback={<Fallback />}>
+              <GenreSubmissionPage />
+            </Suspense>
+          </AuthRequiredPage>
         ),
       },
       {

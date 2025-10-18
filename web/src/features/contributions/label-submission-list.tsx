@@ -26,15 +26,19 @@ class LabelSubmissionListOutletContext {
   sortBy?: SubmissionSortByEnum;
 }
 
+interface LabelSubmissionItemProps {
+  submission: ILabelSubmission;
+  hideUser?: boolean;
+  discardFn?: DiscardSubmissionFn;
+  fullPage?: boolean;
+}
+
 export const LabelSubmissionItem = ({
   submission,
   hideUser,
   discardFn,
-}: {
-  submission: ILabelSubmission;
-  hideUser?: boolean;
-  discardFn?: DiscardSubmissionFn;
-}) => {
+  fullPage,
+}: LabelSubmissionItemProps) => {
   const { original, changes } = submission;
   const hasOriginal = !!original;
   return (
@@ -45,6 +49,7 @@ export const LabelSubmissionItem = ({
       discardFn={discardFn}
       submission={submission}
       submissionType="label"
+      fullPage={fullPage}
     >
       <SubmissionField
         label="Name"
