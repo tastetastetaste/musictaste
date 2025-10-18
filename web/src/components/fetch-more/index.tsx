@@ -29,8 +29,7 @@ export interface FetchMoreProps {
 }
 
 export function FetchMore({ handleFetchMore }: FetchMoreProps) {
-  const ref = useRef<any>();
-  const onScreen = useOnScreen(ref, '-10px');
+  const { ref, isIntersecting } = useOnScreen('-10px');
   const [isLoading, setIsLoading] = useState(false);
 
   const fetchMoreData = async () => {
@@ -40,10 +39,10 @@ export function FetchMore({ handleFetchMore }: FetchMoreProps) {
   };
 
   useEffect(() => {
-    if (onScreen) {
+    if (isIntersecting) {
       fetchMoreData();
     }
-  }, [onScreen]);
+  }, [isIntersecting]);
 
   return (
     <FetchMoreContainer ref={ref}>

@@ -1,10 +1,8 @@
-import { useState, useEffect, RefObject } from 'react';
+import { useState, useEffect, RefObject, useRef } from 'react';
 
-export function useOnScreen(
-  ref: RefObject<HTMLElement>,
-  rootMargin: string = '0px',
-) {
+export function useOnScreen(rootMargin: string = '0px') {
   const [isIntersecting, setIntersecting] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -27,5 +25,5 @@ export function useOnScreen(
     }
   }, [ref, rootMargin]);
 
-  return isIntersecting;
+  return { ref, isIntersecting };
 }
