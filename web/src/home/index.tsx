@@ -141,8 +141,8 @@ const RecentReviewsSection = () => {
   return (
     <div ref={ref} css={{ minHeight: SECTION_MIN_HEIGHT }}>
       <Stack gap="lg">
-        <Link to="/reviews/recent" size="title-lg">
-          Recent Reviews
+        <Link to="/reviews/new" size="title-lg">
+          New Reviews
         </Link>
         {isIntersecting ? (
           <ReviewsListRenderer sortBy={EntriesSortByEnum.ReviewDate} />
