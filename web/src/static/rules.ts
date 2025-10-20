@@ -14,6 +14,9 @@ You are not allowed to impersonate or misrepresent yourself as another person. I
 
 You're not allowed to have multiple accounts unless you're using them for different purposes. Using multiple accounts to manipulate charts or review votes is strictly prohibited.
 
+### 4. Review Bombing
+
+You're not allowed to create an account to manipulate ratings. This includes accounts that give many unfairly low or high scores, or groups that join around the same time and give very similar ratings.
 
 ## Enforcement
 
