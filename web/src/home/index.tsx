@@ -21,7 +21,7 @@ import FeaturesOverview from './features-overview';
 import ReviewsListRenderer from '../features/reviews/reviews-list-renderer';
 import { useOnScreen } from '../hooks/useOnScreen';
 
-const ROOT_MARGIN = '50px';
+const ROOT_MARGIN = '100px';
 const SECTION_MIN_HEIGHT = '500px';
 
 const TopReviewsSection = () => {
