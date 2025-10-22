@@ -294,7 +294,10 @@ export class SubmissionService {
   // --- RELEASES
 
   async createReleaseSubmission(
-    {
+    createReleaseDto: CreateReleaseDto,
+    user: CurrentUserPayload,
+  ) {
+    const {
       title,
       titleLatin,
       artistsIds,
@@ -306,9 +309,8 @@ export class SubmissionService {
       note,
       explicitCoverArt,
       ...rest
-    }: CreateReleaseDto,
-    user: CurrentUserPayload,
-  ) {
+    } = createReleaseDto;
+
     let imageUrl: string | null = null;
 
     if (user.contributorStatus === ContributorStatus.NOT_A_CONTRIBUTOR)
@@ -334,11 +336,6 @@ export class SubmissionService {
     releaseSubmission.userId = user.id;
     releaseSubmission.submissionType = SubmissionType.CREATE;
 
-    releaseSubmission.submissionStatus =
-      user.contributorStatus >= ContributorStatus.EDITOR
-        ? SubmissionStatus.APPROVED
-        : SubmissionStatus.AUTO_APPROVED;
-
     releaseSubmission.note = note;
 
     releaseSubmission.changes = {
@@ -354,18 +351,41 @@ export class SubmissionService {
       explicitCoverArt: explicitCoverArt,
     };
 
-    const release = await this.applyReleaseSubmission(releaseSubmission);
+    let release = null;
 
-    if (!release) {
-      throw new InternalServerErrorException('failed to create a release');
+    try {
+      release = await this.applyReleaseSubmission(releaseSubmission);
+
+      if (!release) {
+        console.error('🚨 Failed to apply release submission');
+        console.error('🚨 createReleaseDto:', createReleaseDto);
+        console.error('🚨 releaseSubmission:', releaseSubmission);
+        console.error('🚨 release:', release);
+      } else {
+        releaseSubmission.releaseId = release.id;
+      }
+    } catch (error) {
+      console.error('🚨 Error while applying release submission', error);
+      console.error('🚨 createReleaseDto:', createReleaseDto);
+      console.error('🚨 releaseSubmission:', releaseSubmission);
+      console.error('🚨 release:', release);
     }
 
-    releaseSubmission.releaseId = release.id;
+    if (release) {
+      releaseSubmission.submissionStatus =
+        user.contributorStatus >= ContributorStatus.EDITOR
+          ? SubmissionStatus.APPROVED
+          : SubmissionStatus.AUTO_APPROVED;
+    } else {
+      releaseSubmission.submissionStatus = SubmissionStatus.OPEN;
+    }
 
     await this.releaseSubmissionRepository.save(releaseSubmission);
 
     return {
-      message: `Release "${title}" added successfully`,
+      message: release
+        ? `Release "${title}" added successfully`
+        : `Release "${title}" is awaiting approval`,
       release: release,
     };
   }

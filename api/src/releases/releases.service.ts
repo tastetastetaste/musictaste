@@ -487,10 +487,9 @@ export class ReleasesService {
       explicitCoverArt,
     },
   }: ReleaseSubmission) {
-    try {
-      const id = genId();
+    const id = genId();
 
-      // use `insert` to prevent accidental overwrite
+    try {
       await this.releasesRepository.insert({
         id,
         title,
@@ -573,10 +572,9 @@ export class ReleasesService {
 
       return release;
     } catch (err) {
-      console.log('failed to create associated data', err);
-      throw new InternalServerErrorException(
-        'failed to create associated data',
-      );
+      console.log('🚨 Failed to create release', err);
+      console.log('🚨 Release Id', id);
+      throw new InternalServerErrorException('failed to create release');
     }
   }
 
