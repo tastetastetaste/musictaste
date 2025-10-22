@@ -98,22 +98,22 @@ export const EditListItem: React.FC<
 > = ({ id, release, index, handleRemove, note, listId }) => {
   return (
     <CardContainer>
-      <Group gap="sm">
+      <Group gap="md" justify="apart">
         <FlexChild grow shrink>
-          <Group gap="sm">
+          <Group gap="md">
             <Typography size="title-lg">{index + 1}</Typography>
-            <ReleaseImageLink release={release} size="xs" />
-            <FlexChild grow shrink>
-              <Stack gap="sm">
-                <ArtistsLinks artists={release.artists} />
-                <ReleaseTitleLink
-                  to={getReleasePath({ releaseId: release.id })}
-                  title={release.title}
-                  latinTitle={release.titleLatin}
-                />
-                <Note note={note} id={id} listId={listId} />
-              </Stack>
+            <FlexChild basis="100px">
+              <ReleaseImageLink release={release} size="xs" />
             </FlexChild>
+            <Stack gap="sm">
+              <ArtistsLinks artists={release.artists} />
+              <ReleaseTitleLink
+                to={getReleasePath({ releaseId: release.id })}
+                title={release.title}
+                latinTitle={release.titleLatin}
+              />
+              <Note note={note} id={id} listId={listId} />
+            </Stack>
           </Group>
         </FlexChild>
 
