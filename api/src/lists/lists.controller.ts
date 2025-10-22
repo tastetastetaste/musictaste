@@ -10,7 +10,12 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { CreateListDto, FindListsDto, UpdateListDto } from 'shared';
+import {
+  CreateListDto,
+  FindListsDto,
+  ReorderListItemsDto,
+  UpdateListDto,
+} from 'shared';
 import { AuthenticatedGuard } from '../auth/Authenticated.guard';
 import { CurUser } from '../decorators/user.decorator';
 import { ListsService } from './lists.service';
@@ -80,11 +85,14 @@ export class ListsController {
   @UseGuards(AuthenticatedGuard)
   reorder(
     @Param('id') id: string,
-    @Body('items') items: { id: string; index: number }[],
-
+    @Body() reorderListItemsDto: ReorderListItemsDto,
     @CurUser('id') userId: string,
   ) {
-    return this.listsService.reorderListItems({ listId: id, items, userId });
+    return this.listsService.reorderListItems({
+      listId: id,
+      items: reorderListItemsDto.items,
+      userId,
+    });
   }
 
   @Patch(':id/items/:itemId')

@@ -435,6 +435,21 @@ export class UpdateListDto {
   ranked: boolean;
 }
 
+export class ListItemDto {
+  @IsString()
+  @MinLength(1)
+  id: string;
+  @Type(() => Number)
+  @IsInt()
+  index: number;
+}
+export class ReorderListItemsDto {
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => ListItemDto)
+  items: ListItemDto[];
+}
+
 export class FindListsDto {
   sortBy: 'date' | 'popular' | 'updatedDate';
   userId?: string;
