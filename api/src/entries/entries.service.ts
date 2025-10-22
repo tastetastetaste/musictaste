@@ -790,7 +790,8 @@ export class EntriesService {
     return result;
   }
   async userEntriesRatings(userId) {
-    const result = await this.userReleaseRepository.query(`
+    const result = await this.userReleaseRepository.query(
+      `
       SELECT
         COUNT(*)::int as "count",
         CASE
@@ -807,8 +808,10 @@ export class EntriesService {
           WHEN rating.rating BETWEEN 100 AND 100 THEN 11
           ELSE -1
         END AS "bucket"
-        FROM "user_release" "ur" LEFT JOIN "rating" "rating" ON "rating"."id"="ur"."ratingId" WHERE "ur"."userId" = '${userId}' GROUP BY bucket;
-      `);
+        FROM "user_release" "ur" LEFT JOIN "rating" "rating" ON "rating"."id"="ur"."ratingId" WHERE "ur"."userId" = $1 GROUP BY bucket;
+      `,
+      [userId],
+    );
 
     return result;
   }
