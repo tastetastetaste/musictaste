@@ -600,12 +600,10 @@ export class ReleasesService {
       explicitCoverArt,
     } = submission.changes;
 
+    // These fields cannot be null
     if (title) _release.title = title;
-    _release.titleLatin = titleLatin; // allow null value
     if (date) _release.date = dayjs(date).format('YYYY-MM-DD').toString();
     if (type) _release.type = type;
-    if (imagePath) _release.imagePath = imagePath;
-    if (explicitCoverArt) _release.explicitCoverArt = explicitCoverArt;
     if (artistsIds) {
       const releaseArtists = await this.releaseArtistRepository.find({
         where: { releaseId: _release.id },
@@ -635,67 +633,71 @@ export class ReleasesService {
         });
     }
 
-    if (labelsIds) {
-      const releaseLabels = await this.releaseLabelRepository.find({
-        where: { releaseId: _release.id },
-        select: ['labelId'],
-      });
+    // These fields can be null
+    _release.titleLatin = titleLatin;
+    _release.imagePath = imagePath;
+    _release.explicitCoverArt = explicitCoverArt;
 
-      const { addedIds, removedIds } = this.compareIds(
+    // labels
+    const releaseLabels = await this.releaseLabelRepository.find({
+      where: { releaseId: _release.id },
+      select: ['labelId'],
+    });
+
+    const { addedIds: addLabelIds, removedIds: removeLabelIds } =
+      this.compareIds(
         labelsIds,
         releaseLabels.map((rl) => rl.labelId),
       );
 
-      addedIds.length > 0 &&
-        addedIds.forEach(async (addedId) => {
-          const _rl = this.releaseLabelRepository.create({
-            labelId: addedId,
-            releaseId: _release.id,
-          });
-          await this.releaseLabelRepository.save(_rl);
+    addLabelIds.length > 0 &&
+      addLabelIds.forEach(async (addedId) => {
+        const _rl = this.releaseLabelRepository.create({
+          labelId: addedId,
+          releaseId: _release.id,
         });
-
-      removedIds.length > 0 &&
-        removedIds.forEach(async (removedId) => {
-          await this.releaseLabelRepository.delete({
-            labelId: removedId,
-            releaseId: _release.id,
-          });
-        });
-    }
-
-    if (languagesIds) {
-      const releaseLanguages = await this.releaseLanguageRepository.find({
-        where: { releaseId: _release.id },
-        select: ['languageId'],
+        await this.releaseLabelRepository.save(_rl);
       });
 
-      const { addedIds, removedIds } = this.compareIds(
+    removeLabelIds.length > 0 &&
+      removeLabelIds.forEach(async (removedId) => {
+        await this.releaseLabelRepository.delete({
+          labelId: removedId,
+          releaseId: _release.id,
+        });
+      });
+
+    // languages
+    const releaseLanguages = await this.releaseLanguageRepository.find({
+      where: { releaseId: _release.id },
+      select: ['languageId'],
+    });
+
+    const { addedIds: addLanguageIds, removedIds: removeLanguageIds } =
+      this.compareIds(
         languagesIds,
         releaseLanguages.map((rl) => rl.languageId),
       );
 
-      addedIds.length > 0 &&
-        addedIds.forEach(async (addedId) => {
-          const _rl = this.releaseLanguageRepository.create({
-            languageId: addedId,
-            releaseId: _release.id,
-          });
-          await this.releaseLanguageRepository.save(_rl);
+    addLanguageIds.length > 0 &&
+      addLanguageIds.forEach(async (addedId) => {
+        const _rl = this.releaseLanguageRepository.create({
+          languageId: addedId,
+          releaseId: _release.id,
         });
+        await this.releaseLanguageRepository.save(_rl);
+      });
 
-      removedIds.length > 0 &&
-        removedIds.forEach(async (removedId) => {
-          await this.releaseLanguageRepository.delete({
-            languageId: removedId,
-            releaseId: _release.id,
-          });
+    removeLanguageIds.length > 0 &&
+      removeLanguageIds.forEach(async (removedId) => {
+        await this.releaseLanguageRepository.delete({
+          languageId: removedId,
+          releaseId: _release.id,
         });
-    }
+      });
 
-    if (tracks) {
-      await this.updateTracks(_release.id, tracks);
-    }
+    // tracks
+    await this.updateTracks(_release.id, tracks);
 
     const release = await this.releasesRepository.save(_release);
 
@@ -714,7 +716,10 @@ export class ReleasesService {
     return true;
   }
 
-  private async updateTracks(releaseId: string, newTracks: TrackChanges[]) {
+  private async updateTracks(
+    releaseId: string,
+    newTracks: TrackChanges[] = [],
+  ) {
     const oldTracks = await this.tracksRepository
       .createQueryBuilder('t')
       .where('t.releaseId = :releaseId', { releaseId })
@@ -787,7 +792,7 @@ export class ReleasesService {
     }
   }
 
-  private compareIds(newIds: string[], currentIds: string[]) {
+  private compareIds(newIds: string[] = [], currentIds: string[] = []) {
     const addedIds = newIds.filter(
       (id) => !currentIds.some((appliedId) => appliedId === id),
     );
