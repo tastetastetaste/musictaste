@@ -77,18 +77,25 @@ export class ImagesService {
           ? 'u-dev'
           : 'r-dev';
 
-    const response = await fetch(url);
-    const arrayBuffer = await response.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
+    try {
+      const response = await fetch(url);
+      const arrayBuffer = await response.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
 
-    const id = nanoid(11);
-    const sizes = imageFor === 'user' ? this.userSizes : this.releaseSizes;
+      const id = nanoid(11);
+      const sizes = imageFor === 'user' ? this.userSizes : this.releaseSizes;
 
-    const resizedImages = await this.resizeImages(buffer, sizes, imageFor);
+      const resizedImages = await this.resizeImages(buffer, sizes, imageFor);
 
-    await this.uploadImagesToS3(resizedImages, container, id);
+      await this.uploadImagesToS3(resizedImages, container, id);
 
-    return { path: `${container}/${id}.jpeg` };
+      return { path: `${container}/${id}.jpeg` };
+    } catch (error) {
+      console.error('Image upload error:', error);
+      console.error('url', url);
+      console.error('imageFor', imageFor);
+      return null;
+    }
   }
 
   private async resizeImages(
