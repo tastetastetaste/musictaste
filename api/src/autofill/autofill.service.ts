@@ -42,11 +42,17 @@ export class AutofillService {
       ]);
     } catch (err) {}
 
-    const release = await this.musicBrainzApi.lookupRelease(mbid, [
-      'recordings',
-      'artist-credits',
-      'labels',
-    ]);
+    let release;
+    try {
+      release = await this.musicBrainzApi.lookupRelease(mbid, [
+        'recordings',
+        'artist-credits',
+        'labels',
+      ]);
+    } catch (error) {
+      console.error('MusicBrainz API error:', error.message);
+      return null;
+    }
 
     if (!release) {
       return null;
@@ -63,9 +69,9 @@ export class AutofillService {
     const artists = release['artist-credit'].map((a) => ({
       name: a.artist.name,
     }));
-    const labels = release['label-info']?.map((l) => ({
-      name: l.label.name,
-    }));
+    const labels = release['label-info']
+      ?.map((l) => (l.label ? { name: l.label.name } : null))
+      .filter(Boolean);
 
     return {
       id: release.id,
