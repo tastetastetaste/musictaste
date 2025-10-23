@@ -75,30 +75,49 @@ export class GenresService {
     });
 
     if (!rg) {
-      const _rg = new ReleaseGenre();
-      _rg.releaseId = releaseId;
-      _rg.genreId = genreId;
-      _rg.votesAvg = 1;
-      _rg.votesCount = 1;
+      const _rg = this.releaseGenresRepository.create({
+        releaseId,
+        genreId,
+        votesAvg: voteType,
+        votesCount: 1,
+      });
+
       rg = await this.releaseGenresRepository.save(_rg);
+
+      // create new vote
+      const _rgv = this.releaseGenreVotesRepository.create({
+        releaseGenreId: rg.id,
+        userId,
+        type: voteType,
+      });
+      await this.releaseGenreVotesRepository.save(_rgv);
     } else {
+      const existingVote = await this.releaseGenreVotesRepository.findOne({
+        where: {
+          releaseGenreId: rg.id,
+          userId,
+        },
+      });
+
+      if (existingVote) {
+        return false;
+      }
+
+      // create new vote
+      const _rgv = this.releaseGenreVotesRepository.create({
+        releaseGenreId: rg.id,
+        userId,
+        type: voteType,
+      });
+      await this.releaseGenreVotesRepository.save(_rgv);
+
+      // Calculate new average
       const newAvg =
         (rg.votesAvg * rg.votesCount + voteType) / (rg.votesCount + 1);
-      await this.releaseGenresRepository.update(
-        { id: rg.id },
-        {
-          votesAvg: newAvg,
-          votesCount: () => 'votesCount + 1',
-        },
-      );
+      rg.votesCount = rg.votesCount + 1;
+      rg.votesAvg = newAvg;
+      await this.releaseGenresRepository.save(rg);
     }
-
-    const _rgv = new ReleaseGenreVote();
-    _rgv.releaseGenreId = rg.id;
-    _rgv.userId = userId;
-    _rgv.type = voteType;
-
-    await this.releaseGenreVotesRepository.save(_rgv);
 
     return true;
   }
