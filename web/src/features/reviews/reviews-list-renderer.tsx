@@ -14,6 +14,7 @@ export interface ReviewsListRendererProps {
   userId?: string;
   releaseId?: string;
   user?: IUserSummary;
+  queryEnabled?: boolean;
 }
 
 export function ReviewsListRenderer({
@@ -21,6 +22,7 @@ export function ReviewsListRenderer({
   releaseId,
   userId,
   user,
+  queryEnabled,
 }: ReviewsListRendererProps) {
   const cacheKey = cacheKeys.entriesKey({
     userId,
@@ -49,6 +51,7 @@ export function ReviewsListRenderer({
           pages.length < lastPage.totalPages
             ? lastPage.currentPage + 1
             : undefined,
+        enabled: queryEnabled,
       },
     );
 

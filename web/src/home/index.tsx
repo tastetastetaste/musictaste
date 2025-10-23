@@ -25,7 +25,6 @@ const ROOT_MARGIN = '100px';
 const SECTION_MIN_HEIGHT = '500px';
 
 const TopReviewsSection = () => {
-  const { ref, isIntersecting } = useOnScreen(ROOT_MARGIN);
   const queryClient = useQueryClient();
   const reviewsCacheKey = cacheKeys.entriesKey({
     page: 1,
@@ -34,22 +33,17 @@ const TopReviewsSection = () => {
     sortBy: EntriesSortByEnum.ReviewTop,
   });
 
-  const { data: reviewsData } = useQuery(
-    reviewsCacheKey,
-    () =>
-      api.getEntries({
-        page: 1,
-        pageSize: 12,
-        withReview: true,
-        sortBy: EntriesSortByEnum.ReviewTop,
-      }),
-    {
-      enabled: isIntersecting,
-    },
+  const { data: reviewsData } = useQuery(reviewsCacheKey, () =>
+    api.getEntries({
+      page: 1,
+      pageSize: 12,
+      withReview: true,
+      sortBy: EntriesSortByEnum.ReviewTop,
+    }),
   );
   const reviews = reviewsData?.entries;
   return (
-    <div ref={ref} css={{ minHeight: SECTION_MIN_HEIGHT }}>
+    <div>
       <Stack gap="lg">
         <Link to="/reviews/top" size="title-lg">
           Top Recent Reviews
@@ -144,9 +138,10 @@ const RecentReviewsSection = () => {
         <Link to="/reviews/new" size="title-lg">
           New Reviews
         </Link>
-        {isIntersecting ? (
-          <ReviewsListRenderer sortBy={EntriesSortByEnum.ReviewDate} />
-        ) : null}
+        <ReviewsListRenderer
+          sortBy={EntriesSortByEnum.ReviewDate}
+          queryEnabled={isIntersecting}
+        />
       </Stack>
     </div>
   );
