@@ -46,14 +46,24 @@ export class SearchService {
               'a.nameLatin',
               'r.explicitCoverArt',
             ])
+            .addSelect(
+              `ts_rank(
+                setweight(to_tsvector('simple', unaccent(r.title || ' ' || COALESCE(r.titleLatin, ''))), 'A') ||
+                setweight(to_tsvector('simple', unaccent(a.name || ' ' || COALESCE(a.nameLatin, ''))), 'B'),
+                plainto_tsquery('simple', unaccent(:query))
+              )`,
+              'search_rank',
+            )
             .leftJoinAndSelect('r.artistConnection', 'ac')
             .leftJoinAndSelect('ac.artist', 'a')
-            .where('r.title ilike :title', {
-              title: `${q}%`,
-            })
-            .orWhere('r.titleLatin ilike :titleLatin', {
-              titleLatin: `${q}%`,
-            })
+            .where(
+              `(
+                setweight(to_tsvector('simple', unaccent(r.title || ' ' || COALESCE(r.titleLatin, ''))), 'A') ||
+                setweight(to_tsvector('simple', unaccent(a.name || ' ' || COALESCE(a.nameLatin, ''))), 'B')
+              ) @@ plainto_tsquery('simple', unaccent(:query))`,
+            )
+            .orderBy('search_rank', 'DESC')
+            .setParameter('query', q)
             .take(take)
             .skip(skip)
             .getManyAndCount()
@@ -62,12 +72,18 @@ export class SearchService {
         ? this.artistsRepository
             .createQueryBuilder('a')
             .select(['a.id', 'a.name', 'a.nameLatin'])
-            .where('a.name ilike :name', {
-              name: `${q}%`,
-            })
-            .orWhere('a.nameLatin ilike :nameLatin', {
-              nameLatin: `${q}%`,
-            })
+            .addSelect(
+              `ts_rank(
+                to_tsvector('simple', unaccent(a.name || ' ' || COALESCE(a.nameLatin, ''))),
+                plainto_tsquery('simple', unaccent(:query))
+              )`,
+              'search_rank',
+            )
+            .where(
+              `to_tsvector('simple', unaccent(a.name || ' ' || COALESCE(a.nameLatin, ''))) @@ plainto_tsquery('simple', unaccent(:query))`,
+            )
+            .orderBy('search_rank', 'DESC')
+            .setParameter('query', q)
             .take(take)
             .skip(skip)
             .getManyAndCount()
@@ -76,12 +92,18 @@ export class SearchService {
         ? this.labelsRepository
             .createQueryBuilder('label')
             .select(['label.id', 'label.name', 'label.nameLatin'])
-            .where('label.name ilike :name', {
-              name: `${q}%`,
-            })
-            .orWhere('label.nameLatin ilike :nameLatin', {
-              nameLatin: `${q}%`,
-            })
+            .addSelect(
+              `ts_rank(
+                to_tsvector('simple', unaccent(label.name || ' ' || COALESCE(label.nameLatin, ''))),
+                plainto_tsquery('simple', unaccent(:query))
+              )`,
+              'search_rank',
+            )
+            .where(
+              `to_tsvector('simple', unaccent(label.name || ' ' || COALESCE(label.nameLatin, ''))) @@ plainto_tsquery('simple', unaccent(:query))`,
+            )
+            .orderBy('search_rank', 'DESC')
+            .setParameter('query', q)
             .take(take)
             .skip(skip)
             .getManyAndCount()
@@ -90,9 +112,18 @@ export class SearchService {
         ? this.genresRepository
             .createQueryBuilder('genre')
             .select(['genre.id', 'genre.name'])
-            .where('genre.name ilike :name', {
-              name: `${q}%`,
-            })
+            .addSelect(
+              `ts_rank(
+                to_tsvector('simple', genre.name),
+                plainto_tsquery('simple', :query)
+              )`,
+              'search_rank',
+            )
+            .where(
+              `to_tsvector('simple', genre.name) @@ plainto_tsquery('simple', :query)`,
+            )
+            .orderBy('search_rank', 'DESC')
+            .setParameter('query', q)
             .take(take)
             .skip(skip)
             .getManyAndCount()
@@ -109,13 +140,21 @@ export class SearchService {
               'u.contributorStatus',
               'u.accountStatus',
             ])
-            .where('(u.username ilike :username OR u.name ilike :name)', {
-              username: `${q}%`,
-              name: `${q}%`,
-            })
+            .addSelect(
+              `ts_rank(
+                to_tsvector('simple', unaccent(u.username || ' ' || COALESCE(u.name, ''))),
+                plainto_tsquery('simple', unaccent(:query))
+              )`,
+              'search_rank',
+            )
+            .where(
+              `to_tsvector('simple', unaccent(u.username || ' ' || COALESCE(u.name, ''))) @@ plainto_tsquery('simple', unaccent(:query))`,
+            )
             .andWhere('u.accountStatus NOT IN (:...excludedStatuses)', {
               excludedStatuses: [AccountStatus.BANNED, AccountStatus.DELETED],
             })
+            .orderBy('search_rank', 'DESC')
+            .setParameter('query', q)
             .take(take)
             .skip(skip)
             .getManyAndCount()
