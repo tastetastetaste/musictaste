@@ -7,7 +7,9 @@ import {
   getReleasePath,
 } from 'shared';
 import { Group } from '../../components/flex/group';
-import { ReleaseImageLink } from '../releases/release/shared';
+import { ArtistsLinks, ReleaseImageLink } from '../releases/release/shared';
+import { Stack } from '../../components/flex/stack';
+import { Typography } from '../../components/typography';
 
 export const ArtistSearchLink = ({ artist }: { artist: IArtistSummary }) => (
   <Link to={getArtistPath({ artistId: artist.id })}>
@@ -44,11 +46,16 @@ export const ReleaseSearchLink = ({
     <div css={{ minWidth: '70px' }}>
       <ReleaseImageLink release={release} size="xs" />
     </div>
-    <Link to={getReleasePath({ releaseId: release.id })}>
-      {release.title}
-      <span css={{ fontStyle: 'italic' }}>
-        {release.titleLatin && ` [${release.titleLatin}]`}
-      </span>
-    </Link>
+    <Stack gap="sm">
+      <ArtistsLinks artists={release.artists} />
+      <Typography inline whiteSpace="nowrap">
+        <Link to={getReleasePath({ releaseId: release.id })}>
+          {release.title}
+          <span css={{ fontStyle: 'italic' }}>
+            {release.titleLatin && ` [${release.titleLatin}]`}
+          </span>
+        </Link>
+      </Typography>
+    </Stack>
   </Group>
 );

@@ -1,5 +1,5 @@
 import styled from '@emotion/styled';
-import { memo } from 'react';
+import { memo, useState } from 'react';
 import { Group } from '../../components/flex/group';
 import AppSidebar from '../app-sidebar';
 import UserMenu from './user-menu';
@@ -10,6 +10,7 @@ import { IconButton } from '../../components/icon-button';
 import { useNavigate } from 'react-router-dom';
 import Notifications from './notifications';
 import { useAuth } from '../../features/account/useAuth';
+import { mediaQueryMinWidth } from '../../hooks/useMediaQuery';
 
 const StyledHeader = styled.header`
   width: 100%;
@@ -30,6 +31,16 @@ const StyledHeaderContent = styled.div`
   margin: 0 auto;
   max-width: ${CONTENT_MAX_WIDTH};
   padding: ${CONTENT_PADDING};
+`;
+
+const HeaderSection = styled.div<{
+  hideOnMobile?: boolean;
+}>`
+  display: ${({ hideOnMobile }) => (hideOnMobile ? 'none' : 'flex')};
+
+  ${mediaQueryMinWidth.md} {
+    display: flex;
+  }
 `;
 
 const HomeLink = () => {
@@ -62,6 +73,8 @@ const HomeLink = () => {
 
 const AppHeader = memo(function AppHeaderFu() {
   const { isLoading, me } = useAuth();
+  const [searchActive, setSearchActive] = useState(false);
+
   return (
     <div
       css={{
@@ -78,15 +91,19 @@ const AppHeader = memo(function AppHeaderFu() {
     >
       <StyledHeader>
         <StyledHeaderContent>
-          <Group gap="sm">
-            <HomeLink />
-            <AppSidebar />
-            <QuickSearch />
-          </Group>
-          <Group gap="sm">
-            {isLoading ? null : me ? <Notifications /> : null}
-            <UserMenu />
-          </Group>
+          <HeaderSection hideOnMobile={searchActive}>
+            <Group gap="sm">
+              <HomeLink />
+              <AppSidebar />
+            </Group>
+          </HeaderSection>
+          <QuickSearch onActiveChange={(active) => setSearchActive(active)} />
+          <HeaderSection hideOnMobile={searchActive}>
+            <Group gap="sm">
+              {isLoading ? null : me ? <Notifications /> : null}
+              <UserMenu />
+            </Group>
+          </HeaderSection>
         </StyledHeaderContent>
       </StyledHeader>
     </div>
