@@ -85,6 +85,22 @@ const client = ky.create({
       : 'http://localhost:4000/',
   credentials: 'include',
   timeout: false,
+  hooks: {
+    afterResponse: [
+      async (_, __, response) => {
+        if (!response.ok) {
+          const body = await response.json().catch(() => ({}));
+          const error: any = new Error('HTTP Error');
+          error.response = {
+            status: response.status,
+            data: body,
+          };
+          throw error;
+        }
+        return response;
+      },
+    ],
+  },
 });
 
 // ----------------
