@@ -85,6 +85,7 @@ const client = ky.create({
       : 'http://localhost:4000/',
   credentials: 'include',
   timeout: false,
+  retry: 0,
   hooks: {
     afterResponse: [
       async (_, __, response) => {
@@ -375,7 +376,7 @@ const removeListLike = (id: string) =>
   client.delete('lists/' + id + '/likes').json<boolean>();
 const getReleaseLists = (releaseId: string, page: number) =>
   client
-    .get('/lists?sortBy=new&releaseId=' + releaseId + '&page=' + page)
+    .get('lists?sortBy=new&releaseId=' + releaseId + '&page=' + page)
     .json<IListsResponse>();
 const getUserLists = (userId: string, page: number) =>
   client

@@ -212,8 +212,13 @@ const QueryProvider = ({ children }: { children: any }) => {
       queries: {
         staleTime: 1000 * 60 * 30,
         retry: (failureCount, error) => {
-          // @ts-expect-error ...
-          if (error?.response?.status === 404) return false;
+          if (
+            // @ts-expect-error ...
+            error?.response?.status === 404 ||
+            // @ts-expect-error ...
+            error?.response?.status === 401
+          )
+            return false;
           return failureCount < 3;
         },
       },
