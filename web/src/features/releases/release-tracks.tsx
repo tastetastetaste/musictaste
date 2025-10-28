@@ -187,7 +187,10 @@ const ReleaseTracks: React.FC<{
                   {tracks && tracks.every((t) => t.durationMs)
                     ? ', ' +
                       millisecondsToTimeStringFull(
-                        tracks?.reduce((acc, t) => acc + t.durationMs, 0),
+                        tracks?.reduce(
+                          (acc, t) => acc + Number(t.durationMs),
+                          0,
+                        ),
                       )
                     : ''}
                 </Typography>
