@@ -50,10 +50,11 @@ export const RatingUnderline = ({ value }: { value: number }) => {
 export const formatRatingNumber = (value: number | string) => {
   if (value === null || value === undefined || value === '') return '';
 
-  const rating = Number(value) / 10;
+  const formattedValue = (Number(value) / 10).toFixed(
+    Number(value) === 100 ? 0 : 1,
+  );
 
-  // show one decimal if the rating doesn't round to 10
-  return rating.toFixed(Math.round(rating) === 10 ? 0 : 1);
+  return formattedValue === '10.0' ? '10' : formattedValue;
 };
 
 export const RatingValue: React.FC<{ value?: number }> = ({ value }) => {
