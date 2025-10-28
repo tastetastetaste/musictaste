@@ -97,6 +97,8 @@ class TrackDto {
   title: string;
   @Type(() => Number)
   @IsNumber()
+  @Min(0)
+  @Max(Number.MAX_SAFE_INTEGER)
   @IsOptional()
   durationMs?: number;
 }

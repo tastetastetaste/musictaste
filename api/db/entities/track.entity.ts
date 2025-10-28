@@ -27,6 +27,6 @@ export class Track extends SharedBaseEntity {
   @OneToMany(() => TrackVote, (rc) => rc.track)
   votes: TrackVote[];
 
-  @Column('int', { nullable: true })
+  @Column('bigint', { nullable: true })
   durationMs?: number;
 }
