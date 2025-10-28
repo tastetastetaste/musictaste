@@ -54,6 +54,7 @@ export class SearchService {
               )`,
               'search_rank',
             )
+            .addSelect('LENGTH(r.title)', 'title_length')
             .leftJoinAndSelect('r.artistConnection', 'ac')
             .leftJoinAndSelect('ac.artist', 'a')
             .where(
@@ -63,6 +64,7 @@ export class SearchService {
               ) @@ plainto_tsquery('simple', unaccent(:query))`,
             )
             .orderBy('search_rank', 'DESC')
+            .addOrderBy('title_length', 'ASC')
             .setParameter('query', q)
             .take(take)
             .skip(skip)
@@ -83,6 +85,7 @@ export class SearchService {
               `to_tsvector('simple', unaccent(a.name || ' ' || COALESCE(a.nameLatin, ''))) @@ plainto_tsquery('simple', unaccent(:query))`,
             )
             .orderBy('search_rank', 'DESC')
+            .addOrderBy('LENGTH(a.name)', 'ASC')
             .setParameter('query', q)
             .take(take)
             .skip(skip)
@@ -103,6 +106,7 @@ export class SearchService {
               `to_tsvector('simple', unaccent(label.name || ' ' || COALESCE(label.nameLatin, ''))) @@ plainto_tsquery('simple', unaccent(:query))`,
             )
             .orderBy('search_rank', 'DESC')
+            .addOrderBy('LENGTH(label.name)', 'ASC')
             .setParameter('query', q)
             .take(take)
             .skip(skip)
@@ -123,6 +127,7 @@ export class SearchService {
               `to_tsvector('simple', genre.name) @@ plainto_tsquery('simple', :query)`,
             )
             .orderBy('search_rank', 'DESC')
+            .addOrderBy('LENGTH(genre.name)', 'ASC')
             .setParameter('query', q)
             .take(take)
             .skip(skip)
@@ -154,6 +159,7 @@ export class SearchService {
               excludedStatuses: [AccountStatus.BANNED, AccountStatus.DELETED],
             })
             .orderBy('search_rank', 'DESC')
+            .addOrderBy('LENGTH(u.username)', 'ASC')
             .setParameter('query', q)
             .take(take)
             .skip(skip)
