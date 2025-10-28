@@ -13,14 +13,22 @@ export interface ReleaseActionsProps {
   date: string;
 }
 
-const ReleaseActionsPopoverContent: React.FC<ReleaseActionsProps> = ({
-  id,
-  date,
-}) => {
+const ReleaseActionsPopoverContent: React.FC<
+  ReleaseActionsProps & {
+    onDragStart?: () => void;
+    onDragEnd?: () => void;
+  }
+> = ({ id, date, onDragStart, onDragEnd }) => {
   const isUnreleased = dayjs(date).isAfter(dayjs());
   return (
     <Stack>
-      {!isUnreleased && <RatingPopoverContent releaseId={id} />}
+      {!isUnreleased && (
+        <RatingPopoverContent
+          releaseId={id}
+          onDragStart={onDragStart}
+          onDragEnd={onDragEnd}
+        />
+      )}
       <AddToListPopoverContent releaseId={id} />
     </Stack>
   );
@@ -30,16 +38,30 @@ export const ReleaseActions = ({ id, date }: ReleaseActionsProps) => {
   const { isLoggedIn } = useAuth();
 
   const [open, setOpen] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
 
   if (!isLoggedIn) {
     return <div></div>;
   }
 
+  const handleClose = () => {
+    if (!isDragging) {
+      setOpen(false);
+    }
+  };
+
   return (
     <Popover
       open={open}
-      onClose={() => setOpen(false)}
-      content={<ReleaseActionsPopoverContent id={id} date={date} />}
+      onClose={handleClose}
+      content={
+        <ReleaseActionsPopoverContent
+          id={id}
+          date={date}
+          onDragStart={() => setIsDragging(true)}
+          onDragEnd={() => setIsDragging(false)}
+        />
+      }
     >
       <IconButton title="" onClick={() => setOpen(!open)}>
         <IconDots />

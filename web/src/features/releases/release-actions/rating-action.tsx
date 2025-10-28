@@ -35,7 +35,9 @@ const StyledRatingInput = styled.input`
 
 export const RatingPopoverContent: React.FC<{
   releaseId: string;
-}> = ({ releaseId }) => {
+  onDragStart?: () => void;
+  onDragEnd?: () => void;
+}> = ({ releaseId, onDragStart, onDragEnd }) => {
   const {
     entry,
     isEntryLoading,
@@ -47,7 +49,7 @@ export const RatingPopoverContent: React.FC<{
 
   const [isRated, setIsRated] = useState(false);
 
-  const [rangeValue, setRangeValue] = useState<number>(0);
+  const [rangeValue, setRangeValue] = useState<number>(null);
 
   const [inputValue, setInputValue] = useState<string>('');
 
@@ -69,7 +71,7 @@ export const RatingPopoverContent: React.FC<{
 
   const getColor = useRatingColor();
 
-  const color = getColor(rangeValue);
+  const color = getColor(rangeValue || 0);
 
   const handleInputChange = (value: string) => {
     if (value === '') {
@@ -108,8 +110,9 @@ export const RatingPopoverContent: React.FC<{
           step={1}
           min={0}
           max={100}
-          values={[rangeValue]}
+          values={[rangeValue || 0]}
           onChange={(values) => handleRangeChange(values[0])}
+          onFinalChange={onDragEnd}
           renderTrack={({ props, children }) => (
             <div
               {...props}
@@ -133,6 +136,8 @@ export const RatingPopoverContent: React.FC<{
                 backgroundColor: theme.colors.highlight,
                 border: '1px solid currentColor',
               }}
+              onMouseDown={onDragStart}
+              onTouchStart={onDragStart}
             />
           )}
         />
@@ -154,15 +159,15 @@ export const RatingPopoverContent: React.FC<{
 
             <RatingUnderline value={rangeValue || 0} />
           </Stack>
-          <IconButton
-            title="Save"
-            disabled={isLoading}
-            onClick={() => {
-              ratingAction(rangeValue);
-            }}
-          >
-            <IconCheck />
-          </IconButton>
+          {typeof rangeValue === 'number' && (
+            <IconButton
+              title="Save"
+              disabled={isLoading}
+              onClick={() => ratingAction(rangeValue)}
+            >
+              <IconCheck />
+            </IconButton>
+          )}
           {isRated && (
             <IconButton
               title="Remove"
@@ -187,14 +192,27 @@ export const RatingAction: React.FC<{
   const { entry } = useReleaseActions(releaseId);
 
   const [open, setOpen] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
 
   const isRated = !!entry?.rating;
+
+  const handleClose = () => {
+    if (!isDragging) {
+      setOpen(false);
+    }
+  };
 
   return (
     <Popover
       open={open}
-      onClose={() => setOpen(false)}
-      content={<RatingPopoverContent releaseId={releaseId} />}
+      onClose={handleClose}
+      content={
+        <RatingPopoverContent
+          releaseId={releaseId}
+          onDragStart={() => setIsDragging(true)}
+          onDragEnd={() => setIsDragging(false)}
+        />
+      }
     >
       <IconButton
         onClick={() => setOpen(!open)}
