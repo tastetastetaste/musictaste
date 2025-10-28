@@ -399,7 +399,7 @@ export class EntriesService {
         break;
 
       case EntriesSortByEnum.ReleaseDate:
-        urQB.orderBy('release.date', 'DESC');
+        urQB.orderBy('release.date', 'DESC').addOrderBy('release.id', 'ASC');
 
         break;
 
