@@ -10,6 +10,7 @@ import {
   IArtistSubmission,
   IGenreSubmission,
   ILabelSubmission,
+  IReleaseChanges,
   IReleaseSubmission,
   SubmissionStatus,
   VoteType,
@@ -102,6 +103,13 @@ const hasChanges = (original: any, updated: any): boolean => {
       hasChanges(original[key], updated[key]),
     );
   }
+  // check if equal but different types
+  if (typeof original === 'string' && typeof updated === 'number') {
+    return Number(original) !== updated;
+  }
+  if (typeof original === 'number' && typeof updated === 'string') {
+    return original !== Number(updated);
+  }
   return original !== updated;
 };
 
@@ -157,18 +165,8 @@ export const SubmissionField: React.FC<{
 };
 
 export const TracksComparisonField: React.FC<{
-  originalTracks?: Array<{
-    id?: string;
-    track?: string;
-    title?: string;
-    durationMs?: number;
-  }>;
-  changedTracks?: Array<{
-    id?: string;
-    track?: string;
-    title?: string;
-    durationMs?: number;
-  }>;
+  originalTracks?: IReleaseChanges['tracks'];
+  changedTracks?: IReleaseChanges['tracks'];
   showOriginal?: boolean;
 }> = ({ originalTracks = [], changedTracks = [], showOriginal = false }) => {
   const EmptyPlaceholder = <span aria-hidden>—</span>;

@@ -359,7 +359,7 @@ export interface ITrack {
   track: string;
   title: string;
   order: number;
-  durationMs?: any;
+  durationMs?: number | string;
 }
 
 export interface ITrackWithVotes extends ITrack {
@@ -428,7 +428,12 @@ export interface IReleaseChanges {
   labels: ILabelSummary[];
   languages: ILanguage[];
   imageUrl: string;
-  tracks: { track: string; title: string; durationMs?: number }[];
+  tracks: {
+    id?: string;
+    track: string;
+    title: string;
+    durationMs?: number | string;
+  }[];
   explicitCoverArt?: ExplicitCoverArt[];
 }
 

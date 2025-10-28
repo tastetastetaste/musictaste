@@ -152,7 +152,7 @@ const EditReleasePage = () => {
                 id: t.id,
                 title: t.title,
                 track: t.track,
-                durationMs: t.durationMs,
+                durationMs: Number(t.durationMs),
               }))
             : undefined,
         imageUrl: release.cover?.original,
