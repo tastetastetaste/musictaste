@@ -1,7 +1,7 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
-import connectRedis from 'connect-redis';
+import { RedisStore } from 'connect-redis';
 import session from 'express-session';
 import passport from 'passport';
 import { dataSourceOptions } from '../db/data-source';
@@ -69,6 +69,7 @@ import { EntitiesModule } from './entities/entities.module';
           },
         ],
         errorMessage: 'Rate limit exceeded. Please try again later.',
+        // throttler-storage-redis doesn't support node-redis
         storage: new ThrottlerStorageRedisService(
           configService.get('NODE_ENV') === 'production'
             ? new Redis({
@@ -114,16 +115,15 @@ export class AppModule implements NestModule {
     private readonly configService: ConfigService,
   ) {}
   configure(consumer: MiddlewareConsumer) {
-    const RedisStore = connectRedis(session);
+    const redisStore = new RedisStore({
+      client: this.redisService.client,
+      prefix: this.redisService.userSessionPrefix,
+    });
 
     consumer
       .apply(
         session({
-          store: new RedisStore({
-            client: this.redisService.client,
-            prefix: this.redisService.userSessionPrefix,
-            logErrors: true,
-          }),
+          store: redisStore,
           name: 'sid',
           secret: this.configService.get('SESSION_SECRET'),
           resave: false,
