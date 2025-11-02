@@ -23,7 +23,7 @@
     "primary": "#ff80ab",
     "highlight": "#f06292",
     "text": "#250013",
-    "text_sub": "#25001380",
+    "text_sub": "#250013",
     "error": "#ff0000"
   },
   "pink 3": {
@@ -32,7 +32,7 @@
     "primary": "#ffa6d6",
     "highlight": "#d40068",
     "text": "#ffffff",
-    "text_sub": "#ffffff80",
+    "text_sub": "#ffffff",
     "error": "#FFD166"
   },
   "pink 4": {
@@ -40,8 +40,8 @@
     "background_sub": "#0f0f10",
     "primary": "#e4609b",
     "highlight": "#47bac0",
-    "text": "#fff",
-    "text_sub": "#fff",
+    "text": "#ffffff",
+    "text_sub": "#ffffff",
     "error": "#d32f2f"
   },
   "purple 1": {
@@ -95,7 +95,7 @@
     "primary": "#e55050",
     "highlight": "#ff6060",
     "text": "#ffbfbf",
-    "text_sub": "#ffbfbf90",
+    "text_sub": "#ffbfbf",
     "error": "#d32f2f"
   },
   "red 3": {
@@ -104,7 +104,7 @@
     "primary": "#b50505",
     "highlight": "#ff0000",
     "text": "#ffffff",
-    "text_sub": "#ffffff80",
+    "text_sub": "#ffffff",
     "error": "#ff0000"
   },
   "green 1": {
@@ -176,7 +176,7 @@
     "primary": "#696969",
     "highlight": "#ff8800",
     "text": "#d1ccc5",
-    "text_sub": "#d1ccc580",
+    "text_sub": "#d1ccc5",
     "error": "#ff5f5f"
   },
   "orange 3": {
@@ -203,7 +203,7 @@
     "primary": "#f8cdc6",
     "highlight": "#9ec1cc",
     "text": "#f5efee",
-    "text_sub": "#f5efee90",
+    "text_sub": "#f5efee",
     "error": "#c9465e"
   },
   "blue 3": {
