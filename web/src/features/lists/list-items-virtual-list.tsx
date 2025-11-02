@@ -57,7 +57,7 @@ export const ListItemsVirtualList: React.FC<{
             }}
             useWindowScroll
             defaultItemHeight={defaultHeight}
-            overscan={3000}
+            overscan={1000}
             endReached={hasMore ? loadMore : undefined}
           />
         );

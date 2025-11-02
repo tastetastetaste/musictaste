@@ -36,7 +36,7 @@ export const ReleasesVirtualGrid: React.FC<{
       <Virtuoso
         useWindowScroll
         totalCount={loadedRowCount}
-        overscan={3000}
+        overscan={1000}
         style={{
           display: 'flex',
           flexDirection: 'column',
