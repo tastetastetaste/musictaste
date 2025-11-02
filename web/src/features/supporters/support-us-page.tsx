@@ -12,7 +12,7 @@ Your donation will allow us to put more time, effort, and resources into this pr
 
 You will get the following for one year:
 - Supporter badge
-- The ability to specify custom profile theme colors that appear on your profile and in your full page reviews and lists
+- Custom profile theme colors
 - More supporter only features as they are added
 
 Donations are made through our Ko-fi page`;

@@ -1,4 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '../../components/button';
 import { Container } from '../../components/containers/container';
 import { Group } from '../../components/flex/group';
@@ -16,6 +17,7 @@ const ThemePage = () => {
   const { themeColors, setThemeColors, applyPreset, selectedPreset } =
     useThemeColors();
   const { me } = useAuth();
+  const navigate = useNavigate();
 
   const { snackbar } = useSnackbar();
 
@@ -118,14 +120,16 @@ const ThemePage = () => {
           {me ? (
             <Button
               variant="highlight"
-              onClick={handleSaveTheme}
-              disabled={isLoading || !me?.id || !me.supporter}
+              onClick={
+                !me?.supporter ? () => navigate('/support-us') : handleSaveTheme
+              }
+              disabled={isLoading || !me?.id}
             >
               {isLoading
                 ? 'Saving...'
                 : !me?.supporter
                   ? 'Support us to use these colors on your profile'
-                  : 'Use these colors on your profile'}
+                  : 'Update your profile theme colors'}
             </Button>
           ) : null}
         </Stack>
