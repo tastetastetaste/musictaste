@@ -30,6 +30,8 @@ import { AdminModule } from './admin/admin.module';
 import { CommentsModule } from './comments/comments.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { EntitiesModule } from './entities/entities.module';
+import { CacheModule } from '@nestjs/cache-manager';
+import KeyvRedis from '@keyv/redis';
 
 @Module({
   imports: [
@@ -57,6 +59,21 @@ import { EntitiesModule } from './entities/entities.module';
         return configService;
       },
       inject: [ConfigService],
+    }),
+    CacheModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => {
+        const redisUrl =
+          configService.get('NODE_ENV') === 'production'
+            ? `redis://:${configService.get('REDIS_PASS')}@${configService.get('REDIS_HOST')}:${configService.get('REDIS_PORT')}`
+            : 'redis://localhost:6379';
+
+        return {
+          stores: [new KeyvRedis(redisUrl)],
+        };
+      },
+      isGlobal: true,
     }),
     ThrottlerModule.forRootAsync({
       imports: [ConfigModule],

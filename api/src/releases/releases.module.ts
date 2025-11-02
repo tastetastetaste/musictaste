@@ -15,6 +15,7 @@ import { ReleasesService } from './releases.service';
 import { ReleaseGenre } from '../../db/entities/release-genre.entity';
 import { CommentsModule } from '../comments/comments.module';
 import { EntitiesModule } from '../entities/entities.module';
+import { RedisModule } from '../redis/redis.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { EntitiesModule } from '../entities/entities.module';
     ImagesModule,
     CommentsModule,
     EntitiesModule,
+    RedisModule,
   ],
   controllers: [ReleasesController],
   providers: [ReleasesService],

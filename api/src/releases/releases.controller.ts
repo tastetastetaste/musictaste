@@ -4,6 +4,7 @@ import {
   Get,
   Param,
   Query,
+  UseInterceptors,
 } from '@nestjs/common';
 import {
   FindReleasesDto,
@@ -12,12 +13,15 @@ import {
   IReleasesResponse,
 } from 'shared';
 import { ReleasesService } from './releases.service';
+import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 
 @Controller('releases')
 export class ReleasesController {
   constructor(private readonly releasesService: ReleasesService) {}
 
   @Get()
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(1000 * 60 * 5) // 5 minutes
   async find(@Query() query: FindReleasesDto): Promise<IReleasesResponse> {
     const page = query.page || 1;
     const pageSize = query.pageSize || 48;
@@ -75,6 +79,8 @@ export class ReleasesController {
   }
 
   @Get(':id')
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(1000 * 60 * 1) // 1 minute
   async findOne(@Param('id') id: string): Promise<IReleaseResponse> {
     const [release, contributors, tracks] = await Promise.all([
       this.releasesService.getReleaseFullInfo(id),

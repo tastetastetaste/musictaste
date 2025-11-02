@@ -1,4 +1,5 @@
 import {
+  Inject,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -7,6 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import dayjs from 'dayjs';
 import {
   CommentEntityType,
+  FindReleasesType,
   IRelease,
   IReleaseFullInfo,
   IReleaseStats,
@@ -32,6 +34,8 @@ import { genId } from '../common/genId';
 import { EntitiesService } from '../entities/entities.service';
 import { ImagesService } from '../images/images.service';
 import { UsersService } from '../users/users.service';
+import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
+import { RedisService } from '../redis/redis.service';
 
 export type ReleaseCountType =
   | 'ratings'
@@ -57,10 +61,12 @@ export class ReleasesService {
     @InjectRepository(Track) private tracksRepository: Repository<Track>,
     @InjectRepository(ReleaseSubmission)
     private releasesSubmissions: Repository<ReleaseSubmission>,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
     private usersService: UsersService,
     private imagesService: ImagesService,
     private commentsService: CommentsService,
     private entitiesService: EntitiesService,
+    private redisService: RedisService,
   ) {}
 
   async statsLoader(ids: string[]): Promise<Record<string, IReleaseStats>> {
@@ -570,6 +576,8 @@ export class ReleasesService {
           .execute();
       }
 
+      await this.invalidateReleasesCache(FindReleasesType.RecentlyAdded);
+
       return release;
     } catch (err) {
       console.log('🚨 Failed to create release', err);
@@ -828,5 +836,11 @@ export class ReleasesService {
       mergedFrom: mergeFrom.title,
       mergedInto: mergeInto.title,
     };
+  }
+
+  async invalidateReleasesCache(type?: FindReleasesType) {
+    await this.redisService.invalidateKeys(
+      `/releases?${type ? `type=${type}` : ''}*`,
+    );
   }
 }

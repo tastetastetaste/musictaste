@@ -143,4 +143,29 @@ export class RedisService {
   async updateUserSessionsAccountStatus(userId: string, newStatus: number) {
     return this.updateUserSessionsField(userId, 'accountStatus', newStatus);
   }
+
+  async invalidateKeys(pattern: string) {
+    const keysArray = [];
+
+    for await (const keys of this.client.scanIterator({
+      MATCH: pattern,
+      COUNT: 100,
+      TYPE: 'string',
+    })) {
+      keysArray.push(...keys);
+    }
+
+    const uniqueKeys = [...new Set(keysArray)];
+
+    if (uniqueKeys.length > 0) {
+      try {
+        await this.client.unlink(uniqueKeys);
+      } catch (error) {
+        console.log('Failed to invalidate keys', error);
+        return false;
+      }
+    }
+
+    return true;
+  }
 }
