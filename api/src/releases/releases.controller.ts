@@ -5,7 +5,12 @@ import {
   Param,
   Query,
 } from '@nestjs/common';
-import { FindReleasesDto, IReleaseResponse, IReleasesResponse } from 'shared';
+import {
+  FindReleasesDto,
+  FindReleasesType,
+  IReleaseResponse,
+  IReleasesResponse,
+} from 'shared';
 import { ReleasesService } from './releases.service';
 
 @Controller('releases')
@@ -20,7 +25,7 @@ export class ReleasesController {
     let result;
 
     switch (query.type) {
-      case 'new':
+      case FindReleasesType.New:
         result = await this.releasesService.findNewReleases(
           page,
           pageSize,
@@ -28,31 +33,31 @@ export class ReleasesController {
           query.labelId,
         );
         break;
-      case 'popular':
+      case FindReleasesType.Popular:
         result = await this.releasesService.findPopularReleases(page, pageSize);
         break;
-      case 'new-popular':
+      case FindReleasesType.NewPopular:
         result = await this.releasesService.findNewPopularReleases(
           page,
           pageSize,
         );
         break;
-      case 'upcoming':
+      case FindReleasesType.Upcoming:
         result = await this.releasesService.findUpcomingReleases(
           page,
           pageSize,
         );
         break;
-      case 'recent':
+      case FindReleasesType.RecentlyAdded:
         result = await this.releasesService.findRecentlyAddedReleases(
           page,
           pageSize,
         );
         break;
-      case 'top':
+      case FindReleasesType.Top:
         result = await this.releasesService.findTopReleasesOAT(page, pageSize);
         break;
-      case 'top-oty':
+      case FindReleasesType.TopOTY:
         result = await this.releasesService.findTopReleasesOTY(page, pageSize);
         break;
       default:

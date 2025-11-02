@@ -5,7 +5,7 @@ import { FindReleasesType } from 'shared';
 const RecentlyAddedReleasesPage = () => {
   return (
     <ReleasesPageWrapper>
-      <ReleasesListRenderer type={FindReleasesType.Recent} />
+      <ReleasesListRenderer type={FindReleasesType.RecentlyAdded} />
     </ReleasesPageWrapper>
   );
 };

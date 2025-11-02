@@ -103,11 +103,11 @@ const RecentlyAddedReleasesSection = () => {
   const { ref, isIntersecting } = useOnScreen(ROOT_MARGIN);
   const { data: recentlyAddedReleasesData } = useQuery(
     cacheKeys.releasesKey({
-      type: FindReleasesType.Recent,
+      type: FindReleasesType.RecentlyAdded,
       page: 1,
       pageSize: 12,
     }),
-    () => api.getReleases(FindReleasesType.Recent, 1, 12),
+    () => api.getReleases(FindReleasesType.RecentlyAdded, 1, 12),
     {
       enabled: isIntersecting,
     },
