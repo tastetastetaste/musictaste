@@ -107,12 +107,12 @@ export class RedisService {
 
     sessionIds.forEach((sessionId, index) => {
       const sessionDataKey = `${this.userSessionPrefix}${sessionId}`;
-      const sessionData = results[index][1] as string;
+      const sessionData = results[index] as unknown as string | null;
 
       if (sessionData) {
         try {
           const parsedSession = JSON.parse(sessionData);
-          if (parsedSession.passport?.user) {
+          if (parsedSession?.passport?.user) {
             parsedSession.passport.user[field] = value;
             updateMulti.set(sessionDataKey, JSON.stringify(parsedSession));
           }
