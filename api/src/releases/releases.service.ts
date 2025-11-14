@@ -364,7 +364,7 @@ export class ReleasesService {
       .select('release.id', 'id')
       .addSelect('COUNT(ur.id)', 'popularity')
       .leftJoin('release.entries', 'ur', 'release.id = ur.releaseId')
-      .where("ur.createdAt >= NOW() - INTERVAL '30 days'")
+      .where("ur.createdAt >= NOW() - INTERVAL '7 days'")
       .groupBy('release.id')
       .orderBy('popularity', 'DESC')
       .addOrderBy('release.id', 'DESC')
@@ -461,7 +461,7 @@ export class ReleasesService {
         releaseTypes: [ReleaseType.LP, ReleaseType.Live],
       })
       .groupBy('ur.releaseId')
-      .having('COUNT(rating) >= 15')
+      .having('COUNT(rating) >= 30')
       .orderBy('AVG(rating.rating)', 'DESC', 'NULLS LAST')
       .addOrderBy('ur.releaseId', 'DESC')
       .limit(100)
