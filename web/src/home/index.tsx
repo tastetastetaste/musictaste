@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Fragment } from 'react';
-import { EntriesSortByEnum, FindReleasesType } from 'shared';
+import { EntriesSortByEnum, ExplicitCoverArt, FindReleasesType } from 'shared';
 import { Feedback } from '../components/feedback';
 import { Grid } from '../components/flex/grid';
 import { Stack } from '../components/flex/stack';
@@ -147,11 +147,48 @@ const RecentReviewsSection = () => {
   );
 };
 
-const HomePage = () => {
+const NewReleasesSection = () => {
   const {
     data: newPopularReleasesData,
     isLoading: isLoadingNewPopularReleases,
   } = useQuery(
+    cacheKeys.releasesKey({
+      type: FindReleasesType.NewPopular,
+      page: 1,
+      pageSize: 16,
+    }),
+    () => api.getReleases(FindReleasesType.NewPopular, 1, 16),
+  );
+
+  const newReleases = newPopularReleasesData?.releases;
+
+  return (
+    <Stack gap="lg">
+      <Link to="/releases/new" size="title-lg">
+        New Releases
+      </Link>
+      {isLoadingNewPopularReleases ? (
+        <Loading />
+      ) : (
+        <Grid cols={[2, 6]} gap={RELEASE_GRID_GAP}>
+          {newReleases &&
+            newReleases
+              .filter(
+                (r) =>
+                  !r.explicitCoverArt?.includes(
+                    ExplicitCoverArt.EXPLICIT_SEXUAL_CONTENT,
+                  ),
+              )
+              .slice(0, 12)
+              .map((r) => <Release key={r.id} release={r} />)}
+        </Grid>
+      )}
+    </Stack>
+  );
+};
+
+const HomePage = () => {
+  const { isLoading: isLoadingNewPopularReleases } = useQuery(
     cacheKeys.releasesKey({
       type: FindReleasesType.NewPopular,
       page: 1,
@@ -162,24 +199,12 @@ const HomePage = () => {
 
   const { isLoggedIn, isLoading } = useAuth();
 
-  const newReleases = newPopularReleasesData?.releases;
-
   return (
     <AppPageWrapper>
       <Stack gap="lg">
         {!isLoading && !isLoggedIn && <FeaturesOverview />}
 
-        <Link to="/releases/new" size="title-lg">
-          New Releases
-        </Link>
-        {isLoadingNewPopularReleases ? (
-          <Loading />
-        ) : (
-          <Grid cols={[2, 6]} gap={RELEASE_GRID_GAP}>
-            {newReleases &&
-              newReleases.map((r) => <Release key={r.id} release={r} />)}
-          </Grid>
-        )}
+        <NewReleasesSection />
         {/* minimize layout shift */}
         {!isLoadingNewPopularReleases ? (
           <Fragment>
