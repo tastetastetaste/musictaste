@@ -11,6 +11,7 @@ import { Stack } from '../../components/flex/stack';
 import { FormInputError } from '../../components/inputs/form-input-error';
 import { Input } from '../../components/inputs/input';
 import { Textarea } from '../../components/inputs/textarea';
+import { TextareaWithPreview } from '../../components/inputs/textarea-with-preview';
 import { Link } from '../../components/links/link';
 import { Typography } from '../../components/typography';
 import { useSnackbar } from '../../hooks/useSnackbar';
@@ -87,7 +88,7 @@ const EditGenrePage = () => {
       reset({
         ...defaultValues,
         name: genreData.genre.name,
-        bio: genreData.genre.bio,
+        bio: genreData.genre.bioSource,
       });
     }
   }, [genreData]);
@@ -114,7 +115,11 @@ const EditGenrePage = () => {
             </Group>
             <Input placeholder="Name" {...register('name')} />
             <FormInputError error={errors.name} />
-            <Textarea {...register('bio')} placeholder="Bio" rows={5} />
+            <TextareaWithPreview
+              {...register('bio')}
+              placeholder="Bio"
+              rows={5}
+            />
             <FormInputError error={errors.bio} />
             <Textarea
               {...register('note')}

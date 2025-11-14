@@ -4,6 +4,7 @@ import { ReleasesModule } from '../releases/releases.module';
 import { UsersModule } from '../users/users.module';
 import { EntriesController } from './entries.controller';
 import { EntriesService } from './entries.service';
+import { EntitiesModule } from '../entities/entities.module';
 import { Rating } from '../../db/entities/rating.entity';
 import { ReleaseArtist } from '../../db/entities/release-artist.entity';
 import { ReleaseGenre } from '../../db/entities/release-genre.entity';
@@ -33,6 +34,7 @@ import { CommentsModule } from '../comments/comments.module';
     ReleasesModule,
     UsersModule,
     CommentsModule,
+    EntitiesModule,
   ],
   controllers: [EntriesController],
   providers: [EntriesService],

@@ -55,7 +55,7 @@ export const GenreSubmissionItem = ({
         originalValue={original?.bio}
         changedValue={changes?.bio}
         showOriginal={hasOriginal}
-        renderValue={(v) => <Typography whiteSpace="pre-wrap">{v}</Typography>}
+        renderValue={(v) => <Markdown>{v}</Markdown>}
       />
       <SubmissionField
         label="Note"

@@ -1,4 +1,4 @@
-import { IsString } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 import { SubmissionStatus, SubmissionType } from 'shared';
 import {
   Column,
@@ -18,6 +18,9 @@ export class GenreChanges {
   name: string;
   @IsString()
   bio: string;
+  @IsString()
+  @IsOptional()
+  bioSource?: string;
 }
 
 @Entity()

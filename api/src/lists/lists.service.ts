@@ -21,6 +21,7 @@ import { ListLike } from '../../db/entities/list-like.entity';
 import { List } from '../../db/entities/list.entity';
 import { ImagesService } from '../images/images.service';
 import { CommentsService } from '../comments/comments.service';
+import { EntitiesReferenceService } from '../entities/entitiesReference.service';
 
 @Injectable()
 export class ListsService {
@@ -35,6 +36,7 @@ export class ListsService {
     private usersService: UsersService,
     private imagesService: ImagesService,
     private commentsService: CommentsService,
+    private entitiesReferenceService: EntitiesReferenceService,
   ) {}
 
   private async getManyByIds(ids: string[]) {
@@ -90,6 +92,7 @@ export class ListsService {
       .addSelect('l.userId', 'userId')
       .addSelect('l.title', 'title')
       .addSelect('l.description', 'description')
+      .addSelect('l.descriptionSource', 'descriptionSource')
       .addSelect('l.ranked', 'ranked')
       .addSelect('l.grid', 'grid')
       .addSelect('l.published', 'published')
@@ -306,7 +309,11 @@ export class ListsService {
 
     newList.userId = currentUserId;
 
-    newList.description = description;
+    if (description !== undefined) {
+      newList.descriptionSource = description;
+      newList.description =
+        await this.entitiesReferenceService.parseLinks(description);
+    }
 
     newList.grid = grid;
 
@@ -334,11 +341,19 @@ export class ListsService {
     if (_list.userId !== currentUserId) {
       throw new UnauthorizedException();
     }
+
+    const updateData: any = { title, grid, ranked };
+
+    if (description !== undefined) {
+      updateData.descriptionSource = description;
+      updateData.description =
+        await this.entitiesReferenceService.parseLinks(description);
+    }
+
     await this.listsRepository
       .createQueryBuilder()
       .update(List)
-
-      .set({ title, description, grid, ranked })
+      .set(updateData)
       .where('id = :id', { id })
       .execute();
 
@@ -509,12 +524,22 @@ export class ListsService {
     if (_list.userId !== currentUserId) {
       throw new UnauthorizedException();
     }
+
+    const updateData: any = {};
+    if (note) {
+      updateData.noteSource = note;
+      updateData.note = await this.entitiesReferenceService.parseLinks(note);
+    } else {
+      updateData.note = null;
+      updateData.noteSource = null;
+    }
+
     const {
       raw: [UpdatedListItem],
     } = await this.listItemsRepository
       .createQueryBuilder()
       .update(ListItem)
-      .set({ note: note || null })
+      .set(updateData)
       .where('id = :listItemId', { listItemId })
       .returning('*')
       .execute();

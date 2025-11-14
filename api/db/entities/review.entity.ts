@@ -20,6 +20,9 @@ export class Review extends SharedBaseEntity {
   @Column('text')
   body: string;
 
+  @Column('text', { nullable: true })
+  bodySource: string;
+
   @OneToMany(() => ReviewVote, (rc) => rc.review)
   votes: ReviewVote[];
 

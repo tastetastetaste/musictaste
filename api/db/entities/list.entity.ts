@@ -23,6 +23,9 @@ export class List extends SharedBaseEntity {
   @Column('text', { nullable: true })
   description: string;
 
+  @Column('text', { nullable: true })
+  descriptionSource: string;
+
   @Column('boolean', { default: false })
   ranked: boolean;
 

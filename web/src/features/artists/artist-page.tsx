@@ -220,6 +220,13 @@ const ArtistPage = () => {
           },
         },
         {
+          label: 'Copy Reference',
+          action: () => {
+            navigator.clipboard.writeText(`[[artist/${artist?.id}]]`);
+            snackbar('Reference copied to clipboard');
+          },
+        },
+        {
           label: 'Report',
           action: () => setOpenReport(true),
         },

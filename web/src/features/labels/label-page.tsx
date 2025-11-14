@@ -5,6 +5,7 @@ import { FindReleasesType, ReportType } from 'shared';
 import { Stack } from '../../components/flex/stack';
 import { Loading } from '../../components/loading';
 import { Typography } from '../../components/typography';
+import { useSnackbar } from '../../hooks/useSnackbar';
 import AppPageWrapper from '../../layout/app-page-wrapper';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
@@ -13,6 +14,8 @@ import { ReportDialog } from '../reports/report-dialog';
 
 const LabelPage = () => {
   const { id } = useParams();
+
+  const { snackbar } = useSnackbar();
 
   const [openReport, setOpenReport] = useState(false);
 
@@ -37,6 +40,20 @@ const LabelPage = () => {
         {
           label: 'Edit',
           to: '/contributions/labels/' + label?.id,
+        },
+        {
+          label: 'Copy ID',
+          action: () => {
+            navigator.clipboard.writeText(label?.id || '');
+            snackbar('ID copied to clipboard');
+          },
+        },
+        {
+          label: 'Copy Reference',
+          action: () => {
+            navigator.clipboard.writeText(`[[label/${label?.id}]]`);
+            snackbar('Reference copied to clipboard');
+          },
         },
         {
           label: 'Report',

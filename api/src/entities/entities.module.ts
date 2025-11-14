@@ -20,10 +20,17 @@ import { Track } from '../../db/entities/track.entity';
 import { ListItem } from '../../db/entities/list-item.entity';
 import { TrackVote } from '../../db/entities/track-vote.entity';
 import { GenreSubmission } from '../../db/entities/genre-submission.entity';
+import { EntitiesReferenceService } from './entitiesReference.service';
+import { Artist } from '../../db/entities/artist.entity';
+import { Genre } from '../../db/entities/genre.entity';
+import { Label } from '../../db/entities/label.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
+      Artist,
+      Genre,
+      Label,
       User,
       UserRelease,
       List,
@@ -45,7 +52,7 @@ import { GenreSubmission } from '../../db/entities/genre-submission.entity';
     ]),
   ],
   controllers: [EntitiesController],
-  providers: [EntitiesService],
-  exports: [EntitiesService],
+  providers: [EntitiesService, EntitiesReferenceService],
+  exports: [EntitiesService, EntitiesReferenceService],
 })
 export class EntitiesModule {}

@@ -23,6 +23,9 @@ export class ListItem extends SharedBaseEntity {
   @Column('text', { nullable: true })
   note: string;
 
+  @Column('text', { nullable: true })
+  noteSource: string;
+
   @ManyToOne(() => List, (list) => list.items, {
     onDelete: 'CASCADE',
   })

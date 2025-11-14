@@ -33,7 +33,8 @@ export interface IListReleaseCover {
 export interface IList {
   id: string;
   title: string;
-  description: string;
+  description?: string;
+  descriptionSource?: string;
   ranked: boolean;
   grid: boolean;
   published: boolean;
@@ -52,6 +53,7 @@ export interface IListItem {
   id: string;
   index: number;
   note: string;
+  noteSource?: string;
   release: IRelease;
 }
 
@@ -86,7 +88,8 @@ export interface IReleaseGenre {
 export interface IGenre {
   id: string;
   name: string;
-  bio: string;
+  bio?: string;
+  bioSource?: string;
 }
 
 export interface ILabel {
@@ -272,6 +275,7 @@ export interface ICurrentUserResponse {
   user:
     | (IUser & {
         allowExplicitCoverArt?: ExplicitCoverArt[];
+        bioSource?: string;
       })
     | null;
 }
@@ -339,6 +343,7 @@ export interface IUserTag {
 export interface IReview {
   id: string;
   body: string;
+  bodySource?: string;
   totalVotes: number;
   netVotes: number;
   commentsCount: number;
@@ -519,6 +524,7 @@ export interface ILabelSubmission {
 export interface IGenreChanges {
   name: string;
   bio: string;
+  bioSource?: string;
 }
 
 export interface IGenreSubmissionVote {

@@ -20,6 +20,7 @@ import { Loading } from '../../components/loading';
 import { Navigation } from '../../components/nav';
 import { Typography } from '../../components/typography';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
+import { useSnackbar } from '../../hooks/useSnackbar';
 import AppPageWrapper from '../../layout/app-page-wrapper';
 import { SOMETHING_WENT_WRONG } from '../../static/feedback';
 import { api } from '../../utils/api';
@@ -237,6 +238,8 @@ export const ReleasePageContainer: React.FC<{
 
   const { isLoggedIn } = useAuth();
 
+  const { snackbar } = useSnackbar();
+
   const smScreen = useMediaQuery({ down: 'md' });
   const mdScreen = useMediaQuery({ down: 'lg' });
 
@@ -255,6 +258,20 @@ export const ReleasePageContainer: React.FC<{
         {
           label: 'History',
           to: '/history/release/' + release.id,
+        },
+        {
+          label: 'Copy ID',
+          action: () => {
+            navigator.clipboard.writeText(release.id);
+            snackbar('ID copied to clipboard');
+          },
+        },
+        {
+          label: 'Copy Reference',
+          action: () => {
+            navigator.clipboard.writeText(`[[release/${release.id}]]`);
+            snackbar('Reference copied to clipboard');
+          },
         },
         {
           label: 'Report',

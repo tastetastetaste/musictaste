@@ -9,7 +9,7 @@ import { Container } from '../../components/containers/container';
 import { Stack } from '../../components/flex/stack';
 import { FormInputError } from '../../components/inputs/form-input-error';
 import { Input } from '../../components/inputs/input';
-import { Textarea } from '../../components/inputs/textarea';
+import { TextareaWithPreview } from '../../components/inputs/textarea-with-preview';
 import { Typography } from '../../components/typography';
 import { useSnackbar } from '../../hooks/useSnackbar';
 import { api } from '../../utils/api';
@@ -52,7 +52,7 @@ const SettingsProfilePage = () => {
     reset({
       name: user.name,
       username: user.username,
-      bio: user.bio,
+      bio: user.bioSource || '',
     });
   }, [user]);
 
@@ -79,7 +79,11 @@ const SettingsProfilePage = () => {
             <Input placeholder="Username" {...register('username')} />
             <FormInputError error={errors.username} />
           </Stack>
-          <Textarea placeholder="Bio" {...register('bio')} rows={22} />
+          <TextareaWithPreview
+            placeholder="Bio"
+            {...register('bio')}
+            rows={22}
+          />
           <FormInputError error={errors.bio} />
           <Button type="submit" disabled={isLoading}>
             Save

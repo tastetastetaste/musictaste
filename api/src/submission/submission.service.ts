@@ -54,6 +54,7 @@ import { GenresService } from '../genres/genres.service';
 import { SubmissionSortByEnum } from 'shared';
 import { Genre } from '../../db/entities/genre.entity';
 import { CommentsService } from '../comments/comments.service';
+import { EntitiesReferenceService } from '../entities/entitiesReference.service';
 
 @Injectable()
 export class SubmissionService {
@@ -93,6 +94,7 @@ export class SubmissionService {
     private artistsService: ArtistsService,
     private genresService: GenresService,
     private commentsService: CommentsService,
+    private entitiesReferenceService: EntitiesReferenceService,
   ) {}
 
   // --- ARTISTS
@@ -521,7 +523,7 @@ export class SubmissionService {
   }
 
   async createGenreSubmission(
-    { name, bio, note }: CreateGenreDto,
+    { name, note, ...rest }: CreateGenreDto,
     user: CurrentUserPayload,
   ) {
     if (user.contributorStatus === ContributorStatus.NOT_A_CONTRIBUTOR)
@@ -529,7 +531,14 @@ export class SubmissionService {
         "You can't submit contributions at this time",
       );
     const genreSubmission = new GenreSubmission();
-    genreSubmission.changes = { name, bio };
+
+    const bio = await this.entitiesReferenceService.parseLinks(rest.bio);
+
+    genreSubmission.changes = {
+      name,
+      bio: bio,
+      bioSource: rest.bio,
+    };
     genreSubmission.submissionType = SubmissionType.CREATE;
     genreSubmission.submissionStatus = SubmissionStatus.OPEN;
     genreSubmission.userId = user.id;
@@ -545,7 +554,7 @@ export class SubmissionService {
 
   async updateGenreSubmission(
     genreId: string,
-    { name, bio, note }: UpdateGenreDto,
+    { name, note, ...rest }: UpdateGenreDto,
     user: CurrentUserPayload,
   ) {
     if (user.contributorStatus === ContributorStatus.NOT_A_CONTRIBUTOR)
@@ -574,8 +583,15 @@ export class SubmissionService {
 
     const gs = new GenreSubmission();
     gs.genreId = genreId;
-    gs.changes = { name, bio };
-    gs.original = { name: genre.name, bio: genre.bio };
+
+    const bio = await this.entitiesReferenceService.parseLinks(rest.bio);
+
+    gs.changes = { name, bio, bioSource: rest.bio };
+    gs.original = {
+      name: genre.name,
+      bio: genre.bio,
+      bioSource: genre.bioSource,
+    };
     gs.submissionType = SubmissionType.UPDATE;
     gs.submissionStatus = SubmissionStatus.OPEN;
     gs.userId = user.id;

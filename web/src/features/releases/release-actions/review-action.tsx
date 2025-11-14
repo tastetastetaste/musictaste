@@ -6,7 +6,7 @@ import { Dialog } from '../../../components/dialog';
 import { Group } from '../../../components/flex/group';
 import { Stack } from '../../../components/flex/stack';
 import { IconButton } from '../../../components/icon-button';
-import { Textarea } from '../../../components/inputs/textarea';
+import { TextareaWithPreview } from '../../../components/inputs/textarea-with-preview';
 import { useReleaseActions } from './useReleaseActions';
 
 const ReviewForm = ({
@@ -22,7 +22,7 @@ const ReviewForm = ({
 
   useEffect(() => {
     reset({
-      body: entry?.review?.body || '',
+      body: entry?.review?.bodySource || '',
     });
   }, [entry?.review, reset]);
 
@@ -42,7 +42,11 @@ const ReviewForm = ({
   return (
     <form onSubmit={handleSubmit(submit)}>
       <Stack gap="sm">
-        <Textarea placeholder="Review" {...register('body')} rows={22} />
+        <TextareaWithPreview
+          placeholder="Review"
+          {...register('body')}
+          rows={22}
+        />
         <Button
           type="submit"
           disabled={updateEntryLoading || createEntryLoading}

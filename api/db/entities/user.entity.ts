@@ -53,6 +53,9 @@ export class User extends SharedBaseEntity {
   @Column('text', { nullable: true })
   bio: string;
 
+  @Column('text', { nullable: true })
+  bioSource: string;
+
   @Column('int', { default: ContributorStatus.CONTRIBUTOR })
   contributorStatus: ContributorStatus;
 

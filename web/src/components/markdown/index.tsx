@@ -2,6 +2,8 @@ import styled from '@emotion/styled';
 import MarkdownToJsx from 'markdown-to-jsx';
 import { Link } from 'react-router-dom';
 import { SITE_DOMAIN } from '../../static/site-info';
+import { isValidURL } from '../../utils/is-valid-url';
+import { IconExternalLink, IconPhoto } from '@tabler/icons-react';
 
 const MarkdownContainer = styled.div<{ variant?: 'default' | 'compact' }>`
   h1,
@@ -132,28 +134,57 @@ export function Markdown({
           overrides: {
             a: {
               component: ({ children, href, title }) => {
-                const relative =
-                  href?.startsWith('/') ||
-                  href?.startsWith('https://' + SITE_DOMAIN) ||
-                  href?.startsWith('https://www.' + SITE_DOMAIN);
+                let external = false;
+                let to;
+                let target = undefined;
+
+                if (
+                  (isValidURL(href) || href.includes(':')) &&
+                  !href.includes(SITE_DOMAIN)
+                ) {
+                  // external link
+                  to = href;
+                  target = '_blank';
+                  external = true;
+                } else {
+                  // relative link
+                  to =
+                    href.startsWith('/') || href.startsWith('http')
+                      ? href
+                      : `/${href}`;
+                }
 
                 return (
-                  <MDLink
-                    to={href}
-                    target={relative ? undefined : '_blank'}
-                    title={title}
+                  <div
+                    css={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '2px',
+                    }}
                   >
-                    {children}
-                  </MDLink>
+                    <MDLink to={to} target={target} title={title}>
+                      {children}
+                    </MDLink>
+                    {external ? <IconExternalLink size={16} /> : null}
+                  </div>
                 );
               },
             },
             img: {
               component: ({ src, alt, title }) => {
                 return (
-                  <MDLink to={src} target="_blank" title={title}>
-                    {alt}
-                  </MDLink>
+                  <div
+                    css={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '2px',
+                    }}
+                  >
+                    <MDLink to={src} target="_blank" title={title}>
+                      {alt}
+                    </MDLink>
+                    <IconPhoto size={16} />
+                  </div>
                 );
               },
             },

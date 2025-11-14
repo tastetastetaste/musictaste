@@ -33,6 +33,7 @@ import { UserRelease } from '../../db/entities/user-release.entity';
 import { CommentsService } from '../comments/comments.service';
 import { ReleasesService } from '../releases/releases.service';
 import { UsersService } from '../users/users.service';
+import { EntitiesReferenceService } from '../entities/entitiesReference.service';
 
 @Injectable()
 export class EntriesService {
@@ -58,6 +59,7 @@ export class EntriesService {
     private releasesService: ReleasesService,
     private usersService: UsersService,
     private commentsService: CommentsService,
+    private entitiesReferenceService: EntitiesReferenceService,
   ) {}
 
   async create(
@@ -76,7 +78,8 @@ export class EntriesService {
 
     if (review) {
       const _review = new Review();
-      _review.body = review;
+      _review.bodySource = review;
+      _review.body = await this.entitiesReferenceService.parseLinks(review);
       ur.review = _review;
     }
 
@@ -148,13 +151,15 @@ export class EntriesService {
       if (!ur.reviewId) {
         // create review
         const _review = new Review();
-        _review.body = review;
+        _review.bodySource = review;
+        _review.body = await this.entitiesReferenceService.parseLinks(review);
         ur.review = _review;
 
         createReview = true;
       } else {
         // update review
-        ur.review.body = review;
+        ur.review.bodySource = review;
+        ur.review.body = await this.entitiesReferenceService.parseLinks(review);
       }
     } else if (ur.reviewId) {
       // remove review
@@ -586,6 +591,7 @@ export class EntriesService {
       .createQueryBuilder('r')
       .select('r.id', 'id')
       .addSelect('r.body', 'body')
+      .addSelect('r.bodySource', 'bodySource')
       .addSelect('r.createdAt', 'createdAt')
       .addSelect('r.updatedAt', 'updatedAt')
       .addSelect(

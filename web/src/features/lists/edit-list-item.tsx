@@ -9,7 +9,7 @@ import { FlexChild } from '../../components/flex/flex-child';
 import { Group } from '../../components/flex/group';
 import { Stack } from '../../components/flex/stack';
 import { IconButton } from '../../components/icon-button';
-import { Textarea } from '../../components/inputs/textarea';
+import { TextareaWithPreview } from '../../components/inputs/textarea-with-preview';
 import { Typography } from '../../components/typography';
 import { api } from '../../utils/api';
 import {
@@ -23,11 +23,13 @@ const EditNoteForm = ({
   itemId,
   note,
   onUpdate,
+  onClose,
 }: {
   listId: string;
   itemId: string;
   note: string;
   onUpdate: (note: string) => void;
+  onClose: () => void;
 }) => {
   const { handleSubmit, register } = useForm();
 
@@ -40,30 +42,36 @@ const EditNoteForm = ({
       note: data.note,
     });
     onUpdate(data.note);
+    onClose();
   };
 
   return (
     <form onSubmit={handleSubmit(submit)}>
       <Stack gap="sm">
-        <Textarea
+        <TextareaWithPreview
           defaultValue={note}
           placeholder="Description..."
           {...register('note')}
+          rows={5}
         />
-        <Button type="submit" disabled={isLoading}>
-          save
-        </Button>
+        <Group gap="sm">
+          <Button type="submit" disabled={isLoading}>
+            save
+          </Button>
+          <Button variant="text" onClick={onClose}>
+            cancel
+          </Button>
+        </Group>
       </Stack>
     </form>
   );
 };
 
-export const Note = ({ id, note, listId }: any) => {
+export const Note = ({ id, note, noteSource, listId }: any) => {
   const [openNoteEditer, setOpenNoteEditer] = useState(false);
-  const [listItemNote, setListItemNote] = useState(note);
+  const [listItemNote, setListItemNote] = useState(noteSource || '');
 
   const onUpdate = async (note: string) => {
-    setOpenNoteEditer(false);
     setListItemNote(note);
   };
 
@@ -75,48 +83,55 @@ export const Note = ({ id, note, listId }: any) => {
           listId={listId}
           note={listItemNote}
           onUpdate={onUpdate}
+          onClose={() => setOpenNoteEditer(false)}
         />
       ) : (
         <span>{listItemNote}</span>
       )}
-      <IconButton
-        title="Add/Edit Note"
-        onClick={() => setOpenNoteEditer(!openNoteEditer)}
-      >
-        <IconMessage />
-      </IconButton>
+
+      {!openNoteEditer ? (
+        <div>
+          <IconButton
+            title="Add/Edit Note"
+            onClick={() => setOpenNoteEditer(!openNoteEditer)}
+          >
+            <IconMessage />
+          </IconButton>
+        </div>
+      ) : null}
     </Fragment>
   );
 };
 
 export const EditListItem: React.FC<
-  Pick<IListItem, 'id' | 'index' | 'note'> & {
+  Pick<IListItem, 'id' | 'index' | 'note' | 'noteSource'> & {
     release: IRelease;
     handleRemove: () => void;
     listId: string;
   }
-> = ({ id, release, index, handleRemove, note, listId }) => {
+> = ({ id, release, index, handleRemove, note, noteSource, listId }) => {
   return (
     <CardContainer>
       <Group gap="md" justify="apart">
-        <FlexChild grow shrink>
-          <Group gap="md">
+        <FlexChild basis="50px">
+          <Group justify="center">
             <Typography size="title-lg">{index + 1}</Typography>
-            <FlexChild basis="100px">
-              <ReleaseImageLink release={release} size="xs" />
-            </FlexChild>
-            <Stack gap="sm">
-              <ArtistsLinks artists={release.artists} />
-              <ReleaseTitleLink
-                to={getReleasePath({ releaseId: release.id })}
-                title={release.title}
-                latinTitle={release.titleLatin}
-              />
-              <Note note={note} id={id} listId={listId} />
-            </Stack>
           </Group>
         </FlexChild>
-
+        <FlexChild basis="100px">
+          <ReleaseImageLink release={release} size="xs" />
+        </FlexChild>
+        <FlexChild grow shrink>
+          <Stack gap="sm">
+            <ArtistsLinks artists={release.artists} />
+            <ReleaseTitleLink
+              to={getReleasePath({ releaseId: release.id })}
+              title={release.title}
+              latinTitle={release.titleLatin}
+            />
+            <Note note={note} noteSource={noteSource} id={id} listId={listId} />
+          </Stack>
+        </FlexChild>
         <IconButton title="Remove" onClick={handleRemove}>
           <IconTrash />
         </IconButton>

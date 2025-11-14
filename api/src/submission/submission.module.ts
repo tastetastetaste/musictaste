@@ -22,6 +22,7 @@ import { GenreSubmissionVote } from '../../db/entities/genre-submission-vote.ent
 import { GenresModule } from '../genres/genres.module';
 import { Genre } from '../../db/entities/genre.entity';
 import { CommentsModule } from '../comments/comments.module';
+import { EntitiesModule } from '../entities/entities.module';
 
 @Module({
   imports: [
@@ -47,6 +48,7 @@ import { CommentsModule } from '../comments/comments.module';
     ArtistsModule,
     GenresModule,
     CommentsModule,
+    EntitiesModule,
   ],
   controllers: [SubmissionsController],
   providers: [SubmissionService],

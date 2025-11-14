@@ -38,8 +38,14 @@ export const ListItem: React.FC<IListItemProps> = ({
       }}
     >
       <Group gap={20}>
-        <Group gap={20}>
-          {ranked && <Typography size="title-lg">{index + 1}</Typography>}
+        <Group>
+          {ranked && (
+            <div css={{ width: '80px' }}>
+              <Group justify="center">
+                <Typography size="title-lg">{index + 1}</Typography>
+              </Group>
+            </div>
+          )}
           <div
             css={{
               height: smScreen ? '100px' : '200px',
