@@ -16,6 +16,7 @@ import { FlexChild } from '../../components/flex/flex-child';
 import { Group } from '../../components/flex/group';
 import { ResponsiveRow } from '../../components/flex/responsive-row';
 import { Stack } from '../../components/flex/stack';
+import { InfoRow } from '../../components/info-row';
 import { Loading } from '../../components/loading';
 import { Navigation } from '../../components/nav';
 import { Typography } from '../../components/typography';
@@ -65,66 +66,26 @@ const ReleaseInfo: React.FC<{
 
   return (
     <Stack gap="lg">
-      <Group gap={5}>
-        <Typography
-          color="sub"
-          css={{
-            width: '90px',
-          }}
-        >
-          Date
-        </Typography>
+      <InfoRow label="Date">
         <Typography>{dateStr}</Typography>
-      </Group>
+      </InfoRow>
 
-      <Group gap={5}>
-        <Typography
-          color="sub"
-          css={{
-            width: '90px',
-          }}
-        >
-          Type
-        </Typography>
+      <InfoRow label="Type">
         <Typography>{formatReleaseType(type)}</Typography>
-      </Group>
+      </InfoRow>
       {languagesStr && (
-        <Group gap={5}>
-          <Typography
-            color="sub"
-            css={{
-              width: '90px',
-            }}
-          >
-            Language
-          </Typography>
+        <InfoRow label="Language">
           <Typography>{languagesStr}</Typography>
-        </Group>
+        </InfoRow>
       )}
       {labels.length ? (
-        <Group gap={5}>
-          <Typography
-            color="sub"
-            css={{
-              width: '90px',
-            }}
-          >
-            Label
-          </Typography>
+        <InfoRow label="Label">
           {/* <Typography>{labelStr}</Typography> */}
 
           <LabelsLinks labels={labels} />
-        </Group>
+        </InfoRow>
       ) : null}
-      <Group gap={5}>
-        <Typography
-          color="sub"
-          css={{
-            width: '90px',
-          }}
-        >
-          Genre
-        </Typography>
+      <InfoRow label="Genre">
         {/* <Typography>{genresStr}</Typography> */}
 
         <GenresLinks
@@ -134,7 +95,7 @@ const ReleaseInfo: React.FC<{
           }))}
         />
         {isLoggedIn && <ReleaseGenreVote releaseId={releaseId} />}
-      </Group>
+      </InfoRow>
     </Stack>
   );
 };

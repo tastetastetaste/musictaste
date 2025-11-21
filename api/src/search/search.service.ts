@@ -73,16 +73,20 @@ export class SearchService {
       type.includes('artists')
         ? this.artistsRepository
             .createQueryBuilder('a')
-            .select(['a.id', 'a.name', 'a.nameLatin'])
+            .select(['a.id', 'a.name', 'a.nameLatin', 'a.disambiguation'])
             .addSelect(
               `ts_rank(
-                to_tsvector('simple', unaccent(a.name || ' ' || COALESCE(a.nameLatin, ''))),
+                setweight(to_tsvector('simple', unaccent(a.name || ' ' || COALESCE(a.nameLatin, ''))), 'A') ||
+                setweight(to_tsvector('simple', unaccent(COALESCE(a.aka, ''))), 'C'),
                 plainto_tsquery('simple', unaccent(:query))
               )`,
               'search_rank',
             )
             .where(
-              `to_tsvector('simple', unaccent(a.name || ' ' || COALESCE(a.nameLatin, ''))) @@ plainto_tsquery('simple', unaccent(:query))`,
+              `(
+                setweight(to_tsvector('simple', unaccent(a.name || ' ' || COALESCE(a.nameLatin, ''))), 'A') ||
+                setweight(to_tsvector('simple', unaccent(COALESCE(a.aka, ''))), 'C')
+              ) @@ plainto_tsquery('simple', unaccent(:query))`,
             )
             .orderBy('search_rank', 'DESC')
             .addOrderBy('LENGTH(a.name)', 'ASC')

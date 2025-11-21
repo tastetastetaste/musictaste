@@ -2,6 +2,7 @@ import { useInfiniteQuery, useMutation } from '@tanstack/react-query';
 import { Fragment } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import {
+  ArtistType,
   getArtistPath,
   IArtistSubmission,
   SubmissionSortByEnum,
@@ -66,6 +67,48 @@ export const ArtistSubmissionItem = ({
         changedValue={changes?.nameLatin}
         showOriginal={hasOriginal}
         renderValue={(v) => <span>{v}</span>}
+      />
+      <SubmissionField
+        label="Type"
+        originalValue={original?.type}
+        changedValue={changes?.type}
+        showOriginal={hasOriginal}
+        renderValue={(v) => <span>{ArtistType[v]}</span>}
+      />
+      <SubmissionField
+        label="Disambiguation"
+        originalValue={original?.disambiguation}
+        changedValue={changes?.disambiguation}
+        showOriginal={hasOriginal}
+        renderValue={(v) => <span>{v}</span>}
+      />
+      <SubmissionField
+        label="Members"
+        originalValue={original?.members}
+        changedValue={changes?.members}
+        showOriginal={hasOriginal}
+        renderValue={(v) => <Markdown variant="compact">{v}</Markdown>}
+      />
+      <SubmissionField
+        label="Member Of"
+        originalValue={original?.memberOf}
+        changedValue={changes?.memberOf}
+        showOriginal={hasOriginal}
+        renderValue={(v) => <Markdown variant="compact">{v}</Markdown>}
+      />
+      <SubmissionField
+        label="Related Artists"
+        originalValue={original?.relatedArtists}
+        changedValue={changes?.relatedArtists}
+        showOriginal={hasOriginal}
+        renderValue={(v) => <Markdown variant="compact">{v}</Markdown>}
+      />
+      <SubmissionField
+        label="AKA"
+        originalValue={original?.aka}
+        changedValue={changes?.aka}
+        showOriginal={hasOriginal}
+        renderValue={(v) => <Markdown variant="compact">{v}</Markdown>}
       />
       {submission.note && (
         <SubmissionField

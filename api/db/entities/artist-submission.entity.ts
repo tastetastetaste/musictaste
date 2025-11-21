@@ -1,5 +1,5 @@
-import { IsString, IsOptional } from 'class-validator';
-import { SubmissionStatus, SubmissionType } from 'shared';
+import { IsString, IsOptional, IsEnum } from 'class-validator';
+import { ArtistType, SubmissionStatus, SubmissionType } from 'shared';
 import {
   Column,
   CreateDateColumn,
@@ -20,6 +20,45 @@ export class ArtistChanges {
   @IsString()
   @IsOptional()
   nameLatin?: string;
+
+  @IsEnum(ArtistType)
+  type: ArtistType;
+
+  @IsString()
+  @IsOptional()
+  disambiguation?: string;
+
+  @IsString()
+  @IsOptional()
+  members?: string;
+
+  @IsString()
+  @IsOptional()
+  membersSource?: string;
+
+  @IsString()
+  @IsOptional()
+  memberOf?: string;
+
+  @IsString()
+  @IsOptional()
+  memberOfSource?: string;
+
+  @IsString()
+  @IsOptional()
+  relatedArtists?: string;
+
+  @IsString()
+  @IsOptional()
+  relatedArtistsSource?: string;
+
+  @IsString()
+  @IsOptional()
+  aka?: string;
+
+  @IsString()
+  @IsOptional()
+  akaSource?: string;
 }
 
 @Entity()

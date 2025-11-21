@@ -77,7 +77,7 @@ const EditReleasePage = () => {
     getValues,
     watch,
     reset,
-    formState: { isSubmitSuccessful, errors },
+    formState: { errors },
   } = useForm<EditReleaseFormValues>({
     resolver: classValidatorResolver(
       UpdateReleaseDto,
@@ -165,19 +165,17 @@ const EditReleasePage = () => {
     mutateAsync: editRelease,
     isLoading,
     data,
-  } = useMutation(api.updateRelease);
+  } = useMutation(api.updateRelease, {
+    onSuccess: () => {
+      snackbar('Changes submitted successfully');
+
+      navigate(`/release/${releaseId}`, { replace: true });
+    },
+  });
 
   const navigate = useNavigate();
 
   const { snackbar } = useSnackbar();
-
-  useEffect(() => {
-    if (isSubmitSuccessful) {
-      snackbar('Changes submitted successfully');
-
-      navigate(`/release/${releaseId}`, { replace: true });
-    }
-  }, [isSubmitSuccessful]);
 
   const title =
     releaseData && releaseData.release && `${releaseData.release.title} / edit`;

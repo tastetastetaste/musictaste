@@ -100,21 +100,71 @@ export class SubmissionService {
   // --- ARTISTS
 
   async createArtistSubmission(
-    { name, nameLatin }: CreateArtistDto,
+    {
+      name,
+      nameLatin,
+      members,
+      memberOf,
+      disambiguation,
+      aka,
+      relatedArtists,
+      type,
+      note,
+    }: CreateArtistDto,
     user: CurrentUserPayload,
   ) {
     if (user.contributorStatus === ContributorStatus.NOT_A_CONTRIBUTOR)
       throw new BadRequestException(
         "You can't submit contributions at this time",
       );
+
+    const nameExists = await this.artistsService.artistNameExists(name);
+    if (nameExists && !disambiguation) {
+      throw new BadRequestException(
+        'Artist name already exists; disambiguation is required',
+      );
+    } else if (nameExists && disambiguation === nameExists.disambiguation) {
+      throw new BadRequestException(
+        'Artist with this name and disambiguation already exists',
+      );
+    }
+
     const artistSubmission = new ArtistSubmission();
-    artistSubmission.changes = { name, nameLatin };
+
+    const processedMembers = members
+      ? await this.entitiesReferenceService.parseLinks(members)
+      : undefined;
+    const processedMemberOf = memberOf
+      ? await this.entitiesReferenceService.parseLinks(memberOf)
+      : undefined;
+    const processedAka = aka
+      ? await this.entitiesReferenceService.parseLinks(aka)
+      : undefined;
+    const processedRelatedArtists = relatedArtists
+      ? await this.entitiesReferenceService.parseLinks(relatedArtists)
+      : undefined;
+
+    artistSubmission.changes = {
+      name,
+      nameLatin,
+      type,
+      disambiguation,
+      members: processedMembers,
+      membersSource: members,
+      memberOf: processedMemberOf,
+      memberOfSource: memberOf,
+      relatedArtists: processedRelatedArtists,
+      relatedArtistsSource: relatedArtists,
+      aka: processedAka,
+      akaSource: aka,
+    };
     artistSubmission.submissionType = SubmissionType.CREATE;
     artistSubmission.submissionStatus =
       user.contributorStatus >= ContributorStatus.EDITOR
         ? SubmissionStatus.APPROVED
         : SubmissionStatus.AUTO_APPROVED;
     artistSubmission.userId = user.id;
+    artistSubmission.note = note;
 
     const artist = await this.applyArtistSubmission(artistSubmission);
 
@@ -134,7 +184,17 @@ export class SubmissionService {
 
   async updateArtistSubmission(
     artistId: string,
-    { name, nameLatin, note }: UpdateArtistDto,
+    {
+      name,
+      nameLatin,
+      members,
+      memberOf,
+      disambiguation,
+      aka,
+      type,
+      note,
+      relatedArtists,
+    }: UpdateArtistDto,
     user: CurrentUserPayload,
   ) {
     if (user.contributorStatus === ContributorStatus.NOT_A_CONTRIBUTOR)
@@ -161,10 +221,49 @@ export class SubmissionService {
       );
     }
 
+    const processedMembers = members
+      ? await this.entitiesReferenceService.parseLinks(members)
+      : undefined;
+    const processedMemberOf = memberOf
+      ? await this.entitiesReferenceService.parseLinks(memberOf)
+      : undefined;
+    const processedAka = aka
+      ? await this.entitiesReferenceService.parseLinks(aka)
+      : undefined;
+    const processedRelatedArtists = relatedArtists
+      ? await this.entitiesReferenceService.parseLinks(relatedArtists)
+      : undefined;
+
     const as = new ArtistSubmission();
     as.artistId = artistId;
-    as.changes = { name, nameLatin };
-    as.original = { name: artist.name, nameLatin: artist.nameLatin };
+    as.changes = {
+      name,
+      nameLatin,
+      type,
+      disambiguation,
+      members: processedMembers,
+      membersSource: members,
+      memberOf: processedMemberOf,
+      memberOfSource: memberOf,
+      relatedArtists: processedRelatedArtists,
+      relatedArtistsSource: relatedArtists,
+      aka: processedAka,
+      akaSource: aka,
+    };
+    as.original = {
+      name: artist.name,
+      nameLatin: artist.nameLatin,
+      type: artist.type,
+      disambiguation: artist.disambiguation,
+      members: artist.members,
+      membersSource: artist.membersSource,
+      memberOf: artist.memberOf,
+      memberOfSource: artist.memberOfSource,
+      relatedArtists: artist.relatedArtists,
+      relatedArtistsSource: artist.relatedArtistsSource,
+      aka: artist.aka,
+      akaSource: artist.akaSource,
+    };
     as.submissionType = SubmissionType.UPDATE;
     as.submissionStatus = SubmissionStatus.OPEN;
     as.userId = user.id;

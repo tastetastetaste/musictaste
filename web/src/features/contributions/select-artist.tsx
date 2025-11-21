@@ -45,9 +45,12 @@ export const SelectArtist = forwardRef(
         isMulti={true}
         options={
           data?.artists &&
-          data.artists.map(({ id, name, nameLatin }) => ({
+          data.artists.map(({ id, name, nameLatin, disambiguation }) => ({
             value: id,
-            label: name + (nameLatin ? ` [${nameLatin}]` : ''),
+            label:
+              name +
+              (nameLatin ? ` [${nameLatin}]` : '') +
+              (disambiguation ? ` (${disambiguation})` : ''),
           }))
         }
         placeholder="Artist/Band"

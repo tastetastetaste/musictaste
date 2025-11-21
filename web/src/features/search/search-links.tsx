@@ -15,7 +15,12 @@ export const ArtistSearchLink = ({ artist }: { artist: IArtistSummary }) => (
   <Link to={getArtistPath({ artistId: artist.id })}>
     {artist.name}{' '}
     {artist.nameLatin ? (
-      <span css={{ fontStyle: 'italic' }}>[{artist.nameLatin}]</span>
+      <span css={{ fontStyle: 'italic' }}>[{artist.nameLatin}] </span>
+    ) : (
+      ''
+    )}
+    {artist.disambiguation ? (
+      <span css={{ opacity: 0.6 }}>({artist.disambiguation})</span>
     ) : (
       ''
     )}

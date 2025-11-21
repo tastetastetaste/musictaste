@@ -26,7 +26,7 @@ const AddGenrePage = () => {
     handleSubmit,
     register,
     reset,
-    formState: { isSubmitSuccessful, errors },
+    formState: { errors },
   } = useForm<CreateGenreDto>({
     resolver: classValidatorResolver(
       CreateGenreDto,
@@ -42,11 +42,11 @@ const AddGenrePage = () => {
     mutateAsync: createGenre,
     isLoading,
     data,
-  } = useMutation(api.createGenre);
-
-  useEffect(() => {
-    reset(defaultValues);
-  }, [isSubmitSuccessful]);
+  } = useMutation(api.createGenre, {
+    onSuccess: () => {
+      reset(defaultValues);
+    },
+  });
 
   return (
     <AppPageWrapper title="Add Genre">

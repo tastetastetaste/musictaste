@@ -11,6 +11,7 @@ import {
   IsString,
   Matches,
   Max,
+  MaxLength,
   Min,
   MinLength,
   registerDecorator,
@@ -33,6 +34,7 @@ import {
   SupporterStatus,
   AccountStatus,
   VoteType,
+  ArtistType,
 } from './enums';
 
 export function IsDayjsDateString(validationOptions?: ValidationOptions) {
@@ -212,6 +214,35 @@ export class CreateArtistDto {
   @IsString()
   @IsOptional()
   nameLatin?: string;
+
+  @IsEnum(ArtistType)
+  type: ArtistType;
+
+  @IsString()
+  @IsOptional()
+  @MaxLength(100)
+  disambiguation?: string;
+
+  @IsString()
+  @IsOptional()
+  members?: string;
+
+  @IsString()
+  @IsOptional()
+  memberOf?: string;
+
+  @IsString()
+  @IsOptional()
+  relatedArtists?: string;
+
+  @IsString()
+  @IsOptional()
+  @MaxLength(500)
+  aka?: string;
+
+  @IsString()
+  @MinLength(1)
+  note: string;
 }
 
 export class UpdateArtistDto {
@@ -227,6 +258,31 @@ export class UpdateArtistDto {
   @IsString()
   @IsOptional()
   nameLatin?: string;
+
+  @IsEnum(ArtistType)
+  type: ArtistType;
+
+  @IsString()
+  @IsOptional()
+  @MaxLength(100)
+  disambiguation?: string;
+
+  @IsString()
+  @IsOptional()
+  members?: string;
+
+  @IsString()
+  @IsOptional()
+  memberOf?: string;
+
+  @IsString()
+  @IsOptional()
+  relatedArtists?: string;
+
+  @IsString()
+  @IsOptional()
+  @MaxLength(500)
+  aka?: string;
 
   @IsString()
   @MinLength(1)

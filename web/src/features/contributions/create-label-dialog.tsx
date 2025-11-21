@@ -25,7 +25,7 @@ const CreateLabelDialog: React.FC<{
   const {
     handleSubmit,
     register,
-    formState: { errors, isSubmitSuccessful },
+    formState: { errors },
     reset,
   } = useForm<CreateLabelDto>({
     resolver: classValidatorResolver(CreateLabelDto),
@@ -33,17 +33,15 @@ const CreateLabelDialog: React.FC<{
   });
 
   const { mutateAsync, isLoading, data } = useMutation(api.createLabel, {
-    onSuccess: () =>
-      qc.invalidateQueries(cacheKeys.searchKey({ type: ['labels'] })),
+    onSuccess: () => {
+      qc.invalidateQueries(cacheKeys.searchKey({ type: ['labels'] }));
+      reset(defaultValues);
+    },
   });
 
   const createLabel = async (data: CreateLabelDto) => {
     await mutateAsync(data);
   };
-
-  useEffect(() => {
-    reset(defaultValues);
-  }, [isSubmitSuccessful]);
 
   return (
     <Dialog isOpen={isOpen} onClose={onClose} title="Add Label">

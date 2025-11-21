@@ -87,7 +87,7 @@ const AddReleasePage = () => {
     getValues,
     watch,
     reset,
-    formState: { isSubmitSuccessful, errors },
+    formState: { errors },
   } = useForm<CreateReleaseFormValues>({
     resolver: classValidatorResolver(
       CreateReleaseDto,
@@ -103,12 +103,12 @@ const AddReleasePage = () => {
     mutateAsync: createRelease,
     isLoading,
     data,
-  } = useMutation(api.createRelease);
-
-  useEffect(() => {
-    reset(defaultValues);
-    setImportMessage('');
-  }, [isSubmitSuccessful]);
+  } = useMutation(api.createRelease, {
+    onSuccess: () => {
+      reset(defaultValues);
+      setImportMessage('');
+    },
+  });
 
   const mbImport = async () => {
     try {

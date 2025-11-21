@@ -29,6 +29,11 @@ export enum ReleaseType {
   Other = 25,
 }
 
+export enum ArtistType {
+  Person = 1,
+  Group = 2,
+}
+
 export enum ExplicitCoverArt {
   NUDITY = 'NUDITY',
   EXPLICIT_SEXUAL_CONTENT = 'EXPLICIT_SEXUAL_CONTENT',

@@ -2,11 +2,13 @@ import { IconChevronDown, IconChevronRight } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { IArtistResponse, IRelease, ReportType } from 'shared';
+import { ArtistType, IArtistResponse, IRelease, ReportType } from 'shared';
 import { Grid } from '../../components/flex/grid';
 import { Group } from '../../components/flex/group';
 import { Stack } from '../../components/flex/stack';
+import { InfoRow } from '../../components/info-row';
 import { Loading } from '../../components/loading';
+import { Markdown } from '../../components/markdown';
 import { Typography } from '../../components/typography';
 import { useSnackbar } from '../../hooks/useSnackbar';
 import AppPageWrapper from '../../layout/app-page-wrapper';
@@ -245,14 +247,41 @@ const ArtistPage = () => {
               padding: '10px 0',
             }}
           >
-            <Typography size="title-xl" as="h1">
-              {artist.name}
-            </Typography>
-            {artist.nameLatin ? (
-              <Typography size="title-lg">{artist.nameLatin}</Typography>
-            ) : (
-              ''
-            )}
+            <Stack gap="lg">
+              <Stack>
+                <Typography size="title-xl" as="h1">
+                  {artist.name}
+                </Typography>
+                {artist.nameLatin ? (
+                  <Typography size="title-lg">{artist.nameLatin}</Typography>
+                ) : (
+                  ''
+                )}
+              </Stack>
+              {artist.members || artist.memberOf ? (
+                <InfoRow
+                  label={
+                    artist.type === ArtistType.Person ? 'Member Of' : 'Members'
+                  }
+                >
+                  <Markdown variant="compact">
+                    {artist.type === ArtistType.Person
+                      ? artist.memberOf
+                      : artist.members}
+                  </Markdown>
+                </InfoRow>
+              ) : null}
+              {artist.relatedArtists ? (
+                <InfoRow label="Related Artists">
+                  <Markdown variant="compact">{artist.relatedArtists}</Markdown>
+                </InfoRow>
+              ) : null}
+              {artist.aka ? (
+                <InfoRow label="AKA">
+                  <Markdown variant="compact">{artist.aka}</Markdown>
+                </InfoRow>
+              ) : null}
+            </Stack>
           </div>
           <Releases releases={data.releases} />
         </Stack>

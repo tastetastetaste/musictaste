@@ -1,8 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateArtistDto, IArtistResponse } from 'shared';
+import { IArtistResponse } from 'shared';
 import { Repository } from 'typeorm';
-import { ArtistSubmission } from '../../db/entities/artist-submission.entity';
+import {
+  ArtistChanges,
+  ArtistSubmission,
+} from '../../db/entities/artist-submission.entity';
 import { Artist } from '../../db/entities/artist.entity';
 import { ReleaseArtist } from '../../db/entities/release-artist.entity';
 import { genId } from '../common/genId';
@@ -34,7 +37,20 @@ export class ArtistsService {
     };
   }
 
-  async create({ name, nameLatin }: CreateArtistDto) {
+  async create({
+    name,
+    nameLatin,
+    type,
+    disambiguation,
+    members,
+    membersSource,
+    memberOf,
+    memberOfSource,
+    relatedArtists,
+    relatedArtistsSource,
+    aka,
+    akaSource,
+  }: ArtistChanges) {
     const id = genId();
 
     // use `insert` to prevent accidental overwrite
@@ -42,6 +58,16 @@ export class ArtistsService {
       id,
       name,
       nameLatin,
+      type,
+      disambiguation,
+      members,
+      membersSource,
+      memberOf,
+      memberOfSource,
+      relatedArtists,
+      relatedArtistsSource,
+      aka,
+      akaSource,
     });
 
     const artist = await this.artistsRepository.findOne({ where: { id } });
@@ -51,10 +77,23 @@ export class ArtistsService {
 
   async updateArtist({
     artistId,
-    changes: { name, nameLatin },
+    changes: {
+      name,
+      nameLatin,
+      type,
+      disambiguation,
+      members,
+      membersSource,
+      memberOf,
+      memberOfSource,
+      relatedArtists,
+      relatedArtistsSource,
+      aka,
+      akaSource,
+    },
   }: {
     artistId: string;
-    changes: { name: string; nameLatin?: string };
+    changes: ArtistChanges;
   }): Promise<Artist> {
     const artist = await this.artistsRepository.findOne({
       where: { id: artistId },
@@ -64,11 +103,25 @@ export class ArtistsService {
 
     artist.name = name;
     artist.nameLatin = nameLatin;
+    artist.type = type;
+    artist.disambiguation = disambiguation;
+    artist.members = members;
+    artist.membersSource = membersSource;
+    artist.memberOf = memberOf;
+    artist.memberOfSource = memberOfSource;
+    artist.relatedArtists = relatedArtists;
+    artist.relatedArtistsSource = relatedArtistsSource;
+    artist.aka = aka;
+    artist.akaSource = akaSource;
     return this.artistsRepository.save(artist);
   }
 
   async deleteArtist(id: string) {
     return await this.artistsRepository.delete(id);
+  }
+
+  async artistNameExists(name: string) {
+    return await this.artistsRepository.findOne({ where: { name } });
   }
 
   async mergeArtists(mergeFromId: string, mergeIntoId: string) {

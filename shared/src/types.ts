@@ -1,5 +1,6 @@
 import {
   AccountStatus,
+  ArtistType,
   CommentEntityType,
   ContributorStatus,
   ExplicitCoverArt,
@@ -12,12 +13,23 @@ export interface IArtistSummary {
   id: string;
   name: string;
   nameLatin?: string;
+  disambiguation?: string;
 }
 
 export interface IArtist {
   id: string;
   name: string;
+  type: ArtistType;
   nameLatin?: string;
+  disambiguation?: string;
+  members?: string;
+  membersSource?: string;
+  memberOf?: string;
+  memberOfSource?: string;
+  relatedArtists?: string;
+  relatedArtistsSource?: string;
+  aka?: string;
+  akaSource?: string;
 }
 
 export interface IArtistResponse {
@@ -468,6 +480,16 @@ export interface IReleaseSubmission {
 export interface IArtistChanges {
   name: string;
   nameLatin?: string;
+  type: ArtistType;
+  disambiguation?: string;
+  members?: string;
+  membersSource?: string;
+  memberOf?: string;
+  memberOfSource?: string;
+  relatedArtists?: string;
+  relatedArtistsSource?: string;
+  aka?: string;
+  akaSource?: string;
 }
 
 export interface IArtistSubmissionVote {

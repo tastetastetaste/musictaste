@@ -1,3 +1,5 @@
+import { ArtistType } from 'shared';
+
 export const ReleaseTypeOptions = [
   { value: 'LP', label: 'LP' },
   { value: 'EP', label: 'EP' },
@@ -14,4 +16,9 @@ export const ReleaseTypeOptions = [
   { value: 'Video', label: 'Video' },
   { value: 'Reissue', label: 'Reissue' },
   { value: 'Other', label: 'Other' },
+];
+
+export const ArtistTypeOptions = [
+  { value: ArtistType.Person, label: 'Person' },
+  { value: ArtistType.Group, label: 'Group' },
 ];
