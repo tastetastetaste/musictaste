@@ -187,6 +187,35 @@ const NewReleasesSection = () => {
   );
 };
 
+const TopReleasesOfTheYearSection = () => {
+  const { data: topReleasesData, isLoading: isLoadingTopReleases } = useQuery(
+    cacheKeys.releasesKey({
+      type: FindReleasesType.TopOTY,
+      page: 1,
+      pageSize: 12,
+    }),
+    () => api.getReleases(FindReleasesType.TopOTY, 1, 12),
+  );
+
+  const topReleases = topReleasesData?.releases;
+
+  return (
+    <Stack gap="lg">
+      <Link to="/releases/top-oty" size="title-lg">
+        Top Releases of the Year
+      </Link>
+      {isLoadingTopReleases ? (
+        <Loading />
+      ) : (
+        <Grid cols={[2, 6]} gap={RELEASE_GRID_GAP}>
+          {topReleases &&
+            topReleases.map((r) => <Release key={r.id} release={r} />)}
+        </Grid>
+      )}
+    </Stack>
+  );
+};
+
 const HomePage = () => {
   const { isLoading: isLoadingNewPopularReleases } = useQuery(
     cacheKeys.releasesKey({
@@ -204,7 +233,7 @@ const HomePage = () => {
       <Stack gap="lg">
         {!isLoading && !isLoggedIn && <FeaturesOverview />}
 
-        <NewReleasesSection />
+        <TopReleasesOfTheYearSection />
         {/* minimize layout shift */}
         {!isLoadingNewPopularReleases ? (
           <Fragment>
