@@ -237,7 +237,7 @@ export class CreateArtistDto {
 
   @IsString()
   @IsOptional()
-  @MaxLength(500)
+  @MaxLength(5000)
   aka?: string;
 
   @IsString()
@@ -281,7 +281,7 @@ export class UpdateArtistDto {
 
   @IsString()
   @IsOptional()
-  @MaxLength(500)
+  @MaxLength(5000)
   aka?: string;
 
   @IsString()

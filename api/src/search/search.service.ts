@@ -76,17 +76,13 @@ export class SearchService {
             .select(['a.id', 'a.name', 'a.nameLatin', 'a.disambiguation'])
             .addSelect(
               `ts_rank(
-                setweight(to_tsvector('simple', unaccent(a.name || ' ' || COALESCE(a.nameLatin, ''))), 'A') ||
-                setweight(to_tsvector('simple', unaccent(COALESCE(a.aka, ''))), 'C'),
+                to_tsvector('simple', unaccent(a.name || ' ' || COALESCE(a.nameLatin, ''))),
                 plainto_tsquery('simple', unaccent(:query))
               )`,
               'search_rank',
             )
             .where(
-              `(
-                setweight(to_tsvector('simple', unaccent(a.name || ' ' || COALESCE(a.nameLatin, ''))), 'A') ||
-                setweight(to_tsvector('simple', unaccent(COALESCE(a.aka, ''))), 'C')
-              ) @@ plainto_tsquery('simple', unaccent(:query))`,
+              `to_tsvector('simple', unaccent(a.name || ' ' || COALESCE(a.nameLatin, ''))) @@ plainto_tsquery('simple', unaccent(:query))`,
             )
             .orderBy('search_rank', 'DESC')
             .addOrderBy('LENGTH(a.name)', 'ASC')
