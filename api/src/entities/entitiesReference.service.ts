@@ -123,24 +123,40 @@ export class EntitiesReferenceService {
   }) {
     const releases = await this.releaseRepository.find({
       where: { id: In(ids.releaseIds) },
-      select: ['id', 'title'],
+      select: ['id', 'title', 'titleLatin'],
     });
     const artists = await this.artistRepository.find({
       where: { id: In(ids.artistIds) },
-      select: ['id', 'name'],
+      select: ['id', 'name', 'nameLatin'],
     });
     const labels = await this.labelRepository.find({
       where: { id: In(ids.labelIds) },
-      select: ['id', 'name'],
+      select: ['id', 'name', 'nameLatin'],
     });
     const genres = await this.genreRepository.find({
       where: { id: In(ids.genreIds) },
       select: ['id', 'name'],
     });
     return {
-      releases: new Map(releases.map((release) => [release.id, release.title])),
-      artists: new Map(artists.map((artist) => [artist.id, artist.name])),
-      labels: new Map(labels.map((label) => [label.id, label.name])),
+      releases: new Map(
+        releases.map((release) => [
+          release.id,
+          release.title +
+            (release.titleLatin ? ` [${release.titleLatin}]` : ''),
+        ]),
+      ),
+      artists: new Map(
+        artists.map((artist) => [
+          artist.id,
+          artist.name + (artist.nameLatin ? ` [${artist.nameLatin}]` : ''),
+        ]),
+      ),
+      labels: new Map(
+        labels.map((label) => [
+          label.id,
+          label.name + (label.nameLatin ? ` [${label.nameLatin}]` : ''),
+        ]),
+      ),
       genres: new Map(genres.map((genre) => [genre.id, genre.name])),
     };
   }
