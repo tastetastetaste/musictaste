@@ -10,6 +10,7 @@ export const CONTRIBUTING_MD = `# Contributing to the Database
 ## General Guidelines
 
 - AI-generated music is not allowed in the database.
+- You should create an artist page only when you are adding a release for that artist. Don't create empty artist pages just to reference them.
 - Always include helpful notes with sources. Every submission is reviewed on its own, so notes like 'Add tracklist' or 'Fix date' are not enough without a supporting source.
 - Don't add or edit data if it doesn't have a public source to verify it.
 
@@ -57,8 +58,11 @@ You can autofill the fields by importing from MusicBrainz.
 - **English / Latin-script name (if applicable)**: The name of the artist in English or Latin-script if the original name is in non-Latin script.
 - **Type**: Select "Person" or "Group".
 - **Disambiguation**: A very short description of the artist to distinguish them from other artists with the same name.
-- **Members**: Members of the band, separated by commas. If members have pages in the database, use **references** to link them.
-- **Member Of**: Groups that the artist is a member of, separated by commas. If groups have pages in the database, use **references** to link them.
+- **Members**: Members of the band, separated by commas. 
+  - If members have pages in the database, use **references** to link them.
+  - If members don't have pages in the database, write their names without linking them. (Don't create empty artist pages)
+  - You can put active years in parentheses for former members or for members who joined later (e.g., 2018-22 or 2022-present).
+- **Member Of**: Groups that the artist is a member of, separated by commas. If bands have pages in the database, use **references** to link them.
 - **Related Artists**: Use references to link related artists, separated by commas. This should only be used for artists that are closely related, such as sub-units of a group.
 - **AKA**: Alternative names, separated by commas. If the artist has a page for an alternative name, use a reference to link it. Creating separate artist pages for aliases is strongly discouraged unless the alias has a notable and distinct discography.
 - **Note/Source**: Add a note for the person reviewing your contribution (include links).

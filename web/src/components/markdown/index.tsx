@@ -188,6 +188,20 @@ export function Markdown({
                 );
               },
             },
+            mark: {
+              component: ({ children }) => {
+                return (
+                  <span
+                    css={(theme) => ({
+                      background: theme.colors.highlight,
+                      color: theme.colors.background,
+                    })}
+                  >
+                    {children}
+                  </span>
+                );
+              },
+            },
           },
         }}
       >
