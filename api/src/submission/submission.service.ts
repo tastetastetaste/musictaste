@@ -100,19 +100,17 @@ export class SubmissionService {
   // --- ARTISTS
 
   async createArtistSubmission(
-    {
-      name,
-      nameLatin,
-      members,
-      memberOf,
-      disambiguation,
-      aka,
-      relatedArtists,
-      type,
-      note,
-    }: CreateArtistDto,
+    { type, note, ...rest }: CreateArtistDto,
     user: CurrentUserPayload,
   ) {
+    const name = rest.name.trim();
+    const nameLatin = rest.nameLatin?.trim();
+    const members = rest.members?.trim();
+    const memberOf = rest.memberOf?.trim();
+    const aka = rest.aka?.trim();
+    const relatedArtists = rest.relatedArtists?.trim();
+    const disambiguation = rest.disambiguation?.trim();
+
     if (user.contributorStatus === ContributorStatus.NOT_A_CONTRIBUTOR)
       throw new BadRequestException(
         "You can't submit contributions at this time",
@@ -184,19 +182,17 @@ export class SubmissionService {
 
   async updateArtistSubmission(
     artistId: string,
-    {
-      name,
-      nameLatin,
-      members,
-      memberOf,
-      disambiguation,
-      aka,
-      type,
-      note,
-      relatedArtists,
-    }: UpdateArtistDto,
+    { type, note, ...rest }: UpdateArtistDto,
     user: CurrentUserPayload,
   ) {
+    const name = rest.name.trim();
+    const nameLatin = rest.nameLatin?.trim();
+    const members = rest.members?.trim();
+    const memberOf = rest.memberOf?.trim();
+    const aka = rest.aka?.trim();
+    const relatedArtists = rest.relatedArtists?.trim();
+    const disambiguation = rest.disambiguation?.trim();
+
     if (user.contributorStatus === ContributorStatus.NOT_A_CONTRIBUTOR)
       throw new BadRequestException(
         "You can't submit contributions at this time",
