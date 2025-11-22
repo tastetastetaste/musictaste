@@ -20,7 +20,8 @@ You can start contributing data by selecting **"Add Release"** from the dropdown
 
 - **Title**: The original title of the release.  
 - **English / Latin-script title (if applicable)**: The title of the release in English or Latin-script if the original title is in non-Latin script.
-- **Artist/Band**: Select the artist or band.  
+- **Artist/Band**: Select the artist or band. 
+  - **Alias**: Use this field when the artist is credited under a different name on one or more releases. Leave empty to keep the original name.
   - For classical music, use all performers and composers as artists.
   - If you don't find the artist, click **"Add new artist"** below the input field to add a new artist to the database. (refer to the section below for information on adding artists)
   - If you know the artist is in the database but can't find them, click **"Select by ID"** below the input field to select the artist by ID. Artist ID can be copied from the top right menu of the artist page.

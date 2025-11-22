@@ -9,6 +9,7 @@ import { Release } from '../../db/entities/release.entity';
 import { User } from '../../db/entities/user.entity';
 import { ImagesService } from '../images/images.service';
 import { SearchDto } from './dto/search.dto';
+import { ReleaseArtist } from '../../db/entities/release-artist.entity';
 
 @Injectable()
 export class SearchService {
@@ -173,7 +174,10 @@ export class SearchService {
           ? releases[0]?.map(({ artistConnection, ...r }) => ({
               ...r,
               cover: this.imagesService.getReleaseCover(r.imagePath),
-              artists: artistConnection.map((ac) => ac.artist),
+              artists: artistConnection.map((ac: ReleaseArtist) => ({
+                ...ac.artist,
+                alias: ac.alias || '',
+              })),
             }))
           : undefined,
       releasesCount: typeof releases !== 'boolean' ? releases[1] : undefined,

@@ -25,7 +25,7 @@ import CreateArtistDialog from './create-artist-dialog';
 import CreateLabelDialog from './create-label-dialog';
 import { importFromMusicBrainz } from './import-data';
 import ReleaseTracksFields from './release-tracks-fields';
-import { SelectArtist } from './select-artist';
+import { ReleaseArtistsField } from './select-artist';
 import { SelectLabel } from './select-label';
 import { SelectLanguage } from './select-language';
 import { ReleaseTypeOptions } from './shared';
@@ -45,7 +45,7 @@ export const ExplicitCoverArtOptions = [
 
 export interface CreateReleaseFormValues extends CreateReleaseDto {
   mbid: string;
-  artists: { label: string; value: string }[];
+  artists: { artistId: string; artistName: string; alias: string }[];
   labels: { label: string; value: string }[];
   languages: { label: string; value: string }[];
 }
@@ -69,6 +69,7 @@ const AddReleasePage = () => {
     imageUrl: '',
     tracks: [],
     artistsIds: [],
+    artistsAliases: [],
     labelsIds: [],
     languagesIds: [],
     artists: [],
@@ -170,7 +171,7 @@ const AddReleasePage = () => {
               {...register('titleLatin')}
             />
             <FormInputError error={errors.titleLatin} />
-            <Controller
+            {/* <Controller
               name="artists"
               control={control}
               render={({ field }) => (
@@ -179,8 +180,9 @@ const AddReleasePage = () => {
                   updateArtistsIds={(value) => setValue('artistsIds', value)}
                 />
               )}
-            />
-            <FormInputError error={errors.artistsIds} />
+            /> */}
+            <ReleaseArtistsField control={control} register={register} />
+            <FormInputError error={errors.artists} />
             <FlexChild align="flex-end">
               <Group gap="lg" wrap>
                 <Button
@@ -324,16 +326,22 @@ const AddReleasePage = () => {
         <AddByIdArtistDialog
           isOpen={openAddByIdArtistDialog}
           onClose={() => setOpenAddByIdArtistDialog(false)}
-          onAddArtist={(artist) => {
+          onAddArtist={(newArtist) => {
+            const artist = {
+              artistId: newArtist.value,
+              artistName: newArtist.label,
+              alias: '',
+            };
             const currentArtists = getValues('artists') || [];
             const newArtists = [...currentArtists, artist];
             setValue('artists', newArtists);
-            setValue(
-              'artistsIds',
-              newArtists.map((a) => a.value),
-            );
           }}
-          currentArtists={getValues('artists') || []}
+          currentArtists={
+            getValues('artists')?.map((a) => ({
+              label: a.artistName,
+              value: a.artistId,
+            })) || []
+          }
         />
         <AddByIdLabelDialog
           isOpen={openAddByIdLabelDialog}

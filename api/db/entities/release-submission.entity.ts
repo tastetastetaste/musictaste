@@ -47,6 +47,10 @@ export class ReleaseChanges {
 
   @IsString({ each: true })
   @IsOptional()
+  artistsAliases: string[];
+
+  @IsString({ each: true })
+  @IsOptional()
   labelsIds: string[];
 
   @IsString({ each: true })

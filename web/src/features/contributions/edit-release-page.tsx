@@ -28,14 +28,14 @@ import CreateArtistDialog from './create-artist-dialog';
 import CreateLabelDialog from './create-label-dialog';
 import { importFromMusicBrainz } from './import-data';
 import ReleaseTracksFields from './release-tracks-fields';
-import { SelectArtist } from './select-artist';
+import { ReleaseArtistsField } from './select-artist';
 import { SelectLabel } from './select-label';
 import { SelectLanguage } from './select-language';
 import { ReleaseTypeOptions } from './shared';
 
 export interface EditReleaseFormValues extends UpdateReleaseDto {
   mbid: string;
-  artists: { label: string; value: string }[];
+  artists: { artistId: string; artistName: string; alias: string }[];
   labels: { label: string; value: string }[];
   languages: { label: string; value: string }[];
 }
@@ -60,6 +60,7 @@ const EditReleasePage = () => {
     imageUrl: '',
     tracks: [],
     artistsIds: [],
+    artistsAliases: [],
     labelsIds: [],
     languagesIds: [],
     artists: [],
@@ -126,10 +127,10 @@ const EditReleasePage = () => {
         title: release.title,
         titleLatin: release.titleLatin,
         artists: release.artists.map((a) => ({
-          label: a.name,
-          value: a.id,
+          artistId: a.id,
+          artistName: a.name,
+          alias: a.alias,
         })),
-        artistsIds: release.artists.map((a) => a.id),
         labels: release.labels
           ? release.labels.map((l) => ({
               label: l.name,
@@ -235,7 +236,7 @@ const EditReleasePage = () => {
               {...register('titleLatin')}
             />
             <FormInputError error={errors.titleLatin} />
-            <Controller
+            {/* <Controller
               name="artists"
               control={control}
               render={({ field }) => (
@@ -244,8 +245,9 @@ const EditReleasePage = () => {
                   updateArtistsIds={(value) => setValue('artistsIds', value)}
                 />
               )}
-            />
-            <FormInputError error={errors.artistsIds} />
+            /> */}
+            <ReleaseArtistsField control={control} register={register} />
+            <FormInputError error={errors.artists} />
             <FlexChild align="flex-end">
               <Group gap="lg" wrap>
                 <Button
@@ -387,16 +389,22 @@ const EditReleasePage = () => {
         <AddByIdArtistDialog
           isOpen={openAddByIdArtistDialog}
           onClose={() => setOpenAddByIdArtistDialog(false)}
-          onAddArtist={(artist) => {
+          onAddArtist={(newArtist) => {
+            const artist = {
+              artistId: newArtist.value,
+              artistName: newArtist.label,
+              alias: '',
+            };
             const currentArtists = getValues('artists') || [];
             const newArtists = [...currentArtists, artist];
             setValue('artists', newArtists);
-            setValue(
-              'artistsIds',
-              newArtists.map((a) => a.value),
-            );
           }}
-          currentArtists={getValues('artists') || []}
+          currentArtists={
+            getValues('artists')?.map((a) => ({
+              label: a.artistName,
+              value: a.artistId,
+            })) || []
+          }
         />
         <AddByIdLabelDialog
           isOpen={openAddByIdLabelDialog}

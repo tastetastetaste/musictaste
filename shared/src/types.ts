@@ -16,6 +16,14 @@ export interface IArtistSummary {
   disambiguation?: string;
 }
 
+export interface IReleaseArtist {
+  id: string;
+  name: string;
+  nameLatin?: string;
+  disambiguation?: string;
+  alias?: string;
+}
+
 export interface IArtist {
   id: string;
   name: string;
@@ -150,7 +158,7 @@ export interface IReleaseSummary {
   title: string;
   titleLatin?: string;
   cover?: IReleaseCover;
-  artists: IArtistSummary[];
+  artists: IReleaseArtist[];
   explicitCoverArt?: ExplicitCoverArt[];
 }
 
@@ -441,7 +449,7 @@ export interface IReleaseChanges {
   titleLatin?: string;
   type: string;
   date: any;
-  artists: IArtistSummary[];
+  artists: IReleaseArtist[];
   labels: ILabelSummary[];
   languages: ILanguage[];
   imageUrl: string;

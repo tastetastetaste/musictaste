@@ -105,6 +105,15 @@ class TrackDto {
   durationMs?: number;
 }
 
+class ReleaseArtistDto {
+  @IsString()
+  @MinLength(1)
+  artistId: string;
+  @IsString()
+  @IsOptional()
+  alias?: string;
+}
+
 const latinCharactersOnlyRegex = /^[a-zA-Z0-9\s\-'.]*$/;
 
 export class CreateReleaseDto {
@@ -121,9 +130,12 @@ export class CreateReleaseDto {
   @IsOptional()
   titleLatin?: string;
 
+  @IsArray()
   @ArrayMinSize(1)
-  @IsString({ each: true })
-  artistsIds: string[];
+  @ValidateNested({ each: true })
+  @Type(() => ReleaseArtistDto)
+  artists: ReleaseArtistDto[];
+
   @IsString()
   @MinLength(1)
   type: string;
@@ -169,8 +181,12 @@ export class UpdateReleaseDto {
   @IsOptional()
   titleLatin?: string;
 
-  @IsString({ each: true })
-  artistsIds: string[];
+  @IsArray()
+  @ArrayMinSize(1)
+  @ValidateNested({ each: true })
+  @Type(() => ReleaseArtistDto)
+  artists: ReleaseArtistDto[];
+
   @IsString()
   type?: string;
   @IsOptional()

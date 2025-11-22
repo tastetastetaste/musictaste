@@ -1,4 +1,4 @@
-import { Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { Artist } from './artist.entity';
 import { Release } from './release.entity';
 
@@ -21,4 +21,7 @@ export class ReleaseArtist {
   })
   @JoinColumn({ name: 'releaseId' })
   release: Release;
+
+  @Column({ nullable: true })
+  alias?: string;
 }
