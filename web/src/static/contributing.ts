@@ -64,7 +64,8 @@ You can autofill the fields by importing from MusicBrainz.
   - You can put active years in parentheses for former members or for members who joined later (e.g., 2018-22 or 2022-present).
 - **Member Of**: Groups that the artist is a member of, separated by commas. If bands have pages in the database, use **references** to link them.
 - **Related Artists**: Use references to link related artists, separated by commas. This should only be used for artists that are closely related, such as sub-units of a group.
-- **AKA**: Alternative names, separated by commas. If the artist has a page for an alternative name, use a reference to link it. Creating separate artist pages for aliases is strongly discouraged unless the alias has a notable and distinct discography.
+- **AKA**: Alternative names, separated by commas. If the artist has a page for an alternative name, use a reference to link it. 
+  - Creating separate artist pages for aliases is strongly discouraged unless the alias has a notable and distinct discography. Releases under one Bandcamp artist account should be added to a single artist page.
 - **Note/Source**: Add a note for the person reviewing your contribution (include links).
 - **Submit**: Click **"Submit"** to add the artist.
 
