@@ -43,11 +43,13 @@ export const ReleaseArtistsField = ({ control, register }: any) => {
       <Select
         value={selectedValue}
         onChange={(selected: { value: string; label: string }) => {
-          append({
-            artistId: selected.value,
-            artistName: selected.label,
-            alias: '',
-          });
+          if (!fields.some((item: any) => item.artistId === selected.value)) {
+            append({
+              artistId: selected.value,
+              artistName: selected.label,
+              alias: '',
+            });
+          }
           setSelectedValue(null);
           setQuery('');
         }}
