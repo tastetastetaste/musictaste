@@ -280,17 +280,6 @@ export class SubmissionService {
       } else if (mainArtist.type === ArtistType.Alias) {
         throw new BadRequestException('Main artist should not be an alias');
       }
-    } else {
-      const nameExists = await this.artistsService.artistNameExists(name);
-      if (nameExists && !disambiguation) {
-        throw new BadRequestException(
-          'Artist name already exists; disambiguation is required',
-        );
-      } else if (nameExists && disambiguation === nameExists.disambiguation) {
-        throw new BadRequestException(
-          'Artist with this name and disambiguation already exists',
-        );
-      }
     }
 
     const as = new ArtistSubmission();
