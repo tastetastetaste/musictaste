@@ -129,10 +129,7 @@ export class ReleasesService {
         ...rest,
         type: ReleaseType[type],
         date: r.date.toString(),
-        artists: artistConnection.map((ac: ReleaseArtist) => ({
-          ...ac.artist,
-          alias: ac.alias || '',
-        })),
+        artists: artistConnection.map((ac: ReleaseArtist) => ac.artist),
         cover: this.imagesService.getReleaseCover(r.imagePath),
         explicitCoverArt: r.explicitCoverArt,
       };
@@ -192,10 +189,7 @@ export class ReleasesService {
       ...rest,
       type: ReleaseType[type],
       date: r.date.toString(),
-      artists: artistConnection.map((ac: ReleaseArtist) => ({
-        ...ac.artist,
-        alias: ac.alias || '',
-      })),
+      artists: artistConnection.map((ac: ReleaseArtist) => ac.artist),
       languages: languageConnection.map((lc: any) => lc.language),
       labels: labelConnection.map((lc: any) => lc.__label__),
       genres: genreConnection
@@ -490,7 +484,6 @@ export class ReleasesService {
       title,
       titleLatin,
       artistsIds,
-      artistsAliases,
       date,
       labelsIds,
       languagesIds,
@@ -533,7 +526,6 @@ export class ReleasesService {
           artists.map((a, i) => ({
             artistId: a.id,
             releaseId: release.id,
-            alias: artistsAliases?.[i] || '',
           })),
         )
         .execute();
@@ -610,7 +602,6 @@ export class ReleasesService {
       type,
       imagePath,
       artistsIds,
-      artistsAliases,
       labelsIds,
       languagesIds,
       tracks,
@@ -627,12 +618,7 @@ export class ReleasesService {
         select: ['artistId'],
       });
 
-      const newArtists = artistsIds.map((artistId, i) => ({
-        artistId,
-        alias: artistsAliases?.[i] || '',
-      }));
-
-      const { addedIds, removedIds, remainingIds } = this.compareIds(
+      const { addedIds, removedIds } = this.compareIds(
         artistsIds,
         releaseArtists.map((ra) => ra.artistId),
       );
@@ -642,7 +628,6 @@ export class ReleasesService {
           const _ra = this.releaseArtistRepository.create({
             artistId: addedId,
             releaseId: _release.id,
-            alias: newArtists.find((a) => a.artistId === addedId)?.alias || '',
           });
           await this.releaseArtistRepository.save(_ra);
         });
@@ -654,30 +639,6 @@ export class ReleasesService {
             releaseId: _release.id,
           });
         });
-
-      if (remainingIds.length > 0) {
-        // update aliases
-        const existingArtists = await this.releaseArtistRepository.find({
-          where: { releaseId: _release.id, artistId: In(remainingIds) },
-          select: ['artistId', 'alias'],
-        });
-
-        for (const artist of existingArtists) {
-          const artistAlias =
-            newArtists.find((a) => a.artistId === artist.artistId)?.alias || '';
-          if (artist.alias !== artistAlias) {
-            await this.releaseArtistRepository.update(
-              {
-                artistId: artist.artistId,
-                releaseId: _release.id,
-              },
-              {
-                alias: artistAlias,
-              },
-            );
-          }
-        }
-      }
     }
 
     // These fields can be null
@@ -846,10 +807,7 @@ export class ReleasesService {
     const removedIds = currentIds.filter(
       (appliedId) => !newIds.some((id) => id === appliedId),
     );
-
-    const remainingIds = newIds.filter((id) => currentIds.includes(id));
-
-    return { addedIds, removedIds, remainingIds };
+    return { addedIds, removedIds };
   }
 
   async mergeReleases(mergeFromId: string, mergeIntoId: string) {

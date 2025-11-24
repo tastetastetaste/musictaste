@@ -22,6 +22,8 @@ export class ReleaseArtist {
   @JoinColumn({ name: 'releaseId' })
   release: Release;
 
+  // @deprecated
+
   @Column({ nullable: true })
   alias?: string;
 }

@@ -25,7 +25,10 @@ export class ArtistsService {
   ) {}
 
   async findOneWithReleases(id: string): Promise<IArtistResponse> {
-    const artist = await this.artistsRepository.findOne({ where: { id } });
+    const artist = await this.artistsRepository.findOne({
+      where: { id },
+      relations: ['mainArtist', 'aliases'],
+    });
 
     if (!artist) throw new NotFoundException();
 
@@ -50,6 +53,7 @@ export class ArtistsService {
     relatedArtistsSource,
     aka,
     akaSource,
+    mainArtistId,
   }: ArtistChanges) {
     const id = genId();
 
@@ -68,6 +72,7 @@ export class ArtistsService {
       relatedArtistsSource,
       aka,
       akaSource,
+      mainArtistId,
     });
 
     const artist = await this.artistsRepository.findOne({ where: { id } });
@@ -90,6 +95,7 @@ export class ArtistsService {
       relatedArtistsSource,
       aka,
       akaSource,
+      mainArtistId,
     },
   }: {
     artistId: string;
@@ -113,6 +119,7 @@ export class ArtistsService {
     artist.relatedArtistsSource = relatedArtistsSource;
     artist.aka = aka;
     artist.akaSource = akaSource;
+    artist.mainArtistId = mainArtistId;
     return this.artistsRepository.save(artist);
   }
 

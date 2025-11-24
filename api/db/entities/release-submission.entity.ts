@@ -45,9 +45,10 @@ export class ReleaseChanges {
   @IsOptional()
   artistsIds: string[];
 
-  @IsString({ each: true })
-  @IsOptional()
-  artistsAliases: string[];
+  // @deprecated
+  // @IsString({ each: true })
+  // @IsOptional()
+  // artistsAliases: string[];
 
   @IsString({ each: true })
   @IsOptional()

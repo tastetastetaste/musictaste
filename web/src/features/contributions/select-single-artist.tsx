@@ -5,13 +5,13 @@ import { Select } from '../../components/inputs/select';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
 
-export const SelectArtist = forwardRef(
+export const SelectSingleArtist = forwardRef(
   (
     {
-      updateArtistsIds,
+      updateMainArtistId,
       onChange,
       ...field
-    }: ControllerRenderProps<any, 'artists'> & { updateArtistsIds: any },
+    }: ControllerRenderProps<any, 'mainArtist'> & { updateMainArtistId: any },
     ref,
   ) => {
     const [query, setQuery] = useState('');
@@ -37,12 +37,12 @@ export const SelectArtist = forwardRef(
       <Select
         {...field}
         ref={ref}
-        onChange={(selected: { value: string; label: string }[]) => {
+        onChange={(selected: { value: string; label: string } | null) => {
           onChange(selected);
-          updateArtistsIds(selected.map((option) => option.value));
+          updateMainArtistId(selected?.value);
         }}
         isLoading={isLoading && fetchStatus !== 'idle'}
-        isMulti={true}
+        isMulti={false}
         options={
           data?.artists &&
           data.artists.map(({ id, name, nameLatin, disambiguation }) => ({
@@ -53,7 +53,7 @@ export const SelectArtist = forwardRef(
               (disambiguation ? ` (${disambiguation})` : ''),
           }))
         }
-        placeholder="Artist/Band"
+        placeholder="Select Main Artist"
         onInputChange={(v: any) => {
           if (v !== '') {
             setQuery(v);
@@ -64,3 +64,5 @@ export const SelectArtist = forwardRef(
     );
   },
 );
+
+SelectSingleArtist.displayName = 'SelectSingleArtist';

@@ -7,6 +7,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import dayjs from 'dayjs';
 import {
+  ArtistType,
   CommentEntityType,
   ContributorStatus,
   CreateArtistDto,
@@ -100,31 +101,51 @@ export class SubmissionService {
   // --- ARTISTS
 
   async createArtistSubmission(
-    { type, note, ...rest }: CreateArtistDto,
+    { type, note, mainArtistId, ...rest }: CreateArtistDto,
     user: CurrentUserPayload,
   ) {
-    const name = rest.name.trim();
-    const nameLatin = rest.nameLatin?.trim();
-    const members = rest.members?.trim();
-    const memberOf = rest.memberOf?.trim();
-    const aka = rest.aka?.trim();
-    const relatedArtists = rest.relatedArtists?.trim();
-    const disambiguation = rest.disambiguation?.trim();
+    let name = rest.name.trim();
+    let nameLatin;
+    let members;
+    let memberOf;
+    let aka;
+    let relatedArtists;
+    let disambiguation;
+
+    if (type !== ArtistType.Alias) {
+      nameLatin = rest.nameLatin?.trim();
+      members = rest.members?.trim();
+      memberOf = rest.memberOf?.trim();
+      aka = rest.aka?.trim();
+      relatedArtists = rest.relatedArtists?.trim();
+      disambiguation = rest.disambiguation?.trim();
+    }
 
     if (user.contributorStatus === ContributorStatus.NOT_A_CONTRIBUTOR)
       throw new BadRequestException(
         "You can't submit contributions at this time",
       );
 
-    const nameExists = await this.artistsService.artistNameExists(name);
-    if (nameExists && !disambiguation) {
-      throw new BadRequestException(
-        'Artist name already exists; disambiguation is required',
-      );
-    } else if (nameExists && disambiguation === nameExists.disambiguation) {
-      throw new BadRequestException(
-        'Artist with this name and disambiguation already exists',
-      );
+    if (type === ArtistType.Alias) {
+      const mainArtist = await this.artistsRepository.findOne({
+        where: { id: mainArtistId },
+      });
+      if (!mainArtist) {
+        throw new BadRequestException('Main artist not found');
+      } else if (mainArtist.type === ArtistType.Alias) {
+        throw new BadRequestException('Main artist should not be an alias');
+      }
+    } else {
+      const nameExists = await this.artistsService.artistNameExists(name);
+      if (nameExists && !disambiguation) {
+        throw new BadRequestException(
+          'Artist name already exists; disambiguation is required',
+        );
+      } else if (nameExists && disambiguation === nameExists.disambiguation) {
+        throw new BadRequestException(
+          'Artist with this name and disambiguation already exists',
+        );
+      }
     }
 
     const artistSubmission = new ArtistSubmission();
@@ -155,6 +176,7 @@ export class SubmissionService {
       relatedArtistsSource: relatedArtists,
       aka: processedAka,
       akaSource: aka,
+      mainArtistId: type === ArtistType.Alias ? mainArtistId : undefined,
     };
     artistSubmission.submissionType = SubmissionType.CREATE;
     artistSubmission.submissionStatus =
@@ -182,17 +204,9 @@ export class SubmissionService {
 
   async updateArtistSubmission(
     artistId: string,
-    { type, note, ...rest }: UpdateArtistDto,
+    { type, note, mainArtistId, ...rest }: UpdateArtistDto,
     user: CurrentUserPayload,
   ) {
-    const name = rest.name.trim();
-    const nameLatin = rest.nameLatin?.trim();
-    const members = rest.members?.trim();
-    const memberOf = rest.memberOf?.trim();
-    const aka = rest.aka?.trim();
-    const relatedArtists = rest.relatedArtists?.trim();
-    const disambiguation = rest.disambiguation?.trim();
-
     if (user.contributorStatus === ContributorStatus.NOT_A_CONTRIBUTOR)
       throw new BadRequestException(
         "You can't submit contributions at this time",
@@ -200,6 +214,7 @@ export class SubmissionService {
 
     const artist = await this.artistsRepository.findOne({
       where: { id: artistId },
+      relations: ['aliases'],
     });
 
     if (!artist) throw new NotFoundException();
@@ -217,6 +232,23 @@ export class SubmissionService {
       );
     }
 
+    let name = rest.name.trim();
+    let nameLatin;
+    let members;
+    let memberOf;
+    let aka;
+    let relatedArtists;
+    let disambiguation;
+
+    if (type !== ArtistType.Alias) {
+      nameLatin = rest.nameLatin?.trim();
+      members = rest.members?.trim();
+      memberOf = rest.memberOf?.trim();
+      aka = rest.aka?.trim();
+      relatedArtists = rest.relatedArtists?.trim();
+      disambiguation = rest.disambiguation?.trim();
+    }
+
     const processedMembers = members
       ? await this.entitiesReferenceService.parseLinks(members)
       : undefined;
@@ -229,6 +261,37 @@ export class SubmissionService {
     const processedRelatedArtists = relatedArtists
       ? await this.entitiesReferenceService.parseLinks(relatedArtists)
       : undefined;
+
+    if (type === ArtistType.Alias) {
+      if (artist.aliases.length > 0) {
+        // can't update main artist (with aliases) to an alias
+        throw new BadRequestException(
+          'Main artist with aliases cannot be updated to an alias',
+        );
+      }
+      if (mainArtistId === artistId) {
+        throw new BadRequestException('Cannot link an artist to itself');
+      }
+      const mainArtist = await this.artistsRepository.findOne({
+        where: { id: mainArtistId },
+      });
+      if (!mainArtist) {
+        throw new BadRequestException('Main artist not found');
+      } else if (mainArtist.type === ArtistType.Alias) {
+        throw new BadRequestException('Main artist should not be an alias');
+      }
+    } else {
+      const nameExists = await this.artistsService.artistNameExists(name);
+      if (nameExists && !disambiguation) {
+        throw new BadRequestException(
+          'Artist name already exists; disambiguation is required',
+        );
+      } else if (nameExists && disambiguation === nameExists.disambiguation) {
+        throw new BadRequestException(
+          'Artist with this name and disambiguation already exists',
+        );
+      }
+    }
 
     const as = new ArtistSubmission();
     as.artistId = artistId;
@@ -245,6 +308,7 @@ export class SubmissionService {
       relatedArtistsSource: relatedArtists,
       aka: processedAka,
       akaSource: aka,
+      mainArtistId: type === ArtistType.Alias ? mainArtistId : undefined,
     };
     as.original = {
       name: artist.name,
@@ -259,6 +323,7 @@ export class SubmissionService {
       relatedArtistsSource: artist.relatedArtistsSource,
       aka: artist.aka,
       akaSource: artist.akaSource,
+      mainArtistId: artist.mainArtistId,
     };
     as.submissionType = SubmissionType.UPDATE;
     as.submissionStatus = SubmissionStatus.OPEN;
@@ -397,7 +462,7 @@ export class SubmissionService {
     const {
       title,
       titleLatin,
-      artists,
+      artistsIds,
       date,
       labelsIds,
       languagesIds,
@@ -440,8 +505,7 @@ export class SubmissionService {
       titleLatin: titleLatin,
       type: ReleaseType[type],
       date: dayjs(date).format('YYYY-MM-DD').toString(),
-      artistsIds: artists.map((a) => a.artistId),
-      artistsAliases: artists.map((a) => a.alias || ''),
+      artistsIds: artistsIds,
       labelsIds: labelsIds,
       languagesIds: languagesIds,
       imagePath: imageUrl,
@@ -493,7 +557,7 @@ export class SubmissionService {
     {
       title,
       titleLatin,
-      artists,
+      artistsIds,
       date,
       labelsIds,
       languagesIds,
@@ -563,8 +627,7 @@ export class SubmissionService {
       titleLatin: titleLatin,
       type: ReleaseType[type],
       date: dayjs(date).format('YYYY-MM-DD').toString(),
-      artistsIds: artists.map((a) => a.artistId),
-      artistsAliases: artists.map((a) => a.alias || ''),
+      artistsIds: artistsIds,
       labelsIds: labelsIds,
       languagesIds: languagesIds,
       imagePath: imageUrl,
@@ -578,7 +641,6 @@ export class SubmissionService {
       type: release.type,
       date: release.date,
       artistsIds: release.artistConnection.map((a) => a.artistId),
-      artistsAliases: release.artistConnection.map((a) => a.alias || ''),
       labelsIds: release.labelConnection.map((l) => l.labelId),
       languagesIds: release.languageConnection.map((l) => l.languageId),
       imagePath: release.imagePath,
@@ -1167,12 +1229,7 @@ export class SubmissionService {
           ...rs.changes,
           type: ReleaseType[rs.changes.type],
           imageUrl: this.imagesService.getImageUrl(rs.changes.imagePath),
-          artists: resolveEntities(rs.changes.artistsIds, artists).map(
-            (a, i) => ({
-              ...a,
-              alias: rs.changes.artistsAliases?.[i] || '',
-            }),
-          ),
+          artists: resolveEntities(rs.changes.artistsIds, artists),
           labels: resolveEntities(rs.changes.labelsIds, labels),
           languages: resolveEntities(rs.changes.languagesIds, languages),
           artistsIds: undefined,
@@ -1185,12 +1242,7 @@ export class SubmissionService {
               ...rs.original,
               type: ReleaseType[rs.original.type],
               imageUrl: this.imagesService.getImageUrl(rs.original.imagePath),
-              artists: resolveEntities(rs.original.artistsIds, artists).map(
-                (a, i) => ({
-                  ...a,
-                  alias: rs.original.artistsAliases?.[i] || '',
-                }),
-              ),
+              artists: resolveEntities(rs.original.artistsIds, artists),
               labels: resolveEntities(rs.original.labelsIds, labels),
               languages: resolveEntities(rs.original.languagesIds, languages),
               artistsIds: undefined,
@@ -1321,9 +1373,32 @@ export class SubmissionService {
       commentsCount.map((item) => [item.entityId, item.count]),
     );
 
+    const mainArtistIds = [
+      ...new Set(rss.map((rs) => rs.changes.mainArtistId)),
+      ...new Set(rss.map((rs) => rs.original?.mainArtistId)),
+    ];
+
+    const mainArtists = await this.artistsRepository.find({
+      where: { id: In(mainArtistIds) },
+    });
+
+    const mainArtistsMap = new Map(
+      mainArtists.map((artist) => [artist.id, artist]),
+    );
+
     return {
       artists: rss.map(({ ...rs }) => ({
         ...rs,
+        changes: {
+          ...rs.changes,
+          mainArtist: mainArtistsMap.get(rs.changes.mainArtistId) || null,
+        },
+        original: rs.original
+          ? {
+              ...rs.original,
+              mainArtist: mainArtistsMap.get(rs.original.mainArtistId) || null,
+            }
+          : null,
         user: users.find((u) => u.id === rs.userId),
         votes:
           rs.votes?.map((vote) => ({
@@ -1357,8 +1432,38 @@ export class SubmissionService {
 
     const users = await this.usersService.getUsersByIds(uniqueUserIds);
 
+    const mainArtistIds = [
+      rs.changes.mainArtistId,
+      rs.original?.mainArtistId,
+    ].filter(Boolean);
+
+    const mainArtists =
+      mainArtistIds.length > 0
+        ? await this.artistsRepository.find({
+            where: { id: In(mainArtistIds) },
+          })
+        : [];
+
+    const mainArtistsMap = new Map(
+      mainArtists.map((artist) => [artist.id, artist]),
+    );
+
     return {
       ...rs,
+      changes: {
+        ...rs.changes,
+        mainArtist: rs.changes.mainArtistId
+          ? mainArtistsMap.get(rs.changes.mainArtistId) || null
+          : undefined,
+      },
+      original: rs.original
+        ? {
+            ...rs.original,
+            mainArtist: rs.original.mainArtistId
+              ? mainArtistsMap.get(rs.original.mainArtistId) || null
+              : undefined,
+          }
+        : null,
       user: users.find((u) => u.id === rs.userId),
       votes:
         rs.votes?.map((vote) => ({

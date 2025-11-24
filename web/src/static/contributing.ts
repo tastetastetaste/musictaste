@@ -21,7 +21,7 @@ You can start contributing data by selecting **"Add Release"** from the dropdown
 - **Title**: The original title of the release.  
 - **English / Latin-script title (if applicable)**: The title of the release in English or Latin-script if the original title is in non-Latin script.
 - **Artist/Band**: Select the artist or band. 
-  - **Alias**: Use this field when the artist is credited under a different name on one or more releases. Leave empty to keep the original name.
+  - If the project is released under an alias, make sure to select the alias profile, not the main artist profile.
   - For classical music, use all performers and composers as artists.
   - If you don't find the artist, click **"Add new artist"** below the input field to add a new artist to the database. (refer to the section below for information on adding artists)
   - If you know the artist is in the database but can't find them, click **"Select by ID"** below the input field to select the artist by ID. Artist ID can be copied from the top right menu of the artist page.
@@ -57,7 +57,8 @@ You can autofill the fields by importing from MusicBrainz.
 
 - **Name**: The original name of the artist.
 - **English / Latin-script name (if applicable)**: The name of the artist in English or Latin-script if the original name is in non-Latin script.
-- **Type**: Select "Person" or "Group".
+- **Type**: Select "Person", "Group", or "Alias".
+  - Artists can have only one "Person" profile and as many "Alias" profiles as needed, all linked to the main artist profile.
 - **Disambiguation**: A very short description of the artist to distinguish them from other artists with the same name.
 - **Members**: Members of the band, separated by commas. 
   - If members have pages in the database, use **references** to link them.

@@ -19,8 +19,10 @@ export const ArtistSearchLink = ({ artist }: { artist: IArtistSummary }) => (
     ) : (
       ''
     )}
-    {artist.disambiguation ? (
-      <span css={{ opacity: 0.6 }}>({artist.disambiguation})</span>
+    {artist.disambiguation || artist.mainArtist ? (
+      <span css={{ opacity: 0.6 }}>
+        ({artist.disambiguation || artist.mainArtist?.name})
+      </span>
     ) : (
       ''
     )}

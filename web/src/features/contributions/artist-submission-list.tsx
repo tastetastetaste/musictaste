@@ -76,6 +76,13 @@ export const ArtistSubmissionItem = ({
         renderValue={(v) => <span>{ArtistType[v]}</span>}
       />
       <SubmissionField
+        label="Main Artist"
+        originalValue={original?.mainArtist}
+        changedValue={changes?.mainArtist}
+        showOriginal={hasOriginal}
+        renderValue={(v) => <span>{v?.name}</span>}
+      />
+      <SubmissionField
         label="Disambiguation"
         originalValue={original?.disambiguation}
         changedValue={changes?.disambiguation}
@@ -103,13 +110,13 @@ export const ArtistSubmissionItem = ({
         showOriginal={hasOriginal}
         renderValue={(v) => <Markdown variant="compact">{v}</Markdown>}
       />
-      <SubmissionField
+      {/* <SubmissionField
         label="AKA"
         originalValue={original?.aka}
         changedValue={changes?.aka}
         showOriginal={hasOriginal}
         renderValue={(v) => <Markdown variant="compact">{v}</Markdown>}
-      />
+      /> */}
       {submission.note && (
         <SubmissionField
           label="Note"

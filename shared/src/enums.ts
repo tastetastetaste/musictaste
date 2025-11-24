@@ -32,6 +32,7 @@ export enum ReleaseType {
 export enum ArtistType {
   Person = 1,
   Group = 2,
+  Alias = 9,
 }
 
 export enum ExplicitCoverArt {

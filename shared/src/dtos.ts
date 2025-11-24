@@ -105,15 +105,6 @@ class TrackDto {
   durationMs?: number;
 }
 
-class ReleaseArtistDto {
-  @IsString()
-  @MinLength(1)
-  artistId: string;
-  @IsString()
-  @IsOptional()
-  alias?: string;
-}
-
 const latinCharactersOnlyRegex = /^[a-zA-Z0-9\s\-'.]*$/;
 
 export class CreateReleaseDto {
@@ -130,11 +121,9 @@ export class CreateReleaseDto {
   @IsOptional()
   titleLatin?: string;
 
-  @IsArray()
   @ArrayMinSize(1)
-  @ValidateNested({ each: true })
-  @Type(() => ReleaseArtistDto)
-  artists: ReleaseArtistDto[];
+  @IsString({ each: true })
+  artistsIds: string[];
 
   @IsString()
   @MinLength(1)
@@ -181,11 +170,9 @@ export class UpdateReleaseDto {
   @IsOptional()
   titleLatin?: string;
 
-  @IsArray()
   @ArrayMinSize(1)
-  @ValidateNested({ each: true })
-  @Type(() => ReleaseArtistDto)
-  artists: ReleaseArtistDto[];
+  @IsString({ each: true })
+  artistsIds: string[];
 
   @IsString()
   type?: string;
@@ -256,6 +243,11 @@ export class CreateArtistDto {
   @MaxLength(5000)
   aka?: string;
 
+  @ValidateIf((o) => o.type === ArtistType.Alias)
+  @IsString()
+  @MinLength(1)
+  mainArtistId?: string;
+
   @IsString()
   @MinLength(1)
   note: string;
@@ -299,6 +291,11 @@ export class UpdateArtistDto {
   @IsOptional()
   @MaxLength(5000)
   aka?: string;
+
+  @ValidateIf((o) => o.type === ArtistType.Alias)
+  @IsString()
+  @MinLength(1)
+  mainArtistId?: string;
 
   @IsString()
   @MinLength(1)

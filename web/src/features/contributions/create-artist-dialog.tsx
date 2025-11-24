@@ -15,6 +15,11 @@ import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
 import { ArtistTypeOptions } from './shared';
 import { Textarea } from '../../components/inputs/textarea';
+import { SelectSingleArtist } from './select-single-artist';
+
+export interface CreateArtistFormValues extends CreateArtistDto {
+  mainArtist: { value: string; label: string };
+}
 
 const CreateArtistDialog: React.FC<{
   isOpen: boolean;
@@ -31,6 +36,7 @@ const CreateArtistDialog: React.FC<{
     disambiguation: '',
     aka: '',
     relatedArtists: '',
+    mainArtistId: '',
     note: '',
   };
 
@@ -41,7 +47,8 @@ const CreateArtistDialog: React.FC<{
     watch,
     formState: { errors },
     reset,
-  } = useForm<CreateArtistDto>({
+    setValue,
+  } = useForm<CreateArtistFormValues>({
     resolver: classValidatorResolver(CreateArtistDto),
     defaultValues,
   });
@@ -74,13 +81,6 @@ const CreateArtistDialog: React.FC<{
         }}
       >
         <Stack gap="sm">
-          <Input placeholder="Name" {...register('name')} />
-          <FormInputError error={errors.name} />
-          <Input
-            placeholder="English / Latin-script name (if applicable)"
-            {...register('nameLatin')}
-          />
-          <FormInputError error={errors.nameLatin} />
           <Controller
             name="type"
             control={control}
@@ -97,8 +97,22 @@ const CreateArtistDialog: React.FC<{
             )}
           />
           <FormInputError error={errors.type} />
-          <Input placeholder="Disambiguation" {...register('disambiguation')} />
-          <FormInputError error={errors.disambiguation} />
+          <Input placeholder="Name" {...register('name')} />
+          <FormInputError error={errors.name} />
+          {artistType !== ArtistType.Alias && (
+            <>
+              <Input
+                placeholder="English / Latin-script name (if applicable)"
+                {...register('nameLatin')}
+              />
+              <FormInputError error={errors.nameLatin} />
+              <Input
+                placeholder="Disambiguation"
+                {...register('disambiguation')}
+              />
+              <FormInputError error={errors.disambiguation} />
+            </>
+          )}
           {artistType === ArtistType.Group && (
             <>
               <TextareaWithPreview
@@ -119,18 +133,41 @@ const CreateArtistDialog: React.FC<{
               <FormInputError error={errors.memberOf} />
             </>
           )}
-          <TextareaWithPreview
-            {...register('relatedArtists')}
-            placeholder="Related Artists"
-            rows={2}
-          />
-          <FormInputError error={errors.relatedArtists} />
-          <TextareaWithPreview
+          {artistType !== ArtistType.Alias && (
+            <>
+              <TextareaWithPreview
+                {...register('relatedArtists')}
+                placeholder="Related Artists"
+                rows={2}
+              />
+              <FormInputError error={errors.relatedArtists} />
+            </>
+          )}
+          {artistType === ArtistType.Alias && (
+            <>
+              <Controller
+                name="mainArtist"
+                control={control}
+                render={({ field }) => (
+                  <SelectSingleArtist
+                    {...field}
+                    updateMainArtistId={(value) =>
+                      setValue('mainArtistId', value)
+                    }
+                  />
+                )}
+              />
+              <FormInputError
+                error={errors.mainArtist || errors.mainArtistId}
+              />
+            </>
+          )}
+          {/* <TextareaWithPreview
             {...register('aka')}
             placeholder="AKA"
             rows={2}
           />
-          <FormInputError error={errors.aka} />
+          <FormInputError error={errors.aka} /> */}
           <Textarea {...register('note')} placeholder="Note/source" rows={2} />
           <FormInputError error={errors.note} />
           <Button variant="main" type="submit" disabled={isLoading}>

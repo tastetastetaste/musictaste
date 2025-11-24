@@ -6,7 +6,6 @@ import {
   getLabelPath,
   IArtistSummary,
   ILabelSummary,
-  IReleaseArtist,
   IReleaseSummary,
 } from 'shared';
 import { CardLink } from '../../../components/links/card-link';
@@ -115,24 +114,18 @@ export const ReleaseTitleLink = ({
   );
 };
 
-export const ArtistsLinks = ({ artists }: { artists: IReleaseArtist[] }) => {
+export const ArtistsLinks = ({ artists }: { artists: IArtistSummary[] }) => {
   return (
     <Typography color="sub">
-      {artists.map(({ id, name, nameLatin, alias }, i) => (
+      {artists.map(({ id, name, nameLatin }, i) => (
         <Fragment key={id}>
           {i > 0 && ', '}
           <Link to={getArtistPath({ artistId: id })}>
-            {alias ? (
-              alias
+            {name}{' '}
+            {nameLatin ? (
+              <span css={{ fontStyle: 'italic' }}>[{nameLatin}]</span>
             ) : (
-              <>
-                {name}{' '}
-                {nameLatin ? (
-                  <span css={{ fontStyle: 'italic' }}>[{nameLatin}]</span>
-                ) : (
-                  ''
-                )}
-              </>
+              ''
             )}
           </Link>
         </Fragment>

@@ -21,4 +21,5 @@ export const ReleaseTypeOptions = [
 export const ArtistTypeOptions = [
   { value: ArtistType.Person, label: 'Person' },
   { value: ArtistType.Group, label: 'Group' },
+  { value: ArtistType.Alias, label: 'Alias' },
 ];

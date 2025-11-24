@@ -20,6 +20,12 @@ import AppPageWrapper from '../../layout/app-page-wrapper';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
 import { ArtistTypeOptions } from './shared';
+import { SelectSingleArtist } from './select-single-artist';
+import { Feedback } from '../../components/feedback';
+
+export interface EditArtistFormValues extends UpdateArtistDto {
+  mainArtist: { value: string; label: string };
+}
 
 const EditArtistPage = () => {
   const { id: artistId } = useParams();
@@ -32,6 +38,7 @@ const EditArtistPage = () => {
     disambiguation: '',
     aka: '',
     relatedArtists: '',
+    mainArtistId: '',
     note: '',
   };
 
@@ -43,7 +50,7 @@ const EditArtistPage = () => {
     control,
     watch,
     formState: { errors },
-  } = useForm<UpdateArtistDto>({
+  } = useForm<EditArtistFormValues>({
     resolver: classValidatorResolver(
       UpdateArtistDto,
       {},
@@ -106,6 +113,7 @@ const EditArtistPage = () => {
         disambiguation: artistData.artist.disambiguation || '',
         aka: artistData.artist.akaSource || '',
         relatedArtists: artistData.artist.relatedArtistsSource || '',
+        mainArtistId: artistData.artist.mainArtistId || '',
       });
     }
   }, [artistData]);
@@ -133,13 +141,11 @@ const EditArtistPage = () => {
                 Need help? Read the Contributing Guide.
               </Link>
             </Group>
-            <Input placeholder="Name" {...register('name')} />
-            <FormInputError error={errors.name} />
-            <Input
-              placeholder="Name (Latin script)"
-              {...register('nameLatin')}
-            />
-            <FormInputError error={errors.nameLatin} />
+            {openSubmission && (
+              <Feedback
+                message={`There is already an open edit submission for this artist. Please wait for it to be reviewed before submitting another edit.`}
+              />
+            )}
             <Controller
               name="type"
               control={control}
@@ -165,16 +171,39 @@ const EditArtistPage = () => {
                         ? artistData?.artist.memberOfSource || ''
                         : '',
                     );
+                    setValue(
+                      'mainArtistId',
+                      val.value === ArtistType.Alias
+                        ? artistData?.artist.mainArtistId || ''
+                        : '',
+                    );
+                    setValue(
+                      'relatedArtists',
+                      val.value !== ArtistType.Alias
+                        ? artistData?.artist.relatedArtistsSource || ''
+                        : '',
+                    );
                   }}
                 />
               )}
             />
             <FormInputError error={errors.type} />
-            <Input
-              placeholder="Disambiguation"
-              {...register('disambiguation')}
-            />
-            <FormInputError error={errors.disambiguation} />
+            <Input placeholder="Name" {...register('name')} />
+            <FormInputError error={errors.name} />
+            {artistType !== ArtistType.Alias && (
+              <>
+                <Input
+                  placeholder="Name (Latin script)"
+                  {...register('nameLatin')}
+                />
+                <FormInputError error={errors.nameLatin} />
+                <Input
+                  placeholder="Disambiguation"
+                  {...register('disambiguation')}
+                />
+                <FormInputError error={errors.disambiguation} />
+              </>
+            )}
             {artistType === ArtistType.Group && (
               <>
                 <TextareaWithPreview
@@ -195,18 +224,41 @@ const EditArtistPage = () => {
                 <FormInputError error={errors.memberOf} />
               </>
             )}
-            <TextareaWithPreview
-              {...register('relatedArtists')}
-              placeholder="Related Artists"
-              rows={2}
-            />
-            <FormInputError error={errors.relatedArtists} />
-            <TextareaWithPreview
+            {artistType === ArtistType.Alias && (
+              <>
+                <Controller
+                  name="mainArtist"
+                  control={control}
+                  render={({ field }) => (
+                    <SelectSingleArtist
+                      {...field}
+                      updateMainArtistId={(value) =>
+                        setValue('mainArtistId', value)
+                      }
+                    />
+                  )}
+                />
+                <FormInputError
+                  error={errors.mainArtist || errors.mainArtistId}
+                />
+              </>
+            )}
+            {artistType !== ArtistType.Alias && (
+              <>
+                <TextareaWithPreview
+                  {...register('relatedArtists')}
+                  placeholder="Related Artists"
+                  rows={2}
+                />
+                <FormInputError error={errors.relatedArtists} />
+              </>
+            )}
+            {/* <TextareaWithPreview
               {...register('aka')}
               placeholder="AKA"
               rows={2}
             />
-            <FormInputError error={errors.aka} />
+            <FormInputError error={errors.aka} /> */}
             <Textarea
               {...register('note')}
               placeholder="Note/source"

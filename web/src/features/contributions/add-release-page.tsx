@@ -1,6 +1,6 @@
 import { classValidatorResolver } from '@hookform/resolvers/class-validator';
 import { useMutation } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { CreateReleaseDto, ExplicitCoverArt, getReleasePath } from 'shared';
@@ -25,7 +25,7 @@ import CreateArtistDialog from './create-artist-dialog';
 import CreateLabelDialog from './create-label-dialog';
 import { importFromMusicBrainz } from './import-data';
 import ReleaseTracksFields from './release-tracks-fields';
-import { ReleaseArtistsField } from './select-artist';
+import { SelectArtist } from './select-artist';
 import { SelectLabel } from './select-label';
 import { SelectLanguage } from './select-language';
 import { ReleaseTypeOptions } from './shared';
@@ -45,7 +45,7 @@ export const ExplicitCoverArtOptions = [
 
 export interface CreateReleaseFormValues extends CreateReleaseDto {
   mbid: string;
-  artists: { artistId: string; artistName: string; alias: string }[];
+  artists: { label: string; value: string }[];
   labels: { label: string; value: string }[];
   languages: { label: string; value: string }[];
 }
@@ -69,7 +69,6 @@ const AddReleasePage = () => {
     imageUrl: '',
     tracks: [],
     artistsIds: [],
-    artistsAliases: [],
     labelsIds: [],
     languagesIds: [],
     artists: [],
@@ -171,7 +170,7 @@ const AddReleasePage = () => {
               {...register('titleLatin')}
             />
             <FormInputError error={errors.titleLatin} />
-            {/* <Controller
+            <Controller
               name="artists"
               control={control}
               render={({ field }) => (
@@ -180,8 +179,7 @@ const AddReleasePage = () => {
                   updateArtistsIds={(value) => setValue('artistsIds', value)}
                 />
               )}
-            /> */}
-            <ReleaseArtistsField control={control} register={register} />
+            />
             <FormInputError error={errors.artists} />
             <FlexChild align="flex-end">
               <Group gap="lg" wrap>
@@ -326,22 +324,16 @@ const AddReleasePage = () => {
         <AddByIdArtistDialog
           isOpen={openAddByIdArtistDialog}
           onClose={() => setOpenAddByIdArtistDialog(false)}
-          onAddArtist={(newArtist) => {
-            const artist = {
-              artistId: newArtist.value,
-              artistName: newArtist.label,
-              alias: '',
-            };
+          onAddArtist={(artist) => {
             const currentArtists = getValues('artists') || [];
             const newArtists = [...currentArtists, artist];
             setValue('artists', newArtists);
+            setValue(
+              'artistsIds',
+              newArtists.map((a) => a.value),
+            );
           }}
-          currentArtists={
-            getValues('artists')?.map((a) => ({
-              label: a.artistName,
-              value: a.artistId,
-            })) || []
-          }
+          currentArtists={getValues('artists') || []}
         />
         <AddByIdLabelDialog
           isOpen={openAddByIdLabelDialog}

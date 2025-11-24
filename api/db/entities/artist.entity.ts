@@ -1,5 +1,12 @@
 import { ArtistType } from 'shared';
-import { Column, CreateDateColumn, Entity, OneToMany } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+} from 'typeorm';
 import { ArtistSubmission } from './artist-submission.entity';
 import { SharedBaseEntity } from '../shared/base-entity';
 import { ReleaseArtist } from './release-artist.entity';
@@ -41,6 +48,16 @@ export class Artist extends SharedBaseEntity {
 
   @Column({ nullable: true })
   akaSource?: string;
+
+  @Column({ nullable: true })
+  mainArtistId?: string;
+
+  @ManyToOne(() => Artist, (artist) => artist.aliases, { nullable: true })
+  @JoinColumn({ name: 'mainArtistId' })
+  mainArtist?: Artist;
+
+  @OneToMany(() => Artist, (artist) => artist.mainArtist)
+  aliases: Artist[];
 
   @OneToMany(() => ReleaseArtist, (ra) => ra.artist)
   releaseConnection: Promise<ReleaseArtist[]>;

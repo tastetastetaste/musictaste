@@ -15,6 +15,7 @@ import AppPageWrapper from '../../layout/app-page-wrapper';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
 import { Release } from '../releases/release';
+import { ArtistsLinks } from '../releases/release/shared';
 import { RELEASE_GRID_GAP } from '../releases/releases-virtual-grid';
 import { ReportDialog } from '../reports/report-dialog';
 
@@ -276,9 +277,19 @@ const ArtistPage = () => {
                   <Markdown variant="compact">{artist.relatedArtists}</Markdown>
                 </InfoRow>
               ) : null}
-              {artist.aka ? (
+              {/* {artist.aka ? (
                 <InfoRow label="AKA">
                   <Markdown variant="compact">{artist.aka}</Markdown>
+                </InfoRow>
+              ) : null} */}
+              {artist.mainArtist ? (
+                <InfoRow label="Main Artist">
+                  <ArtistsLinks artists={[artist.mainArtist]} />
+                </InfoRow>
+              ) : null}
+              {artist.aliases?.length > 0 ? (
+                <InfoRow label="Aliases">
+                  <ArtistsLinks artists={artist.aliases} />
                 </InfoRow>
               ) : null}
             </Stack>

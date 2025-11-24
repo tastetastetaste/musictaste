@@ -209,7 +209,7 @@ export const ReleasePageContainer: React.FC<{
   return (
     <AppPageWrapper
       title={`${release.title} By ${release.artists
-        .map((a) => a.alias || a.name)
+        .map((a) => a.name)
         .join(' & ')}`}
       menu={[
         {
@@ -241,7 +241,7 @@ export const ReleasePageContainer: React.FC<{
       ]}
       image={release?.cover?.original}
       description={`${release.title} By ${release.artists
-        .map((a) => a.alias || a.name)
+        .map((a) => a.name)
         .join(' & ')} released in ${getYearFromDate(release.date)}. ${
         (release.genres &&
           release.genres.length !== 0 &&
@@ -255,7 +255,7 @@ export const ReleasePageContainer: React.FC<{
             <ReleaseCover
               explicitCoverArt={release.explicitCoverArt}
               src={release.cover}
-              alt={`${release.artists.map((a) => a.alias || a.name).join(', ')} - ${release.title}`}
+              alt={`${release.artists.map((a) => a.name).join(', ')} - ${release.title}`}
             />
           </Group>
         </FlexChild>

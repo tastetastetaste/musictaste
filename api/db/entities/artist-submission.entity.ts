@@ -59,6 +59,10 @@ export class ArtistChanges {
   @IsString()
   @IsOptional()
   akaSource?: string;
+
+  @IsString()
+  @IsOptional()
+  mainArtistId?: string;
 }
 
 @Entity()

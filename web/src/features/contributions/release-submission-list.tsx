@@ -74,12 +74,7 @@ export const ReleaseSubmissionItem = ({
         renderValue={(value) => (
           <span>
             {value
-              .map(
-                (a) =>
-                  a?.name +
-                  (a?.nameLatin ? ` [${a?.nameLatin}]` : '') +
-                  (a?.alias ? ` (alias: ${a?.alias})` : ''),
-              )
+              .map((a) => a?.name + (a?.nameLatin ? ` [${a?.nameLatin}]` : ''))
               .join(', ')}
           </span>
         )}

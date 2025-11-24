@@ -73,20 +73,29 @@ export class SearchService {
         : Promise.resolve(false),
       type.includes('artists')
         ? this.artistsRepository
-            .createQueryBuilder('a')
-            .select(['a.id', 'a.name', 'a.nameLatin', 'a.disambiguation'])
+            .createQueryBuilder('artist')
+            .select([
+              'artist.id',
+              'artist.name',
+              'artist.nameLatin',
+              'artist.disambiguation',
+            ])
             .addSelect(
               `ts_rank(
-                to_tsvector('simple', unaccent(a.name || ' ' || COALESCE(a.nameLatin, ''))),
+                to_tsvector('simple', unaccent(artist.name || ' ' || COALESCE(artist.nameLatin, ''))),
                 plainto_tsquery('simple', unaccent(:query))
               )`,
               'search_rank',
             )
+            .addSelect('artist.type', 'type')
+            .addSelect('LENGTH(artist.name)', 'name_length')
             .where(
-              `to_tsvector('simple', unaccent(a.name || ' ' || COALESCE(a.nameLatin, ''))) @@ plainto_tsquery('simple', unaccent(:query))`,
+              `to_tsvector('simple', unaccent(artist.name || ' ' || COALESCE(artist.nameLatin, ''))) @@ plainto_tsquery('simple', unaccent(:query))`,
             )
+            .leftJoinAndSelect('artist.mainArtist', 'ma')
             .orderBy('search_rank', 'DESC')
-            .addOrderBy('LENGTH(a.name)', 'ASC')
+            .addOrderBy('type', 'ASC')
+            .addOrderBy('name_length', 'ASC')
             .setParameter('query', q)
             .take(take)
             .skip(skip)
@@ -174,10 +183,7 @@ export class SearchService {
           ? releases[0]?.map(({ artistConnection, ...r }) => ({
               ...r,
               cover: this.imagesService.getReleaseCover(r.imagePath),
-              artists: artistConnection.map((ac: ReleaseArtist) => ({
-                ...ac.artist,
-                alias: ac.alias || '',
-              })),
+              artists: artistConnection.map((ac: ReleaseArtist) => ac.artist),
             }))
           : undefined,
       releasesCount: typeof releases !== 'boolean' ? releases[1] : undefined,

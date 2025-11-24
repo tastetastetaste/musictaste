@@ -14,14 +14,7 @@ export interface IArtistSummary {
   name: string;
   nameLatin?: string;
   disambiguation?: string;
-}
-
-export interface IReleaseArtist {
-  id: string;
-  name: string;
-  nameLatin?: string;
-  disambiguation?: string;
-  alias?: string;
+  mainArtist?: IArtistSummary;
 }
 
 export interface IArtist {
@@ -38,6 +31,9 @@ export interface IArtist {
   relatedArtistsSource?: string;
   aka?: string;
   akaSource?: string;
+  mainArtistId?: string;
+  mainArtist?: IArtistSummary;
+  aliases?: IArtistSummary[];
 }
 
 export interface IArtistResponse {
@@ -158,7 +154,7 @@ export interface IReleaseSummary {
   title: string;
   titleLatin?: string;
   cover?: IReleaseCover;
-  artists: IReleaseArtist[];
+  artists: IArtistSummary[];
   explicitCoverArt?: ExplicitCoverArt[];
 }
 
@@ -449,7 +445,7 @@ export interface IReleaseChanges {
   titleLatin?: string;
   type: string;
   date: any;
-  artists: IReleaseArtist[];
+  artists: IArtistSummary[];
   labels: ILabelSummary[];
   languages: ILanguage[];
   imageUrl: string;
@@ -498,6 +494,8 @@ export interface IArtistChanges {
   relatedArtistsSource?: string;
   aka?: string;
   akaSource?: string;
+  mainArtistId?: string;
+  mainArtist?: IArtistSummary;
 }
 
 export interface IArtistSubmissionVote {
