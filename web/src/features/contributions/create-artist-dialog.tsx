@@ -99,13 +99,13 @@ const CreateArtistDialog: React.FC<{
           <FormInputError error={errors.type} />
           <Input placeholder="Name" {...register('name')} />
           <FormInputError error={errors.name} />
+          <Input
+            placeholder="English / Latin-script name (if applicable)"
+            {...register('nameLatin')}
+          />
+          <FormInputError error={errors.nameLatin} />
           {artistType !== ArtistType.Alias && (
             <>
-              <Input
-                placeholder="English / Latin-script name (if applicable)"
-                {...register('nameLatin')}
-              />
-              <FormInputError error={errors.nameLatin} />
               <Input
                 placeholder="Disambiguation"
                 {...register('disambiguation')}

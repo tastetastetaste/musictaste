@@ -105,7 +105,7 @@ export class SubmissionService {
     user: CurrentUserPayload,
   ) {
     let name = rest.name.trim();
-    let nameLatin;
+    let nameLatin = rest.nameLatin?.trim();
     let members;
     let memberOf;
     let aka;
@@ -113,7 +113,6 @@ export class SubmissionService {
     let disambiguation;
 
     if (type !== ArtistType.Alias) {
-      nameLatin = rest.nameLatin?.trim();
       members = rest.members?.trim();
       memberOf = rest.memberOf?.trim();
       aka = rest.aka?.trim();
@@ -233,7 +232,7 @@ export class SubmissionService {
     }
 
     let name = rest.name.trim();
-    let nameLatin;
+    let nameLatin = rest.nameLatin?.trim();
     let members;
     let memberOf;
     let aka;
@@ -241,7 +240,6 @@ export class SubmissionService {
     let disambiguation;
 
     if (type !== ArtistType.Alias) {
-      nameLatin = rest.nameLatin?.trim();
       members = rest.members?.trim();
       memberOf = rest.memberOf?.trim();
       aka = rest.aka?.trim();

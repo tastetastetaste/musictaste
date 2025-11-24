@@ -190,13 +190,13 @@ const EditArtistPage = () => {
             <FormInputError error={errors.type} />
             <Input placeholder="Name" {...register('name')} />
             <FormInputError error={errors.name} />
+            <Input
+              placeholder="Name (Latin script)"
+              {...register('nameLatin')}
+            />
+            <FormInputError error={errors.nameLatin} />
             {artistType !== ArtistType.Alias && (
               <>
-                <Input
-                  placeholder="Name (Latin script)"
-                  {...register('nameLatin')}
-                />
-                <FormInputError error={errors.nameLatin} />
                 <Input
                   placeholder="Disambiguation"
                   {...register('disambiguation')}
