@@ -34,7 +34,7 @@ const SidebarContent = ({
   closeSidebar: any;
   onOpenContactDialog: any;
 }) => {
-  const { canVoteOnSubmissions } = useAuth();
+  const { isLoggedIn } = useAuth();
   const navigate = useNavigate();
   const links = [
     { to: '/', label: 'Home', exact: true },
@@ -43,16 +43,20 @@ const SidebarContent = ({
     { to: '/lists/new', label: 'Lists', exact: false },
     { to: '/genres', label: 'Genres', exact: true },
     { to: '/theme', label: 'Theme', exact: true },
-    { to: '/contributing', label: 'Contributing', exact: true },
-    { to: '/rules', label: 'Rules', exact: true },
   ];
 
-  if (canVoteOnSubmissions) {
-    links.push({
-      to: '/contributions/releases',
-      label: 'Open Contributions',
-      exact: true,
-    });
+  if (isLoggedIn) {
+    links.push(
+      ...[
+        { to: '/contributing', label: 'Contributing Guide', exact: true },
+        {
+          to: '/contributions/releases',
+          label: 'Open Contributions',
+          exact: true,
+        },
+        { to: '/rules', label: 'Rules', exact: true },
+      ],
+    );
   }
   return (
     <Fragment>
