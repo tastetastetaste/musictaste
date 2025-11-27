@@ -1,8 +1,7 @@
 import AppPageWrapper from '../../layout/app-page-wrapper';
+import { Outlet } from 'react-router-dom';
 
-const ReleasesPageWrapper: React.FC<{
-  children: JSX.Element | JSX.Element[];
-}> = ({ children }) => {
+const ReleasesPageWrapper: React.FC = () => {
   return (
     <AppPageWrapper
       title="Releases"
@@ -11,11 +10,12 @@ const ReleasesPageWrapper: React.FC<{
         { to: `/releases/upcoming`, label: 'Upcoming' },
         { to: `/releases/popular`, label: 'Popular' },
         { to: `/releases/top`, label: 'Top OAT' },
+        { to: `/releases/top-2`, label: 'Top OAT 2' },
         { to: `/releases/top-oty`, label: 'Top OTY' },
         { to: `/releases/recently-added`, label: 'Recently added' },
       ]}
     >
-      {children}
+      <Outlet />
     </AppPageWrapper>
   );
 };

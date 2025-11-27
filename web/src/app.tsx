@@ -28,6 +28,7 @@ import { SocketProvider } from './hooks/useSocket';
 import AppPageWrapper from './layout/app-page-wrapper';
 import NotFoundPage from './layout/not-found-page';
 import { AUTH_REQUIRED_PAGE, SOMETHING_WENT_WRONG } from './static/feedback';
+import { FindReleasesType } from 'shared';
 
 const UserPageWrapper = lazy(
   () => import('./features/users/user-page-wrapper'),
@@ -99,23 +100,11 @@ const TopReviewsPage = lazy(
   () => import('./features/reviews/top-reviews-page'),
 );
 const ReviewPage = lazy(() => import('./features/reviews/review-page'));
-const NewReleasesPage = lazy(
-  () => import('./features/releases/new-releases-page'),
+const ReleasesPageWrapper = lazy(
+  () => import('./features/releases/releases-page-wrapper'),
 );
-const PopularReleasesPage = lazy(
-  () => import('./features/releases/popular-releases-page'),
-);
-const RecentlyAddedReleasesPage = lazy(
-  () => import('./features/releases/recently-added-releases-page'),
-);
-const TopReleasesPage = lazy(
-  () => import('./features/releases/top-releases-page'),
-);
-const TopReleasesOtyPage = lazy(
-  () => import('./features/releases/top-releases-oty-page'),
-);
-const UpcomingReleasesPage = lazy(
-  () => import('./features/releases/upcoming-releases-page'),
+const ReleasesListRenderer = lazy(
+  () => import('./features/releases/releases-list-renderer'),
 );
 const ReleaseReviewsPage = lazy(
   () => import('./features/releases/release-reviews-page'),
@@ -591,13 +580,18 @@ const router = createBrowserRouter([
       },
       {
         path: 'releases',
+        element: (
+          <Suspense fallback={<Fallback />}>
+            <ReleasesPageWrapper />
+          </Suspense>
+        ),
         children: [
           { index: true, element: <Navigate to="/releases/new" replace /> },
           {
             path: 'new',
             element: (
               <Suspense fallback={<Fallback />}>
-                <NewReleasesPage />
+                <ReleasesListRenderer type={FindReleasesType.NewPopular} />
               </Suspense>
             ),
           },
@@ -605,7 +599,7 @@ const router = createBrowserRouter([
             path: 'popular',
             element: (
               <Suspense fallback={<Fallback />}>
-                <PopularReleasesPage />
+                <ReleasesListRenderer type={FindReleasesType.Popular} />
               </Suspense>
             ),
           },
@@ -613,7 +607,7 @@ const router = createBrowserRouter([
             path: 'recently-added',
             element: (
               <Suspense fallback={<Fallback />}>
-                <RecentlyAddedReleasesPage />
+                <ReleasesListRenderer type={FindReleasesType.RecentlyAdded} />
               </Suspense>
             ),
           },
@@ -621,7 +615,7 @@ const router = createBrowserRouter([
             path: 'upcoming',
             element: (
               <Suspense fallback={<Fallback />}>
-                <UpcomingReleasesPage />
+                <ReleasesListRenderer type={FindReleasesType.Upcoming} />
               </Suspense>
             ),
           },
@@ -629,7 +623,15 @@ const router = createBrowserRouter([
             path: 'top',
             element: (
               <Suspense fallback={<Fallback />}>
-                <TopReleasesPage />
+                <ReleasesListRenderer type={FindReleasesType.Top} />
+              </Suspense>
+            ),
+          },
+          {
+            path: 'top-2',
+            element: (
+              <Suspense fallback={<Fallback />}>
+                <ReleasesListRenderer type={FindReleasesType.Top2} />
               </Suspense>
             ),
           },
@@ -637,7 +639,7 @@ const router = createBrowserRouter([
             path: 'top-oty',
             element: (
               <Suspense fallback={<Fallback />}>
-                <TopReleasesOtyPage />
+                <ReleasesListRenderer type={FindReleasesType.TopOTY} />
               </Suspense>
             ),
           },

@@ -233,7 +233,8 @@ const HomePage = () => {
       <Stack gap="lg">
         {!isLoading && !isLoggedIn && <FeaturesOverview />}
 
-        <TopReleasesOfTheYearSection />
+        {/* <TopReleasesOfTheYearSection /> */}
+        <NewReleasesSection />
         {/* minimize layout shift */}
         {!isLoadingNewPopularReleases ? (
           <Fragment>

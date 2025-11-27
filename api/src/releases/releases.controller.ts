@@ -59,7 +59,12 @@ export class ReleasesController {
         );
         break;
       case FindReleasesType.Top:
-        result = await this.releasesService.findTopReleasesOAT(page, pageSize);
+      case FindReleasesType.Top2:
+        result = await this.releasesService.findTopReleasesOAT(
+          query.type,
+          page,
+          pageSize,
+        );
         break;
       case FindReleasesType.TopOTY:
         result = await this.releasesService.findTopReleasesOTY(page, pageSize);

@@ -364,7 +364,7 @@ export class ReleasesService {
       .select('release.id', 'id')
       .addSelect('COUNT(ur.id)', 'popularity')
       .leftJoin('release.entries', 'ur', 'release.id = ur.releaseId')
-      .where("ur.createdAt >= NOW() - INTERVAL '7 days'")
+      .where("ur.createdAt >= NOW() - INTERVAL '30 days'")
       .groupBy('release.id')
       .orderBy('popularity', 'DESC')
       .addOrderBy('release.id', 'DESC')
@@ -391,7 +391,7 @@ export class ReleasesService {
       .select('release.id', 'id')
       .addSelect('COUNT(ur.id)', 'popularity')
       .leftJoin('release.entries', 'ur', 'release.id = ur.releaseId')
-      .where("release.date >= NOW() - INTERVAL '7 days'")
+      .where("release.date >= NOW() - INTERVAL '30 days'")
       .andWhere('release.date <= NOW()')
       .groupBy('release.id')
       .orderBy('popularity', 'DESC')
@@ -413,8 +413,12 @@ export class ReleasesService {
     };
   }
 
-  async findTopReleasesOAT(page: number = 1, pageSize: number = 48) {
-    const result = await this.userReleaseRepository
+  async findTopReleasesOAT(
+    type: FindReleasesType.Top | FindReleasesType.Top2,
+    page: number = 1,
+    pageSize: number = 48,
+  ) {
+    const query = this.userReleaseRepository
       .createQueryBuilder('ur')
       .select('ur.releaseId', 'releaseId')
       .addSelect('AVG(rating.rating)', 'averageRating')
@@ -423,8 +427,15 @@ export class ReleasesService {
       .where('release.type IN (:...releaseTypes)', {
         releaseTypes: [ReleaseType.LP, ReleaseType.Live],
       })
-      .groupBy('ur.releaseId')
-      .having('COUNT(rating.id) >= 40')
+      .groupBy('ur.releaseId');
+
+    if (type === FindReleasesType.Top) {
+      query.having('COUNT(rating.id) >= 40');
+    } else if (type === FindReleasesType.Top2) {
+      query.having('COUNT(rating.id) >= 20').andHaving('COUNT(rating.id) < 40');
+    }
+
+    const result = await query
       .orderBy('AVG(rating.rating)', 'DESC', 'NULLS LAST')
       .addOrderBy('ur.releaseId', 'DESC')
       .limit(100)
