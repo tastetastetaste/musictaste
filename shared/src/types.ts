@@ -108,6 +108,11 @@ export interface IGenre {
   bioSource?: string;
 }
 
+export interface IGenreSummary {
+  id: string;
+  name: string;
+}
+
 export interface ILabel {
   id: string;
   name: string;
@@ -120,6 +125,10 @@ export interface ILabelResponse {
 
 export interface IGenreResponse {
   genre: IGenre;
+}
+
+export interface IGenresResponse {
+  genres: IGenreSummary[];
 }
 
 export interface ILanguage {

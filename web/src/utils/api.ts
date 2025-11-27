@@ -29,6 +29,7 @@ import {
   IEntry,
   IEntryResonse,
   IGenreResponse,
+  IGenresResponse,
   IGenreSubmission,
   IGenreSubmissionsResponse,
   ILabelResponse,
@@ -121,6 +122,8 @@ const getLabel = (id: string) =>
 // ----------------
 const getGenre = (id: string) =>
   client.get('genres/' + id).json<IGenreResponse>();
+
+const getGenres = () => client.get('genres').json<IGenresResponse>();
 
 // ----------------
 //     LANGUAGE
@@ -724,6 +727,7 @@ export const api = {
   getArtist,
   getLabel,
   getGenre,
+  getGenres,
   createArtist,
   updateArtist,
   createLabel,

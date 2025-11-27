@@ -1,6 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateGenreVoteDto, IGenreResponse, IReleaseGenre } from 'shared';
+import {
+  CreateGenreVoteDto,
+  IGenreResponse,
+  IGenresResponse,
+  IReleaseGenre,
+} from 'shared';
 import { Repository } from 'typeorm';
 import { GenreSubmission } from '../../db/entities/genre-submission.entity';
 import { Genre } from '../../db/entities/genre.entity';
@@ -23,6 +28,19 @@ export class GenresService {
     private releaseGenreRepository: Repository<ReleaseGenre>,
     private usersService: UsersService,
   ) {}
+
+  async findAll(): Promise<IGenresResponse> {
+    const genres = await this.genreRepository.find({
+      select: ['id', 'name'],
+      order: {
+        name: 'ASC',
+      },
+    });
+
+    return {
+      genres,
+    };
+  }
 
   async findOne(id: string): Promise<IGenreResponse> {
     const genre = await this.genreRepository.findOne({ where: { id } });

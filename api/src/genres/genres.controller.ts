@@ -7,16 +7,30 @@ import {
   Post,
   UnauthorizedException,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
-import { ContributorStatus, CreateGenreVoteDto, IGenreResponse } from 'shared';
+import {
+  ContributorStatus,
+  CreateGenreVoteDto,
+  IGenreResponse,
+  IGenresResponse,
+} from 'shared';
 import { AuthenticatedGuard } from '../auth/Authenticated.guard';
 import { CurUser } from '../decorators/user.decorator';
 import { GenresService } from './genres.service';
 import { CurrentUserPayload } from '../auth/session.serializer';
+import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 
 @Controller('genres')
 export class GenresController {
   constructor(private readonly genresService: GenresService) {}
+
+  @Get()
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(1000 * 60 * 60 * 12) // 12 hours
+  findAll(): Promise<IGenresResponse> {
+    return this.genresService.findAll();
+  }
 
   @Get(':id')
   findOne(@Param('id') id: string): Promise<IGenreResponse> {

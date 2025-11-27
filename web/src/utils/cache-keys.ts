@@ -192,6 +192,7 @@ const labelKey = (id: string) => ['label', id];
 
 // GENRES
 const genreKey = (id: string) => ['genre', id];
+const genresKey = () => ['genres'];
 
 // LANGUAGES
 const languagesKey = () => ['languages'];
@@ -261,6 +262,7 @@ export const cacheKeys = {
   artistKey,
   labelKey,
   genreKey,
+  genresKey,
   entryKey,
   myReleaseEntryKey,
   entriesKey,
