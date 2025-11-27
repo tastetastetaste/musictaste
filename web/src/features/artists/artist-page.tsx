@@ -289,7 +289,11 @@ const ArtistPage = () => {
               ) : null}
               {artist.aliases?.length > 0 ? (
                 <InfoRow label="Aliases">
-                  <ArtistsLinks artists={artist.aliases} />
+                  <ArtistsLinks
+                    artists={artist.aliases.sort((a, b) =>
+                      a.name.localeCompare(b.name),
+                    )}
+                  />
                 </InfoRow>
               ) : null}
             </Stack>
