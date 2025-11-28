@@ -6,6 +6,7 @@ import {
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   AccountStatus,
+  ContributorStatus,
   getUserPath,
   IUserProfileResponse,
   SupporterStatus,
@@ -20,6 +21,7 @@ import { useHover } from '../../hooks/useHover';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
 import { useAuth } from '../account/useAuth';
+import { TrustedContributorBadge } from '../../components/badge/trusted-contributor-badge';
 
 const FollowAction = ({
   userId,
@@ -151,6 +153,9 @@ export const UserOverview: React.FC<OverviewSectionProps> = ({
           <Group gap="md" wrap>
             {supporter === SupporterStatus.SUPPORTER ? (
               <SupporterBadge size="lg" />
+            ) : null}
+            {contributorStatus === ContributorStatus.TRUSTED_CONTRIBUTOR ? (
+              <TrustedContributorBadge size="lg" />
             ) : null}
           </Group>
           {accountStatus !== AccountStatus.DELETED &&

@@ -5,7 +5,7 @@ import {
   IconTrash,
   IconArrowBackUp,
 } from '@tabler/icons-react';
-import { IComment, SupporterStatus } from 'shared';
+import { ContributorStatus, IComment, SupporterStatus } from 'shared';
 import { FlexChild } from '../../components/flex/flex-child';
 import { Group } from '../../components/flex/group';
 import { Stack } from '../../components/flex/stack';
@@ -18,6 +18,7 @@ import { getUserPath } from 'shared';
 import { Avatar } from '../users/avatar';
 import { SupporterBadge } from '../../components/badge/supporter-badge';
 import { Markdown } from '../../components/markdown';
+import { TrustedContributorBadge } from '../../components/badge/trusted-contributor-badge';
 
 const Fade = keyframes`
     from {
@@ -65,6 +66,10 @@ export function Comment({
               <Typography color="sub" size="small">
                 @{user.username}
               </Typography>
+              {user.contributorStatus ===
+              ContributorStatus.TRUSTED_CONTRIBUTOR ? (
+                <TrustedContributorBadge size="sm" />
+              ) : null}
               {user.supporter === SupporterStatus.SUPPORTER ? (
                 <SupporterBadge size="sm" />
               ) : null}

@@ -28,20 +28,18 @@ const StyledBadge = styled.span<{ $colorValue: string; $size: string }>`
   box-shadow: 0 0 5px currentColor;
 
   svg {
-    width: 1.2em;
-    height: 1.2em;
+    width: 22px;
   }
 `;
 
-const StyledIconBadge = styled.div<{ $colorValue: string }>`
+const StyledIconBadge = styled.div<{ $colorValue: string; $size: string }>`
   display: inline-flex;
   align-items: center;
   justify-content: center;
   color: ${(props) => props.$colorValue};
 
   svg {
-    width: 0.9em;
-    height: 0.9em;
+    width: ${(props) => (props.$size === 'sm' ? '16px' : '22px')};
   }
 `;
 
@@ -50,7 +48,6 @@ export const Badge: React.FC<BadgeProps> = ({
   color = 'text',
   size = 'md',
   icon,
-  className,
 }) => {
   const { colors } = useTheme();
 
@@ -69,19 +66,19 @@ export const Badge: React.FC<BadgeProps> = ({
 
   const colorValue = getColorValue(color);
 
-  if (size === 'sm') {
+  if (size === 'sm' || size === 'md') {
     return (
       <Tooltip content={label}>
-        <StyledIconBadge $colorValue={colorValue} className={className}>
-          {React.cloneElement(icon, { className: 'icon-badge-icon' })}
+        <StyledIconBadge $colorValue={colorValue} $size={size}>
+          {icon}
         </StyledIconBadge>
       </Tooltip>
     );
   }
 
   return (
-    <StyledBadge $colorValue={colorValue} $size={size} className={className}>
-      {icon && React.cloneElement(icon, { className: 'badge-icon' })}
+    <StyledBadge $colorValue={colorValue} $size={size}>
+      {icon}
       {label}
     </StyledBadge>
   );
