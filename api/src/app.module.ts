@@ -31,10 +31,13 @@ import { CommentsModule } from './comments/comments.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { EntitiesModule } from './entities/entities.module';
 import { CacheModule } from '@nestjs/cache-manager';
+import { TasksModule } from './tasks/tasks.module';
 import KeyvRedis from '@keyv/redis';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     ConfigModule.forRoot({
       envFilePath: '.env',
       isGlobal: true,
@@ -117,6 +120,7 @@ import KeyvRedis from '@keyv/redis';
     CommentsModule,
     NotificationsModule,
     EntitiesModule,
+    TasksModule,
   ],
   controllers: [],
   providers: [

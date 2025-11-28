@@ -7,6 +7,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import dayjs from 'dayjs';
 import {
+  AccountStatus,
   ArtistType,
   CommentEntityType,
   ContributorStatus,
@@ -1818,5 +1819,49 @@ export class SubmissionService {
     return {
       message: 'Deleted successfully!',
     };
+  }
+  async updateTrustedContributorStatuses() {
+    // More than 200 release submissions (all time)
+    // More than 5 release submissions in the last 30 days
+    const result = await this.releaseSubmissionRepository
+      .createQueryBuilder('rs')
+      .select('rs.userId', 'userId')
+      .addSelect('COUNT(rs.id)', 'count')
+      .where((qb) => {
+        const subquery = qb
+          .subQuery()
+          .select('rs.userId', 'userId')
+          .where('rs.submissionStatus IN (:...submissionStatuses)')
+          .andWhere('u.accountStatus = :accountStatus')
+          .andWhere('u.contributorStatus in (:...contributorStatuses)')
+          .from(ReleaseSubmission, 'rs')
+          .leftJoin('rs.user', 'u')
+          .groupBy('rs.userId')
+          .having('COUNT(rs.id) > 200')
+          .getQuery();
+
+        return 'rs.userId IN ' + subquery;
+      })
+      .andWhere('rs.submissionStatus IN (:...submissionStatuses)')
+      .andWhere("rs.createdAt >= now() - INTERVAL '30 days'")
+      .groupBy('rs.userId')
+      .having('COUNT(rs.id) > 5')
+      .setParameters({
+        submissionStatuses: [
+          SubmissionStatus.APPROVED,
+          SubmissionStatus.AUTO_APPROVED,
+        ],
+        contributorStatuses: [
+          ContributorStatus.CONTRIBUTOR,
+          ContributorStatus.TRUSTED_CONTRIBUTOR,
+        ],
+        accountStatus: AccountStatus.CONFIRMED,
+      })
+      .getRawMany();
+
+    await this.usersService.updateTrustedContributorStatuses(
+      result.map((item) => item.userId),
+    );
+    return true;
   }
 }

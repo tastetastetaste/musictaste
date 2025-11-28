@@ -390,4 +390,51 @@ export class UsersService {
 
     return { users };
   }
+
+  async updateTrustedContributorStatuses(userIds: string[]) {
+    const currentTrusted = await this.usersRepository.find({
+      select: ['id'],
+      where: {
+        contributorStatus: ContributorStatus.TRUSTED_CONTRIBUTOR,
+      },
+    });
+
+    const shouldBeRemoved = currentTrusted.filter(
+      (u) => !userIds.some((id) => u.id === id),
+    );
+    const shouldBeAdded = userIds.filter(
+      (id) => !currentTrusted.some((u) => u.id === id),
+    );
+
+    if (shouldBeRemoved.length > 0) {
+      await this.usersRepository.update(
+        shouldBeRemoved.map((c) => c.id),
+        {
+          contributorStatus: ContributorStatus.CONTRIBUTOR,
+        },
+      );
+
+      for (const id of shouldBeRemoved.map((c) => c.id)) {
+        await this.redisService.updateUserSessionsContributorStatus(
+          id,
+          ContributorStatus.CONTRIBUTOR,
+        );
+      }
+    }
+
+    if (shouldBeAdded.length > 0) {
+      await this.usersRepository.update(shouldBeAdded, {
+        contributorStatus: ContributorStatus.TRUSTED_CONTRIBUTOR,
+      });
+
+      for (const id of shouldBeAdded) {
+        await this.redisService.updateUserSessionsContributorStatus(
+          id,
+          ContributorStatus.TRUSTED_CONTRIBUTOR,
+        );
+      }
+    }
+
+    return true;
+  }
 }

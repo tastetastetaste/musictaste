@@ -146,20 +146,27 @@ Each music data contribution goes through an approval process and is assigned on
 
 Each user is assigned one of the following roles:
 
+- **Not a Contributor**
+  - Cannot contribute to the database
 - **Contributor**
-  - Default role upon signup.
-  - Can add releases, artists, and labels.
-      - New additions are automatically added to the database (AUTO APPROVED).
-      - Edits to existing releases require review (OPEN).
+  - Default role upon signup
+  - Can add releases, artists, and labels
+      - New additions are automatically added to the database (AUTO APPROVED)
+      - Edits to existing releases require review (OPEN)
 - **Trusted Contributor**
-  - Can perform all actions of a Contributor.
-  - Can vote on contributions submitted by other users.
-      - If a contribution receives more upvotes than downvotes, it gets approved.
-      - Three votes will finalize the contribution.
-      - Genres require 4+ upvotes out of 5 votes to be approved.
+  - Can perform all actions of a Contributor
+  - Can vote on contributions submitted by other users
+      - If a contribution receives more upvotes than downvotes, it gets approved
+      - Three votes will finalize the contribution
+      - Genres require 4+ upvotes out of 5 votes to be approved
+  - This role is automatically assigned every 24 hours to users who:
+    - Have the Contributor role
+    - Made at least 200 release contributions (all time)
+    - Made at least 5 release contributions in the last 30 days
+    - Have no account warnings
 - **Editor**
-  - Can add and edit music data directly without review.
-  - Can approve or reject contributions submitted by other users.
+  - Can add and edit music data directly without review
+  - Can approve or reject contributions submitted by other users
 
 ## Feedback
 

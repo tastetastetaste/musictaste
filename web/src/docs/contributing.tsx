@@ -7,7 +7,7 @@ import { CONTRIBUTING_MD } from '../static/contributing';
 
 const ContributingPage = () => {
   return (
-    <AppPageWrapper title="about">
+    <AppPageWrapper title="Contributing Guide">
       <Container>
         <Stack gap="lg">
           <Markdown>{CONTRIBUTING_MD}</Markdown>
