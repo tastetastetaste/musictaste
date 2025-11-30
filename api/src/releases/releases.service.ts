@@ -425,14 +425,14 @@ export class ReleasesService {
       .leftJoin('ur.release', 'release')
       .leftJoin('ur.rating', 'rating')
       .where('release.type IN (:...releaseTypes)', {
-        releaseTypes: [ReleaseType.LP, ReleaseType.Live],
+        releaseTypes: [ReleaseType.LP, ReleaseType.Live, ReleaseType.Mixtape],
       })
       .groupBy('ur.releaseId');
 
     if (type === FindReleasesType.Top) {
-      query.having('COUNT(rating.id) >= 40');
+      query.having('COUNT(rating.id) >= 60');
     } else if (type === FindReleasesType.Top2) {
-      query.having('COUNT(rating.id) >= 20').andHaving('COUNT(rating.id) < 40');
+      query.having('COUNT(rating.id) >= 20').andHaving('COUNT(rating.id) < 60');
     }
 
     const result = await query
@@ -469,7 +469,7 @@ export class ReleasesService {
         endDate,
       })
       .andWhere('release.type IN (:...releaseTypes)', {
-        releaseTypes: [ReleaseType.LP, ReleaseType.Live],
+        releaseTypes: [ReleaseType.LP, ReleaseType.Live, ReleaseType.Mixtape],
       })
       .groupBy('ur.releaseId')
       .having('COUNT(rating) >= 30')
