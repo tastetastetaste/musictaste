@@ -121,9 +121,9 @@ export const ArtistsLinks = ({ artists }: { artists: IArtistSummary[] }) => {
         <Fragment key={id}>
           {i > 0 && ', '}
           <Link to={getArtistPath({ artistId: id })}>
-            {name}{' '}
+            {name}
             {nameLatin ? (
-              <span css={{ fontStyle: 'italic' }}>[{nameLatin}]</span>
+              <span css={{ fontStyle: 'italic' }}> [{nameLatin}]</span>
             ) : (
               ''
             )}
@@ -141,9 +141,9 @@ export const LabelsLinks = ({ labels }: { labels: ILabelSummary[] }) => {
         <Fragment key={id}>
           {i > 0 && ', '}
           <Link to={getLabelPath({ labelId: id })}>
-            {name}{' '}
+            {name}
             {nameLatin ? (
-              <span css={{ fontStyle: 'italic' }}>[{nameLatin}]</span>
+              <span css={{ fontStyle: 'italic' }}> [{nameLatin}]</span>
             ) : (
               ''
             )}
