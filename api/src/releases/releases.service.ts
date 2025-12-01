@@ -391,7 +391,7 @@ export class ReleasesService {
       .select('release.id', 'id')
       .addSelect('COUNT(ur.id)', 'popularity')
       .leftJoin('release.entries', 'ur', 'release.id = ur.releaseId')
-      .where("release.date >= NOW() - INTERVAL '30 days'")
+      .where("release.date >= NOW() - INTERVAL '40 days'")
       .andWhere('release.date <= NOW()')
       .groupBy('release.id')
       .orderBy('popularity', 'DESC')

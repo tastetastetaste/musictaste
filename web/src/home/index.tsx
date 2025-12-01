@@ -1,6 +1,11 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Fragment } from 'react';
-import { EntriesSortByEnum, ExplicitCoverArt, FindReleasesType } from 'shared';
+import {
+  EntriesSortByEnum,
+  ExplicitCoverArt,
+  FindReleasesType,
+  ReleaseType,
+} from 'shared';
 import { Feedback } from '../components/feedback';
 import { Grid } from '../components/flex/grid';
 import { Stack } from '../components/flex/stack';
@@ -155,9 +160,9 @@ const NewReleasesSection = () => {
     cacheKeys.releasesKey({
       type: FindReleasesType.NewPopular,
       page: 1,
-      pageSize: 16,
+      pageSize: 18,
     }),
-    () => api.getReleases(FindReleasesType.NewPopular, 1, 16),
+    () => api.getReleases(FindReleasesType.NewPopular, 1, 18),
   );
 
   const newReleases = newPopularReleasesData?.releases;
@@ -177,7 +182,7 @@ const NewReleasesSection = () => {
                 (r) =>
                   !r.explicitCoverArt?.includes(
                     ExplicitCoverArt.EXPLICIT_SEXUAL_CONTENT,
-                  ),
+                  ) && ReleaseType[r.type] !== ReleaseType.Single,
               )
               .slice(0, 12)
               .map((r) => <Release key={r.id} release={r} />)}
