@@ -150,18 +150,13 @@ export class SubmissionService {
 
     const artistSubmission = new ArtistSubmission();
 
-    const processedMembers = members
-      ? await this.entitiesReferenceService.parseLinks(members)
-      : undefined;
-    const processedMemberOf = memberOf
-      ? await this.entitiesReferenceService.parseLinks(memberOf)
-      : undefined;
-    const processedAka = aka
-      ? await this.entitiesReferenceService.parseLinks(aka)
-      : undefined;
-    const processedRelatedArtists = relatedArtists
-      ? await this.entitiesReferenceService.parseLinks(relatedArtists)
-      : undefined;
+    const processedMembers =
+      await this.entitiesReferenceService.parseLinks(members);
+    const processedMemberOf =
+      await this.entitiesReferenceService.parseLinks(memberOf);
+    const processedAka = await this.entitiesReferenceService.parseLinks(aka);
+    const processedRelatedArtists =
+      await this.entitiesReferenceService.parseLinks(relatedArtists);
 
     artistSubmission.changes = {
       name,
@@ -248,18 +243,13 @@ export class SubmissionService {
       disambiguation = rest.disambiguation?.trim();
     }
 
-    const processedMembers = members
-      ? await this.entitiesReferenceService.parseLinks(members)
-      : undefined;
-    const processedMemberOf = memberOf
-      ? await this.entitiesReferenceService.parseLinks(memberOf)
-      : undefined;
-    const processedAka = aka
-      ? await this.entitiesReferenceService.parseLinks(aka)
-      : undefined;
-    const processedRelatedArtists = relatedArtists
-      ? await this.entitiesReferenceService.parseLinks(relatedArtists)
-      : undefined;
+    const processedMembers =
+      await this.entitiesReferenceService.parseLinks(members);
+    const processedMemberOf =
+      await this.entitiesReferenceService.parseLinks(memberOf);
+    const processedAka = await this.entitiesReferenceService.parseLinks(aka);
+    const processedRelatedArtists =
+      await this.entitiesReferenceService.parseLinks(relatedArtists);
 
     if (type === ArtistType.Alias) {
       if (artist.aliases.length > 0) {

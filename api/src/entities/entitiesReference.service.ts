@@ -27,7 +27,7 @@ export class EntitiesReferenceService {
   private readonly REFERENCE_PATTERN = /\[\[([^\]]+)\]\]/g;
   async parseLinks(source: string): Promise<string> {
     // No source
-    if (!source) return source;
+    if (!source) return null;
 
     const matches = Array.from(source.matchAll(this.REFERENCE_PATTERN));
 
