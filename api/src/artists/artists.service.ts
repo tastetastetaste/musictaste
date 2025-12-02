@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { IArtistResponse } from 'shared';
+import { ArtistType, IArtistResponse } from 'shared';
 import { Repository } from 'typeorm';
 import {
   ArtistChanges,
@@ -119,7 +119,7 @@ export class ArtistsService {
     artist.relatedArtistsSource = relatedArtistsSource;
     artist.aka = aka;
     artist.akaSource = akaSource;
-    artist.mainArtistId = mainArtistId;
+    artist.mainArtistId = type === ArtistType.Alias ? mainArtistId : null;
     return this.artistsRepository.save(artist);
   }
 
