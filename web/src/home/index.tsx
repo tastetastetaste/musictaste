@@ -160,9 +160,9 @@ const NewReleasesSection = () => {
     cacheKeys.releasesKey({
       type: FindReleasesType.NewPopular,
       page: 1,
-      pageSize: 18,
+      pageSize: 20,
     }),
-    () => api.getReleases(FindReleasesType.NewPopular, 1, 18),
+    () => api.getReleases(FindReleasesType.NewPopular, 1, 20),
   );
 
   const newReleases = newPopularReleasesData?.releases;
