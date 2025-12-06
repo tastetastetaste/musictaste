@@ -430,9 +430,9 @@ export class ReleasesService {
       .groupBy('ur.releaseId');
 
     if (type === FindReleasesType.Top) {
-      query.having('COUNT(rating.id) >= 60');
+      query.having('COUNT(rating.id) >= 35');
     } else if (type === FindReleasesType.Top2) {
-      query.having('COUNT(rating.id) >= 20').andHaving('COUNT(rating.id) < 60');
+      query.having('COUNT(rating.id) >= 15').andHaving('COUNT(rating.id) < 35');
     }
 
     const result = await query
