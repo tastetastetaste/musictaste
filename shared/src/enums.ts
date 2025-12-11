@@ -29,6 +29,12 @@ export enum ReleaseType {
   Other = 25,
 }
 
+export enum DatePrecision {
+  DAY = 1,
+  MONTH = 2,
+  YEAR = 3,
+}
+
 export enum ArtistType {
   Person = 1,
   Group = 2,

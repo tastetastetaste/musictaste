@@ -36,6 +36,7 @@ import { ImagesService } from '../images/images.service';
 import { UsersService } from '../users/users.service';
 import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
 import { RedisService } from '../redis/redis.service';
+import { normalizeDate } from '../common/normalizeDate';
 
 export type ReleaseCountType =
   | 'ratings'
@@ -106,6 +107,7 @@ export class ReleasesService {
         'release.title',
         'release.titleLatin',
         'release.date',
+        'release.datePrecision',
         'release.type',
         'release.imagePath',
         'release.explicitCoverArt',
@@ -132,6 +134,7 @@ export class ReleasesService {
         artists: artistConnection.map((ac: ReleaseArtist) => ac.artist),
         cover: this.imagesService.getReleaseCover(r.imagePath),
         explicitCoverArt: r.explicitCoverArt,
+        datePrecision: r.datePrecision,
       };
     });
   }
@@ -157,6 +160,7 @@ export class ReleasesService {
         'release.title',
         'release.titleLatin',
         'release.date',
+        'release.datePrecision',
         'release.type',
         'release.imagePath',
         'release.explicitCoverArt',
@@ -198,6 +202,7 @@ export class ReleasesService {
       cover: this.imagesService.getReleaseCover(r.imagePath),
       stats: stats[id],
       explicitCoverArt: r.explicitCoverArt,
+      datePrecision: r.datePrecision,
     };
   }
 
@@ -507,12 +512,15 @@ export class ReleasesService {
     const id = genId();
 
     try {
+      const normalizedDate = normalizeDate(date);
+
       await this.releasesRepository.insert({
         id,
         title,
         titleLatin,
         type,
-        date: dayjs(date).format('YYYY-MM-DD').toString(),
+        date: normalizedDate.fullDate,
+        datePrecision: normalizedDate.precision,
         imagePath: imagePath,
         explicitCoverArt: explicitCoverArt,
       });
@@ -621,7 +629,11 @@ export class ReleasesService {
 
     // These fields cannot be null
     if (title) _release.title = title;
-    if (date) _release.date = dayjs(date).format('YYYY-MM-DD').toString();
+    if (date) {
+      const normalizedDate = normalizeDate(date);
+      _release.date = normalizedDate.fullDate;
+      _release.datePrecision = normalizedDate.precision;
+    }
     if (type) _release.type = type;
     if (artistsIds) {
       const releaseArtists = await this.releaseArtistRepository.find({

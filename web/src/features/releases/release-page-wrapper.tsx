@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Outlet, useParams } from 'react-router-dom';
 import {
   CommentEntityType,
+  DatePrecision,
   ExplicitCoverArt,
   getGenrePath,
   IReleaseCover,
@@ -26,7 +27,7 @@ import AppPageWrapper from '../../layout/app-page-wrapper';
 import { SOMETHING_WENT_WRONG } from '../../static/feedback';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
-import { formatExactDate, getYearFromDate } from '../../utils/date-format';
+import { formatReleaseDate, getYearFromDate } from '../../utils/date-format';
 import { useAuth } from '../account/useAuth';
 import { Comments } from '../comments/comments';
 import { RatingCircle } from '../ratings/rating';
@@ -48,10 +49,18 @@ const ReleaseInfo: React.FC<{
   release: any;
   isLoggedIn?: boolean;
 }> = ({
-  release: { id: releaseId, date: date, genres, labels, languages, type },
+  release: {
+    id: releaseId,
+    date,
+    datePrecision,
+    genres,
+    labels,
+    languages,
+    type,
+  },
   isLoggedIn,
 }) => {
-  const dateStr = formatExactDate(date);
+  const dateStr = formatReleaseDate(date, datePrecision);
 
   const languagesStr =
     languages && languages.map((lang: any) => lang.name).join(', ');

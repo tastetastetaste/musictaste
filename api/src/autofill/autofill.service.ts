@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import dayjs from 'dayjs';
 import { ITrack, MusicBrainzApi } from 'musicbrainz-api';
 import { IAutofillRelease } from 'shared';
+import { normalizeDate } from '../common/normalizeDate';
 
 @Injectable()
 export class AutofillService {
@@ -80,7 +81,7 @@ export class AutofillService {
       labels,
       title: release.title,
       type: release['primary-type'],
-      date: dayjs(release.date).format('YYYY-MM-DD').toString(),
+      date: normalizeDate(release.date).date,
       tracks: allTracks.map((t) => ({
         track: isMultiDisc ? `${t.disk}.${t.number}` : `${t.number}`,
         title: t.title,

@@ -1,4 +1,4 @@
-import { ExplicitCoverArt, ReleaseType } from 'shared';
+import { DatePrecision, ExplicitCoverArt, ReleaseType } from 'shared';
 import { Column, CreateDateColumn, Entity, OneToMany } from 'typeorm';
 import { SharedBaseEntity } from '../shared/base-entity';
 import { ListItem } from './list-item.entity';
@@ -23,6 +23,9 @@ export class Release extends SharedBaseEntity {
 
   @Column('date', { nullable: true })
   date: string;
+
+  @Column('int', { default: DatePrecision.DAY })
+  datePrecision: number;
 
   @Column('text', { nullable: true })
   imagePath: string;

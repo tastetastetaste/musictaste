@@ -57,6 +57,7 @@ import { SubmissionSortByEnum } from 'shared';
 import { Genre } from '../../db/entities/genre.entity';
 import { CommentsService } from '../comments/comments.service';
 import { EntitiesReferenceService } from '../entities/entitiesReference.service';
+import { normalizeDate } from '../common/normalizeDate';
 
 @Injectable()
 export class SubmissionService {
@@ -482,7 +483,7 @@ export class SubmissionService {
       title: title,
       titleLatin: titleLatin,
       type: ReleaseType[type],
-      date: dayjs(date).format('YYYY-MM-DD').toString(),
+      date: normalizeDate(date).date,
       artistsIds: artistsIds,
       labelsIds: labelsIds,
       languagesIds: languagesIds,
@@ -604,7 +605,7 @@ export class SubmissionService {
       title: title,
       titleLatin: titleLatin,
       type: ReleaseType[type],
-      date: dayjs(date).format('YYYY-MM-DD').toString(),
+      date: normalizeDate(date).date,
       artistsIds: artistsIds,
       labelsIds: labelsIds,
       languagesIds: languagesIds,

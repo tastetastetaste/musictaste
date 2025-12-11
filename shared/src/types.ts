@@ -3,6 +3,7 @@ import {
   ArtistType,
   CommentEntityType,
   ContributorStatus,
+  DatePrecision,
   ExplicitCoverArt,
   NotificationType,
   SupporterStatus,
@@ -170,6 +171,7 @@ export interface IReleaseSummary {
 export interface IRelease extends IReleaseSummary {
   type: string;
   date: string;
+  datePrecision: DatePrecision;
 }
 
 export interface IReleaseWithStats extends IRelease {

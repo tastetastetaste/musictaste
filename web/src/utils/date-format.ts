@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import { DatePrecision } from 'shared';
 
 dayjs.extend(relativeTime);
 
@@ -77,8 +78,27 @@ export const formatDate = (date: string) => {
   return parsedDate.format('MMM D, YYYY');
 };
 
-export const formatExactDate = (date: string) => {
-  return dayjs(date).format('MMM D, YYYY');
+export const formatReleaseDate = (date: string, precision: DatePrecision) => {
+  if (precision === DatePrecision.DAY) {
+    return dayjs(date).format('MMM D, YYYY');
+  } else if (precision === DatePrecision.MONTH) {
+    return dayjs(date).format('MMM YYYY');
+  } else {
+    return dayjs(date).format('YYYY');
+  }
+};
+
+export const formatReleaseDateInput = (
+  date: string,
+  precision: DatePrecision,
+) => {
+  if (precision === DatePrecision.DAY) {
+    return dayjs(date).format('YYYY-MM-DD');
+  } else if (precision === DatePrecision.MONTH) {
+    return dayjs(date).format('YYYY-MM');
+  } else {
+    return dayjs(date).format('YYYY');
+  }
 };
 
 export const getYearFromDate = (date: string) => {

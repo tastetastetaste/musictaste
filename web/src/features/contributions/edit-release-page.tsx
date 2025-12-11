@@ -21,6 +21,7 @@ import { useSnackbar } from '../../hooks/useSnackbar';
 import AppPageWrapper from '../../layout/app-page-wrapper';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
+import { formatReleaseDateInput } from '../../utils/date-format';
 import { AddByIdArtistDialog } from './add-by-id-artist-dialog';
 import { AddByIdLabelDialog } from './add-by-id-label-dialog';
 import { ExplicitCoverArtOptions } from './add-release-page';
@@ -145,7 +146,7 @@ const EditReleasePage = () => {
           : undefined,
         languagesIds: release.languages.map((l) => l.id),
         type: release.type,
-        date: release.date,
+        date: formatReleaseDateInput(release.date, release.datePrecision),
         tracks:
           tracks && tracks.length !== 0
             ? tracks.map((t) => ({
