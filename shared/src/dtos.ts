@@ -2,6 +2,7 @@ import { Type } from 'class-transformer';
 import {
   ArrayMinSize,
   IsArray,
+  IsBoolean,
   IsEmail,
   IsEmpty,
   IsEnum,
@@ -204,6 +205,15 @@ export class UpdateReleaseDto {
   note?: string;
 }
 
+export class GroupArtistDto {
+  @IsString()
+  @MinLength(1)
+  artistId: string;
+  @IsBoolean()
+  @IsOptional()
+  current?: boolean;
+}
+
 export class CreateArtistDto {
   @IsString()
   @MinLength(1)
@@ -226,27 +236,37 @@ export class CreateArtistDto {
   @MaxLength(100)
   disambiguation?: string;
 
-  @IsString()
-  @IsOptional()
-  members?: string;
+  // @IsString()
+  // @IsOptional()
+  // members?: string;
 
-  @IsString()
-  @IsOptional()
-  memberOf?: string;
+  // @IsString()
+  // @IsOptional()
+  // memberOf?: string;
 
-  @IsString()
-  @IsOptional()
-  relatedArtists?: string;
+  // @IsString()
+  // @IsOptional()
+  // relatedArtists?: string;
 
-  @IsString()
-  @IsOptional()
-  @MaxLength(5000)
-  aka?: string;
+  // @IsString()
+  // @IsOptional()
+  // @MaxLength(5000)
+  // aka?: string;
 
   @ValidateIf((o) => o.type === ArtistType.Alias)
   @IsString()
   @MinLength(1)
   mainArtistId?: string;
+
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => GroupArtistDto)
+  groupArtists?: GroupArtistDto[];
+
+  @IsString({ each: true })
+  @IsOptional()
+  relatedArtistsIds?: string[];
 
   @IsString()
   @MinLength(1)
@@ -275,27 +295,37 @@ export class UpdateArtistDto {
   @MaxLength(100)
   disambiguation?: string;
 
-  @IsString()
-  @IsOptional()
-  members?: string;
+  // @IsString()
+  // @IsOptional()
+  // members?: string;
 
-  @IsString()
-  @IsOptional()
-  memberOf?: string;
+  // @IsString()
+  // @IsOptional()
+  // memberOf?: string;
 
-  @IsString()
-  @IsOptional()
-  relatedArtists?: string;
+  // @IsString()
+  // @IsOptional()
+  // relatedArtists?: string;
 
-  @IsString()
-  @IsOptional()
-  @MaxLength(5000)
-  aka?: string;
+  // @IsString()
+  // @IsOptional()
+  // @MaxLength(5000)
+  // aka?: string;
 
   @ValidateIf((o) => o.type === ArtistType.Alias)
   @IsString()
   @MinLength(1)
   mainArtistId?: string;
+
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => GroupArtistDto)
+  groupArtists?: GroupArtistDto[];
+
+  @IsString({ each: true })
+  @IsOptional()
+  relatedArtistsIds?: string[];
 
   @IsString()
   @MinLength(1)

@@ -15,7 +15,14 @@ export interface IArtistSummary {
   name: string;
   nameLatin?: string;
   disambiguation?: string;
+  type: ArtistType;
   mainArtist?: IArtistSummary;
+}
+
+export interface IGroupArtist {
+  current?: boolean;
+  artist?: IArtistSummary;
+  group?: IArtistSummary;
 }
 
 export interface IArtist {
@@ -24,16 +31,11 @@ export interface IArtist {
   type: ArtistType;
   nameLatin?: string;
   disambiguation?: string;
-  members?: string;
-  membersSource?: string;
-  memberOf?: string;
-  memberOfSource?: string;
-  relatedArtists?: string;
-  relatedArtistsSource?: string;
-  aka?: string;
-  akaSource?: string;
+  relatedArtists?: IArtistSummary[];
   mainArtistId?: string;
   mainArtist?: IArtistSummary;
+  groupArtists?: IGroupArtist[];
+  groups?: IGroupArtist[];
   aliases?: IArtistSummary[];
 }
 
@@ -497,16 +499,10 @@ export interface IArtistChanges {
   nameLatin?: string;
   type: ArtistType;
   disambiguation?: string;
-  members?: string;
-  membersSource?: string;
-  memberOf?: string;
-  memberOfSource?: string;
-  relatedArtists?: string;
-  relatedArtistsSource?: string;
-  aka?: string;
-  akaSource?: string;
   mainArtistId?: string;
   mainArtist?: IArtistSummary;
+  relatedArtists: IArtistSummary[];
+  groupArtists: IGroupArtist[];
 }
 
 export interface IArtistSubmissionVote {

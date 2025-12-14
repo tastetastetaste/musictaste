@@ -259,29 +259,74 @@ const ArtistPage = () => {
                   ''
                 )}
               </Stack>
-              {artist.members || artist.memberOf ? (
+              {(artist.type === ArtistType.Person &&
+                artist.groups?.filter((g) => g.current)?.length) ||
+              (artist.type === ArtistType.Group &&
+                artist.groupArtists?.filter((g) => g.current)?.length) ? (
                 <InfoRow
                   label={
-                    artist.type === ArtistType.Person ? 'Member Of' : 'Members'
+                    artist.type === ArtistType.Person ? 'Groups' : 'Members'
                   }
                 >
-                  <Markdown variant="compact">
-                    {artist.type === ArtistType.Person
-                      ? artist.memberOf
-                      : artist.members}
-                  </Markdown>
+                  <ArtistsLinks
+                    artists={
+                      artist.type === ArtistType.Person
+                        ? artist.groups
+                            ?.filter((g) => g.current)
+                            .sort((a, b) =>
+                              a.group.name.localeCompare(b.group.name),
+                            )
+                            .map((g) => g.group)
+                        : artist.groupArtists
+                            ?.filter((g) => g.current)
+                            .sort((a, b) =>
+                              a.artist.name.localeCompare(b.artist.name),
+                            )
+                            .map((g) => g.artist)
+                    }
+                  />
                 </InfoRow>
               ) : null}
-              {artist.relatedArtists ? (
+              {(artist.type === ArtistType.Person &&
+                artist.groups?.filter((g) => !g.current)?.length) ||
+              (artist.type === ArtistType.Group &&
+                artist.groupArtists?.filter((g) => !g.current)?.length) ? (
+                <InfoRow
+                  label={
+                    artist.type === ArtistType.Person
+                      ? 'Former Groups'
+                      : 'Former Members'
+                  }
+                >
+                  <ArtistsLinks
+                    artists={
+                      artist.type === ArtistType.Person
+                        ? artist.groups
+                            ?.filter((g) => !g.current)
+                            .sort((a, b) =>
+                              a.group.name.localeCompare(b.group.name),
+                            )
+                            .map((g) => g.group)
+                        : artist.groupArtists
+                            ?.filter((g) => !g.current)
+                            .sort((a, b) =>
+                              a.artist.name.localeCompare(b.artist.name),
+                            )
+                            .map((g) => g.artist)
+                    }
+                  />
+                </InfoRow>
+              ) : null}
+
+              {artist.relatedArtists?.length > 0 ? (
                 <InfoRow label="Related Artists">
-                  <Markdown variant="compact">{artist.relatedArtists}</Markdown>
+                  <ArtistsLinks
+                    artists={artist.relatedArtists.sort((a, b) =>
+                      a.name.localeCompare(b.name),
+                    )}
+                  />
                 </InfoRow>
               ) : null}
-              {/* {artist.aka ? (
-                <InfoRow label="AKA">
-                  <Markdown variant="compact">{artist.aka}</Markdown>
-                </InfoRow>
-              ) : null} */}
               {artist.mainArtist ? (
                 <InfoRow label="Main Artist">
                   <ArtistsLinks artists={[artist.mainArtist]} />

@@ -103,22 +103,21 @@ export class SubmissionService {
   // --- ARTISTS
 
   async createArtistSubmission(
-    { type, note, mainArtistId, ...rest }: CreateArtistDto,
+    {
+      type,
+      note,
+      mainArtistId,
+      relatedArtistsIds,
+      groupArtists,
+      ...rest
+    }: CreateArtistDto,
     user: CurrentUserPayload,
   ) {
     let name = rest.name.trim();
     let nameLatin = rest.nameLatin?.trim();
-    let members;
-    let memberOf;
-    let aka;
-    let relatedArtists;
     let disambiguation;
 
     if (type !== ArtistType.Alias) {
-      members = rest.members?.trim();
-      memberOf = rest.memberOf?.trim();
-      aka = rest.aka?.trim();
-      relatedArtists = rest.relatedArtists?.trim();
       disambiguation = rest.disambiguation?.trim();
     }
 
@@ -151,28 +150,14 @@ export class SubmissionService {
 
     const artistSubmission = new ArtistSubmission();
 
-    const processedMembers =
-      await this.entitiesReferenceService.parseLinks(members);
-    const processedMemberOf =
-      await this.entitiesReferenceService.parseLinks(memberOf);
-    const processedAka = await this.entitiesReferenceService.parseLinks(aka);
-    const processedRelatedArtists =
-      await this.entitiesReferenceService.parseLinks(relatedArtists);
-
     artistSubmission.changes = {
       name,
       nameLatin,
       type,
       disambiguation,
-      members: processedMembers,
-      membersSource: members,
-      memberOf: processedMemberOf,
-      memberOfSource: memberOf,
-      relatedArtists: processedRelatedArtists,
-      relatedArtistsSource: relatedArtists,
-      aka: processedAka,
-      akaSource: aka,
       mainArtistId: type === ArtistType.Alias ? mainArtistId : undefined,
+      relatedArtistsIds: relatedArtistsIds,
+      groupArtists: groupArtists,
     };
     artistSubmission.submissionType = SubmissionType.CREATE;
     artistSubmission.submissionStatus =
@@ -200,7 +185,14 @@ export class SubmissionService {
 
   async updateArtistSubmission(
     artistId: string,
-    { type, note, mainArtistId, ...rest }: UpdateArtistDto,
+    {
+      type,
+      note,
+      mainArtistId,
+      relatedArtistsIds,
+      groupArtists,
+      ...rest
+    }: UpdateArtistDto,
     user: CurrentUserPayload,
   ) {
     if (user.contributorStatus === ContributorStatus.NOT_A_CONTRIBUTOR)
@@ -210,10 +202,29 @@ export class SubmissionService {
 
     const artist = await this.artistsRepository.findOne({
       where: { id: artistId },
-      relations: ['aliases'],
+      relations: ['aliases', 'related', 'relatedTo', 'groupArtists', 'groups'],
     });
 
     if (!artist) throw new NotFoundException();
+
+    if (
+      type !== ArtistType.Alias &&
+      relatedArtistsIds?.some((id) => id === artist.id)
+    ) {
+      throw new BadRequestException('Cannot link an artist to itself');
+    }
+
+    if (type === ArtistType.Group && artist.groups?.length > 0) {
+      throw new BadRequestException(
+        'Group artist cannot be updated to a group',
+      );
+    }
+
+    if (type === ArtistType.Alias && artist.aliases.length > 0) {
+      throw new BadRequestException(
+        'Main artist with aliases cannot be updated to an alias',
+      );
+    }
 
     const exist = await this.artistSubmissionRepository.findOne({
       where: {
@@ -230,35 +241,13 @@ export class SubmissionService {
 
     let name = rest.name.trim();
     let nameLatin = rest.nameLatin?.trim();
-    let members;
-    let memberOf;
-    let aka;
-    let relatedArtists;
     let disambiguation;
 
     if (type !== ArtistType.Alias) {
-      members = rest.members?.trim();
-      memberOf = rest.memberOf?.trim();
-      aka = rest.aka?.trim();
-      relatedArtists = rest.relatedArtists?.trim();
       disambiguation = rest.disambiguation?.trim();
     }
 
-    const processedMembers =
-      await this.entitiesReferenceService.parseLinks(members);
-    const processedMemberOf =
-      await this.entitiesReferenceService.parseLinks(memberOf);
-    const processedAka = await this.entitiesReferenceService.parseLinks(aka);
-    const processedRelatedArtists =
-      await this.entitiesReferenceService.parseLinks(relatedArtists);
-
     if (type === ArtistType.Alias) {
-      if (artist.aliases.length > 0) {
-        // can't update main artist (with aliases) to an alias
-        throw new BadRequestException(
-          'Main artist with aliases cannot be updated to an alias',
-        );
-      }
       if (mainArtistId === artistId) {
         throw new BadRequestException('Cannot link an artist to itself');
       }
@@ -279,30 +268,35 @@ export class SubmissionService {
       nameLatin,
       type,
       disambiguation,
-      members: processedMembers,
-      membersSource: members,
-      memberOf: processedMemberOf,
-      memberOfSource: memberOf,
-      relatedArtists: processedRelatedArtists,
-      relatedArtistsSource: relatedArtists,
-      aka: processedAka,
-      akaSource: aka,
       mainArtistId: type === ArtistType.Alias ? mainArtistId : undefined,
+      relatedArtistsIds: relatedArtistsIds,
+      groupArtists: groupArtists?.map((ga) => ({
+        artistId: ga.artistId,
+        current: ga.current,
+      })),
     };
     as.original = {
       name: artist.name,
       nameLatin: artist.nameLatin,
       type: artist.type,
       disambiguation: artist.disambiguation,
+      mainArtistId: artist.mainArtistId,
+      relatedArtistsIds: [
+        ...artist.related.map((ra) => ra.sourceId),
+        ...artist.relatedTo.map((ra) => ra.targetId),
+      ],
+      // @deprecated
       members: artist.members,
       membersSource: artist.membersSource,
       memberOf: artist.memberOf,
       memberOfSource: artist.memberOfSource,
       relatedArtists: artist.relatedArtists,
       relatedArtistsSource: artist.relatedArtistsSource,
-      aka: artist.aka,
-      akaSource: artist.akaSource,
-      mainArtistId: artist.mainArtistId,
+      // ...
+      groupArtists: artist.groupArtists?.map((ga) => ({
+        artistId: ga.artistId,
+        current: ga.current,
+      })),
     };
     as.submissionType = SubmissionType.UPDATE;
     as.submissionStatus = SubmissionStatus.OPEN;
@@ -1155,6 +1149,12 @@ export class SubmissionService {
 
   // --- Query submissions
 
+  private resolveEntities(ids: string[], source: any[]) {
+    return (
+      ids?.map((id) => source.find((e) => e.id === id)).filter(Boolean) || []
+    );
+  }
+
   async buildReleaseSubmission(submissions: ReleaseSubmission[]) {
     const allArtistIds = [
       ...new Set(
@@ -1199,18 +1199,15 @@ export class SubmissionService {
       this.usersService.getUsersByIds(uniqueUserIds),
     ]);
 
-    const resolveEntities = (ids: string[], source: any[]) =>
-      ids?.map((id) => source.find((e) => e.id === id)).filter(Boolean) || [];
-
     return {
       releases: submissions.map((rs) => {
         const changes = {
           ...rs.changes,
           type: ReleaseType[rs.changes.type],
           imageUrl: this.imagesService.getImageUrl(rs.changes.imagePath),
-          artists: resolveEntities(rs.changes.artistsIds, artists),
-          labels: resolveEntities(rs.changes.labelsIds, labels),
-          languages: resolveEntities(rs.changes.languagesIds, languages),
+          artists: this.resolveEntities(rs.changes.artistsIds, artists),
+          labels: this.resolveEntities(rs.changes.labelsIds, labels),
+          languages: this.resolveEntities(rs.changes.languagesIds, languages),
           artistsIds: undefined,
           labelsIds: undefined,
           languagesIds: undefined,
@@ -1221,9 +1218,12 @@ export class SubmissionService {
               ...rs.original,
               type: ReleaseType[rs.original.type],
               imageUrl: this.imagesService.getImageUrl(rs.original.imagePath),
-              artists: resolveEntities(rs.original.artistsIds, artists),
-              labels: resolveEntities(rs.original.labelsIds, labels),
-              languages: resolveEntities(rs.original.languagesIds, languages),
+              artists: this.resolveEntities(rs.original.artistsIds, artists),
+              labels: this.resolveEntities(rs.original.labelsIds, labels),
+              languages: this.resolveEntities(
+                rs.original.languagesIds,
+                languages,
+              ),
               artistsIds: undefined,
               labelsIds: undefined,
               languagesIds: undefined,
@@ -1352,30 +1352,59 @@ export class SubmissionService {
       commentsCount.map((item) => [item.entityId, item.count]),
     );
 
-    const mainArtistIds = [
-      ...new Set(rss.map((rs) => rs.changes.mainArtistId)),
-      ...new Set(rss.map((rs) => rs.original?.mainArtistId)),
+    const allArtistsIds = [
+      ...new Set([
+        ...rss.map((rs) => rs.changes.mainArtistId),
+        ...rss.map((rs) => rs.original?.mainArtistId),
+        ...rss.flatMap((rs) => rs.changes.relatedArtistsIds),
+        ...rss.flatMap((rs) => rs.original?.relatedArtistsIds),
+        ...rss.flatMap((rs) =>
+          rs.changes.groupArtists?.map((ga) => ga.artistId),
+        ),
+        ...rss.flatMap((rs) =>
+          rs.original?.groupArtists?.map((ga) => ga.artistId),
+        ),
+      ]),
     ];
 
-    const mainArtists = await this.artistsRepository.find({
-      where: { id: In(mainArtistIds) },
+    const artists = await this.artistsRepository.find({
+      where: { id: In(allArtistsIds) },
     });
 
-    const mainArtistsMap = new Map(
-      mainArtists.map((artist) => [artist.id, artist]),
-    );
+    const artistsMap = new Map(artists.map((artist) => [artist.id, artist]));
 
     return {
+      // @ts-ignore
       artists: rss.map(({ ...rs }) => ({
         ...rs,
         changes: {
           ...rs.changes,
-          mainArtist: mainArtistsMap.get(rs.changes.mainArtistId) || null,
+          mainArtist: artistsMap.get(rs.changes.mainArtistId) || null,
+          // compatibility with relatedArtists string field
+          relatedArtists:
+            rs.changes.relatedArtistsIds?.length > 0
+              ? this.resolveEntities(rs.changes.relatedArtistsIds, artists)
+              : rs.changes.relatedArtists,
+          groupArtists: rs.changes.groupArtists?.map((ga) => ({
+            artistId: ga.artistId,
+            current: ga.current,
+            artist: artistsMap.get(ga.artistId) || null,
+          })),
         },
         original: rs.original
           ? {
               ...rs.original,
-              mainArtist: mainArtistsMap.get(rs.original.mainArtistId) || null,
+              mainArtist: artistsMap.get(rs.original.mainArtistId) || null,
+              // compatibility with relatedArtists string field
+              relatedArtists:
+                rs.original.relatedArtistsIds?.length > 0
+                  ? this.resolveEntities(rs.original.relatedArtistsIds, artists)
+                  : rs.original.relatedArtists,
+              groupArtists: rs.original.groupArtists?.map((ga) => ({
+                artistId: ga.artistId,
+                current: ga.current,
+                artist: artistsMap.get(ga.artistId) || null,
+              })),
             }
           : null,
         user: users.find((u) => u.id === rs.userId),

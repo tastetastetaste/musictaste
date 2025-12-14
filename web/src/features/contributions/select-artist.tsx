@@ -4,14 +4,21 @@ import { ControllerRenderProps } from 'react-hook-form';
 import { Select } from '../../components/inputs/select';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
+import { IArtistSummary } from 'shared';
 
 export const SelectArtist = forwardRef(
   (
     {
       updateArtistsIds,
+      placeholder = 'Artist/Band',
       onChange,
+      filterCondition,
       ...field
-    }: ControllerRenderProps<any, 'artists'> & { updateArtistsIds: any },
+    }: ControllerRenderProps<any, 'artists' | 'relatedArtists'> & {
+      updateArtistsIds: any;
+      placeholder?: string;
+      filterCondition?: (artist: IArtistSummary) => boolean;
+    },
     ref,
   ) => {
     const [query, setQuery] = useState('');
@@ -45,7 +52,10 @@ export const SelectArtist = forwardRef(
         isMulti={true}
         options={
           data?.artists &&
-          data.artists.map(({ id, name, nameLatin, disambiguation }) => ({
+          (filterCondition
+            ? data.artists.filter(filterCondition)
+            : data.artists
+          ).map(({ id, name, nameLatin, disambiguation }) => ({
             value: id,
             label:
               name +
@@ -53,7 +63,7 @@ export const SelectArtist = forwardRef(
               (disambiguation ? ` (${disambiguation})` : ''),
           }))
         }
-        placeholder="Artist/Band"
+        placeholder={placeholder}
         onInputChange={(v: any) => {
           if (v !== '') {
             setQuery(v);

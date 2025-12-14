@@ -1,7 +1,11 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ArtistType, IArtistResponse } from 'shared';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import {
   ArtistChanges,
   ArtistSubmission,
@@ -11,6 +15,9 @@ import { ReleaseArtist } from '../../db/entities/release-artist.entity';
 import { genId } from '../common/genId';
 import { EntitiesService } from '../entities/entities.service';
 import { ReleasesService } from '../releases/releases.service';
+import { RelatedArtist } from '../../db/entities/related-artist.entity';
+import { GroupArtist } from '../../db/entities/group-artist.entity';
+import { compareIds } from '../common/compareIds';
 
 @Injectable()
 export class ArtistsService {
@@ -20,6 +27,10 @@ export class ArtistsService {
     private artistSubmissionRepository: Repository<ArtistSubmission>,
     @InjectRepository(ReleaseArtist)
     private releaseArtistRepository: Repository<ReleaseArtist>,
+    @InjectRepository(RelatedArtist)
+    private relatedArtistRepository: Repository<RelatedArtist>,
+    @InjectRepository(GroupArtist)
+    private groupArtistRepository: Repository<GroupArtist>,
     private releasesService: ReleasesService,
     private entitiesService: EntitiesService,
   ) {}
@@ -27,15 +38,46 @@ export class ArtistsService {
   async findOneWithReleases(id: string): Promise<IArtistResponse> {
     const artist = await this.artistsRepository.findOne({
       where: { id },
-      relations: ['mainArtist', 'aliases'],
+      relations: ['aliases', 'related', 'relatedTo', 'groupArtists', 'groups'],
     });
 
     if (!artist) throw new NotFoundException();
 
     const releases = await this.releasesService.getReleasesByArtist(artist.id);
 
+    const linkedArtistsIds = [
+      ...new Set([
+        artist.mainArtistId,
+        ...artist.relatedTo?.flatMap((ra) => ra.targetId),
+        ...artist.related?.flatMap((ra) => ra.sourceId),
+        ...artist.groupArtists?.flatMap((ga) => ga.artistId),
+        ...artist.groups?.flatMap((ga) => ga.groupId),
+      ]),
+    ];
+
+    const linkedArtists = await this.artistsRepository.find({
+      where: { id: In(linkedArtistsIds) },
+    });
+
+    const linkedArtistsMap = new Map(linkedArtists.map((a) => [a.id, a]));
+
     return {
-      artist,
+      artist: {
+        ...artist,
+        mainArtist: linkedArtistsMap.get(artist.mainArtistId),
+        relatedArtists: [
+          ...artist.relatedTo?.map((ra) => linkedArtistsMap.get(ra.targetId)),
+          ...artist.related?.map((ra) => linkedArtistsMap.get(ra.sourceId)),
+        ],
+        groupArtists: artist.groupArtists.map((ga) => ({
+          artist: linkedArtistsMap.get(ga.artistId),
+          current: ga.current,
+        })),
+        groups: artist.groups?.map((ga) => ({
+          group: linkedArtistsMap.get(ga.groupId),
+          current: ga.current,
+        })),
+      },
       releases,
     };
   }
@@ -45,15 +87,9 @@ export class ArtistsService {
     nameLatin,
     type,
     disambiguation,
-    members,
-    membersSource,
-    memberOf,
-    memberOfSource,
-    relatedArtists,
-    relatedArtistsSource,
-    aka,
-    akaSource,
     mainArtistId,
+    relatedArtistsIds,
+    groupArtists,
   }: ArtistChanges) {
     const id = genId();
 
@@ -64,18 +100,37 @@ export class ArtistsService {
       nameLatin,
       type,
       disambiguation,
-      members,
-      membersSource,
-      memberOf,
-      memberOfSource,
-      relatedArtists,
-      relatedArtistsSource,
-      aka,
-      akaSource,
       mainArtistId,
     });
 
     const artist = await this.artistsRepository.findOne({ where: { id } });
+
+    if (
+      type !== ArtistType.Alias &&
+      relatedArtistsIds &&
+      relatedArtistsIds.length > 0
+    ) {
+      const uniqueIds = [...new Set(relatedArtistsIds)];
+      await this.relatedArtistRepository.insert(
+        uniqueIds.map((id) => {
+          const [id1, id2] = [artist.id, id].sort();
+          return {
+            sourceId: id1,
+            targetId: id2,
+          };
+        }),
+      );
+    }
+
+    if (type === ArtistType.Group && groupArtists && groupArtists.length > 0) {
+      await this.groupArtistRepository.insert(
+        groupArtists.map((ga) => ({
+          groupId: artist.id,
+          artistId: ga.artistId,
+          current: ga.current,
+        })),
+      );
+    }
 
     return artist;
   }
@@ -87,15 +142,9 @@ export class ArtistsService {
       nameLatin,
       type,
       disambiguation,
-      members,
-      membersSource,
-      memberOf,
-      memberOfSource,
-      relatedArtists,
-      relatedArtistsSource,
-      aka,
-      akaSource,
       mainArtistId,
+      relatedArtistsIds,
+      groupArtists,
     },
   }: {
     artistId: string;
@@ -103,23 +152,130 @@ export class ArtistsService {
   }): Promise<Artist> {
     const artist = await this.artistsRepository.findOne({
       where: { id: artistId },
+      relations: ['aliases', 'related', 'relatedTo', 'groupArtists', 'groups'],
     });
 
     if (!artist) throw new NotFoundException();
+
+    if (type === ArtistType.Group && artist.groups?.length > 0) {
+      throw new BadRequestException(
+        'Group artist cannot be updated to a group',
+      );
+    }
+
+    if (type === ArtistType.Alias && artist.aliases.length > 0) {
+      throw new BadRequestException(
+        'Main artist with aliases cannot be updated to an alias',
+      );
+    }
 
     artist.name = name;
     artist.nameLatin = nameLatin;
     artist.type = type;
     artist.disambiguation = disambiguation;
-    artist.members = members;
-    artist.membersSource = membersSource;
-    artist.memberOf = memberOf;
-    artist.memberOfSource = memberOfSource;
-    artist.relatedArtists = relatedArtists;
-    artist.relatedArtistsSource = relatedArtistsSource;
-    artist.aka = aka;
-    artist.akaSource = akaSource;
     artist.mainArtistId = type === ArtistType.Alias ? mainArtistId : null;
+
+    if (type !== ArtistType.Alias) {
+      const currentRelatedIds = [
+        ...(artist.relatedTo?.map((ra) => ra.targetId) || []),
+        ...(artist.related?.map((ra) => ra.sourceId) || []),
+      ];
+
+      const { addedIds, removedIds } = compareIds(
+        relatedArtistsIds,
+        currentRelatedIds,
+      );
+
+      if (addedIds.length > 0) {
+        const uniqueIds = [...new Set(addedIds)];
+
+        await this.relatedArtistRepository.insert(
+          uniqueIds.map((id) => {
+            const [id1, id2] = [artist.id, id].sort();
+            return {
+              sourceId: id1,
+              targetId: id2,
+            };
+          }),
+        );
+      }
+      if (removedIds.length > 0) {
+        await this.relatedArtistRepository.delete([
+          ...removedIds.map((id) => ({
+            sourceId: artist.id,
+            targetId: id,
+          })),
+          ...removedIds.map((id) => ({
+            sourceId: id,
+            targetId: artist.id,
+          })),
+        ]);
+      }
+    }
+
+    if (type === ArtistType.Group) {
+      const {
+        addedIds: addedGroupArtistIds,
+        removedIds: removedGroupArtistIds,
+        remainingIds: remainingGroupArtistIds,
+      } = compareIds(
+        groupArtists?.map((ga) => ga.artistId),
+        artist.groupArtists?.map((ga) => ga.artistId),
+      );
+
+      if (addedGroupArtistIds.length > 0) {
+        await this.groupArtistRepository.insert(
+          addedGroupArtistIds.map((id) => ({
+            groupId: artist.id,
+            artistId: id,
+            current: groupArtists.find((ga) => ga.artistId === id)?.current,
+          })),
+        );
+      }
+      if (removedGroupArtistIds.length > 0) {
+        await this.groupArtistRepository.delete(
+          removedGroupArtistIds.map((id) => ({
+            groupId: artist.id,
+            artistId: id,
+          })),
+        );
+      }
+
+      if (remainingGroupArtistIds.length > 0) {
+        for (const id of remainingGroupArtistIds) {
+          const prevCurrent = artist.groupArtists?.find(
+            (ga) => ga.artistId === id,
+          )?.current;
+          const newCurrent = groupArtists.find(
+            (ga) => ga.artistId === id,
+          )?.current;
+
+          if (prevCurrent !== newCurrent) {
+            await this.groupArtistRepository.update(
+              {
+                groupId: artist.id,
+                artistId: id,
+              },
+              {
+                current: newCurrent,
+              },
+            );
+          }
+        }
+      }
+    }
+    if (type !== ArtistType.Group && artist.groupArtists.length) {
+      await this.groupArtistRepository.delete(
+        artist.groupArtists.map((ga) => ({
+          groupId: artist.id,
+          artistId: ga.artistId,
+        })),
+      );
+    }
+    artist.groupArtists = undefined;
+    artist.groups = undefined;
+    artist.related = undefined;
+    artist.relatedTo = undefined;
     return this.artistsRepository.save(artist);
   }
 

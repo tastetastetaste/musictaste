@@ -13,7 +13,7 @@ export const InfoRow: React.FC<InfoRowProps> = ({ label, children }) => {
       <Typography
         color="sub"
         css={{
-          flex: '100px 0 0',
+          flex: '120px 0 0',
         }}
       >
         {label}

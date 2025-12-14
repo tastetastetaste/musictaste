@@ -45,6 +45,8 @@ export class SearchService {
               'a.id',
               'a.name',
               'a.nameLatin',
+              'a.type',
+              'a.disambiguation',
               'r.explicitCoverArt',
             ])
             .addSelect(
@@ -79,6 +81,7 @@ export class SearchService {
               'artist.name',
               'artist.nameLatin',
               'artist.disambiguation',
+              'artist.type',
             ])
             .addSelect(
               `ts_rank(
@@ -87,14 +90,13 @@ export class SearchService {
               )`,
               'search_rank',
             )
-            .addSelect('artist.type', 'type')
             .addSelect('LENGTH(artist.name)', 'name_length')
             .where(
               `to_tsvector('simple', unaccent(artist.name || ' ' || COALESCE(artist.nameLatin, ''))) @@ plainto_tsquery('simple', unaccent(:query))`,
             )
             .leftJoinAndSelect('artist.mainArtist', 'ma')
             .orderBy('search_rank', 'DESC')
-            .addOrderBy('type', 'ASC')
+            .addOrderBy('artist.type', 'ASC')
             .addOrderBy('name_length', 'ASC')
             .setParameter('query', q)
             .take(take)

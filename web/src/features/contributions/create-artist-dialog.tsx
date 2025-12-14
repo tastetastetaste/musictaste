@@ -8,7 +8,6 @@ import { Stack } from '../../components/flex/stack';
 import { FormInputError } from '../../components/inputs/form-input-error';
 import { Input } from '../../components/inputs/input';
 import { Select } from '../../components/inputs/select';
-import { TextareaWithPreview } from '../../components/inputs/textarea-with-preview';
 import { Link } from '../../components/links/link';
 import { Typography } from '../../components/typography';
 import { api } from '../../utils/api';
@@ -16,9 +15,12 @@ import { cacheKeys } from '../../utils/cache-keys';
 import { ArtistTypeOptions } from './shared';
 import { Textarea } from '../../components/inputs/textarea';
 import { SelectSingleArtist } from './select-single-artist';
+import { SelectGroupArtist } from './select-group-artist';
+import { SelectArtist } from './select-artist';
 
 export interface CreateArtistFormValues extends CreateArtistDto {
   mainArtist: { value: string; label: string };
+  relatedArtists: { value: string; label: string }[];
 }
 
 const CreateArtistDialog: React.FC<{
@@ -31,11 +33,8 @@ const CreateArtistDialog: React.FC<{
     name: '',
     nameLatin: '',
     type: ArtistType.Person,
-    members: '',
-    memberOf: '',
     disambiguation: '',
-    aka: '',
-    relatedArtists: '',
+    relatedArtists: [],
     mainArtistId: '',
     note: '',
   };
@@ -115,30 +114,25 @@ const CreateArtistDialog: React.FC<{
           )}
           {artistType === ArtistType.Group && (
             <>
-              <TextareaWithPreview
-                {...register('members')}
-                placeholder="Members"
-                rows={2}
-              />
-              <FormInputError error={errors.members} />
-            </>
-          )}
-          {artistType === ArtistType.Person && (
-            <>
-              <TextareaWithPreview
-                {...register('memberOf')}
-                placeholder="Member Of"
-                rows={2}
-              />
-              <FormInputError error={errors.memberOf} />
+              <SelectGroupArtist control={control} register={register} />
+              <FormInputError error={errors.groupArtists} />
             </>
           )}
           {artistType !== ArtistType.Alias && (
             <>
-              <TextareaWithPreview
-                {...register('relatedArtists')}
-                placeholder="Related Artists"
-                rows={2}
+              <Controller
+                name="relatedArtists"
+                control={control}
+                render={({ field }) => (
+                  <SelectArtist
+                    {...field}
+                    placeholder="Related Artists"
+                    filterCondition={(a) => a.type !== ArtistType.Alias}
+                    updateArtistsIds={(value) =>
+                      setValue('relatedArtistsIds', value)
+                    }
+                  />
+                )}
               />
               <FormInputError error={errors.relatedArtists} />
             </>
@@ -162,12 +156,6 @@ const CreateArtistDialog: React.FC<{
               />
             </>
           )}
-          {/* <TextareaWithPreview
-            {...register('aka')}
-            placeholder="AKA"
-            rows={2}
-          />
-          <FormInputError error={errors.aka} /> */}
           <Textarea {...register('note')} placeholder="Note/source" rows={2} />
           <FormInputError error={errors.note} />
           <Button variant="main" type="submit" disabled={isLoading}>

@@ -1,5 +1,10 @@
 import { IsString, IsOptional, IsEnum } from 'class-validator';
-import { ArtistType, SubmissionStatus, SubmissionType } from 'shared';
+import {
+  ArtistType,
+  GroupArtistDto,
+  SubmissionStatus,
+  SubmissionType,
+} from 'shared';
 import {
   Column,
   CreateDateColumn,
@@ -12,6 +17,7 @@ import { SharedBaseEntity } from '../shared/base-entity';
 import { ArtistSubmissionVote } from './artist-submission-vote.entity';
 import { Artist } from './artist.entity';
 import { User } from './user.entity';
+import { Type } from 'class-transformer';
 
 export class ArtistChanges {
   @IsString()
@@ -28,34 +34,42 @@ export class ArtistChanges {
   @IsOptional()
   disambiguation?: string;
 
+  // @deprecated
   @IsString()
   @IsOptional()
   members?: string;
 
+  // @deprecated
   @IsString()
   @IsOptional()
   membersSource?: string;
 
+  // @deprecated
   @IsString()
   @IsOptional()
   memberOf?: string;
 
+  // @deprecated
   @IsString()
   @IsOptional()
   memberOfSource?: string;
 
+  // @deprecated
   @IsString()
   @IsOptional()
   relatedArtists?: string;
 
+  // @deprecated
   @IsString()
   @IsOptional()
   relatedArtistsSource?: string;
 
+  // @deprecated
   @IsString()
   @IsOptional()
   aka?: string;
 
+  // @deprecated
   @IsString()
   @IsOptional()
   akaSource?: string;
@@ -63,6 +77,14 @@ export class ArtistChanges {
   @IsString()
   @IsOptional()
   mainArtistId?: string;
+
+  @Type(() => GroupArtistDto)
+  @IsOptional()
+  groupArtists: GroupArtistDto[];
+
+  @IsString({ each: true })
+  @IsOptional()
+  relatedArtistsIds: string[];
 }
 
 @Entity()

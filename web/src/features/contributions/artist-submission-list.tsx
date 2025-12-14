@@ -90,33 +90,91 @@ export const ArtistSubmissionItem = ({
         renderValue={(v) => <span>{v}</span>}
       />
       <SubmissionField
-        label="Members"
-        originalValue={original?.members}
-        changedValue={changes?.members}
+        label="Group Artists"
+        originalValue={original?.groupArtists?.sort((a, b) =>
+          a?.artist?.name.localeCompare(b?.artist?.name),
+        )}
+        changedValue={changes?.groupArtists?.sort((a, b) =>
+          a?.artist?.name.localeCompare(b?.artist?.name),
+        )}
         showOriginal={hasOriginal}
-        renderValue={(v) => <Markdown variant="compact">{v}</Markdown>}
+        renderValue={(value) => (
+          <span>
+            {value
+              .map(
+                (a) =>
+                  a?.artist?.name +
+                  (a?.artist?.nameLatin ? ` [${a?.artist?.nameLatin}]` : '') +
+                  (!a?.current ? ' (former)' : ''),
+              )
+              .join(', ')}
+          </span>
+        )}
       />
-      <SubmissionField
-        label="Member Of"
-        originalValue={original?.memberOf}
-        changedValue={changes?.memberOf}
-        showOriginal={hasOriginal}
-        renderValue={(v) => <Markdown variant="compact">{v}</Markdown>}
-      />
-      <SubmissionField
-        label="Related Artists"
-        originalValue={original?.relatedArtists}
-        changedValue={changes?.relatedArtists}
-        showOriginal={hasOriginal}
-        renderValue={(v) => <Markdown variant="compact">{v}</Markdown>}
-      />
-      {/* <SubmissionField
-        label="AKA"
-        originalValue={original?.aka}
-        changedValue={changes?.aka}
-        showOriginal={hasOriginal}
-        renderValue={(v) => <Markdown variant="compact">{v}</Markdown>}
-      /> */}
+
+      {(typeof changes?.relatedArtists === 'object' ||
+        typeof original?.relatedArtists === 'object') && (
+        <SubmissionField
+          label="Related Artists"
+          originalValue={
+            typeof original?.relatedArtists === 'object'
+              ? original?.relatedArtists?.sort((a, b) =>
+                  a?.name.localeCompare(b?.name),
+                )
+              : undefined
+          }
+          changedValue={
+            typeof changes?.relatedArtists === 'object'
+              ? changes?.relatedArtists?.sort((a, b) =>
+                  a?.name.localeCompare(b?.name),
+                )
+              : undefined
+          }
+          showOriginal={hasOriginal}
+          renderValue={(value) => (
+            <span>
+              {value
+                .map(
+                  (a) => a?.name + (a?.nameLatin ? ` [${a?.nameLatin}]` : ''),
+                )
+                .join(', ')}
+            </span>
+          )}
+        />
+      )}
+      {/* TODO: remove deprecated fields */}
+      {/* @ts-ignore */}
+      {(typeof changes?.members === 'string' ||
+        // @ts-ignore
+        typeof original?.members === 'string') && (
+        <SubmissionField
+          label="Members (deprecated)"
+          // @ts-ignore
+          originalValue={original?.members}
+          // @ts-ignore
+          changedValue={changes?.members}
+          showOriginal={hasOriginal}
+          renderValue={(v) => <Markdown variant="compact">{v}</Markdown>}
+        />
+      )}
+      {(typeof changes?.relatedArtists === 'string' ||
+        typeof original?.relatedArtists === 'string') && (
+        <SubmissionField
+          label="Related Artists (deprecated)"
+          originalValue={
+            typeof original?.relatedArtists === 'string'
+              ? original?.relatedArtists
+              : undefined
+          }
+          changedValue={
+            typeof changes?.relatedArtists === 'string'
+              ? changes?.relatedArtists
+              : undefined
+          }
+          showOriginal={hasOriginal}
+          renderValue={(v) => <Markdown variant="compact">{v}</Markdown>}
+        />
+      )}
       {submission.note && (
         <SubmissionField
           label="Note"

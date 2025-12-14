@@ -37,6 +37,7 @@ import { UsersService } from '../users/users.service';
 import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
 import { RedisService } from '../redis/redis.service';
 import { normalizeDate } from '../common/normalizeDate';
+import { compareIds } from '../common/compareIds';
 
 export type ReleaseCountType =
   | 'ratings'
@@ -641,7 +642,7 @@ export class ReleasesService {
         select: ['artistId'],
       });
 
-      const { addedIds, removedIds } = this.compareIds(
+      const { addedIds, removedIds } = compareIds(
         artistsIds,
         releaseArtists.map((ra) => ra.artistId),
       );
@@ -675,11 +676,10 @@ export class ReleasesService {
       select: ['labelId'],
     });
 
-    const { addedIds: addLabelIds, removedIds: removeLabelIds } =
-      this.compareIds(
-        labelsIds,
-        releaseLabels.map((rl) => rl.labelId),
-      );
+    const { addedIds: addLabelIds, removedIds: removeLabelIds } = compareIds(
+      labelsIds,
+      releaseLabels.map((rl) => rl.labelId),
+    );
 
     addLabelIds.length > 0 &&
       addLabelIds.forEach(async (addedId) => {
@@ -705,7 +705,7 @@ export class ReleasesService {
     });
 
     const { addedIds: addLanguageIds, removedIds: removeLanguageIds } =
-      this.compareIds(
+      compareIds(
         languagesIds,
         releaseLanguages.map((rl) => rl.languageId),
       );
@@ -821,16 +821,6 @@ export class ReleasesService {
         )
         .execute();
     }
-  }
-
-  private compareIds(newIds: string[] = [], currentIds: string[] = []) {
-    const addedIds = newIds.filter(
-      (id) => !currentIds.some((appliedId) => appliedId === id),
-    );
-    const removedIds = currentIds.filter(
-      (appliedId) => !newIds.some((id) => id === appliedId),
-    );
-    return { addedIds, removedIds };
   }
 
   async mergeReleases(mergeFromId: string, mergeIntoId: string) {

@@ -10,6 +10,8 @@ import {
 import { ArtistSubmission } from './artist-submission.entity';
 import { SharedBaseEntity } from '../shared/base-entity';
 import { ReleaseArtist } from './release-artist.entity';
+import { GroupArtist } from './group-artist.entity';
+import { RelatedArtist } from './related-artist.entity';
 
 @Entity()
 export class Artist extends SharedBaseEntity {
@@ -25,27 +27,35 @@ export class Artist extends SharedBaseEntity {
   @Column({ nullable: true })
   disambiguation?: string;
 
+  // @deprecated
   @Column({ nullable: true })
   members?: string;
 
+  // @deprecated
   @Column({ nullable: true })
   membersSource?: string;
 
+  // @deprecated
   @Column({ nullable: true })
   memberOf?: string;
 
+  // @deprecated
   @Column({ nullable: true })
   memberOfSource?: string;
 
+  // @deprecated
   @Column({ nullable: true })
   relatedArtists?: string;
 
+  // @deprecated
   @Column({ nullable: true })
   relatedArtistsSource?: string;
 
+  // @deprecated
   @Column({ nullable: true })
   aka?: string;
 
+  // @deprecated
   @Column({ nullable: true })
   akaSource?: string;
 
@@ -58,6 +68,18 @@ export class Artist extends SharedBaseEntity {
 
   @OneToMany(() => Artist, (artist) => artist.mainArtist)
   aliases: Artist[];
+
+  @OneToMany(() => GroupArtist, (ga) => ga.artist)
+  groups: GroupArtist[];
+
+  @OneToMany(() => GroupArtist, (ga) => ga.group)
+  groupArtists: GroupArtist[];
+
+  @OneToMany(() => RelatedArtist, (ra) => ra.source)
+  relatedTo: RelatedArtist[];
+
+  @OneToMany(() => RelatedArtist, (ra) => ra.target)
+  related: RelatedArtist[];
 
   @OneToMany(() => ReleaseArtist, (ra) => ra.artist)
   releaseConnection: Promise<ReleaseArtist[]>;

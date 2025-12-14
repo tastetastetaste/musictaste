@@ -1,4 +1,9 @@
-import { IArtistSummary, IReleaseSummary } from 'shared';
+import {
+  IArtistSummary,
+  IGenreSummary,
+  ILabelSummary,
+  IReleaseSummary,
+} from 'shared';
 import { Link } from '../../components/links/link';
 import {
   getArtistPath,
@@ -29,7 +34,7 @@ export const ArtistSearchLink = ({ artist }: { artist: IArtistSummary }) => (
   </Link>
 );
 
-export const LabelSearchLink = ({ label }: { label: IArtistSummary }) => (
+export const LabelSearchLink = ({ label }: { label: ILabelSummary }) => (
   <Link to={getLabelPath({ labelId: label.id })}>
     {label.name}{' '}
     {label.nameLatin ? (
@@ -40,7 +45,7 @@ export const LabelSearchLink = ({ label }: { label: IArtistSummary }) => (
   </Link>
 );
 
-export const GenreSearchLink = ({ genre }: { genre: IArtistSummary }) => (
+export const GenreSearchLink = ({ genre }: { genre: IGenreSummary }) => (
   <Link to={getGenrePath({ genreId: genre.id })}>{genre.name}</Link>
 );
 

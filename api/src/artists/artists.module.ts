@@ -7,10 +7,18 @@ import { EntitiesModule } from '../entities/entities.module';
 import { ReleasesModule } from '../releases/releases.module';
 import { ArtistsController } from './artists.controller';
 import { ArtistsService } from './artists.service';
+import { RelatedArtist } from '../../db/entities/related-artist.entity';
+import { GroupArtist } from '../../db/entities/group-artist.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Artist, ArtistSubmission, ReleaseArtist]),
+    TypeOrmModule.forFeature([
+      Artist,
+      ArtistSubmission,
+      ReleaseArtist,
+      RelatedArtist,
+      GroupArtist,
+    ]),
     ReleasesModule,
     EntitiesModule,
   ],

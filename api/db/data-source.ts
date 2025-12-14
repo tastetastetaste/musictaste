@@ -34,6 +34,8 @@ import { GenreSubmissionVote } from './entities/genre-submission-vote.entity';
 import { LabelSubmissionVote } from './entities/label-submission-vote.entity';
 import { ReleaseSubmissionVote } from './entities/release-submission-vote.entity';
 import { Notification } from './entities/notification.entity';
+import { GroupArtist } from './entities/group-artist.entity';
+import { RelatedArtist } from './entities/related-artist.entity';
 
 config();
 const configService = new ConfigService();
@@ -54,6 +56,8 @@ export const dataSourceOptions: DataSourceOptions = {
     ArtistSubmission,
     ArtistSubmissionVote,
     Artist,
+    GroupArtist,
+    RelatedArtist,
     GenreSubmission,
     GenreSubmissionVote,
     Genre,
