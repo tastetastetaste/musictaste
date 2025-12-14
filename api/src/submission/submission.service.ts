@@ -1440,36 +1440,54 @@ export class SubmissionService {
 
     const users = await this.usersService.getUsersByIds(uniqueUserIds);
 
-    const mainArtistIds = [
-      rs.changes.mainArtistId,
-      rs.original?.mainArtistId,
+    const allArtistsIds = [
+      ...new Set([
+        rs.changes.mainArtistId,
+        rs.original?.mainArtistId,
+        ...(rs.changes.relatedArtistsIds || []),
+        ...(rs.original?.relatedArtistsIds || []),
+        ...(rs.changes.groupArtists?.map((ga) => ga.artistId) || []),
+        ...(rs.original?.groupArtists?.map((ga) => ga.artistId) || []),
+      ]),
     ].filter(Boolean);
 
-    const mainArtists =
-      mainArtistIds.length > 0
+    const artists =
+      allArtistsIds.length > 0
         ? await this.artistsRepository.find({
-            where: { id: In(mainArtistIds) },
+            where: { id: In(allArtistsIds) },
           })
         : [];
 
-    const mainArtistsMap = new Map(
-      mainArtists.map((artist) => [artist.id, artist]),
-    );
+    const artistsMap = new Map(artists.map((artist) => [artist.id, artist]));
 
     return {
       ...rs,
       changes: {
         ...rs.changes,
-        mainArtist: rs.changes.mainArtistId
-          ? mainArtistsMap.get(rs.changes.mainArtistId) || null
-          : undefined,
+        mainArtist: artistsMap.get(rs.changes.mainArtistId) || null,
+        relatedArtists:
+          rs.changes.relatedArtistsIds?.length > 0
+            ? this.resolveEntities(rs.changes.relatedArtistsIds, artists)
+            : rs.changes.relatedArtists,
+        groupArtists: rs.changes.groupArtists?.map((ga) => ({
+          artistId: ga.artistId,
+          current: ga.current,
+          artist: artistsMap.get(ga.artistId) || null,
+        })),
       },
       original: rs.original
         ? {
             ...rs.original,
-            mainArtist: rs.original.mainArtistId
-              ? mainArtistsMap.get(rs.original.mainArtistId) || null
-              : undefined,
+            mainArtist: artistsMap.get(rs.original.mainArtistId) || null,
+            relatedArtists:
+              rs.original.relatedArtistsIds?.length > 0
+                ? this.resolveEntities(rs.original.relatedArtistsIds, artists)
+                : rs.original.relatedArtists,
+            groupArtists: rs.original.groupArtists?.map((ga) => ({
+              artistId: ga.artistId,
+              current: ga.current,
+              artist: artistsMap.get(ga.artistId) || null,
+            })),
           }
         : null,
       user: users.find((u) => u.id === rs.userId),
