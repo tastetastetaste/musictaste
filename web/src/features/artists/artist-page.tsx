@@ -259,18 +259,23 @@ const ArtistPage = () => {
                   ''
                 )}
               </Stack>
-              {(artist.type === ArtistType.Person &&
+              {((artist.type === ArtistType.Person ||
+                artist.type === ArtistType.Alias) &&
                 artist.groups?.filter((g) => g.current)?.length) ||
               (artist.type === ArtistType.Group &&
                 artist.groupArtists?.filter((g) => g.current)?.length) ? (
                 <InfoRow
                   label={
-                    artist.type === ArtistType.Person ? 'Groups' : 'Members'
+                    artist.type === ArtistType.Person ||
+                    artist.type === ArtistType.Alias
+                      ? 'Groups'
+                      : 'Members'
                   }
                 >
                   <ArtistsLinks
                     artists={
-                      artist.type === ArtistType.Person
+                      artist.type === ArtistType.Person ||
+                      artist.type === ArtistType.Alias
                         ? artist.groups
                             ?.filter((g) => g.current)
                             .sort((a, b) =>
@@ -287,20 +292,23 @@ const ArtistPage = () => {
                   />
                 </InfoRow>
               ) : null}
-              {(artist.type === ArtistType.Person &&
+              {((artist.type === ArtistType.Person ||
+                artist.type === ArtistType.Alias) &&
                 artist.groups?.filter((g) => !g.current)?.length) ||
               (artist.type === ArtistType.Group &&
                 artist.groupArtists?.filter((g) => !g.current)?.length) ? (
                 <InfoRow
                   label={
-                    artist.type === ArtistType.Person
+                    artist.type === ArtistType.Person ||
+                    artist.type === ArtistType.Alias
                       ? 'Former Groups'
                       : 'Former Members'
                   }
                 >
                   <ArtistsLinks
                     artists={
-                      artist.type === ArtistType.Person
+                      artist.type === ArtistType.Person ||
+                      artist.type === ArtistType.Alias
                         ? artist.groups
                             ?.filter((g) => !g.current)
                             .sort((a, b) =>
