@@ -778,7 +778,7 @@ export class ReleasesService {
               id: existingTrack.id,
               track: newTrack.track,
               title: newTrack.title,
-              durationMs: newTrack.durationMs,
+              durationMs: newTrack.durationMs || null,
               order,
             });
           }
