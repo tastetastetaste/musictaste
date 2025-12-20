@@ -136,7 +136,7 @@ const AddReleasePage = () => {
         <form
           onSubmit={handleSubmit((data) => handleCreateRelease(data))}
           onKeyDown={(e) => {
-            if (e.key === 'Enter') {
+            if (e.key === 'Enter' && !e.shiftKey) {
               e.preventDefault();
             }
           }}

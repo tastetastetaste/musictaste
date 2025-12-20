@@ -142,7 +142,7 @@ const EditArtistPage = () => {
             updateArtist({ id: artistId, data }),
           )}
           onKeyDown={(e) => {
-            if (e.key === 'Enter') {
+            if (e.key === 'Enter' && !e.shiftKey) {
               e.preventDefault();
             }
           }}

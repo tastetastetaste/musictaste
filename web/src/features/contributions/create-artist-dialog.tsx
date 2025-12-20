@@ -74,7 +74,7 @@ const CreateArtistDialog: React.FC<{
       <form
         onSubmit={handleSubmit(createArtist)}
         onKeyDown={(e) => {
-          if (e.key === 'Enter') {
+          if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
           }
         }}

@@ -101,7 +101,7 @@ const EditGenrePage = () => {
         <form
           onSubmit={handleSubmit((data) => updateGenre({ id: genreId, data }))}
           onKeyDown={(e) => {
-            if (e.key === 'Enter') {
+            if (e.key === 'Enter' && !e.shiftKey) {
               e.preventDefault();
             }
           }}

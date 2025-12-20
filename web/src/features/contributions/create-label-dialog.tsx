@@ -48,7 +48,7 @@ const CreateLabelDialog: React.FC<{
       <form
         onSubmit={handleSubmit(createLabel)}
         onKeyDown={(e) => {
-          if (e.key === 'Enter') {
+          if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
           }
         }}

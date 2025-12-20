@@ -100,7 +100,7 @@ const EditLabelPage = () => {
         <form
           onSubmit={handleSubmit((data) => updateLabel({ id: labelId, data }))}
           onKeyDown={(e) => {
-            if (e.key === 'Enter') {
+            if (e.key === 'Enter' && !e.shiftKey) {
               e.preventDefault();
             }
           }}
