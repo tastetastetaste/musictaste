@@ -75,7 +75,6 @@ export const useReleaseActions = (releaseId: string) => {
     } else if (typeof value === 'number') {
       await createEntryMu({ releaseId, rating: value });
     }
-    qc.refetchQueries(cacheKeys.releaseKey(releaseId));
     qc.invalidateQueries(cacheKeys.entriesKey({}));
     qc.invalidateQueries(cacheKeys.entriesKey({ withReview: true }));
   };
