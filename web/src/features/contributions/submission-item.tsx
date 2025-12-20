@@ -1,5 +1,9 @@
 import { useTheme } from '@emotion/react';
-import { IconArrowBigDown, IconArrowBigUp } from '@tabler/icons-react';
+import {
+  IconArrowBigDown,
+  IconArrowBigUp,
+  IconMessage,
+} from '@tabler/icons-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import React, { Fragment } from 'react';
 import {
@@ -30,6 +34,7 @@ import { User } from '../users/user';
 import { Typography } from '../../components/typography';
 import { formatDateTime } from '../../utils/date-format';
 import { Stack } from '../../components/flex/stack';
+import { useNavigate } from 'react-router-dom';
 
 const FieldContainer = styled.div`
   display: flex;
@@ -345,6 +350,8 @@ export const SubmissionItemWrapper = ({
   const { me } = useAuth();
   const qc = useQueryClient();
 
+  const navigate = useNavigate();
+
   const color =
     submission.submissionStatus === SubmissionStatus['DISAPPROVED']
       ? colors.error
@@ -396,7 +403,7 @@ export const SubmissionItemWrapper = ({
       )}
       <div>{children}</div>
       <Group justify="apart" wrap>
-        <Group align="center" gap="md">
+        <Group align="center" gap="lg">
           {!submission.votes.some((v) => v.userId === me.id) && (
             <SubmissionActions
               id={submission.id}
@@ -404,6 +411,17 @@ export const SubmissionItemWrapper = ({
               voteFn={voteFn}
             />
           )}
+
+          {!fullPage ? (
+            <IconButton
+              title="Comments"
+              num={Number(submission.commentsCount)}
+              onClick={() => navigate(submissionLink)}
+              active={Number(submission.commentsCount) > 0}
+            >
+              <IconMessage />
+            </IconButton>
+          ) : null}
 
           <div
             css={(theme) => ({
@@ -446,11 +464,6 @@ export const SubmissionItemWrapper = ({
               </Fragment>
             ))}
           </Group>
-          {!fullPage ? (
-            <Link to={submissionLink}>
-              Comments ({submission.commentsCount})
-            </Link>
-          ) : null}
         </Stack>
         <Group gap="md">
           <Typography>{formatDateTime(submission.createdAt)}</Typography>
