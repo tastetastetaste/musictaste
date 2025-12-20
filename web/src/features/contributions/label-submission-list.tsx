@@ -1,4 +1,4 @@
-import { useInfiniteQuery, useMutation } from '@tanstack/react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { Fragment } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import {
@@ -13,11 +13,7 @@ import { Loading } from '../../components/loading';
 import { Markdown } from '../../components/markdown';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
-import {
-  DiscardSubmissionFn,
-  SubmissionField,
-  SubmissionItemWrapper,
-} from './submission-item';
+import { SubmissionField, SubmissionItemWrapper } from './submission-item';
 
 class LabelSubmissionListOutletContext {
   status?: SubmissionStatus;
@@ -29,14 +25,12 @@ class LabelSubmissionListOutletContext {
 interface LabelSubmissionItemProps {
   submission: ILabelSubmission;
   hideUser?: boolean;
-  discardFn?: DiscardSubmissionFn;
   fullPage?: boolean;
 }
 
 export const LabelSubmissionItem = ({
   submission,
   hideUser,
-  discardFn,
   fullPage,
 }: LabelSubmissionItemProps) => {
   const { original, changes } = submission;
@@ -46,7 +40,6 @@ export const LabelSubmissionItem = ({
       link={submission.labelId && getLabelPath({ labelId: submission.labelId })}
       voteFn={api.labelSubmissionVote}
       hideUser={hideUser}
-      discardFn={discardFn}
       submission={submission}
       submissionType="label"
       fullPage={fullPage}
@@ -81,8 +74,6 @@ export const LabelSubmissionItem = ({
 const LabelSubmissionsList: React.FC = () => {
   const { status, labelId, userId, sortBy } =
     useOutletContext<LabelSubmissionListOutletContext>();
-
-  const { mutateAsync: discardFn } = useMutation(api.discardMyLabelSubmission);
 
   const { data, isFetching, isFetchingNextPage, fetchNextPage, hasNextPage } =
     useInfiniteQuery(
@@ -121,7 +112,6 @@ const LabelSubmissionsList: React.FC = () => {
               key={submission.id}
               submission={submission}
               hideUser={!!userId}
-              discardFn={discardFn}
             />
           ))}
         </Stack>

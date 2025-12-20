@@ -1,20 +1,16 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
+import { CommentEntityType } from 'shared';
+import { Feedback } from '../../components/feedback';
 import { Loading } from '../../components/loading';
+import AppPageWrapper from '../../layout/app-page-wrapper';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
-import AppPageWrapper from '../../layout/app-page-wrapper';
-import { ReleaseSubmissionItem } from './release-submission-list';
-import { Feedback } from '../../components/feedback';
-import { CommentEntityType } from 'shared';
 import { Comments } from '../comments/comments';
+import { ReleaseSubmissionItem } from './release-submission-list';
 
 const ReleaseSubmissionPage = () => {
   const { submissionId } = useParams<{ submissionId: string }>();
-
-  const { mutateAsync: discardFn } = useMutation(
-    api.discardMyReleaseSubmission,
-  );
 
   const { data: submission, isLoading } = useQuery(
     cacheKeys.releaseSubmissionByIdKey(submissionId!),
@@ -34,11 +30,7 @@ const ReleaseSubmissionPage = () => {
 
   return (
     <AppPageWrapper>
-      <ReleaseSubmissionItem
-        submission={submission}
-        discardFn={discardFn}
-        fullPage
-      />
+      <ReleaseSubmissionItem submission={submission} fullPage />
       <Comments
         entityType={CommentEntityType.RELEASE_SUBMISSION}
         entityId={submission.id}

@@ -259,6 +259,18 @@ export class SubmissionsController {
     );
   }
 
+  @Delete('genres/:submissionId')
+  @UseGuards(AuthenticatedGuard)
+  discardMyGenreSubmission(
+    @Param('submissionId') submissionId: string,
+    @CurUser() user: CurrentUserPayload,
+  ) {
+    return this.submissionsService.discardMyGenreSubmission(
+      submissionId,
+      user.id,
+    );
+  }
+
   @Post('process-pending-deletion')
   @UseGuards(AuthenticatedGuard)
   processPendingDeletion(

@@ -1,4 +1,4 @@
-import { useInfiniteQuery, useMutation } from '@tanstack/react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { Fragment } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import {
@@ -14,11 +14,7 @@ import { Loading } from '../../components/loading';
 import { Markdown } from '../../components/markdown';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
-import {
-  DiscardSubmissionFn,
-  SubmissionField,
-  SubmissionItemWrapper,
-} from './submission-item';
+import { SubmissionField, SubmissionItemWrapper } from './submission-item';
 
 class ArtistSubmissionListOutletContext {
   status?: SubmissionStatus;
@@ -30,14 +26,12 @@ class ArtistSubmissionListOutletContext {
 interface ArtistSubmissionItemProps {
   submission: IArtistSubmission;
   hideUser?: boolean;
-  discardFn?: DiscardSubmissionFn;
   fullPage?: boolean;
 }
 
 export const ArtistSubmissionItem = ({
   submission,
   hideUser,
-  discardFn,
   fullPage,
 }: ArtistSubmissionItemProps) => {
   const { original, changes } = submission;
@@ -49,7 +43,6 @@ export const ArtistSubmissionItem = ({
       }
       voteFn={api.artistSubmissionVote}
       hideUser={hideUser}
-      discardFn={discardFn}
       submission={submission}
       submissionType="artist"
       fullPage={fullPage}
@@ -192,8 +185,6 @@ const ArtistSubmissionsList: React.FC = () => {
   const { status, artistId, userId, sortBy } =
     useOutletContext<ArtistSubmissionListOutletContext>();
 
-  const { mutateAsync: discardFn } = useMutation(api.discardMyArtistSubmission);
-
   const { data, isFetching, isFetchingNextPage, fetchNextPage, hasNextPage } =
     useInfiniteQuery(
       cacheKeys.artistSubmissionsKey({
@@ -231,7 +222,6 @@ const ArtistSubmissionsList: React.FC = () => {
               key={submission.id}
               submission={submission}
               hideUser={!!userId}
-              discardFn={discardFn}
             />
           ))}
         </Stack>

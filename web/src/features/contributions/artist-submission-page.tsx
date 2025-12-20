@@ -1,18 +1,16 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
+import { CommentEntityType } from 'shared';
+import { Feedback } from '../../components/feedback';
 import { Loading } from '../../components/loading';
+import AppPageWrapper from '../../layout/app-page-wrapper';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
-import AppPageWrapper from '../../layout/app-page-wrapper';
-import { ArtistSubmissionItem } from './artist-submission-list';
-import { Feedback } from '../../components/feedback';
 import { Comments } from '../comments/comments';
-import { CommentEntityType } from 'shared';
+import { ArtistSubmissionItem } from './artist-submission-list';
 
 const ArtistSubmissionPage = () => {
   const { submissionId } = useParams<{ submissionId: string }>();
-
-  const { mutateAsync: discardFn } = useMutation(api.discardMyArtistSubmission);
 
   const { data: submission, isLoading } = useQuery(
     cacheKeys.artistSubmissionByIdKey(submissionId!),
@@ -32,11 +30,7 @@ const ArtistSubmissionPage = () => {
 
   return (
     <AppPageWrapper>
-      <ArtistSubmissionItem
-        submission={submission}
-        discardFn={discardFn}
-        fullPage
-      />
+      <ArtistSubmissionItem submission={submission} fullPage />
       <Comments
         entityType={CommentEntityType.ARTIST_SUBMISSION}
         entityId={submission.id}

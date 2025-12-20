@@ -1792,13 +1792,19 @@ export class SubmissionService {
     ) {
       await this.artistsService.deleteArtist(submission.artistId);
       await this.artistSubmissionRepository.delete(submissionId);
+      return {
+        message: 'Deleted successfully!',
+      };
     } else if (submission.submissionStatus === SubmissionStatus.OPEN) {
       await this.artistSubmissionRepository.delete(submissionId);
+
+      return {
+        message: 'Deleted successfully!',
+      };
     }
 
-    return {
-      message: 'Deleted successfully!',
-    };
+    // approved or disapproved
+    throw new BadRequestException('Something went wrong!');
   }
 
   async discardMyLabelSubmission(submissionId: string, userId: string) {
@@ -1821,13 +1827,17 @@ export class SubmissionService {
     ) {
       await this.labelsService.deleteLabel(submission.labelId);
       await this.labelSubmissionRepository.delete(submissionId);
+      return {
+        message: 'Deleted successfully!',
+      };
     } else if (submission.submissionStatus === SubmissionStatus.OPEN) {
       await this.labelSubmissionRepository.delete(submissionId);
+      return {
+        message: 'Deleted successfully!',
+      };
     }
 
-    return {
-      message: 'Deleted successfully!',
-    };
+    throw new BadRequestException('Something went wrong!');
   }
 
   async discardMyReleaseSubmission(submissionId: string, userId: string) {
@@ -1850,14 +1860,46 @@ export class SubmissionService {
     ) {
       await this.releasesService.deleteRelease(submission.releaseId);
       await this.releaseSubmissionRepository.delete(submissionId);
+      return {
+        message: 'Deleted successfully!',
+      };
     } else if (submission.submissionStatus === SubmissionStatus.OPEN) {
       await this.releaseSubmissionRepository.delete(submissionId);
+      return {
+        message: 'Deleted successfully!',
+      };
     }
 
-    return {
-      message: 'Deleted successfully!',
-    };
+    throw new BadRequestException('Something went wrong!');
   }
+
+  async discardMyGenreSubmission(submissionId: string, userId: string) {
+    const submission = await this.genreSubmissionRepository.findOne({
+      where: {
+        id: submissionId,
+      },
+    });
+    if (
+      !submission ||
+      submission.userId !== userId ||
+      dayjs().diff(submission.createdAt, 'hour') > 1
+    ) {
+      throw new BadRequestException();
+    }
+
+    if (
+      submission.submissionType === SubmissionType.CREATE ||
+      submission.submissionStatus === SubmissionStatus.OPEN
+    ) {
+      await this.genreSubmissionRepository.delete(submissionId);
+      return {
+        message: 'Deleted successfully!',
+      };
+    }
+
+    throw new BadRequestException('Something went wrong!');
+  }
+
   async updateTrustedContributorStatuses() {
     // More than 200 release submissions (all time)
     // More than 5 release submissions in the last 30 days

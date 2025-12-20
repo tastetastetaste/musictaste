@@ -535,6 +535,9 @@ const discardMyLabelSubmission = (submissionId: string) =>
 const discardMyArtistSubmission = (submissionId: string) =>
   client.delete('submissions/artists/' + submissionId).json<void>();
 
+const discardMyGenreSubmission = (submissionId: string) =>
+  client.delete('submissions/genres/' + submissionId).json<void>();
+
 const processPendingDeletion = (data: ProcessPendingDeletionDto) =>
   client
     .post('submissions/process-pending-deletion', { json: data })
@@ -798,6 +801,7 @@ export const api = {
   discardMyArtistSubmission,
   discardMyLabelSubmission,
   discardMyReleaseSubmission,
+  discardMyGenreSubmission,
   processPendingDeletion,
   getUserContributionsStats,
   releaseSubmissionVote,

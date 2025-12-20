@@ -35,6 +35,7 @@ import { Typography } from '../../components/typography';
 import { formatDateTime } from '../../utils/date-format';
 import { Stack } from '../../components/flex/stack';
 import { useNavigate } from 'react-router-dom';
+import { api } from '../../utils/api';
 
 const FieldContainer = styled.div`
   display: flex;
@@ -323,20 +324,10 @@ export const SubmissionActions = ({
 
 export type DiscardSubmissionFn = (submissionId: string) => Promise<void>;
 
-export const SubmissionItemWrapper = ({
-  children,
-  link,
-  voteFn,
-  discardFn,
-  hideUser,
-  submission,
-  submissionType,
-  fullPage,
-}: {
+interface SubmissionItemWrapperProps {
   children: React.ReactElement | React.ReactElement[];
   link?: string;
   voteFn: (params: { submissionId: string; vote: VoteType }) => Promise<any>;
-  discardFn?: DiscardSubmissionFn;
   hideUser?: boolean;
   submission:
     | IArtistSubmission
@@ -345,7 +336,17 @@ export const SubmissionItemWrapper = ({
     | IGenreSubmission;
   submissionType: 'artist' | 'label' | 'release' | 'genre';
   fullPage?: boolean;
-}) => {
+}
+
+export const SubmissionItemWrapper = ({
+  children,
+  link,
+  voteFn,
+  hideUser,
+  submission,
+  submissionType,
+  fullPage,
+}: SubmissionItemWrapperProps) => {
   const { colors } = useTheme();
   const { me } = useAuth();
   const qc = useQueryClient();
@@ -359,6 +360,20 @@ export const SubmissionItemWrapper = ({
         ? colors.highlight
         : colors.text;
 
+  const { mutateAsync: discardReleaseSubmissionFn } = useMutation(
+    api.discardMyReleaseSubmission,
+  );
+
+  const { mutateAsync: discardArtistSubmissionFn } = useMutation(
+    api.discardMyArtistSubmission,
+  );
+  const { mutateAsync: discardLabelSubmissionFn } = useMutation(
+    api.discardMyLabelSubmission,
+  );
+  const { mutateAsync: discardGenreSubmissionFn } = useMutation(
+    api.discardMyGenreSubmission,
+  );
+
   const handleDiscard = async () => {
     const confirmed = confirm(
       'Are you sure you want to discard this contribution?',
@@ -366,11 +381,18 @@ export const SubmissionItemWrapper = ({
 
     if (!confirmed) return;
 
-    if (discardFn) {
-      await discardFn(submission.id);
+    if (submissionType === 'release') {
+      await discardReleaseSubmissionFn(submission.id);
       qc.resetQueries(cacheKeys.releaseSubmissionsKey());
+    } else if (submissionType === 'artist') {
+      await discardArtistSubmissionFn(submission.id);
       qc.resetQueries(cacheKeys.artistSubmissionsKey());
+    } else if (submissionType === 'label') {
+      await discardLabelSubmissionFn(submission.id);
       qc.resetQueries(cacheKeys.labelSubmissionsKey());
+    } else if (submissionType === 'genre') {
+      await discardGenreSubmissionFn(submission.id);
+      qc.resetQueries(cacheKeys.genreSubmissionsKey());
     }
   };
 
@@ -404,13 +426,14 @@ export const SubmissionItemWrapper = ({
       <div>{children}</div>
       <Group justify="apart" wrap>
         <Group align="center" gap="lg">
-          {!submission.votes.some((v) => v.userId === me.id) && (
-            <SubmissionActions
-              id={submission.id}
-              status={submission.submissionStatus}
-              voteFn={voteFn}
-            />
-          )}
+          {submission.userId !== me.id &&
+            !submission.votes.some((v) => v.userId === me.id) && (
+              <SubmissionActions
+                id={submission.id}
+                status={submission.submissionStatus}
+                voteFn={voteFn}
+              />
+            )}
 
           {!fullPage ? (
             <IconButton
@@ -467,9 +490,12 @@ export const SubmissionItemWrapper = ({
         </Stack>
         <Group gap="md">
           <Typography>{formatDateTime(submission.createdAt)}</Typography>
-          {submissionType !== 'genre' &&
-            me?.id === submission.user.id &&
-            dayjs().diff(submission.createdAt, 'hour') < 1 && (
+          {me?.id === submission.user.id &&
+            !submission.votes.length &&
+            dayjs().diff(submission.createdAt, 'hour') < 1 &&
+            (submission.submissionStatus === SubmissionStatus.OPEN ||
+              submission.submissionStatus ===
+                SubmissionStatus.AUTO_APPROVED) && (
               <Button danger onClick={handleDiscard}>
                 Discard
               </Button>

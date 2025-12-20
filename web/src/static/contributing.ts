@@ -102,7 +102,7 @@ Will render as:
 
 ## Discarding Data Submissions
 
-If you add or edit data by mistake (or accident), you can discard it within **1 hour** after submitting.
+If you add or edit data by mistake (or accident), you can discard your submissions within **1 hour** of submitting them, as long as they don't have any votes.
 
 - Find the submission (multiple options)
   - You can fine all your contributions in **your contributions page** (from the top right menu in your profile page)

@@ -1,18 +1,16 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
+import { CommentEntityType } from 'shared';
+import { Feedback } from '../../components/feedback';
 import { Loading } from '../../components/loading';
+import AppPageWrapper from '../../layout/app-page-wrapper';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
-import AppPageWrapper from '../../layout/app-page-wrapper';
-import { LabelSubmissionItem } from './label-submission-list';
-import { Feedback } from '../../components/feedback';
 import { Comments } from '../comments/comments';
-import { CommentEntityType } from 'shared';
+import { LabelSubmissionItem } from './label-submission-list';
 
 const LabelSubmissionPage = () => {
   const { submissionId } = useParams<{ submissionId: string }>();
-
-  const { mutateAsync: discardFn } = useMutation(api.discardMyLabelSubmission);
 
   const { data: submission, isLoading } = useQuery(
     cacheKeys.labelSubmissionByIdKey(submissionId!),
@@ -31,11 +29,7 @@ const LabelSubmissionPage = () => {
   }
   return (
     <AppPageWrapper>
-      <LabelSubmissionItem
-        submission={submission}
-        discardFn={discardFn}
-        fullPage
-      />
+      <LabelSubmissionItem submission={submission} fullPage />
       <Comments
         entityType={CommentEntityType.LABEL_SUBMISSION}
         entityId={submission.id}

@@ -1,4 +1,4 @@
-import { useInfiniteQuery, useMutation } from '@tanstack/react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { Fragment } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import {
@@ -16,7 +16,6 @@ import { cacheKeys } from '../../utils/cache-keys';
 import { formatReleaseType } from '../releases/format-release-type';
 import { ExplicitCoverArtOptions } from './add-release-page';
 import {
-  DiscardSubmissionFn,
   ImagePreview,
   SubmissionField,
   SubmissionItemWrapper,
@@ -26,14 +25,12 @@ import {
 interface ReleaseSubmissionItemProps {
   submission: IReleaseSubmission;
   hideUser?: boolean;
-  discardFn?: DiscardSubmissionFn;
   fullPage?: boolean;
 }
 
 export const ReleaseSubmissionItem = ({
   submission,
   hideUser,
-  discardFn,
   fullPage,
 }: ReleaseSubmissionItemProps) => {
   const { original, changes } = submission;
@@ -48,7 +45,6 @@ export const ReleaseSubmissionItem = ({
       voteFn={api.releaseSubmissionVote}
       hideUser={hideUser}
       submission={submission}
-      discardFn={discardFn}
       submissionType="release"
       fullPage={fullPage}
     >
@@ -169,10 +165,6 @@ const ReleaseSubmissionsList = () => {
   const { userId, releaseId, status, sortBy } =
     useOutletContext<ReleaseSubmissionListOutletContext>();
 
-  const { mutateAsync: discardFn } = useMutation(
-    api.discardMyReleaseSubmission,
-  );
-
   const { data, isFetching, isFetchingNextPage, fetchNextPage, hasNextPage } =
     useInfiniteQuery(
       cacheKeys.releaseSubmissionsKey({
@@ -210,7 +202,6 @@ const ReleaseSubmissionsList = () => {
               key={submission.id}
               submission={submission}
               hideUser={!!userId}
-              discardFn={discardFn}
             />
           ))}
         </Stack>
