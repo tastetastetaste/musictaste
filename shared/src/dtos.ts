@@ -407,6 +407,17 @@ export class FindReleasesDto {
   @IsOptional()
   @IsString()
   labelId?: string;
+  @IsOptional()
+  @IsString()
+  artistId?: string;
+  @IsOptional()
+  @Type(() => Boolean)
+  @IsBoolean()
+  includeAliases?: boolean; // used for artist releases
+  @IsOptional()
+  @Type(() => Number)
+  @IsEnum(ReleaseType)
+  releaseType?: ReleaseType; // used for artist releases
 }
 
 // --- USER

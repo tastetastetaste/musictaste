@@ -5,6 +5,8 @@ import { Group } from '../../components/flex/group';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
 import { getRowIndexes } from '../users/user-music-virtual-grid';
 import { Release } from './release';
+import { Button } from '../../components/button';
+import { FetchMoreOnClick } from '../../components/fetch-more';
 
 export const RELEASE_GRID_PADDING = '4px';
 export const RELEASE_GRID_GAP = '8px';
@@ -14,7 +16,8 @@ export const ReleasesVirtualGrid: React.FC<{
   loadMore: () => Promise<any>;
   hasMore: boolean;
   children?: JSX.Element | JSX.Element[];
-}> = ({ releases, loadMore, hasMore, children }) => {
+  manualLoad?: boolean;
+}> = ({ releases, loadMore, hasMore, children, manualLoad }) => {
   const sm = useMediaQuery({ down: 'sm' });
 
   const md = useMediaQuery({ down: 'md' });
@@ -42,7 +45,7 @@ export const ReleasesVirtualGrid: React.FC<{
           flexDirection: 'column',
           minHeight: loadedRowCount * defaultItemHeight,
         }}
-        endReached={hasMore ? loadMore : undefined}
+        endReached={manualLoad ? undefined : hasMore ? loadMore : undefined}
         itemContent={(n) => {
           const inx = getRowIndexes(n, itemsPerRow, currentItems);
 
@@ -74,6 +77,7 @@ export const ReleasesVirtualGrid: React.FC<{
         }}
         defaultItemHeight={defaultItemHeight}
       />
+      {manualLoad && hasMore && <FetchMoreOnClick handleFetchMore={loadMore} />}
     </div>
   );
 };

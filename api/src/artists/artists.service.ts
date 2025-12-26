@@ -35,7 +35,7 @@ export class ArtistsService {
     private entitiesService: EntitiesService,
   ) {}
 
-  async findOneWithReleases(id: string): Promise<IArtistResponse> {
+  async findOne(id: string): Promise<IArtistResponse> {
     const artist = await this.artistsRepository.findOne({
       where: { id },
       relations: ['aliases', 'related', 'relatedTo', 'groupArtists', 'groups'],
@@ -43,7 +43,14 @@ export class ArtistsService {
 
     if (!artist) throw new NotFoundException();
 
-    const releases = await this.releasesService.getReleasesByArtist(artist.id);
+    const aliasIds = artist.aliases?.map((a) => a.id) || [];
+
+    const [releaseCounts, releaseCountsWithAliases] = await Promise.all([
+      this.releasesService.getArtistReleaseCounts(artist.id),
+      aliasIds.length > 0
+        ? this.releasesService.getArtistReleaseCounts([artist.id, ...aliasIds])
+        : null,
+    ]);
 
     const linkedArtistsIds = [
       ...new Set([
@@ -78,7 +85,8 @@ export class ArtistsService {
           current: ga.current,
         })),
       },
-      releases,
+      releaseCounts,
+      releaseCountsWithAliases,
     };
   }
 

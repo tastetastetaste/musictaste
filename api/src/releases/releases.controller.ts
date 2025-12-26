@@ -35,6 +35,9 @@ export class ReleasesController {
           pageSize,
           query.genreId,
           query.labelId,
+          query.artistId,
+          query.includeAliases,
+          query.releaseType,
         );
         break;
       case FindReleasesType.Popular:

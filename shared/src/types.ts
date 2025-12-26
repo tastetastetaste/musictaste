@@ -6,6 +6,7 @@ import {
   DatePrecision,
   ExplicitCoverArt,
   NotificationType,
+  ReleaseType,
   SupporterStatus,
   VoteType,
 } from './enums';
@@ -41,7 +42,8 @@ export interface IArtist {
 
 export interface IArtistResponse {
   artist: IArtist;
-  releases: IRelease[];
+  releaseCounts: { type: ReleaseType; count: number }[];
+  releaseCountsWithAliases?: { type: ReleaseType; count: number }[];
 }
 
 export interface IListReleaseCover {

@@ -1,7 +1,6 @@
-import { CreateArtistDto, IArtistResponse } from 'shared';
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
-import { AuthenticatedGuard } from '../auth/Authenticated.guard';
-import { CurUser } from '../decorators/user.decorator';
+import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
+import { Controller, Get, Param, UseInterceptors } from '@nestjs/common';
+import { IArtistResponse } from 'shared';
 import { ArtistsService } from './artists.service';
 
 @Controller('artists')
@@ -9,7 +8,9 @@ export class ArtistsController {
   constructor(private readonly artistsService: ArtistsService) {}
 
   @Get(':id')
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(1000 * 60 * 5) // 5 minutes
   findOne(@Param('id') id: string): Promise<IArtistResponse> {
-    return this.artistsService.findOneWithReleases(id);
+    return this.artistsService.findOne(id);
   }
 }

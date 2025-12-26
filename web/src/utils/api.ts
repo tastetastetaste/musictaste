@@ -62,6 +62,7 @@ import {
   IUsersResponse,
   IUserTag,
   ProcessPendingDeletionDto,
+  ReleaseType,
   SearchType,
   SendNotificationDto,
   UpdateAccountStatusDto,
@@ -407,10 +408,13 @@ const getReleases = (
   pageSize?: number,
   genreId?: string,
   labelId?: string,
+  artistId?: string,
+  releaseType?: ReleaseType,
+  includeAliases?: boolean,
 ) =>
   client
     .get(
-      `releases?type=${type}&page=${page}${pageSize ? `&pageSize=${pageSize}` : ''}${genreId ? `&genreId=${genreId}` : ''}${labelId ? `&labelId=${labelId}` : ''}`,
+      `releases?type=${type}&page=${page}${pageSize ? `&pageSize=${pageSize}` : ''}${genreId ? `&genreId=${genreId}` : ''}${labelId ? `&labelId=${labelId}` : ''}${artistId ? `&artistId=${artistId}` : ''}${releaseType ? `&releaseType=${releaseType}` : ''}${includeAliases ? `&includeAliases=true` : ''}`,
     )
     .json<IReleasesResponse>();
 

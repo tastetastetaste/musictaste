@@ -219,6 +219,21 @@ export class ReleasesService {
     return result;
   }
 
+  async getArtistReleaseCounts(artistIds: string | string[]) {
+    const ids = Array.isArray(artistIds) ? artistIds : [artistIds];
+
+    const result = await this.releasesRepository
+      .createQueryBuilder('release')
+      .select('release.type', 'type')
+      .addSelect('COUNT(DISTINCT release.id)', 'count')
+      .innerJoin(ReleaseArtist, 'ra', 'ra.releaseId = release.id')
+      .where('ra.artistId IN (:...ids)', { ids })
+      .groupBy('release.type')
+      .getRawMany();
+
+    return result;
+  }
+
   async getContributors(id: string) {
     const releaseSubmissions = await this.releasesSubmissions.find({
       where: { releaseId: id },
@@ -267,45 +282,64 @@ export class ReleasesService {
     pageSize: number = 48,
     genreId?: string,
     labelId?: string,
+    artistId?: string,
+    includeAliases?: boolean,
+    releaseType?: ReleaseType,
   ) {
     const qb = this.releasesRepository
       .createQueryBuilder('release')
       .select('release.id', 'id')
+      .addSelect('release.date', 'date')
       .where('release.date <= current_date');
 
     if (genreId) {
-      const subQuery = this.releasesRepository
-        .createQueryBuilder('subRelease')
-        .select('subRelease.id')
-        .leftJoin(
-          ReleaseGenre,
-          'rg',
-          'rg.releaseId = subRelease.id AND rg.votesAvg > 0',
-        )
-        .where('rg.genreId = :genreId', { genreId });
-
-      qb.andWhere(`release.id IN (${subQuery.getQuery()})`);
-      qb.setParameters(subQuery.getParameters());
+      qb.innerJoin(
+        ReleaseGenre,
+        'rg',
+        'rg.releaseId = release.id AND rg.votesAvg > 0 AND rg.genreId = :genreId',
+        { genreId },
+      );
     }
 
     if (labelId) {
-      const subQuery = this.releasesRepository
-        .createQueryBuilder('subRelease')
-        .select('subRelease.id')
-        .leftJoin(ReleaseLabel, 'rl', 'rl.releaseId = subRelease.id')
-        .where('rl.labelId = :labelId', { labelId });
+      qb.innerJoin(
+        ReleaseLabel,
+        'rl',
+        'rl.releaseId = release.id AND rl.labelId = :labelId',
+        { labelId },
+      );
+    }
 
-      qb.andWhere(`release.id IN (${subQuery.getQuery()})`);
-      qb.setParameters(subQuery.getParameters());
+    if (artistId) {
+      const ids = [artistId];
+
+      if (includeAliases) {
+        const aliases = await this.artistsRepository.find({
+          where: { mainArtistId: artistId },
+        });
+        ids.push(...aliases.map((a) => a.id));
+      }
+
+      qb.innerJoin(
+        ReleaseArtist,
+        'ra',
+        'ra.releaseId = release.id AND ra.artistId IN (:...ids)',
+        { ids },
+      );
+    }
+
+    if (releaseType) {
+      qb.andWhere('release.type = :releaseType', { releaseType });
     }
 
     const qb2 = qb.clone();
 
     const res = await qb
+      .distinct(true)
       .orderBy('release.date', 'DESC')
       .addOrderBy('release.id', 'ASC')
-      .take(pageSize)
-      .skip((page - 1) * pageSize)
+      .limit(pageSize)
+      .offset((page - 1) * pageSize)
       .getRawMany();
 
     const releases = await this.getReleasesByIdsWithStats(res.map((r) => r.id));

@@ -1,39 +1,43 @@
 import { IconChevronDown, IconChevronRight } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { ArtistType, IArtistResponse, IRelease, ReportType } from 'shared';
-import { Grid } from '../../components/flex/grid';
+import { ArtistType, FindReleasesType, ReleaseType, ReportType } from 'shared';
+import { Button } from '../../components/button';
 import { Group } from '../../components/flex/group';
 import { Stack } from '../../components/flex/stack';
 import { InfoRow } from '../../components/info-row';
 import { Loading } from '../../components/loading';
-import { Markdown } from '../../components/markdown';
 import { Typography } from '../../components/typography';
 import { useSnackbar } from '../../hooks/useSnackbar';
 import AppPageWrapper from '../../layout/app-page-wrapper';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
-import { Release } from '../releases/release';
 import { ArtistsLinks } from '../releases/release/shared';
-import { RELEASE_GRID_GAP } from '../releases/releases-virtual-grid';
 import { ReportDialog } from '../reports/report-dialog';
+import ReleasesListRenderer from '../releases/releases-list-renderer';
 
-interface ReleasesSectionProps {
+interface ArtistReleasesSectionProps {
+  artistId: string;
+  includeAliases: boolean;
   title: string;
-  releases: IRelease[];
+  releaseType: ReleaseType;
+  count: number;
   expand?: boolean;
 }
 
-const ReleasesSection: React.FC<ReleasesSectionProps> = ({
+const ArtistReleasesSection: React.FC<ArtistReleasesSectionProps> = ({
+  artistId,
+  includeAliases,
   title,
-  releases,
+  releaseType,
+  count,
   expand = false,
 }) => {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  if (releases.length === 0) return null;
+  if (count === 0) return null;
 
   const sectionKey = `${title.toLowerCase().replace(/\s+/g, '_')}`;
   const isCollapsedParam = searchParams.get(sectionKey);
@@ -55,10 +59,6 @@ const ReleasesSection: React.FC<ReleasesSectionProps> = ({
     }
   };
 
-  const sortedReleases = [...releases].sort(
-    (a, b) => Number(new Date(b.date)) - Number(new Date(a.date)),
-  );
-
   return (
     <>
       <div
@@ -72,7 +72,7 @@ const ReleasesSection: React.FC<ReleasesSectionProps> = ({
         <Group gap="md" align="center">
           <Typography size="title-lg">{title}</Typography>
           <Typography size="title" color="sub">
-            ({releases.length})
+            ({count})
           </Typography>
           {isCollapsed ? (
             <IconChevronRight strokeWidth={3} />
@@ -82,102 +82,88 @@ const ReleasesSection: React.FC<ReleasesSectionProps> = ({
         </Group>
       </div>
       {!isCollapsed && (
-        <Grid cols={[2, 4, 4, 6]} gap={RELEASE_GRID_GAP}>
-          {sortedReleases.map((release) => (
-            <Release release={release} key={release.id} />
-          ))}
-        </Grid>
+        <ReleasesListRenderer
+          type={FindReleasesType.New}
+          artistId={artistId}
+          releaseType={releaseType}
+          includeAliases={includeAliases}
+          manualLoad
+        />
       )}
     </>
   );
 };
 
-const Releases: React.FC<{ releases: IArtistResponse['releases'] }> = ({
-  releases,
+const RELEASE_SECTIONS = [
+  { title: 'Albums', releaseType: ReleaseType.LP },
+  { title: 'Mixtapes', releaseType: ReleaseType.Mixtape },
+  { title: 'EPs', releaseType: ReleaseType.EP },
+  { title: 'Singles', releaseType: ReleaseType.Single },
+  { title: 'Live', releaseType: ReleaseType.Live },
+  { title: 'DJ Mixes', releaseType: ReleaseType.DJMix },
+  {
+    title: 'Compilations',
+    releaseType: ReleaseType.Compilation,
+  },
+  {
+    title: 'Soundtracks',
+    releaseType: ReleaseType.Soundtrack,
+  },
+  { title: 'Remixes', releaseType: ReleaseType.Remix },
+  { title: 'Covers', releaseType: ReleaseType.Cover },
+  {
+    title: 'Instrumentals',
+    releaseType: ReleaseType.Instrumental,
+  },
+  { title: 'Videos', releaseType: ReleaseType.Video },
+  { title: 'Reissues', releaseType: ReleaseType.Reissue },
+  { title: 'Other', releaseType: ReleaseType.Other },
+  {
+    title: 'Unofficial',
+    releaseType: ReleaseType.Unofficial,
+  },
+];
+
+interface ArtistReleasesProps {
+  artistId: string;
+  includeAliases: boolean;
+  releaseCounts: { type: ReleaseType; count: number }[];
+  releaseCountsWithAliases?: { type: ReleaseType; count: number }[];
+}
+
+const ArtistReleases: React.FC<ArtistReleasesProps> = ({
+  artistId,
+  releaseCounts,
+  releaseCountsWithAliases,
+  includeAliases,
 }) => {
-  const sections = [
-    {
-      title: 'Albums',
-      types: ['LP'],
-    },
-    {
-      title: 'Mixtapes',
-      types: ['Mixtape'],
-    },
-    {
-      title: 'EPs',
-      types: ['EP'],
-    },
-    {
-      title: 'Singles',
-      types: ['Single'],
-    },
-    {
-      title: 'Live',
-      types: ['Live'],
-    },
-    {
-      title: 'DJ Mixes',
-      types: ['DJMix'],
-    },
-    {
-      title: 'Compilations',
-      types: ['Compilation'],
-    },
-    {
-      title: 'Soundtracks',
-      types: ['Soundtrack'],
-    },
-    {
-      title: 'Remixes',
-      types: ['Remix'],
-    },
-    {
-      title: 'Covers',
-      types: ['Cover'],
-    },
-    {
-      title: 'Instrumentals',
-      types: ['Instrumental'],
-    },
-    {
-      title: 'Videos',
-      types: ['Video'],
-    },
-    {
-      title: 'Reissues',
-      types: ['Reissue'],
-    },
-    {
-      title: 'Other',
-      types: ['Other'],
-    },
-    {
-      title: 'Unofficial',
-      types: ['Unofficial'],
-    },
-  ];
+  const currentCounts =
+    includeAliases && releaseCountsWithAliases
+      ? releaseCountsWithAliases
+      : releaseCounts;
 
   let firstSectionExpanded = false;
 
   return (
     <Stack gap="sm">
-      {sections.map((section) => {
-        const filteredReleases = releases.filter((r) =>
-          section.types.includes(r.type),
-        );
+      {RELEASE_SECTIONS.map((section) => {
+        const count =
+          currentCounts.find((c) => c.type === section.releaseType)?.count || 0;
 
         // expand first section that has releases and collapse other sections
-        const expand = !firstSectionExpanded && filteredReleases.length > 0;
+        const expand = !firstSectionExpanded && count > 0;
         if (expand) {
           firstSectionExpanded = true;
         }
 
         return (
-          <ReleasesSection
-            key={section.title}
+          <ArtistReleasesSection
+            key={`${section.title}-${includeAliases}`}
+            artistId={artistId}
+            includeAliases={includeAliases}
             title={section.title}
-            releases={filteredReleases}
+            releaseType={section.releaseType}
+            count={count}
             expand={expand}
           />
         );
@@ -202,6 +188,31 @@ const ArtistPage = () => {
   );
 
   const artist = data && data.artist;
+
+  const navigate = useNavigate();
+
+  const [searchParams] = useSearchParams();
+
+  const [includeAliases, setIncludeAliases] = useState(
+    searchParams.get('includeAliases') === 'true',
+  );
+
+  const toggleIncludeAliases = () => {
+    setIncludeAliases(!includeAliases);
+    const newSearchParams = new URLSearchParams();
+    if (!includeAliases) {
+      newSearchParams.set('includeAliases', 'true');
+    }
+    navigate(`?${newSearchParams.toString()}`, { replace: true });
+  };
+
+  useEffect(() => {
+    const includeAliasesParam = searchParams.get('includeAliases');
+    const newIncludeAliasesParam = includeAliasesParam === 'true';
+    if (newIncludeAliasesParam !== includeAliases) {
+      setIncludeAliases(newIncludeAliasesParam);
+    }
+  }, [searchParams]);
 
   return (
     <AppPageWrapper
@@ -349,9 +360,23 @@ const ArtistPage = () => {
                   />
                 </InfoRow>
               ) : null}
+              {artist.aliases?.length > 0 ? (
+                <div css={{ display: 'flex', justifyContent: 'flex-end' }}>
+                  <Button variant="main" onClick={toggleIncludeAliases}>
+                    {includeAliases
+                      ? 'Hide Alias Releases'
+                      : 'Show Alias Releases'}
+                  </Button>
+                </div>
+              ) : null}
             </Stack>
           </div>
-          <Releases releases={data.releases} />
+          <ArtistReleases
+            artistId={artist.id}
+            includeAliases={includeAliases}
+            releaseCounts={data.releaseCounts}
+            releaseCountsWithAliases={data.releaseCountsWithAliases}
+          />
         </Stack>
       ) : (
         <div></div>

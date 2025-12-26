@@ -1,4 +1,9 @@
-import { CommentEntityType, FindReleasesType, FindUsersType } from 'shared';
+import {
+  CommentEntityType,
+  FindReleasesType,
+  FindUsersType,
+  ReleaseType,
+} from 'shared';
 
 // ENTRY
 const entryKey = (id: string) => ['entries', id];
@@ -78,13 +83,30 @@ const releasesKey = ({
   pageSize,
   genreId,
   labelId,
+  artistId,
+  releaseType,
+  includeAliases,
 }: {
   type?: FindReleasesType;
   page?: number;
   pageSize?: number;
   genreId?: string;
   labelId?: string;
-}) => ['releases', type, page, pageSize, genreId, labelId].filter(Boolean);
+  artistId?: string;
+  releaseType?: ReleaseType;
+  includeAliases?: boolean;
+}) =>
+  [
+    'releases',
+    type,
+    page,
+    pageSize,
+    genreId,
+    labelId,
+    artistId,
+    releaseType,
+    includeAliases,
+  ].filter(Boolean);
 
 // RELEASE SUBMISSIONS
 
