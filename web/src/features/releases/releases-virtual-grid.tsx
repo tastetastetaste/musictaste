@@ -43,7 +43,6 @@ export const ReleasesVirtualGrid: React.FC<{
         style={{
           display: 'flex',
           flexDirection: 'column',
-          minHeight: loadedRowCount * defaultItemHeight,
         }}
         endReached={manualLoad ? undefined : hasMore ? loadMore : undefined}
         itemContent={(n) => {
