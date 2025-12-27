@@ -10,7 +10,6 @@ export const CONTRIBUTING_MD = `# Contributing to the Database
 ## General Guidelines
 
 - AI-generated music is not allowed in the database.
-- You should create an artist page only when you are adding a release for that artist. Don't create empty artist pages just to reference them.
 - Always include helpful notes with sources. Every submission is reviewed on its own, so notes like 'Add tracklist' or 'Fix date' are not enough without a supporting source.
 - Don't add or edit data if it doesn't have a public source to verify it.
 
