@@ -88,6 +88,7 @@ export const formatReleaseDate = (date: string, precision: DatePrecision) => {
   }
 };
 
+// doublicate api/src/common/normalizeDate.ts
 export const formatReleaseDateInput = (
   date: string,
   precision: DatePrecision,
