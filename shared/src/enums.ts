@@ -72,6 +72,7 @@ export enum ContributorStatus {
 export enum SupporterStatus {
   NOT_A_SUPPORTER = 0,
   SUPPORTER = 10,
+  OWNER = 100,
 }
 
 // other enums
@@ -96,7 +97,6 @@ export enum FindReleasesType {
   Upcoming = 'upcoming',
   RecentlyAdded = 'recently-added',
   Top = 'top',
-  Top2 = 'top-2',
   TopOTY = 'top-oty',
 }
 

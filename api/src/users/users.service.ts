@@ -318,7 +318,8 @@ export class UsersService {
       select: ['id', 'supporter'],
     });
 
-    if (!user || !user.supporter) throw new UnauthorizedException();
+    if (!user || user.supporter < SupporterStatus.SUPPORTER)
+      throw new UnauthorizedException();
 
     await this.usersRepository.update(id, { theme });
     return true;

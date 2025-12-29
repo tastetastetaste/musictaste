@@ -27,13 +27,13 @@ function Support() {
 
   const { isLoading, me } = useAuth();
 
-  if (isLoading || me?.supporter === SupporterStatus.SUPPORTER) return null;
+  if (isLoading || me?.supporter >= SupporterStatus.SUPPORTER) return null;
 
   return (
     <StyledButton onClick={() => navigate('/support-us')}>
       <Stack gap="md" align="center">
         <Typography size="title-lg" color="bg">
-          Support your favorite music reviews site
+          Unlock all features — become a supporter
         </Typography>
       </Stack>
     </StyledButton>

@@ -70,7 +70,7 @@ export function Comment({
               ContributorStatus.TRUSTED_CONTRIBUTOR ? (
                 <TrustedContributorBadge size="sm" />
               ) : null}
-              {user.supporter === SupporterStatus.SUPPORTER ? (
+              {user.supporter >= SupporterStatus.SUPPORTER ? (
                 <SupporterBadge size="sm" />
               ) : null}
               {onReply && (

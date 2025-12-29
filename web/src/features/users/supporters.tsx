@@ -14,7 +14,7 @@ export const Supporters: React.FC = () => {
 
   if (isLoading) return <Loading />;
 
-  const contributors = data?.users || [];
+  const supporters = data?.users || [];
 
   return (
     <Stack gap="md">
@@ -24,8 +24,8 @@ export const Supporters: React.FC = () => {
         supporting what we do!
       </Typography>
       <Stack gap="md">
-        {contributors.map((contributor) => (
-          <User key={contributor.id} user={contributor} />
+        {supporters.map((supporter) => (
+          <User key={supporter.id} user={supporter} />
         ))}
       </Stack>
     </Stack>

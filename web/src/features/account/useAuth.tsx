@@ -1,13 +1,19 @@
 import { useQuery } from '@tanstack/react-query';
 import { createContext, useContext, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { AccountStatus, ContributorStatus, ICurrentUserResponse } from 'shared';
+import {
+  AccountStatus,
+  ContributorStatus,
+  ICurrentUserResponse,
+  SupporterStatus,
+} from 'shared';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
 
 interface IUseAuth {
   isLoggedIn: boolean;
   isAdmin: boolean;
+  isSupporter: boolean;
   canVoteOnSubmissions: boolean;
   isLoading: boolean;
   me?: ICurrentUserResponse['user'] | null;
@@ -16,6 +22,7 @@ interface IUseAuth {
 const useAuthContext = createContext<IUseAuth>({
   isLoggedIn: false,
   isAdmin: false,
+  isSupporter: false,
   canVoteOnSubmissions: false,
   isLoading: true,
   me: null,
@@ -55,6 +62,7 @@ export const UseAuthProvider: React.FC<{
       value={{
         isLoggedIn: !!user,
         isAdmin: user?.contributorStatus === ContributorStatus.ADMIN,
+        isSupporter: user?.supporter >= SupporterStatus.SUPPORTER,
         canVoteOnSubmissions:
           user?.contributorStatus >= ContributorStatus.TRUSTED_CONTRIBUTOR,
         isLoading,

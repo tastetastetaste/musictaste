@@ -42,7 +42,7 @@ export const User: React.FC<IUserItemProps> = ({
 
   if (avatarOnly) return userAvatar;
 
-  const isSupporter = supporter === SupporterStatus.SUPPORTER;
+  const isSupporter = supporter >= SupporterStatus.SUPPORTER;
   const isTrusted = contributorStatus === ContributorStatus.TRUSTED_CONTRIBUTOR;
 
   return isLarge ? (

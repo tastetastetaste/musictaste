@@ -151,7 +151,7 @@ export const UserOverview: React.FC<OverviewSectionProps> = ({
             <Typography>@{username}</Typography>
           </Stack>
           <Group gap="md" wrap>
-            {supporter === SupporterStatus.SUPPORTER ? (
+            {supporter >= SupporterStatus.SUPPORTER ? (
               <SupporterBadge size="lg" />
             ) : null}
             {contributorStatus === ContributorStatus.TRUSTED_CONTRIBUTOR ? (

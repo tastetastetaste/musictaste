@@ -70,7 +70,7 @@ const UserPageWrapper: React.FC = () => {
   };
 
   const updateSupporterStatus = () => {
-    const status = prompt('0=Not Supporter, 10=Supporter');
+    const status = prompt('0=Not Supporter, 10=Supporter, 100=Owner');
     if (status) {
       updateSupporterStatusMutation(
         {
