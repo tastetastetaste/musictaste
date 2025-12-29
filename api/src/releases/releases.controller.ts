@@ -14,6 +14,7 @@ import {
 } from 'shared';
 import { ReleasesService } from './releases.service';
 import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
+import { CurUser } from '../decorators/user.decorator';
 
 @Controller('releases')
 export class ReleasesController {
@@ -22,7 +23,10 @@ export class ReleasesController {
   @Get()
   @UseInterceptors(CacheInterceptor)
   @CacheTTL(1000 * 60 * 5) // 5 minutes
-  async find(@Query() query: FindReleasesDto): Promise<IReleasesResponse> {
+  async find(
+    @Query() query: FindReleasesDto,
+    @CurUser('id') userId: string,
+  ): Promise<IReleasesResponse> {
     const page = query.page || 1;
     const pageSize = query.pageSize || 48;
 
@@ -62,15 +66,22 @@ export class ReleasesController {
         );
         break;
       case FindReleasesType.Top:
-      case FindReleasesType.Top2:
         result = await this.releasesService.findTopReleasesOAT(
-          query.type,
+          userId,
+          query.minRatings,
+          query.maxRatings,
           page,
           pageSize,
         );
         break;
       case FindReleasesType.TopOTY:
-        result = await this.releasesService.findTopReleasesOTY(page, pageSize);
+        result = await this.releasesService.findTopReleasesOTY(
+          userId,
+          query.minRatings,
+          query.maxRatings,
+          page,
+          pageSize,
+        );
         break;
       default:
         throw new BadRequestException('Invalid type');

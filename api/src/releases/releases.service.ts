@@ -15,6 +15,11 @@ import {
   IReleaseWithStats,
   ITrackWithVotes,
   ReleaseType,
+  SupporterStatus,
+  TOP_RELEASES_OAT_MAX_RATINGS_COUNT,
+  TOP_RELEASES_OAT_MIN_RATINGS_COUNT,
+  TOP_RELEASES_OTY_MAX_RATINGS_COUNT,
+  TOP_RELEASES_OTY_MIN_RATINGS_COUNT,
 } from 'shared';
 import { In, Repository } from 'typeorm';
 import { Artist } from '../../db/entities/artist.entity';
@@ -454,10 +459,29 @@ export class ReleasesService {
   }
 
   async findTopReleasesOAT(
-    type: FindReleasesType.Top | FindReleasesType.Top2,
+    userId?: string,
+    minRatings?: number,
+    maxRatings?: number,
     page: number = 1,
     pageSize: number = 48,
   ) {
+    let minRatingsCount: number = TOP_RELEASES_OAT_MIN_RATINGS_COUNT;
+    let maxRatingsCount: number = TOP_RELEASES_OAT_MAX_RATINGS_COUNT;
+    if ((minRatings || maxRatings) && userId) {
+      // user must be supporter
+      const user = await this.usersService.getUserById(userId);
+      if (user && user.supporter >= SupporterStatus.SUPPORTER) {
+        minRatingsCount = minRatings
+          ? minRatings
+          : TOP_RELEASES_OAT_MIN_RATINGS_COUNT;
+        maxRatingsCount =
+          maxRatings && maxRatings >= minRatingsCount
+            ? maxRatings
+            : TOP_RELEASES_OAT_MAX_RATINGS_COUNT;
+
+        console.log(minRatingsCount, maxRatingsCount);
+      }
+    }
     const query = this.userReleaseRepository
       .createQueryBuilder('ur')
       .select('ur.releaseId', 'releaseId')
@@ -469,10 +493,22 @@ export class ReleasesService {
       })
       .groupBy('ur.releaseId');
 
-    if (type === FindReleasesType.Top) {
-      query.having('COUNT(rating.id) >= 35');
-    } else if (type === FindReleasesType.Top2) {
-      query.having('COUNT(rating.id) >= 15').andHaving('COUNT(rating.id) < 35');
+    if (minRatingsCount && maxRatingsCount) {
+      query
+        .having('COUNT(rating.id) >= :minRatingsCount', {
+          minRatingsCount,
+        })
+        .andHaving('COUNT(rating.id) <= :maxRatingsCount', {
+          maxRatingsCount,
+        });
+    } else if (maxRatingsCount) {
+      query.having('COUNT(rating.id) <= :maxRatingsCount', {
+        maxRatingsCount,
+      });
+    } else if (minRatingsCount) {
+      query.having('COUNT(rating.id) >= :minRatingsCount', {
+        minRatingsCount,
+      });
     }
 
     const result = await query
@@ -493,12 +529,35 @@ export class ReleasesService {
     };
   }
 
-  async findTopReleasesOTY(page: number = 1, pageSize: number = 48) {
+  async findTopReleasesOTY(
+    userId?: string,
+    minRatings?: number,
+    maxRatings?: number,
+    page: number = 1,
+    pageSize: number = 48,
+  ) {
     const currentYear = new Date().getFullYear();
     const startDate = new Date(currentYear, 0, 1);
     const endDate = new Date(currentYear + 1, 0, 1);
 
-    const result = await this.userReleaseRepository
+    let minRatingsCount: number = TOP_RELEASES_OTY_MIN_RATINGS_COUNT;
+    let maxRatingsCount: number = TOP_RELEASES_OTY_MAX_RATINGS_COUNT;
+
+    if ((minRatings || maxRatings) && userId) {
+      // user must be supporter
+      const user = await this.usersService.getUserById(userId);
+      if (user && user.supporter >= SupporterStatus.SUPPORTER) {
+        minRatingsCount = minRatings
+          ? minRatings
+          : TOP_RELEASES_OTY_MIN_RATINGS_COUNT;
+        maxRatingsCount =
+          maxRatings && maxRatings >= minRatingsCount
+            ? maxRatings
+            : TOP_RELEASES_OTY_MAX_RATINGS_COUNT;
+      }
+    }
+
+    const query = this.userReleaseRepository
       .createQueryBuilder('ur')
       .select('ur.releaseId', 'releaseId')
       .addSelect('AVG(rating.rating)', 'averageRating')
@@ -511,8 +570,27 @@ export class ReleasesService {
       .andWhere('release.type IN (:...releaseTypes)', {
         releaseTypes: [ReleaseType.LP, ReleaseType.Live, ReleaseType.Mixtape],
       })
-      .groupBy('ur.releaseId')
-      .having('COUNT(rating) >= 30')
+      .groupBy('ur.releaseId');
+
+    if (minRatingsCount && maxRatingsCount) {
+      query
+        .having('COUNT(rating.id) >= :minRatingsCount', {
+          minRatingsCount,
+        })
+        .andHaving('COUNT(rating.id) <= :maxRatingsCount', {
+          maxRatingsCount,
+        });
+    } else if (maxRatingsCount) {
+      query.having('COUNT(rating.id) <= :maxRatingsCount', {
+        maxRatingsCount,
+      });
+    } else if (minRatingsCount) {
+      query.having('COUNT(rating.id) >= :minRatingsCount', {
+        minRatingsCount,
+      });
+    }
+
+    const result = await query
       .orderBy('AVG(rating.rating)', 'DESC', 'NULLS LAST')
       .addOrderBy('ur.releaseId', 'DESC')
       .limit(100)

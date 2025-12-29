@@ -86,6 +86,8 @@ const releasesKey = ({
   artistId,
   releaseType,
   includeAliases,
+  minRatings,
+  maxRatings,
 }: {
   type?: FindReleasesType;
   page?: number;
@@ -95,6 +97,8 @@ const releasesKey = ({
   artistId?: string;
   releaseType?: ReleaseType;
   includeAliases?: boolean;
+  minRatings?: number;
+  maxRatings?: number;
 }) =>
   [
     'releases',
@@ -106,6 +110,8 @@ const releasesKey = ({
     artistId,
     releaseType,
     includeAliases,
+    minRatings,
+    maxRatings,
   ].filter(Boolean);
 
 // RELEASE SUBMISSIONS

@@ -411,10 +411,12 @@ const getReleases = (
   artistId?: string,
   releaseType?: ReleaseType,
   includeAliases?: boolean,
+  minRatings?: number,
+  maxRatings?: number,
 ) =>
   client
     .get(
-      `releases?type=${type}&page=${page}${pageSize ? `&pageSize=${pageSize}` : ''}${genreId ? `&genreId=${genreId}` : ''}${labelId ? `&labelId=${labelId}` : ''}${artistId ? `&artistId=${artistId}` : ''}${releaseType ? `&releaseType=${releaseType}` : ''}${includeAliases ? `&includeAliases=true` : ''}`,
+      `releases?type=${type}&page=${page}${pageSize ? `&pageSize=${pageSize}` : ''}${genreId ? `&genreId=${genreId}` : ''}${labelId ? `&labelId=${labelId}` : ''}${artistId ? `&artistId=${artistId}` : ''}${releaseType ? `&releaseType=${releaseType}` : ''}${includeAliases ? `&includeAliases=true` : ''}${minRatings ? `&minRatings=${minRatings}` : ''}${maxRatings ? `&maxRatings=${maxRatings}` : ''}`,
     )
     .json<IReleasesResponse>();
 

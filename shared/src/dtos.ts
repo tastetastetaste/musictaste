@@ -418,6 +418,12 @@ export class FindReleasesDto {
   @Type(() => Number)
   @IsEnum(ReleaseType)
   releaseType?: ReleaseType; // used for artist releases
+  @IsOptional()
+  @Type(() => Number)
+  minRatings?: number; // used for top releases
+  @IsOptional()
+  @Type(() => Number)
+  maxRatings?: number; // used for top releases
 }
 
 // --- USER

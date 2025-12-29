@@ -13,6 +13,7 @@ Your donation will allow us to put more time, effort, and resources into this pr
 You will get the following for one year:
 - Supporter badge
 - Custom profile theme colors
+- Filter charts by minimum and maximum number of ratings
 - More supporter only features as they are added
 
 Donations are made through our Ko-fi page`;

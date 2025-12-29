@@ -628,14 +628,6 @@ const router = createBrowserRouter([
             ),
           },
           {
-            path: 'top-2',
-            element: (
-              <Suspense fallback={<Fallback />}>
-                <ReleasesListRenderer type={FindReleasesType.Top2} />
-              </Suspense>
-            ),
-          },
-          {
             path: 'top-oty',
             element: (
               <Suspense fallback={<Fallback />}>
