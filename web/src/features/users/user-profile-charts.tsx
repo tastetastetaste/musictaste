@@ -12,7 +12,7 @@ import { cacheKeys } from '../../utils/cache-keys';
 const StyledText = styled.text`
   font-size: 3px;
   font-family: ${({ theme }) => theme.font.family.base};
-  color: ${({ theme }) => theme.colors.highlight};
+  color: ${({ theme }) => theme.colors.primary};
   pointer-events: none;
 `;
 
@@ -26,7 +26,7 @@ export const useChartColor = () => {
       }
 
       return Color(theme.colors.background_sub)
-        .mix(Color(theme.colors.primary), percentage / 100)
+        .mix(Color(theme.colors.highlight), percentage / 100)
         .hex();
     },
     [theme],
