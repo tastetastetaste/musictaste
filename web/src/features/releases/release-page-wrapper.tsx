@@ -311,7 +311,7 @@ export const ReleasePageContainer: React.FC<{
           <div
             css={{
               position: 'relative',
-              top: mdScreen ? '10px' : '-150px',
+              top: '10px',
             }}
           >
             <Stack align={smScreen ? 'center' : 'end'} gap="lg">
