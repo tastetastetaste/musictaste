@@ -222,14 +222,14 @@ const TopReleasesOfTheYearSection = () => {
 };
 
 const HomePage = () => {
-  const { isLoading: isLoadingNewPopularReleases } = useQuery(
-    cacheKeys.releasesKey({
-      type: FindReleasesType.NewPopular,
-      page: 1,
-      pageSize: 12,
-    }),
-    () => api.getReleases(FindReleasesType.NewPopular, 1, 12),
-  );
+  // const { isLoading: isLoadingNewPopularReleases } = useQuery(
+  //   cacheKeys.releasesKey({
+  //     type: FindReleasesType.NewPopular,
+  //     page: 1,
+  //     pageSize: 12,
+  //   }),
+  //   () => api.getReleases(FindReleasesType.NewPopular, 1, 12),
+  // );
 
   const { isLoggedIn, isLoading } = useAuth();
 
@@ -239,17 +239,18 @@ const HomePage = () => {
         {!isLoading && !isLoggedIn && <FeaturesOverview />}
 
         {/* <TopReleasesOfTheYearSection /> */}
-        <NewReleasesSection />
+        {/* <NewReleasesSection /> */}
+
+        <TopReviewsSection />
         {/* minimize layout shift */}
-        {!isLoadingNewPopularReleases ? (
-          <Fragment>
-            <Support />
-            <TopReviewsSection />
-            <LatestListsSection />
-            <RecentlyAddedReleasesSection />
-            <RecentReviewsSection />
-          </Fragment>
-        ) : null}
+        {/* {!isLoadingNewPopularReleases ? ( */}
+        <Fragment>
+          <Support />
+          <LatestListsSection />
+          <RecentlyAddedReleasesSection />
+          <RecentReviewsSection />
+        </Fragment>
+        {/* ) : null} */}
       </Stack>
     </AppPageWrapper>
   );
