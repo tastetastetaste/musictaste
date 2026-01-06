@@ -294,8 +294,12 @@ export class ReleasesService {
     const qb = this.releasesRepository
       .createQueryBuilder('release')
       .select('release.id', 'id')
-      .addSelect('release.date', 'date')
-      .where('release.date <= current_date');
+      .addSelect('release.date', 'date');
+
+    // Exclude unreleased releases unless filtering by label or artist
+    if (!labelId && !artistId) {
+      qb.where('release.date <= current_date');
+    }
 
     if (genreId) {
       qb.innerJoin(
