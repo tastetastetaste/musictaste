@@ -222,6 +222,22 @@ const TopReleasesOfTheYearSection = () => {
 };
 
 const HomePage = () => {
+  const reviewsCacheKey = cacheKeys.entriesKey({
+    page: 1,
+    pageSize: 12,
+    withReview: true,
+    sortBy: EntriesSortByEnum.ReviewTop,
+  });
+
+  const { isLoading: isLoadingReviews } = useQuery(reviewsCacheKey, () =>
+    api.getEntries({
+      page: 1,
+      pageSize: 12,
+      withReview: true,
+      sortBy: EntriesSortByEnum.ReviewTop,
+    }),
+  );
+
   // const { isLoading: isLoadingNewPopularReleases } = useQuery(
   //   cacheKeys.releasesKey({
   //     type: FindReleasesType.NewPopular,
@@ -243,14 +259,14 @@ const HomePage = () => {
 
         <TopReviewsSection />
         {/* minimize layout shift */}
-        {/* {!isLoadingNewPopularReleases ? ( */}
-        <Fragment>
-          <Support />
-          <LatestListsSection />
-          <RecentlyAddedReleasesSection />
-          <RecentReviewsSection />
-        </Fragment>
-        {/* ) : null} */}
+        {!isLoadingReviews ? (
+          <Fragment>
+            <Support />
+            <LatestListsSection />
+            <RecentlyAddedReleasesSection />
+            <RecentReviewsSection />
+          </Fragment>
+        ) : null}
       </Stack>
     </AppPageWrapper>
   );
