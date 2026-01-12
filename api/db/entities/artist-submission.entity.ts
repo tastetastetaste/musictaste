@@ -85,6 +85,10 @@ export class ArtistChanges {
   @IsString({ each: true })
   @IsOptional()
   relatedArtistsIds: string[];
+
+  @IsString()
+  @IsOptional()
+  countryId?: string;
 }
 
 @Entity()

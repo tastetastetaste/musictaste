@@ -20,6 +20,7 @@ import {
   IArtistSubmissionsResponse,
   IAutofillRelease,
   ICommentsResponse,
+  ICountriesResponse,
   ICreateArtistResponse,
   ICreateGenreSubmissionResponse,
   ICreateLabelResponse,
@@ -131,6 +132,11 @@ const getGenres = () => client.get('genres').json<IGenresResponse>();
 // ----------------
 const getLanguages = () =>
   client.get('languages').json<{ languages: ILanguage[] }>();
+
+// ----------------
+//     COUNTRY
+// ----------------
+const getCountries = () => client.get('countries').json<ICountriesResponse>();
 
 // ----------------
 //     AUTH
@@ -742,6 +748,7 @@ export const api = {
   createLabel,
   updateLabel,
   getLanguages,
+  getCountries,
   login,
   signup,
   logout,

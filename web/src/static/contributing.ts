@@ -59,6 +59,7 @@ You can autofill the fields by importing from MusicBrainz.
 - **Name**: The original name of the artist.
 - **English / Latin-script name (if applicable)**: The name of the artist in English or Latin-script if the original name is in non-Latin script.
 - **Disambiguation**: A very short description of the artist to distinguish them from other artists with the same name.
+- **Country**: The country of birth for artists and the country of formation for groups.
 - **Group Members**: Members of the group
   - If members don't have pages in the database, create a new artist page for them and link them here.
   - **Current**: Uncheck this box if this is a former member of the group.

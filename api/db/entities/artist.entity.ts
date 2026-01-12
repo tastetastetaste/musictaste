@@ -12,6 +12,7 @@ import { SharedBaseEntity } from '../shared/base-entity';
 import { ReleaseArtist } from './release-artist.entity';
 import { GroupArtist } from './group-artist.entity';
 import { RelatedArtist } from './related-artist.entity';
+import { Country } from './country.entity';
 
 @Entity()
 export class Artist extends SharedBaseEntity {
@@ -61,6 +62,13 @@ export class Artist extends SharedBaseEntity {
 
   @Column({ nullable: true })
   mainArtistId?: string;
+
+  @Column({ nullable: true })
+  countryId?: string;
+
+  @ManyToOne(() => Country)
+  @JoinColumn({ name: 'countryId' })
+  country?: Country;
 
   @ManyToOne(() => Artist, (artist) => artist.aliases, { nullable: true })
   @JoinColumn({ name: 'mainArtistId' })

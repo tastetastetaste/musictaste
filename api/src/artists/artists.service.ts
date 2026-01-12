@@ -38,7 +38,14 @@ export class ArtistsService {
   async findOne(id: string): Promise<IArtistResponse> {
     const artist = await this.artistsRepository.findOne({
       where: { id },
-      relations: ['aliases', 'related', 'relatedTo', 'groupArtists', 'groups'],
+      relations: [
+        'aliases',
+        'related',
+        'relatedTo',
+        'groupArtists',
+        'groups',
+        'country',
+      ],
     });
 
     if (!artist) throw new NotFoundException();
@@ -98,6 +105,7 @@ export class ArtistsService {
     mainArtistId,
     relatedArtistsIds,
     groupArtists,
+    countryId,
   }: ArtistChanges) {
     const id = genId();
 
@@ -109,6 +117,7 @@ export class ArtistsService {
       type,
       disambiguation,
       mainArtistId,
+      countryId,
     });
 
     const artist = await this.artistsRepository.findOne({ where: { id } });
@@ -153,6 +162,7 @@ export class ArtistsService {
       mainArtistId,
       relatedArtistsIds,
       groupArtists,
+      countryId,
     },
   }: {
     artistId: string;
@@ -182,6 +192,7 @@ export class ArtistsService {
     artist.type = type;
     artist.disambiguation = disambiguation;
     artist.mainArtistId = type === ArtistType.Alias ? mainArtistId : null;
+    artist.countryId = type !== ArtistType.Alias ? countryId : null;
 
     if (type !== ArtistType.Alias) {
       const currentRelatedIds = [

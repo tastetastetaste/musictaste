@@ -23,6 +23,7 @@ import { GenresModule } from '../genres/genres.module';
 import { Genre } from '../../db/entities/genre.entity';
 import { CommentsModule } from '../comments/comments.module';
 import { EntitiesModule } from '../entities/entities.module';
+import { Country } from '../../db/entities/country.entity';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { EntitiesModule } from '../entities/entities.module';
       ArtistSubmissionVote,
       GenreSubmission,
       GenreSubmissionVote,
+      Country,
     ]),
     ReleasesModule,
     ImagesModule,

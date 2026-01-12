@@ -9,6 +9,7 @@ import { ArtistsController } from './artists.controller';
 import { ArtistsService } from './artists.service';
 import { RelatedArtist } from '../../db/entities/related-artist.entity';
 import { GroupArtist } from '../../db/entities/group-artist.entity';
+import { Country } from '../../db/entities/country.entity';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { GroupArtist } from '../../db/entities/group-artist.entity';
       ReleaseArtist,
       RelatedArtist,
       GroupArtist,
+      Country,
     ]),
     ReleasesModule,
     EntitiesModule,

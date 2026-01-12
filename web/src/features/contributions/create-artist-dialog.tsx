@@ -17,9 +17,11 @@ import { Textarea } from '../../components/inputs/textarea';
 import { SelectSingleArtist } from './select-single-artist';
 import { SelectGroupArtist } from './select-group-artist';
 import { SelectArtist } from './select-artist';
+import { SelectCountry } from './select-country';
 
 export interface CreateArtistFormValues extends CreateArtistDto {
   mainArtist: { value: string; label: string };
+  country: { value: string; label: string };
   relatedArtists: { value: string; label: string }[];
 }
 
@@ -36,6 +38,7 @@ const CreateArtistDialog: React.FC<{
     disambiguation: '',
     relatedArtists: [],
     mainArtistId: '',
+    countryId: '',
     note: '',
   };
 
@@ -110,6 +113,17 @@ const CreateArtistDialog: React.FC<{
                 {...register('disambiguation')}
               />
               <FormInputError error={errors.disambiguation} />
+              <Controller
+                name="country"
+                control={control}
+                render={({ field }) => (
+                  <SelectCountry
+                    {...field}
+                    updateCountryId={(value) => setValue('countryId', value)}
+                  />
+                )}
+              />
+              <FormInputError error={errors.country || errors.countryId} />
             </>
           )}
           {artistType === ArtistType.Group && (

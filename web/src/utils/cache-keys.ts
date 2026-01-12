@@ -225,6 +225,9 @@ const genresKey = () => ['genres'];
 // LANGUAGES
 const languagesKey = () => ['languages'];
 
+// COUNTRIES
+const countriesKey = () => ['countries'];
+
 // LISTS
 const listKey = (id: string) => ['list', id];
 const listItemsKey = (id: string, page?: number) => ['list', id, 'items', page];
@@ -296,6 +299,7 @@ export const cacheKeys = {
   entriesKey,
   userLabelsKey,
   languagesKey,
+  countriesKey,
   listKey,
   listItemsKey,
   releaseListsKey,

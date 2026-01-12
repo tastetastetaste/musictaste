@@ -34,6 +34,7 @@ import { CacheModule } from '@nestjs/cache-manager';
 import { TasksModule } from './tasks/tasks.module';
 import KeyvRedis from '@keyv/redis';
 import { ScheduleModule } from '@nestjs/schedule';
+import { CountriesModule } from './countries/countries.module';
 
 @Module({
   imports: [
@@ -121,6 +122,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     NotificationsModule,
     EntitiesModule,
     TasksModule,
+    CountriesModule,
   ],
   controllers: [],
   providers: [

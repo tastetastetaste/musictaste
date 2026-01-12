@@ -270,6 +270,9 @@ const ArtistPage = () => {
                   ''
                 )}
               </Stack>
+              {artist.country ? (
+                <InfoRow label="Country">{artist.country.name}</InfoRow>
+              ) : null}
               {((artist.type === ArtistType.Person ||
                 artist.type === ArtistType.Alias) &&
                 artist.groups?.filter((g) => g.current)?.length) ||

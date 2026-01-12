@@ -83,6 +83,13 @@ export const ArtistSubmissionItem = ({
         renderValue={(v) => <span>{v}</span>}
       />
       <SubmissionField
+        label="Country"
+        originalValue={original?.country}
+        changedValue={changes?.country}
+        showOriginal={hasOriginal}
+        renderValue={(v) => <span>{v?.name}</span>}
+      />
+      <SubmissionField
         label="Group Artists"
         originalValue={original?.groupArtists?.sort((a, b) =>
           a?.artist?.name.localeCompare(b?.artist?.name),

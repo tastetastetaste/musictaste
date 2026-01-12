@@ -26,12 +26,22 @@ export interface IGroupArtist {
   group?: IArtistSummary;
 }
 
+export interface ICountry {
+  id: string;
+  name: string;
+}
+
+export interface ICountriesResponse {
+  countries: ICountry[];
+}
+
 export interface IArtist {
   id: string;
   name: string;
   type: ArtistType;
   nameLatin?: string;
   disambiguation?: string;
+  country?: ICountry;
   relatedArtists?: IArtistSummary[];
   mainArtistId?: string;
   mainArtist?: IArtistSummary;
@@ -503,6 +513,8 @@ export interface IArtistChanges {
   disambiguation?: string;
   mainArtistId?: string;
   mainArtist?: IArtistSummary;
+  countryId?: string;
+  country?: ICountry;
   relatedArtists: IArtistSummary[];
   groupArtists: IGroupArtist[];
 }

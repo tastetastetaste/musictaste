@@ -4,6 +4,7 @@ import { config } from 'dotenv';
 import { DataSource, DataSourceOptions } from 'typeorm';
 import { ArtistSubmission } from './entities/artist-submission.entity';
 import { Artist } from './entities/artist.entity';
+import { Country } from './entities/country.entity';
 import { GenreSubmission } from './entities/genre-submission.entity';
 import { Genre } from './entities/genre.entity';
 import { LabelSubmission } from './entities/label-submission.entity';
@@ -58,6 +59,7 @@ export const dataSourceOptions: DataSourceOptions = {
     Artist,
     GroupArtist,
     RelatedArtist,
+    Country,
     GenreSubmission,
     GenreSubmissionVote,
     Genre,

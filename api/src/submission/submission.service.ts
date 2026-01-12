@@ -58,6 +58,7 @@ import { Genre } from '../../db/entities/genre.entity';
 import { CommentsService } from '../comments/comments.service';
 import { EntitiesReferenceService } from '../entities/entitiesReference.service';
 import { formatReleaseDateInput, normalizeDate } from '../common/normalizeDate';
+import { Country } from '../../db/entities/country.entity';
 
 @Injectable()
 export class SubmissionService {
@@ -90,6 +91,8 @@ export class SubmissionService {
     private genreSubmissionRepository: Repository<GenreSubmission>,
     @InjectRepository(GenreSubmissionVote)
     private genreSubmissionVoteRepository: Repository<GenreSubmissionVote>,
+    @InjectRepository(Country)
+    private countriesRepository: Repository<Country>,
     private releasesService: ReleasesService,
     private imagesService: ImagesService,
     private usersService: UsersService,
@@ -107,6 +110,7 @@ export class SubmissionService {
       type,
       note,
       mainArtistId,
+      countryId,
       relatedArtistsIds,
       groupArtists,
       ...rest
@@ -146,6 +150,14 @@ export class SubmissionService {
           'Artist with this name and disambiguation already exists',
         );
       }
+      if (countryId) {
+        const country = await this.countriesRepository.findOne({
+          where: { id: countryId },
+        });
+        if (!country) {
+          throw new BadRequestException('Country not found');
+        }
+      }
     }
 
     const artistSubmission = new ArtistSubmission();
@@ -155,7 +167,8 @@ export class SubmissionService {
       nameLatin,
       type,
       disambiguation,
-      mainArtistId: type === ArtistType.Alias ? mainArtistId : undefined,
+      mainArtistId: type === ArtistType.Alias ? mainArtistId : null,
+      countryId: type !== ArtistType.Alias ? countryId : null,
       relatedArtistsIds: relatedArtistsIds,
       groupArtists: groupArtists,
     };
@@ -189,6 +202,7 @@ export class SubmissionService {
       type,
       note,
       mainArtistId,
+      countryId,
       relatedArtistsIds,
       groupArtists,
       ...rest
@@ -224,6 +238,15 @@ export class SubmissionService {
       throw new BadRequestException(
         'Main artist with aliases cannot be updated to an alias',
       );
+    }
+
+    if (type !== ArtistType.Alias && countryId) {
+      const country = await this.countriesRepository.findOne({
+        where: { id: countryId },
+      });
+      if (!country) {
+        throw new BadRequestException('Country not found');
+      }
     }
 
     const exist = await this.artistSubmissionRepository.findOne({
@@ -268,7 +291,8 @@ export class SubmissionService {
       nameLatin,
       type,
       disambiguation,
-      mainArtistId: type === ArtistType.Alias ? mainArtistId : undefined,
+      mainArtistId: type === ArtistType.Alias ? mainArtistId : null,
+      countryId: type !== ArtistType.Alias ? countryId : null,
       relatedArtistsIds: relatedArtistsIds,
       groupArtists: groupArtists?.map((ga) => ({
         artistId: ga.artistId,
@@ -281,6 +305,7 @@ export class SubmissionService {
       type: artist.type,
       disambiguation: artist.disambiguation,
       mainArtistId: artist.mainArtistId,
+      countryId: artist.countryId,
       relatedArtistsIds: [
         ...artist.related.map((ra) => ra.sourceId),
         ...artist.relatedTo.map((ra) => ra.targetId),
@@ -1373,6 +1398,24 @@ export class SubmissionService {
 
     const artistsMap = new Map(artists.map((artist) => [artist.id, artist]));
 
+    const allCountryIds = [
+      ...new Set([
+        ...rss.map((rs) => rs.changes.countryId),
+        ...rss.map((rs) => rs.original?.countryId),
+      ]),
+    ];
+
+    let countries: Country[] = [];
+    if (allCountryIds.length > 0) {
+      countries = await this.countriesRepository.find({
+        where: { id: In(allCountryIds) },
+      });
+    }
+
+    const countriesMap = new Map(
+      countries.map((country) => [country.id, country]),
+    );
+
     return {
       // @ts-ignore
       artists: rss.map(({ ...rs }) => ({
@@ -1380,6 +1423,7 @@ export class SubmissionService {
         changes: {
           ...rs.changes,
           mainArtist: artistsMap.get(rs.changes.mainArtistId) || null,
+          country: countriesMap.get(rs.changes.countryId) || null,
           // compatibility with relatedArtists string field
           relatedArtists:
             rs.changes.relatedArtistsIds?.length > 0
@@ -1395,6 +1439,7 @@ export class SubmissionService {
           ? {
               ...rs.original,
               mainArtist: artistsMap.get(rs.original.mainArtistId) || null,
+              country: countriesMap.get(rs.original.countryId) || null,
               // compatibility with relatedArtists string field
               relatedArtists:
                 rs.original.relatedArtistsIds?.length > 0
@@ -1460,11 +1505,27 @@ export class SubmissionService {
 
     const artistsMap = new Map(artists.map((artist) => [artist.id, artist]));
 
+    const allCountryIds = [
+      ...new Set([rs.changes.countryId, rs.original?.countryId]),
+    ].filter(Boolean);
+
+    let countries: Country[] = [];
+    if (allCountryIds.length > 0) {
+      countries = await this.countriesRepository.find({
+        where: { id: In(allCountryIds) },
+      });
+    }
+
+    const countriesMap = new Map(
+      countries.map((country) => [country.id, country]),
+    );
+
     return {
       ...rs,
       changes: {
         ...rs.changes,
         mainArtist: artistsMap.get(rs.changes.mainArtistId) || null,
+        country: countriesMap.get(rs.changes.countryId) || null,
         relatedArtists:
           rs.changes.relatedArtistsIds?.length > 0
             ? this.resolveEntities(rs.changes.relatedArtistsIds, artists)
@@ -1479,6 +1540,7 @@ export class SubmissionService {
         ? {
             ...rs.original,
             mainArtist: artistsMap.get(rs.original.mainArtistId) || null,
+            country: countriesMap.get(rs.original.countryId) || null,
             relatedArtists:
               rs.original.relatedArtistsIds?.length > 0
                 ? this.resolveEntities(rs.original.relatedArtistsIds, artists)

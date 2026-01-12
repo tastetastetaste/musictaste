@@ -25,9 +25,11 @@ import { SelectArtist } from './select-artist';
 import { SelectGroupArtist } from './select-group-artist';
 import CreateArtistDialog from './create-artist-dialog';
 import { FlexChild } from '../../components/flex/flex-child';
+import { SelectCountry } from './select-country';
 
 export interface EditArtistFormValues extends UpdateArtistDto {
   mainArtist: { value: string; label: string };
+  country: { value: string; label: string };
   relatedArtists: { value: string; label: string }[];
 }
 
@@ -41,6 +43,7 @@ const EditArtistPage = () => {
     relatedArtists: [],
     relatedArtistsIds: [],
     mainArtistId: '',
+    countryId: '',
     note: '',
   };
 
@@ -113,6 +116,13 @@ const EditArtistPage = () => {
         nameLatin: artistData.artist.nameLatin || '',
         type: artistData.artist.type,
         disambiguation: artistData.artist.disambiguation || '',
+        country: artistData.artist.country
+          ? {
+              value: artistData.artist.country.id,
+              label: artistData.artist.country.name,
+            }
+          : null,
+        countryId: artistData.artist.country?.id,
         groupArtists:
           artistData.artist.groupArtists?.map((ga) => ({
             artistName: ga.artist.name,
@@ -213,6 +223,17 @@ const EditArtistPage = () => {
                   {...register('disambiguation')}
                 />
                 <FormInputError error={errors.disambiguation} />
+                <Controller
+                  name="country"
+                  control={control}
+                  render={({ field }) => (
+                    <SelectCountry
+                      {...field}
+                      updateCountryId={(value) => setValue('countryId', value)}
+                    />
+                  )}
+                />
+                <FormInputError error={errors.country || errors.countryId} />
               </>
             )}
             {artistType === ArtistType.Group && (

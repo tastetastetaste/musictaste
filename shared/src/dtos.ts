@@ -259,6 +259,10 @@ export class CreateArtistDto {
   mainArtistId?: string;
 
   @IsOptional()
+  @IsString()
+  countryId?: string;
+
+  @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => GroupArtistDto)
@@ -316,6 +320,10 @@ export class UpdateArtistDto {
   @IsString()
   @MinLength(1)
   mainArtistId?: string;
+
+  @IsOptional()
+  @IsString()
+  countryId?: string;
 
   @IsOptional()
   @IsArray()
