@@ -117,7 +117,7 @@ export class ArtistsService {
       type,
       disambiguation,
       mainArtistId,
-      countryId,
+      countryId: countryId || null,
     });
 
     const artist = await this.artistsRepository.findOne({ where: { id } });
@@ -192,7 +192,7 @@ export class ArtistsService {
     artist.type = type;
     artist.disambiguation = disambiguation;
     artist.mainArtistId = type === ArtistType.Alias ? mainArtistId : null;
-    artist.countryId = type !== ArtistType.Alias ? countryId : null;
+    artist.countryId = type !== ArtistType.Alias ? countryId || null : null;
 
     if (type !== ArtistType.Alias) {
       const currentRelatedIds = [
