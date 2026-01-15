@@ -63,7 +63,7 @@ You can autofill the fields by importing from MusicBrainz.
 - **Group Members**: Members of the group
   - If members don't have pages in the database, create a new artist page for them and link them here.
   - **Current**: Uncheck this box if this is a former member of the group.
-- **Related Artists**: This should only be used for artists that are closely related, such as sub-units of a group. (note that alias profiles cannot be linked as related artists)
+- **Related Artists**: Groups can be linked if they share at least two members, and artists can be linked if they are spouses or immediate family members. Make sure to provide sources and specify the relationship in the note.
 - **Note/Source**: Add a note for the person reviewing your contribution (include links).
 - **Submit**: Click **"Submit"** to add the artist.
 
