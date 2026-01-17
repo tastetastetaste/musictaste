@@ -25,6 +25,7 @@ import { cacheKeys } from '../utils/cache-keys';
 import FeaturesOverview from './features-overview';
 import ReviewsListRenderer from '../features/reviews/reviews-list-renderer';
 import { useOnScreen } from '../hooks/useOnScreen';
+import { CommunityHighlight } from './community-highlight';
 
 const ROOT_MARGIN = '100px';
 const SECTION_MIN_HEIGHT = '500px';
@@ -263,6 +264,7 @@ const HomePage = () => {
           <Fragment>
             <Support />
             <LatestListsSection />
+            <CommunityHighlight />
             <RecentlyAddedReleasesSection />
             <RecentReviewsSection />
           </Fragment>
