@@ -515,8 +515,20 @@ export class ReleasesService {
       });
     }
 
+    const m = minRatingsCount;
+    const C = 60;
+
+    // weighted rating = (v/(v+m)) * R + (m/(v+m)) * C
+    // v = number of votes (ratings)
+    // m = minimum number of ratings
+    // R = average rating of the release
+    // C = average rating for all music
     const result = await query
-      .orderBy('AVG(rating.rating)', 'DESC', 'NULLS LAST')
+      .addSelect(
+        `((1.0 * COUNT(rating.id) / (COUNT(rating.id) + ${m})) * AVG(rating.rating)) + ((1.0 * ${m} / (COUNT(rating.id) + ${m})) * ${C})`,
+        'weighted_rating',
+      )
+      .orderBy('weighted_rating', 'DESC', 'NULLS LAST')
       .addOrderBy('ur.releaseId', 'DESC')
       .limit(100)
       .getRawMany();
@@ -594,8 +606,15 @@ export class ReleasesService {
       });
     }
 
+    const m = minRatingsCount;
+    const C = 60;
+
     const result = await query
-      .orderBy('AVG(rating.rating)', 'DESC', 'NULLS LAST')
+      .addSelect(
+        `((1.0 * COUNT(rating.id) / (COUNT(rating.id) + ${m})) * AVG(rating.rating)) + ((1.0 * ${m} / (COUNT(rating.id) + ${m})) * ${C})`,
+        'weighted_rating',
+      )
+      .orderBy('weighted_rating', 'DESC', 'NULLS LAST')
       .addOrderBy('ur.releaseId', 'DESC')
       .limit(100)
       .getRawMany();
