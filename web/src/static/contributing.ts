@@ -84,6 +84,7 @@ You can edit releases, artists, and genres using a similar process:
 - Click the dropdown menu in the top right corner and select **"Edit"**.  
 - Make your changes and click **"Submit"**.  
 - Edits may take up to 24 hours to be approved.
+- Edits by the original contributor within one hour of submission override the original.
 
 ## References
 

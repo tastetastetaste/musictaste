@@ -18,6 +18,7 @@ import { ReleasesService } from '../releases/releases.service';
 import { RelatedArtist } from '../../db/entities/related-artist.entity';
 import { GroupArtist } from '../../db/entities/group-artist.entity';
 import { compareIds } from '../common/compareIds';
+import { RedisService } from '../redis/redis.service';
 
 @Injectable()
 export class ArtistsService {
@@ -33,6 +34,7 @@ export class ArtistsService {
     private groupArtistRepository: Repository<GroupArtist>,
     private releasesService: ReleasesService,
     private entitiesService: EntitiesService,
+    private redisService: RedisService,
   ) {}
 
   async findOne(id: string): Promise<IArtistResponse> {
@@ -295,7 +297,9 @@ export class ArtistsService {
     artist.groups = undefined;
     artist.related = undefined;
     artist.relatedTo = undefined;
-    return this.artistsRepository.save(artist);
+    const savedArtist = await this.artistsRepository.save(artist);
+    await this.redisService.invalidateArtistCache(savedArtist.id);
+    return savedArtist;
   }
 
   async deleteArtist(id: string) {

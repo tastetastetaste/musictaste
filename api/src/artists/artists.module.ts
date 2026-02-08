@@ -10,6 +10,7 @@ import { ArtistsService } from './artists.service';
 import { RelatedArtist } from '../../db/entities/related-artist.entity';
 import { GroupArtist } from '../../db/entities/group-artist.entity';
 import { Country } from '../../db/entities/country.entity';
+import { RedisModule } from '../redis/redis.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { Country } from '../../db/entities/country.entity';
     ]),
     ReleasesModule,
     EntitiesModule,
+    RedisModule,
   ],
   controllers: [ArtistsController],
   providers: [ArtistsService],

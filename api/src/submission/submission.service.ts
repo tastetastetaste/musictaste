@@ -249,14 +249,17 @@ export class SubmissionService {
       }
     }
 
-    const exist = await this.artistSubmissionRepository.findOne({
+    const allArtistSubmissions = await this.artistSubmissionRepository.find({
       where: {
         artistId,
-        submissionStatus: SubmissionStatus.OPEN,
       },
     });
 
-    if (exist) {
+    if (
+      allArtistSubmissions.some(
+        (s) => s.submissionStatus === SubmissionStatus.OPEN,
+      )
+    ) {
       throw new BadRequestException(
         'There is already an open edit submission for this artist',
       );
@@ -324,16 +327,49 @@ export class SubmissionService {
       })),
     };
     as.submissionType = SubmissionType.UPDATE;
-    as.submissionStatus = SubmissionStatus.OPEN;
+    as.submissionStatus =
+      user.contributorStatus >= ContributorStatus.EDITOR
+        ? SubmissionStatus.APPROVED
+        : SubmissionStatus.OPEN;
     as.userId = user.id;
     as.note = note;
 
-    await this.artistSubmissionRepository.save(as);
+    // Created less than 1 hour ago by the same user
+    if (
+      allArtistSubmissions.length === 1 &&
+      allArtistSubmissions[0].userId === user.id &&
+      allArtistSubmissions[0].submissionType === SubmissionType.CREATE &&
+      (allArtistSubmissions[0].submissionStatus ===
+        SubmissionStatus.AUTO_APPROVED ||
+        allArtistSubmissions[0].submissionStatus ===
+          SubmissionStatus.APPROVED) &&
+      dayjs().diff(allArtistSubmissions[0].createdAt, 'minutes') <= 60
+    ) {
+      // Update the submission and apply changes
+      await this.applyArtistSubmission(as);
 
-    return {
-      message: `Artist "${name}" is awaiting approval`,
-      artistSubmission: as,
-    };
+      const updatedArtistSubmission = allArtistSubmissions[0];
+
+      updatedArtistSubmission.changes = as.changes;
+      updatedArtistSubmission.note = as.note;
+
+      await this.artistSubmissionRepository.save(updatedArtistSubmission);
+
+      return { message: 'Updated successfully' };
+    } else {
+      // Create a new submission
+
+      const newArtistSubmission =
+        await this.artistSubmissionRepository.save(as);
+
+      if (newArtistSubmission.submissionStatus === SubmissionStatus.APPROVED) {
+        await this.applyArtistSubmission(newArtistSubmission);
+
+        return { message: 'Updated successfully' };
+      } else {
+        return { message: 'Submitted for review' };
+      }
+    }
   }
 
   private async applyArtistSubmission(submission: ArtistSubmission) {
@@ -404,34 +440,69 @@ export class SubmissionService {
 
     if (!label) throw new NotFoundException();
 
-    const exist = await this.labelSubmissionRepository.findOne({
+    const allLabelSubmissions = await this.labelSubmissionRepository.find({
       where: {
         labelId,
-        submissionStatus: SubmissionStatus.OPEN,
       },
     });
 
-    if (exist) {
+    if (
+      allLabelSubmissions.some(
+        (s) => s.submissionStatus === SubmissionStatus.OPEN,
+      )
+    ) {
       throw new BadRequestException(
         'There is already an open edit submission for this label',
       );
     }
 
-    const as = new LabelSubmission();
-    as.labelId = labelId;
-    as.changes = { name, nameLatin };
-    as.original = { name: label.name, nameLatin: label.nameLatin };
-    as.submissionType = SubmissionType.UPDATE;
-    as.submissionStatus = SubmissionStatus.OPEN;
-    as.userId = user.id;
-    as.note = note;
+    const ls = new LabelSubmission();
+    ls.labelId = labelId;
+    ls.changes = { name, nameLatin };
+    ls.original = { name: label.name, nameLatin: label.nameLatin };
+    ls.submissionType = SubmissionType.UPDATE;
+    ls.submissionStatus =
+      user.contributorStatus >= ContributorStatus.EDITOR
+        ? SubmissionStatus.APPROVED
+        : SubmissionStatus.OPEN;
+    ls.userId = user.id;
+    ls.note = note;
 
-    await this.labelSubmissionRepository.save(as);
+    // Created less than 1 hour ago by the same user
+    if (
+      allLabelSubmissions.length === 1 &&
+      allLabelSubmissions[0].userId === user.id &&
+      allLabelSubmissions[0].submissionType === SubmissionType.CREATE &&
+      (allLabelSubmissions[0].submissionStatus ===
+        SubmissionStatus.AUTO_APPROVED ||
+        allLabelSubmissions[0].submissionStatus ===
+          SubmissionStatus.APPROVED) &&
+      dayjs().diff(allLabelSubmissions[0].createdAt, 'minutes') <= 60
+    ) {
+      await this.applyLabelSubmission(ls);
 
-    return {
-      message: `Label "${name}" is awaiting approval`,
-      labelSubmission: as,
-    };
+      const updatedLabelSubmission = allLabelSubmissions[0];
+
+      updatedLabelSubmission.changes = ls.changes;
+      updatedLabelSubmission.note = ls.note;
+
+      await this.labelSubmissionRepository.save(updatedLabelSubmission);
+
+      return {
+        message: `Updated successfully`,
+      };
+    } else {
+      const newLabelSubmission = await this.labelSubmissionRepository.save(ls);
+
+      if (newLabelSubmission.submissionStatus === SubmissionStatus.APPROVED) {
+        await this.applyLabelSubmission(newLabelSubmission);
+        return {
+          message: `Updated successfully`,
+        };
+      } else {
+        return { message: 'Submitted for review' };
+      }
+    }
   }
 
   private async applyLabelSubmission(submission: LabelSubmission) {
@@ -583,14 +654,18 @@ export class SubmissionService {
 
     if (!release) throw new NotFoundException();
 
-    const exist = await this.releaseSubmissionRepository.findOne({
+    const allReleaseSubmissions = await this.releaseSubmissionRepository.find({
       where: {
         releaseId,
-        submissionStatus: SubmissionStatus.OPEN,
       },
     });
 
-    if (exist) {
+    // Open submission exists
+    if (
+      allReleaseSubmissions.some(
+        (s) => s.submissionStatus === SubmissionStatus.OPEN,
+      )
+    ) {
       throw new BadRequestException(
         'There is already an open edit submission for this release',
       );
@@ -653,16 +728,42 @@ export class SubmissionService {
         })),
     };
 
-    const newReleaseSubmission =
-      await this.releaseSubmissionRepository.save(rs);
+    // Created less than 1 hour ago by the same user
+    if (
+      allReleaseSubmissions.length === 1 &&
+      allReleaseSubmissions[0].userId === user.id &&
+      allReleaseSubmissions[0].submissionType === SubmissionType.CREATE &&
+      (allReleaseSubmissions[0].submissionStatus ===
+        SubmissionStatus.AUTO_APPROVED ||
+        allReleaseSubmissions[0].submissionStatus ===
+          SubmissionStatus.APPROVED) &&
+      dayjs().diff(allReleaseSubmissions[0].createdAt, 'minutes') <= 60
+    ) {
+      // Update the submission and apply changes
+      await this.applyReleaseSubmission(rs);
 
-    if (newReleaseSubmission.submissionStatus === SubmissionStatus.APPROVED) {
-      await this.applyReleaseSubmission(newReleaseSubmission);
+      const updatedReleaseSubmission = allReleaseSubmissions[0];
 
-      return { message: 'Your changes are live!' };
+      updatedReleaseSubmission.changes = rs.changes;
+      updatedReleaseSubmission.note = rs.note;
+
+      await this.releaseSubmissionRepository.save(updatedReleaseSubmission);
+
+      return { message: 'Updated successfully' };
+    } else {
+      // Create a new submission
+
+      const newReleaseSubmission =
+        await this.releaseSubmissionRepository.save(rs);
+
+      if (newReleaseSubmission.submissionStatus === SubmissionStatus.APPROVED) {
+        await this.applyReleaseSubmission(newReleaseSubmission);
+
+        return { message: 'Updated successfully' };
+      } else {
+        return { message: 'Submitted for review' };
+      }
     }
-
-    return { message: 'Submitted for review - thank you!' };
   }
 
   // --- GENRES

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { createClient, RedisClientType } from 'redis';
+import { FindReleasesType } from 'shared';
 
 @Injectable()
 export class RedisService {
@@ -144,7 +145,19 @@ export class RedisService {
     return this.updateUserSessionsField(userId, 'accountStatus', newStatus);
   }
 
-  async invalidateKeys(pattern: string) {
+  async invalidateReleasesCache(type?: FindReleasesType) {
+    await this.invalidateKeys(`/releases?${type ? `type=${type}` : ''}*`);
+  }
+
+  async invalidateReleaseCache(id: string) {
+    await this.invalidateKeys(`/releases/${id}*`);
+  }
+
+  async invalidateArtistCache(id: string) {
+    await this.invalidateKeys(`/artists/${id}*`);
+  }
+
+  private async invalidateKeys(pattern: string) {
     const keysArray = [];
 
     for await (const keys of this.client.scanIterator({

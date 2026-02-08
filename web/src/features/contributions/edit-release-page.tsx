@@ -167,8 +167,8 @@ const EditReleasePage = () => {
     isLoading,
     data,
   } = useMutation(api.updateRelease, {
-    onSuccess: () => {
-      snackbar('Changes submitted successfully');
+    onSuccess: ({ message }) => {
+      snackbar(message || 'Changes submitted successfully');
 
       navigate(`/release/${releaseId}`, { replace: true });
     },

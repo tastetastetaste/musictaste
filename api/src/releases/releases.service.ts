@@ -731,7 +731,9 @@ export class ReleasesService {
           .execute();
       }
 
-      await this.invalidateReleasesCache(FindReleasesType.RecentlyAdded);
+      await this.redisService.invalidateReleasesCache(
+        FindReleasesType.RecentlyAdded,
+      );
 
       return release;
     } catch (err) {
@@ -867,6 +869,8 @@ export class ReleasesService {
 
     const release = await this.releasesRepository.save(_release);
 
+    await this.redisService.invalidateReleaseCache(release.id);
+
     return release;
   }
 
@@ -878,6 +882,8 @@ export class ReleasesService {
       ),
       this.releasesRepository.delete(id),
     ]);
+
+    await this.redisService.invalidateReleaseCache(id);
 
     return true;
   }
@@ -983,11 +989,5 @@ export class ReleasesService {
       mergedFrom: mergeFrom.title,
       mergedInto: mergeInto.title,
     };
-  }
-
-  async invalidateReleasesCache(type?: FindReleasesType) {
-    await this.redisService.invalidateKeys(
-      `/releases?${type ? `type=${type}` : ''}*`,
-    );
   }
 }
