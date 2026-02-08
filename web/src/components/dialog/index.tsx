@@ -25,6 +25,8 @@ const DialogBox = styled.div`
   max-width: 500px;
   width: 100%;
   z-index: 2001;
+  max-height: 80%;
+  overflow-y: scroll;
 `;
 
 interface DialogProps {
