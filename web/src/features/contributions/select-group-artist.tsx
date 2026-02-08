@@ -1,6 +1,6 @@
 import { IconMinus } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Controller, useFieldArray } from 'react-hook-form';
 import { Group } from '../../components/flex/group';
 import { Stack } from '../../components/flex/stack';
@@ -58,6 +58,8 @@ export const SelectGroupArtist = ({ control }: any) => {
           data?.artists &&
           data.artists
             .filter((a) => a.type !== ArtistType.Group)
+            // @ts-ignore
+            .filter((a) => !fields.some((f) => f.artistId === a.id))
             .map(({ id, name, nameLatin, disambiguation }) => ({
               value: id,
               label:
