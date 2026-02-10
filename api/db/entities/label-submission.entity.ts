@@ -20,6 +20,14 @@ export class LabelChanges {
   @IsString()
   @IsOptional()
   nameLatin?: string;
+
+  @IsString()
+  @IsOptional()
+  shortName?: string;
+
+  @IsString()
+  @IsOptional()
+  disambiguation?: string;
 }
 
 @Entity()

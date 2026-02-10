@@ -137,11 +137,11 @@ export const ArtistsLinks = ({ artists }: { artists: IArtistSummary[] }) => {
 export const LabelsLinks = ({ labels }: { labels: ILabelSummary[] }) => {
   return (
     <Typography color="sub">
-      {labels.map(({ id, name, nameLatin }, i) => (
+      {labels.map(({ id, name, nameLatin, shortName }, i) => (
         <Fragment key={id}>
           {i > 0 && ', '}
           <Link to={getLabelPath({ labelId: id })}>
-            {name}
+            {shortName || name}
             {nameLatin ? (
               <span css={{ fontStyle: 'italic' }}> [{nameLatin}]</span>
             ) : (

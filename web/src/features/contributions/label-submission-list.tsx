@@ -58,6 +58,20 @@ export const LabelSubmissionItem = ({
         showOriginal={hasOriginal}
         renderValue={(v) => <span>{v}</span>}
       />
+      <SubmissionField
+        label="Short name"
+        originalValue={original?.shortName}
+        changedValue={changes?.shortName}
+        showOriginal={hasOriginal}
+        renderValue={(v) => <span>{v}</span>}
+      />
+      <SubmissionField
+        label="Disambiguation"
+        originalValue={original?.disambiguation}
+        changedValue={changes?.disambiguation}
+        showOriginal={hasOriginal}
+        renderValue={(v) => <span>{v}</span>}
+      />
       {submission.note && (
         <SubmissionField
           label="Note"

@@ -11,6 +11,7 @@ import { Input } from '../../components/inputs/input';
 import { Typography } from '../../components/typography';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
+import { Textarea } from '../../components/inputs/textarea';
 
 const CreateLabelDialog: React.FC<{
   isOpen: boolean;
@@ -21,6 +22,9 @@ const CreateLabelDialog: React.FC<{
   const defaultValues = {
     name: '',
     nameLatin: '',
+    shortName: '',
+    disambiguation: '',
+    note: '',
   };
   const {
     handleSubmit,
@@ -54,13 +58,19 @@ const CreateLabelDialog: React.FC<{
         }}
       >
         <Stack gap="sm">
-          <Input placeholder="Name" {...register('name')} />
+          <Input placeholder="Full Name" {...register('name')} />
           <FormInputError error={errors.name} />
+          <Input placeholder="Short Name" {...register('shortName')} />
+          <FormInputError error={errors.shortName} />
           <Input
             placeholder="English / Latin-script name (if applicable)"
             {...register('nameLatin')}
           />
           <FormInputError error={errors.nameLatin} />
+          <Input placeholder="Disambiguation" {...register('disambiguation')} />
+          <FormInputError error={errors.disambiguation} />
+          <Textarea {...register('note')} placeholder="Note/source" rows={2} />
+          <FormInputError error={errors.note} />
           <Button variant="main" type="submit" disabled={isLoading}>
             Submit
           </Button>

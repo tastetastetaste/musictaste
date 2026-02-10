@@ -23,6 +23,8 @@ const EditLabelPage = () => {
   const defaultValues = {
     name: '',
     nameLatin: '',
+    shortName: '',
+    disambiguation: '',
     note: '',
   };
 
@@ -88,6 +90,8 @@ const EditLabelPage = () => {
         ...defaultValues,
         name: labelData.label.name,
         nameLatin: labelData.label.nameLatin || '',
+        shortName: labelData.label.shortName || '',
+        disambiguation: labelData.label.disambiguation || '',
       });
     }
   }, [labelData]);
@@ -112,13 +116,20 @@ const EditLabelPage = () => {
                 Need help? Read the Contributing Guide.
               </Link>
             </Group>
-            <Input placeholder="Name" {...register('name')} />
+            <Input placeholder="Full Name" {...register('name')} />
             <FormInputError error={errors.name} />
+            <Input placeholder="Short Name" {...register('shortName')} />
+            <FormInputError error={errors.shortName} />
             <Input
-              placeholder="Name (Latin script)"
+              placeholder="English / Latin-script name (if applicable)"
               {...register('nameLatin')}
             />
             <FormInputError error={errors.nameLatin} />
+            <Input
+              placeholder="Disambiguation"
+              {...register('disambiguation')}
+            />
+            <FormInputError error={errors.disambiguation} />
             <Textarea
               {...register('note')}
               placeholder="Note/source"

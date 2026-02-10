@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { Label } from '../../db/entities/label.entity';
 import { EntitiesService } from '../entities/entities.service';
 import { ReleaseLabel } from '../../db/entities/release-label.entity';
+import { LabelChanges } from '../../db/entities/label-submission.entity';
 
 @Injectable()
 export class LabelsService {
@@ -26,20 +27,27 @@ export class LabelsService {
     };
   }
 
-  async createLabel({ name, nameLatin }: CreateLabelDto): Promise<Label> {
+  async createLabel({
+    name,
+    nameLatin,
+    shortName,
+    disambiguation,
+  }: LabelChanges): Promise<Label> {
     const label = new Label();
     label.name = name;
     label.nameLatin = nameLatin;
+    label.shortName = shortName;
+    label.disambiguation = disambiguation;
 
     return this.labelRepository.save(label);
   }
 
   async updateLabel({
     labelId,
-    changes: { name, nameLatin },
+    changes: { name, nameLatin, shortName, disambiguation },
   }: {
     labelId: string;
-    changes: { name: string; nameLatin?: string };
+    changes: LabelChanges;
   }): Promise<Label> {
     const label = await this.labelRepository.findOne({
       where: { id: labelId },
@@ -48,12 +56,19 @@ export class LabelsService {
     if (!label) throw new NotFoundException();
 
     label.name = name;
-    label.nameLatin = nameLatin;
+    label.nameLatin = nameLatin || null;
+    label.shortName = shortName || null;
+    label.disambiguation = disambiguation || null;
+
     return this.labelRepository.save(label);
   }
 
   async deleteLabel(id: string) {
     return await this.labelRepository.delete(id);
+  }
+
+  async labelNameExists(name: string) {
+    return await this.labelRepository.findOne({ where: { name } });
   }
 
   async mergeLabels(mergeFromId: string, mergeIntoId: string) {

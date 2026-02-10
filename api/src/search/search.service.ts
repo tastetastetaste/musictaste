@@ -106,16 +106,22 @@ export class SearchService {
       type.includes('labels')
         ? this.labelsRepository
             .createQueryBuilder('label')
-            .select(['label.id', 'label.name', 'label.nameLatin'])
+            .select([
+              'label.id',
+              'label.name',
+              'label.nameLatin',
+              'label.shortName',
+              'label.disambiguation',
+            ])
             .addSelect(
               `ts_rank(
-                to_tsvector('simple', unaccent(label.name || ' ' || COALESCE(label.nameLatin, ''))),
+                to_tsvector('simple', unaccent(label.name || ' ' || COALESCE(label.nameLatin, '') || ' ' || COALESCE(label.shortName, ''))),
                 plainto_tsquery('simple', unaccent(:query))
               )`,
               'search_rank',
             )
             .where(
-              `to_tsvector('simple', unaccent(label.name || ' ' || COALESCE(label.nameLatin, ''))) @@ plainto_tsquery('simple', unaccent(:query))`,
+              `to_tsvector('simple', unaccent(label.name || ' ' || COALESCE(label.nameLatin, '') || ' ' || COALESCE(label.shortName, ''))) @@ plainto_tsquery('simple', unaccent(:query))`,
             )
             .orderBy('search_rank', 'DESC')
             .addOrderBy('LENGTH(label.name)', 'ASC')

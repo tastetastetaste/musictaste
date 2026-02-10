@@ -143,7 +143,7 @@ export class SubmissionService {
       const nameExists = await this.artistsService.artistNameExists(name);
       if (nameExists && !disambiguation) {
         throw new BadRequestException(
-          'Artist name already exists; disambiguation is required',
+          'Artist with this name already exists - disambiguation is required',
         );
       } else if (nameExists && disambiguation === nameExists.disambiguation) {
         throw new BadRequestException(
@@ -392,15 +392,27 @@ export class SubmissionService {
   // --- LABELS
 
   async createLabelSubmission(
-    { name, nameLatin }: CreateLabelDto,
+    { name, nameLatin, shortName, disambiguation, note }: CreateLabelDto,
     user: CurrentUserPayload,
   ) {
     if (user.contributorStatus === ContributorStatus.NOT_A_CONTRIBUTOR)
       throw new BadRequestException(
         "You can't submit contributions at this time",
       );
+
+    const nameExists = await this.labelsService.labelNameExists(name);
+    if (nameExists && !disambiguation) {
+      throw new BadRequestException(
+        'Label with this name already exists - disambiguation is required',
+      );
+    } else if (nameExists && disambiguation === nameExists.disambiguation) {
+      throw new BadRequestException(
+        'Label with this name and disambiguation already exists',
+      );
+    }
     const labelSubmission = new LabelSubmission();
-    labelSubmission.changes = { name, nameLatin };
+    labelSubmission.changes = { name, nameLatin, shortName, disambiguation };
+    labelSubmission.note = note;
     labelSubmission.submissionType = SubmissionType.CREATE;
     labelSubmission.submissionStatus =
       user.contributorStatus >= ContributorStatus.EDITOR
@@ -426,7 +438,7 @@ export class SubmissionService {
 
   async updateLabelSubmission(
     labelId: string,
-    { name, nameLatin, note }: UpdateLabelDto,
+    { name, nameLatin, shortName, disambiguation, note }: UpdateLabelDto,
     user: CurrentUserPayload,
   ) {
     if (user.contributorStatus === ContributorStatus.NOT_A_CONTRIBUTOR)
@@ -458,8 +470,13 @@ export class SubmissionService {
 
     const ls = new LabelSubmission();
     ls.labelId = labelId;
-    ls.changes = { name, nameLatin };
-    ls.original = { name: label.name, nameLatin: label.nameLatin };
+    ls.changes = { name, nameLatin, shortName, disambiguation };
+    ls.original = {
+      name: label.name,
+      nameLatin: label.nameLatin,
+      shortName: label.shortName,
+      disambiguation: label.disambiguation,
+    };
     ls.submissionType = SubmissionType.UPDATE;
     ls.submissionStatus =
       user.contributorStatus >= ContributorStatus.EDITOR

@@ -42,6 +42,11 @@ export const LabelSearchLink = ({ label }: { label: ILabelSummary }) => (
     ) : (
       ''
     )}
+    {label.disambiguation ? (
+      <span css={{ opacity: 0.6 }}>({label.disambiguation})</span>
+    ) : (
+      ''
+    )}
   </Link>
 );
 

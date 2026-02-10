@@ -353,6 +353,19 @@ export class CreateLabelDto {
   @IsString()
   @IsOptional()
   nameLatin?: string;
+
+  @IsString()
+  @IsOptional()
+  shortName?: string;
+
+  @IsString()
+  @IsOptional()
+  @MaxLength(100)
+  disambiguation?: string;
+
+  @IsString()
+  @MinLength(1)
+  note: string;
 }
 
 export class UpdateLabelDto {
@@ -368,6 +381,15 @@ export class UpdateLabelDto {
   @IsString()
   @IsOptional()
   nameLatin?: string;
+
+  @IsString()
+  @IsOptional()
+  shortName?: string;
+
+  @IsString()
+  @IsOptional()
+  @MaxLength(100)
+  disambiguation?: string;
 
   @IsString()
   @MinLength(1)

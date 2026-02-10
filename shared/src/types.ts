@@ -132,6 +132,8 @@ export interface ILabel {
   id: string;
   name: string;
   nameLatin?: string;
+  shortName?: string;
+  disambiguation?: string;
 }
 
 export interface ILabelResponse {
@@ -436,6 +438,8 @@ export interface ILabelSummary {
   id: string;
   name: string;
   nameLatin?: string;
+  shortName?: string;
+  disambiguation?: string;
 }
 
 export interface IGenreSummary {
@@ -545,6 +549,8 @@ export interface IArtistSubmission {
 export interface ILabelChanges {
   name: string;
   nameLatin?: string;
+  shortName?: string;
+  disambiguation?: string;
 }
 
 export interface ILabelSubmissionVote {
