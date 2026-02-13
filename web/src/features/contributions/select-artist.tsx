@@ -55,12 +55,14 @@ export const SelectArtist = forwardRef(
           (filterCondition
             ? data.artists.filter(filterCondition)
             : data.artists
-          ).map(({ id, name, nameLatin, disambiguation }) => ({
+          ).map(({ id, name, nameLatin, disambiguation, mainArtist }) => ({
             value: id,
             label:
               name +
               (nameLatin ? ` [${nameLatin}]` : '') +
-              (disambiguation ? ` (${disambiguation})` : ''),
+              (disambiguation || mainArtist
+                ? ` (${disambiguation || mainArtist?.name})`
+                : ''),
           }))
         }
         placeholder={placeholder}

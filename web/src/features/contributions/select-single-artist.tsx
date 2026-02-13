@@ -4,14 +4,19 @@ import { ControllerRenderProps } from 'react-hook-form';
 import { Select } from '../../components/inputs/select';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
+import { IArtistSummary } from 'shared';
 
 export const SelectSingleArtist = forwardRef(
   (
     {
       updateMainArtistId,
       onChange,
+      filterCondition,
       ...field
-    }: ControllerRenderProps<any, 'mainArtist'> & { updateMainArtistId: any },
+    }: ControllerRenderProps<any, 'mainArtist'> & {
+      updateMainArtistId: any;
+      filterCondition?: (artist: IArtistSummary) => boolean;
+    },
     ref,
   ) => {
     const [query, setQuery] = useState('');
@@ -45,12 +50,17 @@ export const SelectSingleArtist = forwardRef(
         isMulti={false}
         options={
           data?.artists &&
-          data.artists.map(({ id, name, nameLatin, disambiguation }) => ({
+          (filterCondition
+            ? data.artists.filter(filterCondition)
+            : data.artists
+          ).map(({ id, name, nameLatin, disambiguation, mainArtist }) => ({
             value: id,
             label:
               name +
               (nameLatin ? ` [${nameLatin}]` : '') +
-              (disambiguation ? ` (${disambiguation})` : ''),
+              (disambiguation || mainArtist
+                ? ` (${disambiguation || mainArtist?.name})`
+                : ''),
           }))
         }
         placeholder="Select Main Artist"

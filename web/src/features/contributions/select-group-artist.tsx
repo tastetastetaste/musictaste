@@ -60,12 +60,14 @@ export const SelectGroupArtist = ({ control }: any) => {
             .filter((a) => a.type !== ArtistType.Group)
             // @ts-ignore
             .filter((a) => !fields.some((f) => f.artistId === a.id))
-            .map(({ id, name, nameLatin, disambiguation }) => ({
+            .map(({ id, name, nameLatin, disambiguation, mainArtist }) => ({
               value: id,
               label:
                 name +
                 (nameLatin ? ` [${nameLatin}]` : '') +
-                (disambiguation ? ` (${disambiguation})` : ''),
+                (disambiguation || mainArtist
+                  ? ` (${disambiguation || mainArtist?.name})`
+                  : ''),
             }))
         }
         placeholder="Group Members"

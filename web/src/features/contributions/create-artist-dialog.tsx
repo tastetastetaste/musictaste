@@ -162,6 +162,7 @@ const CreateArtistDialog: React.FC<{
                     updateMainArtistId={(value) =>
                       setValue('mainArtistId', value)
                     }
+                    filterCondition={(a) => a.type !== ArtistType.Alias}
                   />
                 )}
               />
