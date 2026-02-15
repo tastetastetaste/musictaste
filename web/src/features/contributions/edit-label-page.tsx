@@ -17,6 +17,7 @@ import { useSnackbar } from '../../hooks/useSnackbar';
 import AppPageWrapper from '../../layout/app-page-wrapper';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
+import { Feedback } from '../../components/feedback';
 
 const EditLabelPage = () => {
   const { id: labelId } = useParams();
@@ -116,6 +117,11 @@ const EditLabelPage = () => {
                 Need help? Read the Contributing Guide.
               </Link>
             </Group>
+            {openSubmission && (
+              <Feedback
+                message={`There is already an open edit submission for this label. Please wait for it to be reviewed before submitting another edit.`}
+              />
+            )}
             <Input placeholder="Full Name" {...register('name')} />
             <FormInputError error={errors.name} />
             <Input placeholder="Short Name" {...register('shortName')} />
