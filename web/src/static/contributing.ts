@@ -28,7 +28,7 @@ You can start contributing data by selecting **"Add Release"** from the dropdown
 - **Date**: Release date.  
   - Accepted formats: YYYY, YYYY-MM, YYYY-MM-DD, MM/DD/YYYY, MM-DD-YYYY, or MMM DD, YYYY.  
 - **Label**: Select the label.  
-  - If it doesn't have a label, use **"Not On Label (Self-Released)"** as a label.
+  - If it doesn't have a label, use **"No Label"** as a label.
   - If you don't find the label, click **"Add new label"** below the input field to add a new one to the database.  
     - **Full Name**: The full name of the label
     - **Short Name**: The short name of the label
