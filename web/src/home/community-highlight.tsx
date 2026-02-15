@@ -9,6 +9,7 @@ import { Release, ReleaseSmall } from '../features/releases/release';
 import { useMediaQuery } from '../hooks/useMediaQuery';
 import { DISCORD_SERVER_INVITE } from '../static/site-info';
 import { api } from '../utils/api';
+import { cacheKeys } from '../utils/cache-keys';
 
 const MD_HOW_THIS_WORKS = `Little-known albums, nominated, and voted on by the community to bring them more attention.
 
@@ -20,7 +21,7 @@ Voting currently happens on our Discord server. [Join to vote](${DISCORD_SERVER_
 
 export const CommunityHighlight = () => {
   const { data: release, isLoading: isLoadingRelease } = useQuery(
-    ['community-highlight'],
+    cacheKeys.communityHighlightKey(),
     () => api.getCommunityHighlight(),
   );
 

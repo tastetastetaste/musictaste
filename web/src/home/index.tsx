@@ -156,6 +156,7 @@ const RecentReviewsSection = () => {
 };
 
 const NewReleasesSection = () => {
+  const { ref, isIntersecting } = useOnScreen(ROOT_MARGIN);
   const {
     data: newPopularReleasesData,
     isLoading: isLoadingNewPopularReleases,
@@ -166,32 +167,37 @@ const NewReleasesSection = () => {
       pageSize: 20,
     }),
     () => api.getReleases(FindReleasesType.NewPopular, 1, 20),
+    {
+      enabled: isIntersecting,
+    },
   );
 
   const newReleases = newPopularReleasesData?.releases;
 
   return (
-    <Stack gap="lg">
-      <Link to="/releases/new" size="title-lg">
-        New Releases
-      </Link>
-      {isLoadingNewPopularReleases ? (
-        <Loading />
-      ) : (
-        <Grid cols={[2, 6, 6, 2]} gap={RELEASE_GRID_GAP}>
-          {newReleases &&
-            newReleases
-              .filter(
-                (r) =>
-                  !r.explicitCoverArt?.includes(
-                    ExplicitCoverArt.EXPLICIT_SEXUAL_CONTENT,
-                  ) && ReleaseType[r.type] !== ReleaseType.Single,
-              )
-              .slice(0, 12)
-              .map((r) => <Release key={r.id} release={r} />)}
-        </Grid>
-      )}
-    </Stack>
+    <div ref={ref} css={{ minHeight: SECTION_MIN_HEIGHT }}>
+      <Stack gap="lg">
+        <Link to="/releases/new" size="title-lg">
+          New Releases
+        </Link>
+        {isLoadingNewPopularReleases ? (
+          <Loading />
+        ) : (
+          <Grid cols={[2, 6, 6, 2]} gap={RELEASE_GRID_GAP}>
+            {newReleases &&
+              newReleases
+                .filter(
+                  (r) =>
+                    !r.explicitCoverArt?.includes(
+                      ExplicitCoverArt.EXPLICIT_SEXUAL_CONTENT,
+                    ) && ReleaseType[r.type] !== ReleaseType.Single,
+                )
+                .slice(0, 12)
+                .map((r) => <Release key={r.id} release={r} />)}
+          </Grid>
+        )}
+      </Stack>
+    </div>
   );
 };
 
@@ -221,6 +227,11 @@ const HomePage = () => {
     }),
   );
 
+  const { isLoading: isLoadingCommunityHighlight } = useQuery(
+    cacheKeys.communityHighlightKey(),
+    () => api.getCommunityHighlight(),
+  );
+
   const { isLoggedIn, isLoading } = useAuth();
 
   return (
@@ -229,7 +240,7 @@ const HomePage = () => {
         {!isLoading && !isLoggedIn && <FeaturesOverview />}
 
         {/* minimize layout shift */}
-        {!isLoadingTopReviews ? (
+        {!isLoadingTopReviews && !isLoadingCommunityHighlight ? (
           <Fragment>
             <ResponsiveRow breakpoint="lg" gap="md">
               <FlexChild grow={3}>
@@ -247,7 +258,9 @@ const HomePage = () => {
             <RecentlyAddedReleasesSection />
             <RecentReviewsSection />
           </Fragment>
-        ) : null}
+        ) : (
+          <Loading />
+        )}
       </Stack>
     </AppPageWrapper>
   );
