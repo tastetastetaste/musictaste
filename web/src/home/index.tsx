@@ -26,6 +26,8 @@ import FeaturesOverview from './features-overview';
 import ReviewsListRenderer from '../features/reviews/reviews-list-renderer';
 import { useOnScreen } from '../hooks/useOnScreen';
 import { CommunityHighlight } from './community-highlight';
+import { ResponsiveRow } from '../components/flex/responsive-row';
+import { FlexChild } from '../components/flex/flex-child';
 
 const ROOT_MARGIN = '100px';
 const SECTION_MIN_HEIGHT = '500px';
@@ -94,7 +96,7 @@ const LatestListsSection = () => {
           Latest Lists
         </Link>
         {lists && lists.length === 0 && <Feedback message="No lists yet" />}
-        <Grid cols={[1, 2, 3]} gap={LIST_GRID_PADDING}>
+        <Grid cols={[1, 2, 3, 1]} gap={LIST_GRID_PADDING}>
           {lists &&
             (lists.length > 6 ? lists.slice(0, 6) : lists).map((list) => (
               <List key={list.id} list={list} />
@@ -176,7 +178,7 @@ const NewReleasesSection = () => {
       {isLoadingNewPopularReleases ? (
         <Loading />
       ) : (
-        <Grid cols={[2, 6]} gap={RELEASE_GRID_GAP}>
+        <Grid cols={[2, 6, 6, 2]} gap={RELEASE_GRID_GAP}>
           {newReleases &&
             newReleases
               .filter(
@@ -194,13 +196,29 @@ const NewReleasesSection = () => {
 };
 
 const HomePage = () => {
-  const { isLoading: isLoadingNewPopularReleases } = useQuery(
-    cacheKeys.releasesKey({
-      type: FindReleasesType.NewPopular,
+  // const { isLoading: isLoadingNewPopularReleases } = useQuery(
+  //   cacheKeys.releasesKey({
+  //     type: FindReleasesType.NewPopular,
+  //     page: 1,
+  //     pageSize: 20,
+  //   }),
+  //   () => api.getReleases(FindReleasesType.NewPopular, 1, 20),
+  // );
+
+  const reviewsCacheKey = cacheKeys.entriesKey({
+    page: 1,
+    pageSize: 12,
+    withReview: true,
+    sortBy: EntriesSortByEnum.ReviewTop,
+  });
+
+  const { isLoading: isLoadingTopReviews } = useQuery(reviewsCacheKey, () =>
+    api.getEntries({
       page: 1,
       pageSize: 12,
+      withReview: true,
+      sortBy: EntriesSortByEnum.ReviewTop,
     }),
-    () => api.getReleases(FindReleasesType.NewPopular, 1, 12),
   );
 
   const { isLoggedIn, isLoading } = useAuth();
@@ -210,15 +228,22 @@ const HomePage = () => {
       <Stack gap="lg">
         {!isLoading && !isLoggedIn && <FeaturesOverview />}
 
-        <NewReleasesSection />
-
         {/* minimize layout shift */}
-        {!isLoadingNewPopularReleases ? (
+        {!isLoadingTopReviews ? (
           <Fragment>
-            <Support />
-            <TopReviewsSection />
-            <LatestListsSection />
-            <CommunityHighlight />
+            <ResponsiveRow breakpoint="lg" gap="md">
+              <FlexChild grow={3}>
+                <TopReviewsSection />
+              </FlexChild>
+              <FlexChild grow={1}>
+                <Stack gap="lg">
+                  <Support />
+                  <CommunityHighlight />
+                  <LatestListsSection />
+                  <NewReleasesSection />
+                </Stack>
+              </FlexChild>
+            </ResponsiveRow>
             <RecentlyAddedReleasesSection />
             <RecentReviewsSection />
           </Fragment>

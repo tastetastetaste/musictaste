@@ -1,15 +1,14 @@
 import { useQuery } from '@tanstack/react-query';
-import { cacheKeys } from '../utils/cache-keys';
-import { api } from '../utils/api';
-import { Release, ReleaseSmall } from '../features/releases/release';
-import { Typography } from '../components/typography';
-import { Stack } from '../components/flex/stack';
-import Dialog from '../components/dialog';
 import { useState } from 'react';
 import { Button } from '../components/button';
-import { DISCORD_SERVER_INVITE } from '../static/site-info';
+import Dialog from '../components/dialog';
+import { Stack } from '../components/flex/stack';
 import { Markdown } from '../components/markdown';
-import { FlexChild } from '../components/flex/flex-child';
+import { Typography } from '../components/typography';
+import { Release, ReleaseSmall } from '../features/releases/release';
+import { useMediaQuery } from '../hooks/useMediaQuery';
+import { DISCORD_SERVER_INVITE } from '../static/site-info';
+import { api } from '../utils/api';
 
 const MD_HOW_THIS_WORKS = `Little-known albums, nominated, and voted on by the community to bring them more attention.
 
@@ -25,26 +24,38 @@ export const CommunityHighlight = () => {
     () => api.getCommunityHighlight(),
   );
 
+  const mdScreen = useMediaQuery({ down: 'lg' });
+
   const [opened, setOpened] = useState(false);
 
   if (!release) return null;
 
   return (
-    <Stack gap="md" align="start">
-      <Typography size="title-lg">Community Highlight</Typography>
-      <ReleaseSmall release={release} />
-      <FlexChild align="center">
+    <div
+      css={(theme) => ({
+        background: theme.colors.background_sub,
+        padding: '16px',
+        borderRadius: theme.border_radius.base,
+      })}
+    >
+      <Stack gap="md" align="center">
+        <Typography size="title">Community Highlight</Typography>
+        {mdScreen ? (
+          <ReleaseSmall release={release} />
+        ) : (
+          <Release release={release} />
+        )}
         <Button onClick={() => setOpened(true)} variant="text">
           How this works?
         </Button>
-      </FlexChild>
-      <Dialog
-        title="Community Highlights"
-        isOpen={opened}
-        onClose={() => setOpened(false)}
-      >
-        <Markdown>{MD_HOW_THIS_WORKS}</Markdown>
-      </Dialog>
-    </Stack>
+        <Dialog
+          title="Community Highlights"
+          isOpen={opened}
+          onClose={() => setOpened(false)}
+        >
+          <Markdown>{MD_HOW_THIS_WORKS}</Markdown>
+        </Dialog>
+      </Stack>
+    </div>
   );
 };

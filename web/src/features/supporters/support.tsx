@@ -10,8 +10,7 @@ const StyledButton = styled.button`
   color: ${({ theme }) => theme.colors.background};
   border-radius: ${({ theme }) => theme.border_radius.base};
   padding: 18px;
-  margin-top: 48px;
-  margin-bottom: 24px;
+  margin-top: 24px;
   border: none;
   cursor: pointer;
   &:hover {
@@ -33,7 +32,7 @@ function Support() {
     <StyledButton onClick={() => navigate('/support-us')}>
       <Stack gap="md" align="center">
         <Typography size="title-lg" color="bg">
-          Unlock all features — become a supporter
+          Become a Supporter
         </Typography>
       </Stack>
     </StyledButton>
