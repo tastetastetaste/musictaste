@@ -9,16 +9,25 @@ interface InfoRowProps {
 
 export const InfoRow: React.FC<InfoRowProps> = ({ label, children }) => {
   return (
-    <Group gap={5} align="start">
-      <Typography
-        color="sub"
-        css={{
-          flex: '120px 0 0',
-        }}
-      >
-        {label}
-      </Typography>
-      {children}
-    </Group>
+    <div
+      css={{
+        minHeight: '40px',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+      }}
+    >
+      <Group gap={5} align="center">
+        <Typography
+          color="sub"
+          css={{
+            flex: '120px 0 0',
+          }}
+        >
+          {label}
+        </Typography>
+        {children}
+      </Group>
+    </div>
   );
 };

@@ -92,14 +92,14 @@ const AppHeader = memo(function AppHeaderFu() {
       <StyledHeader>
         <StyledHeaderContent>
           <HeaderSection hideOnMobile={searchActive}>
-            <Group gap="sm">
+            <Group>
               <HomeLink />
               <AppSidebar />
             </Group>
           </HeaderSection>
           <QuickSearch onActiveChange={(active) => setSearchActive(active)} />
           <HeaderSection hideOnMobile={searchActive}>
-            <Group gap="sm">
+            <Group>
               {isLoading ? null : me ? <Notifications /> : null}
               <UserMenu />
             </Group>

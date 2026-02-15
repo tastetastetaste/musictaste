@@ -74,7 +74,7 @@ const ReleaseInfo: React.FC<{
   //   '';
 
   return (
-    <Stack gap="lg">
+    <Stack>
       <InfoRow label="Date">
         <Typography>{dateStr}</Typography>
       </InfoRow>
@@ -276,7 +276,7 @@ export const ReleasePageContainer: React.FC<{
             paddingTop: smScreen ? '24px' : '40px',
           }}
         >
-          <Stack gap="lg">
+          <Stack gap="md">
             <Group align="center" justify="apart" gap="lg">
               <Stack>
                 <ArtistsLinks artists={artists} />

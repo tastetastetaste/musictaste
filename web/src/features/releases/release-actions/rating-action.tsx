@@ -142,7 +142,7 @@ export const RatingPopoverContent: React.FC<{
           )}
         />
 
-        <Group gap="sm">
+        <Group>
           <Stack>
             <StyledRatingInput
               onChange={(e) => handleInputChange(e.target.value)}

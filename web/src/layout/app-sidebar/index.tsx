@@ -70,7 +70,7 @@ const SidebarContent = ({
         </Stack>
 
         <Stack gap={10}>
-          <Group gap="lg" align="center" justify="center">
+          <Group align="center" justify="center">
             <IconButton
               title="Discord"
               onClick={() => window.open(DISCORD_SERVER_INVITE, '_blank')}

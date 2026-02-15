@@ -3,6 +3,7 @@ import React, { forwardRef } from 'react';
 import { Group } from '../flex/group';
 
 const Button = styled.button<{ $active?: boolean; $danger?: boolean }>`
+  padding: 8px;
   display: flex;
   align-items: center;
   background: transparent;
@@ -15,15 +16,8 @@ const Button = styled.button<{ $active?: boolean; $danger?: boolean }>`
         : theme.colors.primary};
   cursor: pointer;
   &:hover {
-    color: ${({ theme }) => theme.colors.text};
-  }
-  &:active {
-    color: ${({ theme, $active, $danger }) =>
-      $danger
-        ? theme.colors.error
-        : $active
-          ? theme.colors.highlight
-          : theme.colors.primary};
+    color: ${({ theme, $active }) =>
+      $active ? theme.colors.highlight : theme.colors.text};
   }
   &:disabled {
     opacity: 0.5;

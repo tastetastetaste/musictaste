@@ -259,7 +259,7 @@ const ArtistPage = () => {
               padding: '10px 0',
             }}
           >
-            <Stack gap="lg">
+            <Stack>
               <Stack>
                 <Typography size="title-xl" as="h1">
                   {artist.name}

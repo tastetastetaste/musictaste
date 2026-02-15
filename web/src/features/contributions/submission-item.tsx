@@ -300,7 +300,7 @@ export const SubmissionActions = ({
       {data ? (
         <span>Ok</span>
       ) : (
-        <Group gap={30}>
+        <Group gap="lg">
           <IconButton
             title="Vote Up"
             onClick={() => vote({ submissionId: id, vote: VoteType.UP })}

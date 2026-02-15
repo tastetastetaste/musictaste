@@ -52,22 +52,24 @@ export const Release: React.FC<IReleaseProps> = ({ release, entry }) => {
           />
           <>
             <Group justify="apart" align="center">
-              {isUserEntry ? (
-                <UserEntryOnRelease entry={entry} />
-              ) : isReleaseWithStats(release) &&
-                release.stats?.ratingsCount > 0 ? (
-                <AllUsersRating
-                  rating={release.stats.ratingsAvg}
-                  count={release.stats.ratingsCount}
-                />
-              ) : (
-                <div></div>
-              )}
+              <Stack gap="sm">
+                {isUserEntry ? (
+                  <UserEntryOnRelease entry={entry} />
+                ) : isReleaseWithStats(release) &&
+                  release.stats?.ratingsCount > 0 ? (
+                  <AllUsersRating
+                    rating={release.stats.ratingsAvg}
+                    count={release.stats.ratingsCount}
+                  />
+                ) : (
+                  <div></div>
+                )}
+                <Typography size="small" color="sub">
+                  {`${getYearFromDate(release.date)} · ${formatReleaseType(release.type)}`}
+                </Typography>
+              </Stack>
               <ReleaseActions id={release.id} date={release.date} />
             </Group>
-            <Typography size="small" color="sub">
-              {`${getYearFromDate(release.date)} · ${formatReleaseType(release.type)}`}
-            </Typography>
           </>
         </Stack>
       </Stack>

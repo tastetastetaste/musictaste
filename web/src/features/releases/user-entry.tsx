@@ -53,8 +53,10 @@ export const UserEntryOnRelease = ({ entry }: { entry: IEntry }) => {
   return (
     <Group gap="sm">
       <UserRating rating={entry.rating} />
-      {entry.hasTrackVotes && <FavoriteTracksPopover entryId={entry.id} />}
-      {!!entry.reviewId && <ReviewLink entryId={entry.id} />}
+      <Group>
+        {entry.hasTrackVotes && <FavoriteTracksPopover entryId={entry.id} />}
+        {!!entry.reviewId && <ReviewLink entryId={entry.id} />}
+      </Group>
       <Tooltip content={`Added ${formatRelativeTime(entry.createdAt)}`}>
         <Typography>{formatRelativeTimeShort(entry.createdAt)}</Typography>
       </Tooltip>
