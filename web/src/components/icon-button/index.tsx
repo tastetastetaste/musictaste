@@ -3,7 +3,7 @@ import React, { forwardRef } from 'react';
 import { Group } from '../flex/group';
 
 const Button = styled.button<{ $active?: boolean; $danger?: boolean }>`
-  padding: 8px;
+  padding: 6px;
   display: flex;
   align-items: center;
   background: transparent;

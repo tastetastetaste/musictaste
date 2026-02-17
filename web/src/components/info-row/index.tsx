@@ -11,7 +11,7 @@ export const InfoRow: React.FC<InfoRowProps> = ({ label, children }) => {
   return (
     <div
       css={{
-        minHeight: '40px',
+        minHeight: '36px',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',

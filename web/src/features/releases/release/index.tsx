@@ -52,7 +52,7 @@ export const Release: React.FC<IReleaseProps> = ({ release, entry }) => {
           />
           <>
             <Group justify="apart" align="center">
-              <Stack gap="sm">
+              <Stack gap="sm" align="start">
                 {isUserEntry ? (
                   <UserEntryOnRelease entry={entry} />
                 ) : isReleaseWithStats(release) &&
