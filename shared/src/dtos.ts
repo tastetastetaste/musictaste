@@ -459,18 +459,22 @@ export class FindReleasesDto {
 // --- USER
 
 export class LoginDto {
+  @MaxLength(255)
   @IsEmail()
   email: string;
   @IsString()
   @MinLength(6)
+  @MaxLength(128)
   password: string;
 }
 
 export class SignupDto {
+  @MaxLength(255)
   @IsEmail()
   email: string;
   @IsString()
   @MinLength(3)
+  @MaxLength(30)
   @Matches(/^[a-zA-Z0-9-_\.]+$/, {
     message:
       'Username can only contain letters, numbers, dashes, underscores, and periods, and should not contain spaces.',
@@ -478,12 +482,14 @@ export class SignupDto {
   username: string;
   @IsString()
   @MinLength(6)
+  @MaxLength(128)
   password: string;
 }
 
 export class UpdateUserProfileDto {
   @IsString()
   @MinLength(3)
+  @MaxLength(30)
   @Matches(/^[a-zA-Z0-9-_\.]+$/, {
     message:
       'Username can only contain letters, numbers, dashes, underscores, and periods, and should not contain spaces.',
@@ -491,7 +497,10 @@ export class UpdateUserProfileDto {
   username: string;
   @IsString()
   @MinLength(1)
+  @MaxLength(70)
   name: string;
+  @IsString()
+  @MaxLength(5000)
   bio?: string;
 }
 
