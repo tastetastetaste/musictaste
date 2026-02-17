@@ -11,7 +11,7 @@ import {
   millisecondsToTimeString,
   millisecondsToTimeStringFull,
 } from '../contributions/release-tracks-fields';
-import { useReleaseActions } from './release-actions/useReleaseActions';
+import { useReleaseTrackActions } from './release-actions/useReleaseActions';
 import dayjs from 'dayjs';
 import { FlexChild } from '../../components/flex/flex-child';
 import Color from 'color';
@@ -53,7 +53,7 @@ const ReleaseTracks: React.FC<{
 }> = ({ releaseId, releaseTracks, date }) => {
   const { isLoggedIn } = useAuth();
   const { entry, createEntry, trackVote, removeTrackVote, createEntryLoading } =
-    useReleaseActions(releaseId);
+    useReleaseTrackActions(releaseId);
 
   const [tracks, setTrack] = useState<TrackWithMyVote[]>();
   const isUnreleased = dayjs(date).isAfter(dayjs());

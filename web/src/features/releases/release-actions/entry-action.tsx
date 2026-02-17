@@ -1,19 +1,20 @@
 import { IconPlus, IconX } from '@tabler/icons-react';
-import { IconButton } from '../../../components/icon-button';
+import { IconButton, IconButtonProps } from '../../../components/icon-button';
 import { useReleaseActions } from './useReleaseActions';
 
 interface CreateEntryProps {
   createEntry: () => void;
   loading: boolean;
+  variant?: IconButtonProps['variant'];
 }
 
-const CreateEntry = ({ createEntry, loading }: CreateEntryProps) => {
+const CreateEntry = ({ createEntry, loading, variant }: CreateEntryProps) => {
   return (
     <IconButton
       title="Add"
       onClick={createEntry}
       disabled={loading}
-      variant="solid"
+      variant={variant}
     >
       <IconPlus />
     </IconButton>
@@ -23,9 +24,11 @@ const CreateEntry = ({ createEntry, loading }: CreateEntryProps) => {
 const RemoveEntry = ({
   removeEntry,
   loading,
+  variant,
 }: {
   loading: boolean;
   removeEntry: () => Promise<any>;
+  variant?: IconButtonProps['variant'];
 }) => {
   const remove = () => {
     const confirmed = confirm('Remove your all activities on this release?');
@@ -41,14 +44,20 @@ const RemoveEntry = ({
       disabled={loading}
       danger
       active
-      variant="solid"
+      variant={variant}
     >
       <IconX />
     </IconButton>
   );
 };
 
-export const EntryAction = ({ releaseId }: { releaseId: string }) => {
+export const EntryAction = ({
+  releaseId,
+  variant,
+}: {
+  releaseId: string;
+  variant?: IconButtonProps['variant'];
+}) => {
   const {
     entry,
     createEntry,
@@ -58,8 +67,16 @@ export const EntryAction = ({ releaseId }: { releaseId: string }) => {
   } = useReleaseActions(releaseId);
 
   return entry && entry.id ? (
-    <RemoveEntry removeEntry={removeEntry} loading={removeEntryLoading} />
+    <RemoveEntry
+      removeEntry={removeEntry}
+      loading={removeEntryLoading}
+      variant={variant}
+    />
   ) : (
-    <CreateEntry createEntry={createEntry} loading={createEntryLoading} />
+    <CreateEntry
+      createEntry={createEntry}
+      loading={createEntryLoading}
+      variant={variant}
+    />
   );
 };

@@ -8,53 +8,40 @@ export const useReleaseActions = (releaseId: string) => {
   const qc = useQueryClient();
   const { me } = useAuth();
 
-  const refetchQuery = () =>
+  const refetchQueries = () => {
     qc.refetchQueries(cacheKeys.myReleaseEntryKey(releaseId));
+    qc.invalidateQueries(cacheKeys.entriesKey({ userId: me.id }));
+  };
 
-  const { data: releaseData } = useQuery(
-    cacheKeys.releaseKey(releaseId),
-    () => api.getRelease(releaseId!),
-    {
-      enabled: !!releaseId,
-    },
-  );
-
-  const {
-    data: entryData,
-    isLoading: isEntryLoading,
-    refetch,
-  } = useQuery(cacheKeys.myReleaseEntryKey(releaseId), () =>
-    api.getMyReleaseEntry(releaseId),
+  const { data: entryData, isLoading: isEntryLoading } = useQuery(
+    cacheKeys.myReleaseEntryKey(releaseId),
+    () => api.getMyReleaseEntry(releaseId),
   );
 
   const { mutateAsync: createEntryMu, isLoading: createEntryLoading } =
     useMutation(api.createEntry, {
-      onSettled: refetchQuery,
+      onSettled: refetchQueries,
     });
 
   const { mutateAsync: updateEntryMu, isLoading: updateEntryLoading } =
     useMutation(api.updateEntry, {
-      onSettled: refetchQuery,
+      onSettled: refetchQueries,
     });
 
   const { mutateAsync: removeEntryMu, isLoading: removeEntryLoading } =
     useMutation(api.removeEntry, {
-      onSettled: refetchQuery,
+      onSettled: refetchQueries,
     });
 
   const createEntry = async () => {
     const data = await createEntryMu({
       releaseId,
     });
-    await refetch();
-    qc.invalidateQueries(cacheKeys.entriesKey({}));
     return data.data?.createEntry;
   };
 
   const removeEntry = async () => {
     if (entryData) await removeEntryMu(entryData.entry.id);
-    qc.invalidateQueries(cacheKeys.entriesKey({}));
-    qc.invalidateQueries(cacheKeys.entriesKey({ withReview: true }));
   };
 
   const updateEntry = async (overrides: Partial<UpdateEntryDto>) => {
@@ -75,8 +62,6 @@ export const useReleaseActions = (releaseId: string) => {
     } else if (typeof value === 'number') {
       await createEntryMu({ releaseId, rating: value });
     }
-    qc.invalidateQueries(cacheKeys.entriesKey({}));
-    qc.invalidateQueries(cacheKeys.entriesKey({ withReview: true }));
   };
 
   const reviewAction = async (body?: string) => {
@@ -85,12 +70,6 @@ export const useReleaseActions = (releaseId: string) => {
     } else if (body) {
       await createEntryMu({ releaseId, review: body });
     }
-    // invalidate all reviews
-    qc.invalidateQueries(
-      cacheKeys.entriesKey({
-        withReview: true,
-      }),
-    );
   };
 
   const tagsAction = async (tagIds?: string[]) => {
@@ -99,24 +78,44 @@ export const useReleaseActions = (releaseId: string) => {
     } else if (tagIds) {
       await createEntryMu({ releaseId, tags: tagIds });
     }
-    // clear user entries
-    qc.invalidateQueries(
-      cacheKeys.entriesKey({
-        userId: me.username,
-      }),
-    );
-
-    // clear user tags
+    // Update user tags release count
     qc.invalidateQueries(cacheKeys.userTagsKey(me.id));
   };
+
+  return {
+    createEntry,
+    removeEntry,
+    ratingAction,
+    reviewAction,
+    tagsAction,
+    createEntryLoading,
+    removeEntryLoading,
+    entry: entryData ? entryData.entry : undefined,
+    isEntryLoading,
+    updateEntryLoading,
+  };
+};
+
+export const useReleaseTrackActions = (releaseId: string) => {
+  const qc = useQueryClient();
+  const { data: releaseData } = useQuery(
+    cacheKeys.releaseKey(releaseId),
+    () => api.getRelease(releaseId!),
+    {
+      enabled: !!releaseId,
+    },
+  );
+
+  const { createEntry, createEntryLoading, entry, isEntryLoading } =
+    useReleaseActions(releaseId);
 
   const { mutateAsync: trackVote } = useMutation(api.trackVote, {
     onSuccess: (newTrackVote) => {
       // update the entry
       qc.setQueryData<IEntryResonse>(cacheKeys.myReleaseEntryKey(releaseId), {
         entry: {
-          ...entryData.entry,
-          trackVotes: [...entryData.entry.trackVotes, newTrackVote],
+          ...entry,
+          trackVotes: [...entry.trackVotes, newTrackVote],
         },
       });
 
@@ -146,8 +145,8 @@ export const useReleaseActions = (releaseId: string) => {
       // update the entry
       qc.setQueryData<IEntryResonse>(cacheKeys.myReleaseEntryKey(releaseId), {
         entry: {
-          ...entryData.entry,
-          trackVotes: entryData.entry.trackVotes.filter(
+          ...entry,
+          trackVotes: entry.trackVotes.filter(
             (v) => v.trackId !== variables.trackId,
           ),
         },
@@ -158,13 +157,13 @@ export const useReleaseActions = (releaseId: string) => {
         tracks: releaseData.tracks.map((t) => ({
           ...t,
           upvotes:
-            entryData.entry.trackVotes.some(
+            entry.trackVotes.some(
               (t) => t.trackId === variables.trackId && t.vote === VoteType.UP,
             ) && variables.trackId === t.id
               ? Number(t.upvotes) - 1
               : t.upvotes,
           downvotes:
-            entryData.entry.trackVotes.some(
+            entry.trackVotes.some(
               (t) =>
                 t.trackId === variables.trackId && t.vote === VoteType.DOWN,
             ) && variables.trackId === t.id
@@ -174,22 +173,15 @@ export const useReleaseActions = (releaseId: string) => {
       });
 
       // invalidate entry
-      qc.invalidateQueries(cacheKeys.entryKey(entryData.entry.id));
+      qc.invalidateQueries(cacheKeys.entryKey(entry.id));
     },
   });
 
   return {
     createEntry,
-    removeEntry,
-    ratingAction,
-    reviewAction,
-    tagsAction,
     createEntryLoading,
-    removeEntryLoading,
-    entry: entryData ? entryData.entry : undefined,
+    entry,
     isEntryLoading,
-    updateEntryLoading,
-    refetchQuery,
     trackVote,
     removeTrackVote,
   };

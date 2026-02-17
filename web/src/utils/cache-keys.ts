@@ -10,9 +10,9 @@ const entryKey = (id: string) => ['entries', id];
 const myReleaseEntryKey = (releaseId: string) => ['entries', 'me', releaseId];
 
 const entriesKey = (filters: {
-  withReview?: boolean;
   releaseId?: string;
   userId?: string;
+  withReview?: boolean;
   sortBy?: string;
   year?: string;
   decade?: string;
@@ -27,13 +27,12 @@ const entriesKey = (filters: {
 }) =>
   [
     'entries',
-    filters.withReview,
     ...(filters.releaseId
       ? ['release', filters.releaseId]
       : filters.userId
         ? ['user', filters.userId]
         : []),
-
+    filters.withReview,
     ...(filters.sortBy
       ? [
           filters.sortBy,

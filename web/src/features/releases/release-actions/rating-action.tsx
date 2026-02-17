@@ -37,7 +37,8 @@ export const RatingPopoverContent: React.FC<{
   releaseId: string;
   onDragStart?: () => void;
   onDragEnd?: () => void;
-}> = ({ releaseId, onDragStart, onDragEnd }) => {
+  children?: any;
+}> = ({ releaseId, onDragStart, onDragEnd, children }) => {
   const {
     entry,
     isEntryLoading,
@@ -142,44 +143,45 @@ export const RatingPopoverContent: React.FC<{
           )}
         />
 
-        <Group>
-          <Stack>
-            <StyledRatingInput
-              onChange={(e) => handleInputChange(e.target.value)}
-              onBlur={handleBlur}
-              value={inputValue}
-              placeholder="NR"
-              autoComplete="off"
-              type="number"
-              step="0.1"
-              min="0"
-              max="10"
-              autoFocus={true}
-            />
+        <Group justify="apart" align="center">
+          <div>{children}</div>
+          <Group>
+            <Stack>
+              <StyledRatingInput
+                onChange={(e) => handleInputChange(e.target.value)}
+                onBlur={handleBlur}
+                value={inputValue}
+                placeholder="NR"
+                autoComplete="off"
+                type="number"
+                step="0.1"
+                min="0"
+                max="10"
+                autoFocus={true}
+              />
 
-            <RatingUnderline value={rangeValue || 0} />
-          </Stack>
-          {typeof rangeValue === 'number' && (
+              <RatingUnderline value={rangeValue || 0} />
+            </Stack>
             <IconButton
               title="Save"
-              disabled={isLoading}
+              disabled={typeof rangeValue !== 'number' || isLoading}
               onClick={() => ratingAction(rangeValue)}
             >
               <IconCheck />
             </IconButton>
-          )}
-          {isRated && (
-            <IconButton
-              title="Remove"
-              disabled={isLoading}
-              onClick={() => {
-                ratingAction();
-              }}
-              danger
-            >
-              <IconX />
-            </IconButton>
-          )}
+            {isRated && (
+              <IconButton
+                title="Remove"
+                disabled={isLoading}
+                onClick={() => {
+                  ratingAction();
+                }}
+                danger
+              >
+                <IconX />
+              </IconButton>
+            )}
+          </Group>
         </Group>
       </Stack>
     </div>

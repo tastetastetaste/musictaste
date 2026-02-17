@@ -25,13 +25,13 @@ export const ReleaseActionsFullPage = ({
     <Group gap="sm">
       {!isUnreleased && (
         <>
-          <EntryAction releaseId={id} />
+          <EntryAction releaseId={id} variant="solid" />
           <RatingAction releaseId={id} />
           <TagsAction releaseId={id} />
           <ReviewAction releaseId={id} />
         </>
       )}
-      <AddToList releaseId={id} />
+      <AddToList releaseId={id} variant="solid" />
     </Group>
   );
 };

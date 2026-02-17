@@ -10,7 +10,7 @@ import { getListPath } from 'shared';
 import { Button } from '../../../components/button';
 import { FetchMore } from '../../../components/fetch-more';
 import { Group } from '../../../components/flex/group';
-import { IconButton } from '../../../components/icon-button';
+import { IconButton, IconButtonProps } from '../../../components/icon-button';
 import { Link } from '../../../components/links/link';
 import { Loading } from '../../../components/loading';
 import { Popover } from '../../../components/popover';
@@ -19,7 +19,7 @@ import { cacheKeys } from '../../../utils/cache-keys';
 import { useAuth } from '../../account/useAuth';
 import { CreateListDialog } from '../../lists/create-list-dialog';
 
-export const AddToListPopoverContent = ({
+const AddToListPopoverContent = ({
   releaseId,
   onOpenCreateList,
 }: {
@@ -142,9 +142,10 @@ export const AddToListPopoverContent = ({
 
 interface AddToListProps {
   releaseId: string;
+  variant?: IconButtonProps['variant'];
 }
 
-export const AddToList = ({ releaseId }: AddToListProps) => {
+export const AddToList = ({ releaseId, variant }: AddToListProps) => {
   const [openCreateList, setOpenCreateList] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -163,7 +164,7 @@ export const AddToList = ({ releaseId }: AddToListProps) => {
         <IconButton
           title="Add to list"
           onClick={() => setOpen(!open)}
-          variant="solid"
+          variant={variant}
         >
           <IconPlaylistAdd />
         </IconButton>
