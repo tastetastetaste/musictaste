@@ -31,6 +31,7 @@ import { FlexChild } from '../components/flex/flex-child';
 
 const ROOT_MARGIN = '100px';
 const SECTION_MIN_HEIGHT = '500px';
+const NEW_RELEASES_SECTION_MIN_HEIGHT = '300px';
 
 const TopReviewsSection = () => {
   const queryClient = useQueryClient();
@@ -127,7 +128,7 @@ const RecentlyAddedReleasesSection = () => {
         <Link to="/releases/recently-added" size="title-lg">
           Recently Added
         </Link>
-        <Grid cols={[2, 6]} gap={RELEASE_GRID_GAP}>
+        <Grid cols={[3, 6]} gap={RELEASE_GRID_GAP}>
           {recentlyAddedReleases &&
             recentlyAddedReleases.map((r) => (
               <Release key={r.id} release={r} />
@@ -164,18 +165,18 @@ const NewReleasesSection = () => {
     cacheKeys.releasesKey({
       type: FindReleasesType.NewPopular,
       page: 1,
-      pageSize: 20,
+      pageSize: 10,
     }),
-    () => api.getReleases(FindReleasesType.NewPopular, 1, 20),
-    {
-      enabled: isIntersecting,
-    },
+    () => api.getReleases(FindReleasesType.NewPopular, 1, 10),
+    // {
+    //   enabled: isIntersecting,
+    // },
   );
 
   const newReleases = newPopularReleasesData?.releases;
 
   return (
-    <div ref={ref} css={{ minHeight: SECTION_MIN_HEIGHT }}>
+    <div ref={ref} css={{ minHeight: NEW_RELEASES_SECTION_MIN_HEIGHT }}>
       <Stack gap="lg">
         <Link to="/releases/new" size="title-lg">
           New Releases
@@ -183,7 +184,7 @@ const NewReleasesSection = () => {
         {isLoadingNewPopularReleases ? (
           <Loading />
         ) : (
-          <Grid cols={[2, 6, 6, 2]} gap={RELEASE_GRID_GAP}>
+          <Grid cols={[3, 6, 6]} gap={RELEASE_GRID_GAP}>
             {newReleases &&
               newReleases
                 .filter(
@@ -192,7 +193,7 @@ const NewReleasesSection = () => {
                       ExplicitCoverArt.EXPLICIT_SEXUAL_CONTENT,
                     ) && ReleaseType[r.type] !== ReleaseType.Single,
                 )
-                .slice(0, 12)
+                .slice(0, 6)
                 .map((r) => <Release key={r.id} release={r} />)}
           </Grid>
         )}
@@ -202,30 +203,30 @@ const NewReleasesSection = () => {
 };
 
 const HomePage = () => {
-  // const { isLoading: isLoadingNewPopularReleases } = useQuery(
-  //   cacheKeys.releasesKey({
-  //     type: FindReleasesType.NewPopular,
-  //     page: 1,
-  //     pageSize: 20,
-  //   }),
-  //   () => api.getReleases(FindReleasesType.NewPopular, 1, 20),
-  // );
-
-  const reviewsCacheKey = cacheKeys.entriesKey({
-    page: 1,
-    pageSize: 12,
-    withReview: true,
-    sortBy: EntriesSortByEnum.ReviewTop,
-  });
-
-  const { isLoading: isLoadingTopReviews } = useQuery(reviewsCacheKey, () =>
-    api.getEntries({
+  const { isLoading: isLoadingNewPopularReleases } = useQuery(
+    cacheKeys.releasesKey({
+      type: FindReleasesType.NewPopular,
       page: 1,
-      pageSize: 12,
-      withReview: true,
-      sortBy: EntriesSortByEnum.ReviewTop,
+      pageSize: 10,
     }),
+    () => api.getReleases(FindReleasesType.NewPopular, 1, 10),
   );
+
+  // const reviewsCacheKey = cacheKeys.entriesKey({
+  //   page: 1,
+  //   pageSize: 12,
+  //   withReview: true,
+  //   sortBy: EntriesSortByEnum.ReviewTop,
+  // });
+
+  // const { isLoading: isLoadingTopReviews } = useQuery(reviewsCacheKey, () =>
+  //   api.getEntries({
+  //     page: 1,
+  //     pageSize: 12,
+  //     withReview: true,
+  //     sortBy: EntriesSortByEnum.ReviewTop,
+  //   }),
+  // );
 
   const { isLoading: isLoadingCommunityHighlight } = useQuery(
     cacheKeys.communityHighlightKey(),
@@ -240,18 +241,18 @@ const HomePage = () => {
         {!isLoading && !isLoggedIn && <FeaturesOverview />}
 
         {/* minimize layout shift */}
-        {!isLoadingTopReviews && !isLoadingCommunityHighlight ? (
+        {!isLoadingNewPopularReleases && !isLoadingCommunityHighlight ? (
           <Fragment>
+            <NewReleasesSection />
+            <Support />
             <ResponsiveRow breakpoint="lg" gap="md">
               <FlexChild grow={3}>
                 <TopReviewsSection />
               </FlexChild>
               <FlexChild grow={1}>
                 <Stack gap="lg">
-                  <Support />
                   <CommunityHighlight />
                   <LatestListsSection />
-                  <NewReleasesSection />
                 </Stack>
               </FlexChild>
             </ResponsiveRow>
