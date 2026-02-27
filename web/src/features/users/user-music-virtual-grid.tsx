@@ -40,12 +40,14 @@ export const UserMusicVirtualGrid: React.FC<Props> = ({
 
   const md = useMediaQuery({ down: 'md' });
 
+  const lg = useMediaQuery({ down: 'lg' });
+
   const { currentItems, totalItems, itemsPerPage, totalPages } =
     ratings.pages[ratings.pages.length - 1];
 
   const defaultItemHeight = 330;
 
-  const itemsPerRow = sm ? 3 : md ? 4 : 5;
+  const itemsPerRow = sm ? 3 : md ? 4 : lg ? 4 : 5;
 
   const remoteRowCount = Math.ceil(totalItems / itemsPerRow);
 

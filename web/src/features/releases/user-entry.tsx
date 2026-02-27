@@ -51,7 +51,7 @@ export const FollowingUserEntry = ({ entry }: { entry: IEntry }) => {
 
 export const UserEntryOnRelease = ({ entry }: { entry: IEntry }) => {
   return (
-    <Group gap="sm">
+    <Group wrap>
       <UserRating rating={entry.rating} />
       <Group>
         {entry.hasTrackVotes && <FavoriteTracksPopover entryId={entry.id} />}
