@@ -52,7 +52,7 @@ const TopReviewsSection = () => {
   );
   const reviews = reviewsData?.entries;
   return (
-    <div>
+    <div css={{ minHeight: SECTION_MIN_HEIGHT }}>
       <Stack gap="lg">
         <Link to="/reviews/top" size="title-lg">
           Top Recent Reviews
