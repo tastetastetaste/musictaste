@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
 import { Loading } from '../../components/loading';
 import { api } from '../../utils/api';
@@ -7,10 +7,12 @@ import AppPageWrapper from '../../layout/app-page-wrapper';
 import { GenreSubmissionItem } from './genre-submission-list';
 import { Feedback } from '../../components/feedback';
 import { Comments } from '../comments/comments';
-import { CommentEntityType } from 'shared';
+import { CommentEntityType, IGenreSubmission } from 'shared';
 
 const GenreSubmissionPage = () => {
   const { submissionId } = useParams<{ submissionId: string }>();
+
+  const queryClient = useQueryClient();
 
   const { data: submission, isLoading } = useQuery(
     cacheKeys.genreSubmissionByIdKey(submissionId!),
@@ -19,6 +21,19 @@ const GenreSubmissionPage = () => {
       enabled: !!submissionId,
     },
   );
+
+  const handleUpdateAfterVote = (submission: IGenreSubmission) => {
+    queryClient.setQueryData(
+      cacheKeys.genreSubmissionByIdKey(submissionId!),
+      (oldData: any) => {
+        return {
+          ...oldData,
+          submissionStatus: submission.submissionStatus,
+          votes: submission.votes,
+        };
+      },
+    );
+  };
 
   if (isLoading) {
     return <Loading />;
@@ -30,7 +45,11 @@ const GenreSubmissionPage = () => {
 
   return (
     <AppPageWrapper>
-      <GenreSubmissionItem submission={submission} fullPage />
+      <GenreSubmissionItem
+        submission={submission}
+        fullPage
+        onUpdate={handleUpdateAfterVote}
+      />
       <Comments
         entityType={CommentEntityType.GENRE_SUBMISSION}
         entityId={submission.id}

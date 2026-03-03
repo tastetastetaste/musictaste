@@ -1,4 +1,4 @@
-import { useInfiniteQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import { Fragment } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import {
@@ -26,12 +26,14 @@ interface LabelSubmissionItemProps {
   submission: ILabelSubmission;
   hideUser?: boolean;
   fullPage?: boolean;
+  onUpdate?: (submission: ILabelSubmission) => void;
 }
 
 export const LabelSubmissionItem = ({
   submission,
   hideUser,
   fullPage,
+  onUpdate,
 }: LabelSubmissionItemProps) => {
   const { original, changes } = submission;
   const hasOriginal = !!original;
@@ -43,6 +45,7 @@ export const LabelSubmissionItem = ({
       submission={submission}
       submissionType="label"
       fullPage={fullPage}
+      onUpdate={onUpdate}
     >
       <SubmissionField
         label="Name"
@@ -113,6 +116,38 @@ const LabelSubmissionsList: React.FC = () => {
       },
     );
 
+  const queryClient = useQueryClient();
+
+  const handleUpdateAfterVote = (submission: ILabelSubmission) => {
+    queryClient.setQueryData(
+      cacheKeys.labelSubmissionsKey({
+        status,
+        labelId,
+        userId,
+        sortBy,
+      }),
+      (oldData: any) => {
+        const pages = oldData?.pages?.map((page: any) => {
+          const labels = page.labels?.map((labelSubmission: any) => {
+            if (labelSubmission.id === submission.id) {
+              return {
+                ...labelSubmission,
+                submissionStatus: submission.submissionStatus,
+                votes: submission.votes,
+              };
+            }
+            return labelSubmission;
+          });
+          return {
+            ...page,
+            labels,
+          };
+        });
+        return { ...oldData, pages };
+      },
+    );
+  };
+
   if (isFetching && !isFetchingNextPage) {
     return <Loading />;
   }
@@ -126,6 +161,7 @@ const LabelSubmissionsList: React.FC = () => {
               key={submission.id}
               submission={submission}
               hideUser={!!userId}
+              onUpdate={handleUpdateAfterVote}
             />
           ))}
         </Stack>

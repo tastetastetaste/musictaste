@@ -276,15 +276,27 @@ interface SubmissionActionsProps {
   id: string;
   status: SubmissionStatus;
   voteFn: (params: { submissionId: string; vote: VoteType }) => Promise<any>;
+  onUpdate?: (submission: ILabelSubmission) => void;
+  currentVote?: VoteType;
 }
 
 export const SubmissionActions = ({
   id,
   status,
   voteFn,
+  onUpdate,
+  currentVote,
 }: SubmissionActionsProps) => {
   const { canVoteOnSubmissions } = useAuth();
-  const { mutateAsync: vote, data, isLoading } = useMutation(voteFn);
+  const {
+    mutateAsync: vote,
+    data,
+    isLoading,
+  } = useMutation(voteFn, {
+    onSuccess: (data) => {
+      onUpdate?.(data.submission);
+    },
+  });
 
   if (
     !canVoteOnSubmissions ||
@@ -297,27 +309,22 @@ export const SubmissionActions = ({
 
   return (
     <Fragment>
-      {data ? (
-        <span>Ok</span>
-      ) : (
-        <Group gap="lg">
-          <IconButton
-            title="Vote Up"
-            onClick={() => vote({ submissionId: id, vote: VoteType.UP })}
-            disabled={isLoading}
-          >
-            <IconArrowBigUp />
-          </IconButton>
-          <IconButton
-            title="Vote Down"
-            onClick={() => vote({ submissionId: id, vote: VoteType.DOWN })}
-            disabled={isLoading}
-          >
-            <IconArrowBigDown />
-          </IconButton>
-        </Group>
-      )}
-      {isLoading && <span>loading..</span>}
+      <Group gap="lg">
+        <IconButton
+          title="Vote Up"
+          onClick={() => vote({ submissionId: id, vote: VoteType.UP })}
+          disabled={isLoading || currentVote === VoteType.UP}
+        >
+          <IconArrowBigUp />
+        </IconButton>
+        <IconButton
+          title="Vote Down"
+          onClick={() => vote({ submissionId: id, vote: VoteType.DOWN })}
+          disabled={isLoading || currentVote === VoteType.DOWN}
+        >
+          <IconArrowBigDown />
+        </IconButton>
+      </Group>
     </Fragment>
   );
 };
@@ -336,6 +343,13 @@ interface SubmissionItemWrapperProps {
     | IGenreSubmission;
   submissionType: 'artist' | 'label' | 'release' | 'genre';
   fullPage?: boolean;
+  onUpdate?: (
+    submission:
+      | ILabelSubmission
+      | IReleaseSubmission
+      | IArtistSubmission
+      | IGenreSubmission,
+  ) => void;
 }
 
 export const SubmissionItemWrapper = ({
@@ -346,6 +360,7 @@ export const SubmissionItemWrapper = ({
   submission,
   submissionType,
   fullPage,
+  onUpdate,
 }: SubmissionItemWrapperProps) => {
   const { colors } = useTheme();
   const { me } = useAuth();
@@ -426,14 +441,17 @@ export const SubmissionItemWrapper = ({
       <div>{children}</div>
       <Group justify="apart" wrap>
         <Group align="center" gap="lg">
-          {submission.userId !== me.id &&
-            !submission.votes.some((v) => v.userId === me.id) && (
-              <SubmissionActions
-                id={submission.id}
-                status={submission.submissionStatus}
-                voteFn={voteFn}
-              />
-            )}
+          {submission.userId !== me.id && (
+            <SubmissionActions
+              id={submission.id}
+              status={submission.submissionStatus}
+              voteFn={voteFn}
+              onUpdate={onUpdate}
+              currentVote={
+                submission.votes.find((v) => v.userId === me.id)?.type
+              }
+            />
+          )}
 
           {!fullPage ? (
             <IconButton

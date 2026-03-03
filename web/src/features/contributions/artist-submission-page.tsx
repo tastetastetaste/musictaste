@@ -1,6 +1,6 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
-import { CommentEntityType } from 'shared';
+import { CommentEntityType, IArtistSubmission } from 'shared';
 import { Feedback } from '../../components/feedback';
 import { Loading } from '../../components/loading';
 import AppPageWrapper from '../../layout/app-page-wrapper';
@@ -12,6 +12,8 @@ import { ArtistSubmissionItem } from './artist-submission-list';
 const ArtistSubmissionPage = () => {
   const { submissionId } = useParams<{ submissionId: string }>();
 
+  const queryClient = useQueryClient();
+
   const { data: submission, isLoading } = useQuery(
     cacheKeys.artistSubmissionByIdKey(submissionId!),
     () => api.getArtistSubmissionById(submissionId!),
@@ -19,6 +21,19 @@ const ArtistSubmissionPage = () => {
       enabled: !!submissionId,
     },
   );
+
+  const handleUpdateAfterVote = (submission: IArtistSubmission) => {
+    queryClient.setQueryData(
+      cacheKeys.artistSubmissionByIdKey(submissionId!),
+      (oldData: any) => {
+        return {
+          ...oldData,
+          submissionStatus: submission.submissionStatus,
+          votes: submission.votes,
+        };
+      },
+    );
+  };
 
   if (isLoading) {
     return <Loading />;
@@ -30,7 +45,11 @@ const ArtistSubmissionPage = () => {
 
   return (
     <AppPageWrapper>
-      <ArtistSubmissionItem submission={submission} fullPage />
+      <ArtistSubmissionItem
+        submission={submission}
+        fullPage
+        onUpdate={handleUpdateAfterVote}
+      />
       <Comments
         entityType={CommentEntityType.ARTIST_SUBMISSION}
         entityId={submission.id}

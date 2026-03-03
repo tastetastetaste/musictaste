@@ -1,6 +1,6 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
-import { CommentEntityType } from 'shared';
+import { CommentEntityType, IReleaseSubmission } from 'shared';
 import { Feedback } from '../../components/feedback';
 import { Loading } from '../../components/loading';
 import AppPageWrapper from '../../layout/app-page-wrapper';
@@ -12,6 +12,8 @@ import { ReleaseSubmissionItem } from './release-submission-list';
 const ReleaseSubmissionPage = () => {
   const { submissionId } = useParams<{ submissionId: string }>();
 
+  const queryClient = useQueryClient();
+
   const { data: submission, isLoading } = useQuery(
     cacheKeys.releaseSubmissionByIdKey(submissionId!),
     () => api.getReleaseSubmissionById(submissionId!),
@@ -19,6 +21,19 @@ const ReleaseSubmissionPage = () => {
       enabled: !!submissionId,
     },
   );
+
+  const handleUpdateAfterVote = (submission: IReleaseSubmission) => {
+    queryClient.setQueryData(
+      cacheKeys.releaseSubmissionByIdKey(submissionId!),
+      (oldData: any) => {
+        return {
+          ...oldData,
+          submissionStatus: submission.submissionStatus,
+          votes: submission.votes,
+        };
+      },
+    );
+  };
 
   if (isLoading) {
     return <Loading />;
@@ -30,7 +45,11 @@ const ReleaseSubmissionPage = () => {
 
   return (
     <AppPageWrapper>
-      <ReleaseSubmissionItem submission={submission} fullPage />
+      <ReleaseSubmissionItem
+        submission={submission}
+        fullPage
+        onUpdate={handleUpdateAfterVote}
+      />
       <Comments
         entityType={CommentEntityType.RELEASE_SUBMISSION}
         entityId={submission.id}

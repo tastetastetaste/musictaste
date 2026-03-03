@@ -913,12 +913,24 @@ export class SubmissionService {
     )
       throw new BadRequestException();
 
-    const newVote = new ReleaseSubmissionVote();
-    newVote.type = vote;
-    newVote.userId = user.id;
-    newVote.releaseSubmissionId = releaseSubmission.id;
+    if (user.contributorStatus < ContributorStatus.TRUSTED_CONTRIBUTOR) {
+      throw new BadRequestException();
+    }
 
-    await this.releaseSubmissionVoteRepository.save(newVote);
+    let submissionVote = await this.releaseSubmissionVoteRepository.findOne({
+      where: { userId: user.id, releaseSubmissionId: releaseSubmission.id },
+    });
+
+    if (submissionVote) {
+      submissionVote.type = vote;
+    } else {
+      submissionVote = new ReleaseSubmissionVote();
+      submissionVote.type = vote;
+      submissionVote.userId = user.id;
+      submissionVote.releaseSubmissionId = releaseSubmission.id;
+    }
+
+    await this.releaseSubmissionVoteRepository.save(submissionVote);
 
     let closeSubmission = false;
     let approveSubmission = false;
@@ -931,15 +943,18 @@ export class SubmissionService {
     ) {
       const submissionVotes = await this.releaseSubmissionVoteRepository
         .createQueryBuilder('v')
-        .select('COUNT(v.id)', 'totalVotes')
-        .addSelect('SUM(v.type)', 'netVotes')
+        .select('COUNT(*) FILTER (WHERE v.type = 1)', 'upvotes')
+        .addSelect('COUNT(*) FILTER (WHERE v.type = -1)', 'downvotes')
         .where('v.releaseSubmissionId = :id', { id: submissionId })
         .getRawOne();
 
-      closeSubmission = Number(submissionVotes.totalVotes) >= 3;
-      approveSubmission = Number(submissionVotes.netVotes) > 0;
-    } else {
-      throw new BadRequestException();
+      if (Number(submissionVotes.upvotes) >= 3) {
+        approveSubmission = true;
+        closeSubmission = true;
+      } else if (Number(submissionVotes.downvotes) >= 3) {
+        approveSubmission = false;
+        closeSubmission = true;
+      }
     }
 
     if (closeSubmission) {
@@ -968,13 +983,19 @@ export class SubmissionService {
         : releaseSubmission.submissionStatus ===
               SubmissionStatus.AUTO_APPROVED &&
             releaseSubmission.submissionType === SubmissionType.CREATE
-          ? SubmissionStatus.PENDING_ENTITY_DELETION
+          ? SubmissionStatus.PENDING_DELETION
           : SubmissionStatus.DISAPPROVED;
 
       await this.releaseSubmissionRepository.save(releaseSubmission);
     }
 
-    return { message: 'Voted successfully' };
+    const updatedReleaseSubmission =
+      await this.getReleaseSubmissionById(submissionId);
+
+    return {
+      message: 'Voted successfully',
+      submission: updatedReleaseSubmission,
+    };
   }
 
   async processPendingDeletion({
@@ -1075,12 +1096,24 @@ export class SubmissionService {
     )
       throw new BadRequestException();
 
-    const newVote = new LabelSubmissionVote();
-    newVote.type = vote;
-    newVote.userId = user.id;
-    newVote.labelSubmissionId = labelSubmission.id;
+    if (user.contributorStatus < ContributorStatus.TRUSTED_CONTRIBUTOR) {
+      throw new BadRequestException();
+    }
 
-    await this.labelSubmissionVoteRepository.save(newVote);
+    let submissionVote = await this.labelSubmissionVoteRepository.findOne({
+      where: { userId: user.id, labelSubmissionId: labelSubmission.id },
+    });
+
+    if (submissionVote) {
+      submissionVote.type = vote;
+    } else {
+      submissionVote = new LabelSubmissionVote();
+      submissionVote.type = vote;
+      submissionVote.userId = user.id;
+      submissionVote.labelSubmissionId = labelSubmission.id;
+    }
+
+    await this.labelSubmissionVoteRepository.save(submissionVote);
 
     let closeSubmission = false;
     let approveSubmission = false;
@@ -1093,15 +1126,18 @@ export class SubmissionService {
     ) {
       const submissionVotes = await this.labelSubmissionVoteRepository
         .createQueryBuilder('v')
-        .select('COUNT(v.id)', 'totalVotes')
-        .addSelect('SUM(v.type)', 'netVotes')
+        .select('COUNT(*) FILTER (WHERE v.type = 1)', 'upvotes')
+        .addSelect('COUNT(*) FILTER (WHERE v.type = -1)', 'downvotes')
         .where('v.labelSubmissionId = :id', { id: submissionId })
         .getRawOne();
 
-      closeSubmission = Number(submissionVotes.totalVotes) >= 3;
-      approveSubmission = Number(submissionVotes.netVotes) > 0;
-    } else {
-      throw new BadRequestException();
+      if (Number(submissionVotes.upvotes) >= 3) {
+        approveSubmission = true;
+        closeSubmission = true;
+      } else if (Number(submissionVotes.downvotes) >= 3) {
+        approveSubmission = false;
+        closeSubmission = true;
+      }
     }
 
     if (closeSubmission) {
@@ -1129,13 +1165,19 @@ export class SubmissionService {
         ? SubmissionStatus.APPROVED
         : labelSubmission.submissionStatus === SubmissionStatus.AUTO_APPROVED &&
             labelSubmission.submissionType === SubmissionType.CREATE
-          ? SubmissionStatus.PENDING_ENTITY_DELETION
+          ? SubmissionStatus.PENDING_DELETION
           : SubmissionStatus.DISAPPROVED;
 
       await this.labelSubmissionRepository.save(labelSubmission);
     }
 
-    return { message: 'Voted successfully' };
+    const updatedLabelSubmission =
+      await this.getLabelSubmissionById(submissionId);
+
+    return {
+      message: 'Voted successfully',
+      submission: updatedLabelSubmission,
+    };
   }
 
   async artistSubmissionVote(
@@ -1156,12 +1198,24 @@ export class SubmissionService {
     )
       throw new BadRequestException();
 
-    const newVote = new ArtistSubmissionVote();
-    newVote.type = vote;
-    newVote.userId = user.id;
-    newVote.artistSubmissionId = artistSubmission.id;
+    if (user.contributorStatus < ContributorStatus.TRUSTED_CONTRIBUTOR) {
+      throw new BadRequestException();
+    }
 
-    await this.artistSubmissionVoteRepository.save(newVote);
+    let submissionVote = await this.artistSubmissionVoteRepository.findOne({
+      where: { userId: user.id, artistSubmissionId: artistSubmission.id },
+    });
+
+    if (submissionVote) {
+      submissionVote.type = vote;
+    } else {
+      submissionVote = new ArtistSubmissionVote();
+      submissionVote.type = vote;
+      submissionVote.userId = user.id;
+      submissionVote.artistSubmissionId = artistSubmission.id;
+    }
+
+    await this.artistSubmissionVoteRepository.save(submissionVote);
 
     let closeSubmission = false;
     let approveSubmission = false;
@@ -1174,15 +1228,18 @@ export class SubmissionService {
     ) {
       const submissionVotes = await this.artistSubmissionVoteRepository
         .createQueryBuilder('v')
-        .select('COUNT(v.id)', 'totalVotes')
-        .addSelect('SUM(v.type)', 'netVotes')
+        .select('COUNT(*) FILTER (WHERE v.type = 1)', 'upvotes')
+        .addSelect('COUNT(*) FILTER (WHERE v.type = -1)', 'downvotes')
         .where('v.artistSubmissionId = :id', { id: submissionId })
         .getRawOne();
 
-      closeSubmission = Number(submissionVotes.totalVotes) >= 3;
-      approveSubmission = Number(submissionVotes.netVotes) > 0;
-    } else {
-      throw new BadRequestException();
+      if (Number(submissionVotes.upvotes) >= 3) {
+        approveSubmission = true;
+        closeSubmission = true;
+      } else if (Number(submissionVotes.downvotes) >= 3) {
+        approveSubmission = false;
+        closeSubmission = true;
+      }
     }
 
     if (closeSubmission) {
@@ -1211,13 +1268,19 @@ export class SubmissionService {
         : artistSubmission.submissionStatus ===
               SubmissionStatus.AUTO_APPROVED &&
             artistSubmission.submissionType === SubmissionType.CREATE
-          ? SubmissionStatus.PENDING_ENTITY_DELETION
+          ? SubmissionStatus.PENDING_DELETION
           : SubmissionStatus.DISAPPROVED;
 
       await this.artistSubmissionRepository.save(artistSubmission);
     }
 
-    return { message: 'Voted successfully' };
+    const updatedArtistSubmission =
+      await this.getArtistSubmissionById(submissionId);
+
+    return {
+      message: 'Voted successfully',
+      submission: updatedArtistSubmission,
+    };
   }
 
   async genreSubmissionVote(
@@ -1238,12 +1301,24 @@ export class SubmissionService {
     )
       throw new BadRequestException();
 
-    const newVote = new GenreSubmissionVote();
-    newVote.type = vote;
-    newVote.userId = user.id;
-    newVote.genreSubmissionId = genreSubmission.id;
+    if (user.contributorStatus < ContributorStatus.TRUSTED_CONTRIBUTOR) {
+      throw new BadRequestException();
+    }
 
-    await this.genreSubmissionVoteRepository.save(newVote);
+    let submissionVote = await this.genreSubmissionVoteRepository.findOne({
+      where: { userId: user.id, genreSubmissionId: genreSubmission.id },
+    });
+
+    if (submissionVote) {
+      submissionVote.type = vote;
+    } else {
+      submissionVote = new GenreSubmissionVote();
+      submissionVote.type = vote;
+      submissionVote.userId = user.id;
+      submissionVote.genreSubmissionId = genreSubmission.id;
+    }
+
+    await this.genreSubmissionVoteRepository.save(submissionVote);
 
     let closeSubmission = false;
     let approveSubmission = false;
@@ -1256,15 +1331,18 @@ export class SubmissionService {
     ) {
       const submissionVotes = await this.genreSubmissionVoteRepository
         .createQueryBuilder('v')
-        .select('COUNT(v.id)', 'totalVotes')
-        .addSelect('SUM(v.type)', 'netVotes')
+        .select('COUNT(*) FILTER (WHERE v.type = 1)', 'upvotes')
+        .addSelect('COUNT(*) FILTER (WHERE v.type = -1)', 'downvotes')
         .where('v.genreSubmissionId = :id', { id: submissionId })
         .getRawOne();
 
-      closeSubmission = Number(submissionVotes.totalVotes) >= 5;
-      approveSubmission = Number(submissionVotes.netVotes) >= 3;
-    } else {
-      throw new BadRequestException();
+      if (Number(submissionVotes.upvotes) >= 5) {
+        approveSubmission = true;
+        closeSubmission = true;
+      } else if (Number(submissionVotes.downvotes) >= 5) {
+        approveSubmission = false;
+        closeSubmission = true;
+      }
     }
 
     if (closeSubmission) {
@@ -1287,7 +1365,13 @@ export class SubmissionService {
       await this.genreSubmissionRepository.save(genreSubmission);
     }
 
-    return { message: 'Voted successfully' };
+    const updatedGenreSubmission =
+      await this.getGenreSubmissionById(submissionId);
+
+    return {
+      message: 'Voted successfully',
+      submission: updatedGenreSubmission,
+    };
   }
 
   // --- Query submissions
@@ -2081,8 +2165,8 @@ export class SubmissionService {
   }
 
   async updateTrustedContributorStatuses() {
-    // More than 200 release submissions (all time)
-    // More than 5 release submissions in the last 30 days
+    // At least 200 release submissions (all time)
+    // At least 5 release submissions in the last 30 days
     const result = await this.releaseSubmissionRepository
       .createQueryBuilder('rs')
       .select('rs.userId', 'userId')
@@ -2097,7 +2181,7 @@ export class SubmissionService {
           .from(ReleaseSubmission, 'rs')
           .leftJoin('rs.user', 'u')
           .groupBy('rs.userId')
-          .having('COUNT(rs.id) > 200')
+          .having('COUNT(rs.id) >= 200')
           .getQuery();
 
         return 'rs.userId IN ' + subquery;
@@ -2105,7 +2189,7 @@ export class SubmissionService {
       .andWhere('rs.submissionStatus IN (:...submissionStatuses)')
       .andWhere("rs.createdAt >= now() - INTERVAL '30 days'")
       .groupBy('rs.userId')
-      .having('COUNT(rs.id) > 5')
+      .having('COUNT(rs.id) >= 5')
       .setParameters({
         submissionStatuses: [
           SubmissionStatus.APPROVED,

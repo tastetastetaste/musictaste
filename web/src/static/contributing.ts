@@ -140,7 +140,7 @@ Each music data contribution goes through an approval process and is assigned on
 	- The contribution has been reviewed and approved, and the data has been added to the database.
 - **DISAPPROVED**
 	- The contribution has been reviewed and rejected, and the data has not been added to the database.
-- **PENDING ENTITY DELETION**
+- **PENDING DELETION**
   - AUTO APPROVED contribution has been disapproved and the linked data is now pending hard deletion.
 
 ## Contributor roles
@@ -157,9 +157,8 @@ Each user is assigned one of the following roles:
 - **Trusted Contributor**
   - Can perform all actions of a Contributor
   - Can vote on contributions submitted by other users
-      - If a contribution receives more upvotes than downvotes, it gets approved
-      - Three votes will finalize the contribution
-      - Genres require 4+ upvotes out of 5 votes to be approved
+      - Release, artist, and label submissions require 3 upvotes to approve and 3 downvotes to disapprove
+      - Genre submissions require 5 upvotes to approve and 5 downvotes to disapprove
   - This role is automatically assigned every 24 hours to users who:
     - Have the Contributor role
     - Made at least 200 release contributions (all time)
@@ -167,7 +166,7 @@ Each user is assigned one of the following roles:
     - Have no account warnings
 - **Editor**
   - Can add and edit music data directly without review
-  - Can approve or reject contributions submitted by other users
+  - Can approve or disapprove contributions submitted by other users
 
 ## Feedback
 

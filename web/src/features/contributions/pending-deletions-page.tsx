@@ -20,7 +20,7 @@ const PendingDeletionsPage = () => {
     () =>
       api.getReleaseSubmissions({
         page: 1,
-        status: SubmissionStatus.PENDING_ENTITY_DELETION,
+        status: SubmissionStatus.PENDING_DELETION,
       }),
     {
       enabled: isAdmin,
@@ -31,7 +31,7 @@ const PendingDeletionsPage = () => {
     () =>
       api.getArtistSubmissions({
         page: 1,
-        status: SubmissionStatus.PENDING_ENTITY_DELETION,
+        status: SubmissionStatus.PENDING_DELETION,
       }),
     {
       enabled: isAdmin,
@@ -42,7 +42,7 @@ const PendingDeletionsPage = () => {
     () =>
       api.getLabelSubmissions({
         page: 1,
-        status: SubmissionStatus.PENDING_ENTITY_DELETION,
+        status: SubmissionStatus.PENDING_DELETION,
       }),
     {
       enabled: isAdmin,
