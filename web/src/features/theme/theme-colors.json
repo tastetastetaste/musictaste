@@ -83,8 +83,8 @@
   "red 1": {
     "background": "#e1e1e3",
     "background_sub": "#d1d3d8",
-    "primary": "#de1818",
-    "highlight": "#aaaeb3",
+    "primary": "#aaaeb3",
+    "highlight": "#de1818",
     "text": "#323437",
     "text_sub": "#323437",
     "error": "#d32f2f"
@@ -93,7 +93,7 @@
     "background": "#6e2626",
     "background_sub": "#3f1616",
     "primary": "#e55050",
-    "highlight": "#ff6060",
+    "highlight": "#869b68",
     "text": "#ffbfbf",
     "text_sub": "#ffbfbf",
     "error": "#d32f2f"
@@ -110,8 +110,8 @@
   "green 1": {
     "background": "#dadbdc",
     "background_sub": "#bcd5bb",
-    "primary": "#ae185e",
-    "highlight": "#35b538",
+    "primary": "#35b538",
+    "highlight": "#ae185e",
     "text": "#414141",
     "text_sub": "#414141",
     "error": "#b82727"
@@ -119,8 +119,8 @@
   "green 2": {
     "background": "#1f4437",
     "background_sub": "#244d3f",
-    "primary": "#d6686f",
-    "highlight": "#3e7a65",
+    "primary": "#3e7a65",
+    "highlight": "#d6686f",
     "text": "#cdc6bc",
     "text_sub": "#cdc6bc",
     "error": "#d32f2f"
@@ -146,8 +146,8 @@
   "brown 2": {
     "background": "#523525",
     "background_sub": "#422b1e",
-    "primary": "#7ec160",
-    "highlight": "#9e6749",
+    "primary": "#9e6749",
+    "highlight": "#7ec160",
     "text": "#ecddcc",
     "text_sub": "#ecddcc",
     "error": "#d32f2f"
@@ -164,8 +164,8 @@
   "orange 1": {
     "background": "#313131",
     "background_sub": "#2b2b2b",
-    "primary": "#f66e0d",
-    "highlight": "#616161",
+    "primary": "#616161",
+    "highlight": "#f66e0d",
     "text": "#f5e6c8",
     "text_sub": "#f5e6c8",
     "error": "#d32f2f"
@@ -182,8 +182,8 @@
   "orange 3": {
     "background": "#0e0e0e",
     "background_sub": "#151515",
-    "primary": "#ff9900",
-    "highlight": "#555555",
+    "primary": "#555555",
+    "highlight": "#ff9900",
     "text": "#c6c6c6",
     "text_sub": "#c6c6c6",
     "error": "#d32f2f"
@@ -200,8 +200,8 @@
   "blue 2": {
     "background": "#475769",
     "background_sub": "#3c4a5b",
-    "primary": "#f8cdc6",
-    "highlight": "#9ec1cc",
+    "primary": "#9ec1cc",
+    "highlight": "#f8cdc6",
     "text": "#f5efee",
     "text_sub": "#f5efee",
     "error": "#c9465e"
@@ -209,8 +209,8 @@
   "blue 3": {
     "background": "#003950",
     "background_sub": "#014961",
-    "primary": "#ffcefb",
-    "highlight": "#00e4ff",
+    "primary": "#00e4ff",
+    "highlight": "#ffcefb",
     "text": "#82eaff",
     "text_sub": "#82eaff",
     "error": "#d32f2f"

@@ -80,6 +80,9 @@ const SettingsAccountPage = lazy(
 const SettingsContentPage = lazy(
   () => import('./features/settings/settings-content-page'),
 );
+const SettingsThemePage = lazy(
+  () => import('./features/settings/settings-theme-page'),
+);
 const SearchPage = lazy(() => import('./features/search/search-page'));
 const SearchArtistPage = lazy(
   () => import('./features/search/search-artist-page'),
@@ -191,8 +194,6 @@ const LabelSubmissionPage = lazy(
 const GenreSubmissionPage = lazy(
   () => import('./features/contributions/genre-submission-page'),
 );
-
-const ThemePage = lazy(() => import('./features/theme/theme-page'));
 
 const QueryProvider = ({ children }: { children: any }) => {
   const { snackbar } = useSnackbar();
@@ -316,14 +317,6 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<Fallback />}>
             <HomePage />
-          </Suspense>
-        ),
-      },
-      {
-        path: 'theme',
-        element: (
-          <Suspense fallback={<Fallback />}>
-            <ThemePage />
           </Suspense>
         ),
       },
@@ -485,6 +478,14 @@ const router = createBrowserRouter([
             element: (
               <Suspense fallback={<Fallback />}>
                 <SettingsAccountPage />
+              </Suspense>
+            ),
+          },
+          {
+            path: 'theme',
+            element: (
+              <Suspense fallback={<Fallback />}>
+                <SettingsThemePage />
               </Suspense>
             ),
           },

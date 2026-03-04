@@ -63,7 +63,7 @@ const SettingsImagePage = () => {
             )}
           />
           <Button type="submit" disabled={isLoading}>
-            Upload
+            Save
           </Button>
         </Stack>
       </form>

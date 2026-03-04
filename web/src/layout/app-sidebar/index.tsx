@@ -42,7 +42,6 @@ const SidebarContent = ({
     { to: '/reviews/new', label: 'Reviews', exact: false },
     { to: '/lists/new', label: 'Lists', exact: false },
     { to: '/genres', label: 'Genres', exact: true },
-    { to: '/theme', label: 'Theme', exact: true },
   ];
 
   if (isLoggedIn) {

@@ -9,6 +9,8 @@ import {
 } from 'shared';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
+import { DEFAULT_THEME_PRESET, useThemeColors } from '../theme/useTheme';
+import { THEME_COLOR_PRESETS } from '../theme/theme-constants';
 
 interface IUseAuth {
   isLoggedIn: boolean;
@@ -46,6 +48,8 @@ export const UseAuthProvider: React.FC<{
   const { pathname } = useLocation();
   const navigate = useNavigate();
 
+  const { setThemeColors } = useThemeColors();
+
   const user = data?.user;
   useEffect(() => {
     if (
@@ -56,6 +60,14 @@ export const UseAuthProvider: React.FC<{
       navigate('/confirm');
     }
   }, [navigate, pathname, user]);
+
+  useEffect(() => {
+    if (user && user.theme) {
+      setThemeColors(user.theme);
+    } else {
+      setThemeColors(THEME_COLOR_PRESETS[DEFAULT_THEME_PRESET]);
+    }
+  }, [user]);
 
   return (
     <useAuthContext.Provider

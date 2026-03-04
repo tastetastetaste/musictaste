@@ -313,14 +313,6 @@ export class UsersService {
   }
 
   async updateTheme(id: string, theme: UpdateUserThemeDto) {
-    const user = await this.usersRepository.findOne({
-      where: { id },
-      select: ['id', 'supporter'],
-    });
-
-    if (!user || user.supporter < SupporterStatus.SUPPORTER)
-      throw new UnauthorizedException();
-
     await this.usersRepository.update(id, { theme });
     return true;
   }
