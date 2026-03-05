@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { AccountStatus, ISearchResponse } from 'shared';
+import { AccountStatus, ISearchResponse, SupporterStatus } from 'shared';
 import { Repository } from 'typeorm';
 import { Artist } from '../../db/entities/artist.entity';
 import { Genre } from '../../db/entities/genre.entity';
@@ -205,7 +205,10 @@ export class SearchService {
         typeof users !== 'boolean'
           ? users[0].map((u) => ({
               ...u,
-              image: this.imagesService.getUserImage(u.imagePath),
+              image: this.imagesService.getUserImage(
+                u.imagePath,
+                u.supporter >= SupporterStatus.SUPPORTER,
+              ),
             }))
           : undefined,
       usersCount: typeof users !== 'boolean' ? users[1] : undefined,

@@ -10,10 +10,11 @@ export const SUPPORT_US_MD = `# Thank you for considering supporting MusicTaste!
 
 Your donation will allow us to put more time, effort, and resources into this project. You will also be making the website better for everyone!
 
-Supporters get the following:
+As a supporter, you will get the following:
 - Exclusive "Supporter" badge next to your name
 - Personalize your public profile with your theme colors
-- Filter charts by minimum and maximum number of ratings
+- Use animated GIF images for your profile picture
+- Filter charts by number of ratings
 - More supporter only features as they are added
 
 **One time donation = 1 year of supporter features**

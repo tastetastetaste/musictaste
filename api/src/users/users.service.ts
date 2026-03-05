@@ -136,7 +136,10 @@ export class UsersService {
 
     return {
       ...user,
-      image: this.imagesService.getUserImage(user.imagePath),
+      image: this.imagesService.getUserImage(
+        user.imagePath,
+        user.supporter >= SupporterStatus.SUPPORTER,
+      ),
       allowExplicitCoverArt: user.allowExplicitCoverArt,
     };
   }
@@ -160,7 +163,10 @@ export class UsersService {
 
     return {
       ...user,
-      image: this.imagesService.getUserImage(user.imagePath),
+      image: this.imagesService.getUserImage(
+        user.imagePath,
+        user.supporter >= SupporterStatus.SUPPORTER,
+      ),
     };
   }
 
@@ -185,7 +191,10 @@ export class UsersService {
         user.id,
         {
           ...user,
-          image: this.imagesService.getUserImage(user.imagePath),
+          image: this.imagesService.getUserImage(
+            user.imagePath,
+            user.supporter >= SupporterStatus.SUPPORTER,
+          ),
         },
       ]),
     );
@@ -215,7 +224,10 @@ export class UsersService {
 
     return {
       ...user,
-      image: this.imagesService.getUserImage(user.imagePath),
+      image: this.imagesService.getUserImage(
+        user.imagePath,
+        user.supporter >= SupporterStatus.SUPPORTER,
+      ),
     };
   }
 
@@ -307,7 +319,20 @@ export class UsersService {
   }
 
   async updateImage(id: string, image: any) {
-    const { path } = await this.imagesService.storeUpload(image, 'user');
+    const user = await this.usersRepository.findOne({
+      where: { id },
+      select: ['supporter', 'imagePath'],
+    });
+    const { path } = await this.imagesService.storeUpload(
+      image,
+      'user',
+      user.supporter >= SupporterStatus.SUPPORTER,
+    );
+
+    if (user.imagePath) {
+      await this.imagesService.deleteImage(user.imagePath, 'user');
+    }
+
     await this.usersRepository.update(id, { imagePath: path });
     return true;
   }

@@ -1,4 +1,8 @@
-import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import {
+  PutObjectCommand,
+  DeleteObjectCommand,
+  S3Client,
+} from '@aws-sdk/client-s3';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { nanoid } from 'nanoid';
@@ -10,6 +14,13 @@ export type Upload = { buffer: Buffer; mimetype: string };
 interface ResizedImage {
   buffer: Buffer;
   suffix: string;
+  extension: string;
+}
+
+interface Size {
+  suffix: string;
+  size?: number;
+  quality?: number;
 }
 
 @Injectable()
@@ -26,28 +37,24 @@ export class ImagesService {
     });
   }
 
-  private releaseSizes: {
-    suffix: string;
-    size?: number;
-    quality?: number;
-  }[] = [
-    { suffix: 'original' },
+  private releaseSizes: Size[] = [
+    { suffix: 'original', quality: 100 },
     { suffix: 'lg', size: 600 },
     { suffix: 'md', size: 350 },
     { suffix: 'sm', size: 150 },
   ];
 
-  private userSizes: {
-    suffix: string;
-    size?: number;
-    quality?: number;
-  }[] = [
-    { suffix: 'original' },
+  private userSizes: Size[] = [
+    { suffix: 'original', quality: 100 },
     { suffix: 'md', size: 300 },
     { suffix: 'sm', size: 100 },
   ];
 
-  async storeUpload({ buffer }: Upload, imageFor: 'release' | 'user') {
+  async storeUpload(
+    { buffer }: Upload,
+    imageFor: 'release' | 'user',
+    allowGif?: boolean,
+  ) {
     const container =
       this.configService.get('NODE_ENV') === 'production'
         ? imageFor === 'user'
@@ -60,11 +67,17 @@ export class ImagesService {
     const id = nanoid(11);
     const sizes = imageFor === 'user' ? this.userSizes : this.releaseSizes;
 
-    const resizedImages = await this.resizeImages(buffer, sizes, imageFor);
+    const { resizedImages, isAnimated } = await this.resizeImages(
+      buffer,
+      sizes,
+      allowGif,
+    );
 
     await this.uploadImagesToS3(resizedImages, container, id);
 
-    return { path: `${container}/${id}.jpeg` };
+    return {
+      path: `${container}/${id}.${isAnimated ? 'animated.webp' : 'webp'}`,
+    };
   }
 
   async storeUploadFromUrl(url: string, imageFor: 'release' | 'user') {
@@ -85,11 +98,17 @@ export class ImagesService {
       const id = nanoid(11);
       const sizes = imageFor === 'user' ? this.userSizes : this.releaseSizes;
 
-      const resizedImages = await this.resizeImages(buffer, sizes, imageFor);
+      const { resizedImages, isAnimated } = await this.resizeImages(
+        buffer,
+        sizes,
+        false,
+      );
 
       await this.uploadImagesToS3(resizedImages, container, id);
 
-      return { path: `${container}/${id}.jpeg` };
+      return {
+        path: `${container}/${id}.${isAnimated ? 'animated.webp' : 'webp'}`,
+      };
     } catch (error) {
       console.error('Image upload error:', error);
       console.error('url', url);
@@ -100,25 +119,63 @@ export class ImagesService {
 
   private async resizeImages(
     buffer: Buffer,
-    sizes: { suffix: string; size?: number; quality?: number }[],
-    imageFor: 'release' | 'user',
-  ): Promise<ResizedImage[]> {
-    return Promise.all(
-      sizes.map(async (size) => {
-        const resizedImage =
-          size.suffix === 'original'
-            ? await sharp(buffer).jpeg({ quality: 100 }).toBuffer()
-            : await sharp(buffer)
-                .resize(
-                  imageFor === 'release'
-                    ? { width: size.size }
-                    : { width: size.size, height: size.size },
-                )
-                .jpeg({ quality: size.quality })
-                .toBuffer();
-        return { buffer: resizedImage, suffix: size.suffix };
-      }),
-    );
+    sizes: Size[],
+    allowAnimated = false, // Store additional animated version of each size if the picture is animated
+  ): Promise<{ resizedImages: ResizedImage[]; isAnimated: boolean }> {
+    const resizedImages: ResizedImage[] = [];
+
+    const metadata = await sharp(buffer).metadata();
+    const isAnimated = !!allowAnimated && metadata.pages > 1;
+
+    // Resize and convert to webp
+    const processImage = async (size: Size, animate: boolean) => {
+      let pipeline = sharp(buffer, { animated: animate });
+      if (size.size) {
+        pipeline = pipeline.resize({
+          width: size.size,
+          height: size.size,
+        });
+      }
+      return pipeline.webp(animate ? {} : { quality: size.quality }).toBuffer();
+    };
+
+    for (const size of sizes) {
+      if (size.suffix === 'original') {
+        const staticBuffer = await processImage(size, false);
+        resizedImages.push({
+          buffer: staticBuffer,
+          suffix: 'original',
+          extension: 'webp',
+        });
+
+        if (isAnimated) {
+          const animatedBuffer = await processImage(size, true);
+          resizedImages.push({
+            buffer: animatedBuffer,
+            suffix: 'original',
+            extension: 'animated.webp',
+          });
+        }
+      } else {
+        const staticBuffer = await processImage(size, false);
+        resizedImages.push({
+          buffer: staticBuffer,
+          suffix: size.suffix,
+          extension: 'webp',
+        });
+
+        if (isAnimated) {
+          const animatedBuffer = await processImage(size, true);
+          resizedImages.push({
+            buffer: animatedBuffer,
+            suffix: size.suffix,
+            extension: 'animated.webp',
+          });
+        }
+      }
+    }
+
+    return { resizedImages, isAnimated };
   }
 
   private async uploadImagesToS3(
@@ -126,18 +183,64 @@ export class ImagesService {
     container: string,
     id: string,
   ) {
-    for (const resizedImage of resizedImages) {
-      const command = new PutObjectCommand({
-        Bucket: this.configService.get('AWS_BUCKET_NAME'),
-        Key:
-          resizedImage.suffix === 'original'
-            ? `${container}/${id}.jpeg`
-            : `${container}/${resizedImage.suffix}/${id}.jpeg`,
-        Body: resizedImage.buffer,
-        ContentType: 'image/jpeg',
-      });
+    await Promise.all(
+      resizedImages.map((resizedImage) =>
+        this.s3.send(
+          new PutObjectCommand({
+            Bucket: this.configService.get('AWS_BUCKET_NAME'),
+            Key:
+              resizedImage.suffix === 'original'
+                ? `${container}/${id}.${resizedImage.extension}`
+                : `${container}/${resizedImage.suffix}/${id}.${resizedImage.extension}`,
+            Body: resizedImage.buffer,
+            ContentType: 'image/webp',
+          }),
+        ),
+      ),
+    );
+  }
 
-      await this.s3.send(command);
+  async deleteImage(path: string, imageFor: 'release' | 'user') {
+    try {
+      const parts = path.split('/');
+      if (parts.length < 2) return;
+      const container = parts[0];
+      const filename = parts[1];
+      const extension = filename.includes('.')
+        ? filename.split('.').slice(1).join('.')
+        : '';
+      const id = filename.split('.')[0];
+
+      const sizes = imageFor === 'user' ? this.userSizes : this.releaseSizes;
+      const keysToDelete: string[] = [];
+
+      for (const size of sizes) {
+        const basePath =
+          size.suffix === 'original'
+            ? container
+            : `${container}/${size.suffix}`;
+
+        // Delete the main file
+        keysToDelete.push(`${basePath}/${id}.${extension}`);
+
+        // Delete static fallback if animated
+        if (extension === 'animated.webp') {
+          keysToDelete.push(`${basePath}/${id}.webp`);
+        }
+      }
+
+      await Promise.all(
+        keysToDelete.map((key) =>
+          this.s3.send(
+            new DeleteObjectCommand({
+              Bucket: this.configService.get('AWS_BUCKET_NAME'),
+              Key: key,
+            }),
+          ),
+        ),
+      );
+    } catch (error) {
+      console.error('Failed to delete image from S3', error);
     }
   }
 
@@ -145,16 +248,22 @@ export class ImagesService {
     return !path ? null : `${this.configService.get('CDN_URL')}${path}`;
   }
 
-  getUserImage(imageUrl?: string): IUserImage {
+  getUserImage(imageUrl?: string, allowAnimated: boolean = false): IUserImage {
     if (!imageUrl) return null;
 
-    const container = imageUrl.split('/')[0];
-    const name = imageUrl.split('/')[1];
+    const parts = imageUrl.split('/');
+    if (parts.length < 2) return null;
+    const container = parts[0];
+    let filename = parts[1];
+
+    if (!allowAnimated && filename.endsWith('.animated.webp')) {
+      filename = filename.replace('.animated.webp', '.webp');
+    }
 
     return {
-      md: this.getImageUrl(`${container}/md/${name}`),
-      sm: this.getImageUrl(`${container}/sm/${name}`),
-      original: this.getImageUrl(`${container}/${name}`),
+      md: this.getImageUrl(`${container}/md/${filename}`),
+      sm: this.getImageUrl(`${container}/sm/${filename}`),
+      original: this.getImageUrl(`${container}/${filename}`),
     };
   }
 
