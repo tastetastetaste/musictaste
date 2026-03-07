@@ -2,6 +2,7 @@ export const SITE_DOMAIN = 'musictaste.xyz';
 export const SITE_NAME = 'MusicTaste';
 export const CONTACT_EMAIL = 'hello@musictaste.xyz';
 export const KOFI_LINK = 'https://ko-fi.com/musictaste';
+export const BUY_ME_A_COFFEE_LINK = 'https://www.buymeacoffee.com/musictaste';
 
 export const DISCORD_SERVER_INVITE = 'https://discord.gg/a5xUW97UB5';
 
