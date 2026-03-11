@@ -15,6 +15,9 @@ import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
 import { useAuth } from '../account/useAuth';
 import { User } from '../users/user';
+import { Stack } from '../../components/flex/stack';
+import { Typography } from '../../components/typography';
+import removeMarkdown from 'remove-markdown';
 
 type VoteFuT = typeof api.createReleaseGenreVote;
 type RemoveVoteFuT = typeof api.removeReleaseGenreVote;
@@ -78,20 +81,24 @@ const ReleaseGenreItem: React.FC<ReleaseGenreItemProps> = ({
 
   return (
     <Fragment>
-      <div>
+      <Stack gap="sm">
         <span
           style={
             !appliedToRelease
               ? {
                   color: 'red',
                   textDecoration: 'line-through',
+                  fontWeight: 'bold',
                 }
-              : {}
+              : {
+                  fontWeight: 'bold',
+                }
           }
         >
           {genre.name}
         </span>
-      </div>
+        <Typography size="small">{removeMarkdown(genre.bio)}</Typography>
+      </Stack>
       <Group justify="apart">
         <Group wrap gap="sm">
           {genreVotes &&

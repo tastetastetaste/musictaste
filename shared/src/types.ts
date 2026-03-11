@@ -112,7 +112,7 @@ export interface IGenreVote {
 export interface IReleaseGenre {
   id: string;
   valid: boolean;
-  genre: IGenreSummary;
+  genre: IGenre;
   genreVotes: IGenreVote[];
 }
 
