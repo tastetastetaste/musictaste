@@ -60,9 +60,21 @@ const customStyles: (theme: Theme) => StylesConfig = (theme) => ({
       color: theme.colors.text,
     },
   }),
+  menuPortal: (provided) => ({
+    ...provided,
+    zIndex: 9999,
+  }),
 });
 export const Select = forwardRef((props: any, ref) => {
   const theme = useTheme();
 
-  return <ReactSelect ref={ref} {...props} styles={customStyles(theme)} />;
+  return (
+    <ReactSelect
+      ref={ref}
+      menuPortalTarget={document.body}
+      menuPosition="fixed"
+      {...props}
+      styles={customStyles(theme)}
+    />
+  );
 });
