@@ -3,14 +3,15 @@ import {
   IconArrowBigUp,
   IconPencil,
 } from '@tabler/icons-react';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Fragment, useState } from 'react';
-import { IGenreSummary, IReleaseGenre, VoteType } from 'shared';
+import { IReleaseGenre, VoteType, GENRE_REFERENCE_PATTERN } from 'shared';
 import { Dialog } from '../../components/dialog';
 import { Group } from '../../components/flex/group';
 import { IconButton } from '../../components/icon-button';
-import { Input } from '../../components/inputs/input';
+import { Select } from '../../components/inputs/select';
 import { Loading } from '../../components/loading';
+import { useSnackbar } from '../../hooks/useSnackbar';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
 import { useAuth } from '../account/useAuth';
@@ -21,34 +22,6 @@ import removeMarkdown from 'remove-markdown';
 
 type VoteFuT = typeof api.createReleaseGenreVote;
 type RemoveVoteFuT = typeof api.removeReleaseGenreVote;
-
-type GenreItemProps = {
-  genre: IGenreSummary;
-  releaseId: string;
-  vote: VoteFuT;
-};
-
-const GenreItem: React.FC<GenreItemProps> = ({ genre, releaseId, vote }) => {
-  return (
-    <div css={{ padding: '6px 0' }}>
-      <Group justify="apart">
-        <span>{genre.name}</span>
-        <IconButton
-          title="Upvote"
-          onClick={() =>
-            vote({
-              releaseId,
-              genreId: genre.id,
-              voteType: VoteType.UP,
-            })
-          }
-        >
-          <IconArrowBigUp />
-        </IconButton>
-      </Group>
-    </div>
-  );
-};
 
 type ReleaseGenreItemProps = {
   me: any;
@@ -157,8 +130,10 @@ const ReleaseGenreItem: React.FC<ReleaseGenreItemProps> = ({
 
 const DialogContent = ({ releaseId }: { releaseId: string }) => {
   const { me } = useAuth();
+  const queryClient = useQueryClient();
+  const { snackbar } = useSnackbar();
 
-  const [q, setQ] = useState<string>();
+  const [query, setQuery] = useState('');
 
   const {
     data,
@@ -174,19 +149,19 @@ const DialogContent = ({ releaseId }: { releaseId: string }) => {
     fetchStatus,
   } = useQuery(
     cacheKeys.searchKey({
-      q: q!,
+      q: query!,
       type: ['genres'],
       page: 1,
       pageSize: 12,
     }),
     () =>
       api.search({
-        q: q!,
+        q: query!,
         type: ['genres'],
         page: 1,
         pageSize: 12,
       }),
-    { enabled: !!q },
+    { enabled: !!query },
   );
 
   const { mutateAsync: vote } = useMutation(api.createReleaseGenreVote, {
@@ -196,12 +171,64 @@ const DialogContent = ({ releaseId }: { releaseId: string }) => {
     onSettled: refetch,
   });
 
+  const handleInputChange = (v: any) => {
+    const match = v.match(GENRE_REFERENCE_PATTERN);
+    if (match) {
+      const genreId = match[1];
+      setQuery('');
+
+      queryClient
+        .fetchQuery(cacheKeys.genreKey(genreId), () => api.getGenre(genreId))
+        .then(({ genre }) => {
+          vote({
+            releaseId,
+            genreId: genre.id,
+            voteType: VoteType.UP,
+          });
+        })
+        .catch(() => {
+          snackbar('Failed to select genre');
+        });
+    } else {
+      setQuery(v);
+    }
+  };
+
   return (
     <div>
       {rgLoading && <Loading />}
 
       {data && (
         <Fragment>
+          <div style={{ paddingBottom: '16px' }}>
+            <Select
+              name="genreSelect"
+              value={null}
+              onChange={(selected: { value: string; label: string }) => {
+                if (!selected) return;
+                vote({
+                  releaseId,
+                  genreId: selected.value,
+                  voteType: VoteType.UP,
+                });
+                setQuery('');
+              }}
+              isLoading={isLoading && fetchStatus !== 'idle'}
+              isMulti={false}
+              options={
+                searchData?.genres &&
+                searchData.genres
+                  .filter((sg) => !data.some((rg) => sg.id === rg.genre.id))
+                  .map((g) => ({
+                    value: g.id,
+                    label: g.name,
+                  }))
+              }
+              placeholder="Release Genre"
+              inputValue={query}
+              onInputChange={handleInputChange}
+            />
+          </div>
           <div css={{ maxHeight: '300px', overflowY: 'auto' }}>
             {data.map((rg) => (
               <ReleaseGenreItem
@@ -214,22 +241,6 @@ const DialogContent = ({ releaseId }: { releaseId: string }) => {
               />
             ))}
           </div>
-          <Input
-            onChange={(e) => setQ(e.target.value)}
-            placeholder="Search..."
-          />
-          {isLoading && fetchStatus !== 'idle' && <Loading />}
-          {searchData?.genres &&
-            searchData.genres
-              .filter((sg) => !data.some((rg) => sg.id === rg.genre.id))
-              .map((g) => (
-                <GenreItem
-                  key={g.id}
-                  genre={g}
-                  releaseId={releaseId}
-                  vote={vote}
-                />
-              ))}
         </Fragment>
       )}
     </div>

@@ -41,13 +41,7 @@ const LabelPage = () => {
           label: 'Edit',
           to: '/contributions/labels/' + label?.id,
         },
-        {
-          label: 'Copy ID',
-          action: () => {
-            navigator.clipboard.writeText(label?.id || '');
-            snackbar('ID copied to clipboard');
-          },
-        },
+
         {
           label: 'Copy Reference',
           action: () => {

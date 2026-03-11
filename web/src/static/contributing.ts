@@ -23,7 +23,7 @@ You can start contributing data by selecting **"Add Release"** from the dropdown
   - If the project is released under an alias, make sure to select the alias profile, not the main artist profile.
   - For classical music, use all performers and composers as artists.
   - If you don't find the artist, click **"Add new artist"** below the input field to add a new artist to the database. (refer to the section below for information on adding artists)
-  - If you know the artist is in the database but can't find them, click **"Select by ID"** below the input field to select the artist by ID. Artist ID can be copied from the top right menu of the artist page.
+  - If you know the artist is in the database but can't find them, you can paste their reference directly into the search field. (refer to the references section)
 - **Type**: Select the release type.  
 - **Date**: Release date.  
   - Accepted formats: YYYY, YYYY-MM, YYYY-MM-DD, MM/DD/YYYY, MM-DD-YYYY, or MMM DD, YYYY.  
@@ -35,7 +35,7 @@ You can start contributing data by selecting **"Add Release"** from the dropdown
     - **English / Latin-script name (if applicable)**: The name of the label in English or Latin-script if the original name is in non-Latin script.
     - **Disambiguation**: A very short description of the label to distinguish it from other labels with the same name. Required only if there's a label with the same name in the database.
     - **Note/Source**: Add a note for the person reviewing your contribution (include links).  
-  - Similar to artists, you can select the label by ID. 
+  - Similar to artists, you can paste the label reference directly into the input search field.
 - **Language**: Select the language.  
   - If the language isn't listed, please send feedback (contact information is in the sidebar).  
 - **Cover Art**: Drag and drop, or click to select cover art.
@@ -92,18 +92,27 @@ You can edit releases, artists, and genres using a similar process:
 
 ## References
 
-You can reference releases, artists, labels, and genres by copying the reference from the top-right menu on their page and pasting it into supported fields. 
+References are used to link to specific pages in some text fields, and can be used in dropdown fields to select artists, labels, and genres.
 
-Example:
-[[release/PWSPvqA2Vcc1]]
-[[artist/cHIeGCCs9qH3]]
-[[label/_mIOVkk01WAG]]
-[[genre/TVja92bPs-jK]]
-Will render as:
-[Vespertine](${getReleasePath({ releaseId: 'PWSPvqA2Vcc1' })})
-[Kendrick Lamar](${getArtistPath({ artistId: 'cHIeGCCs9qH3' })})
-[Constellation](${getLabelPath({ labelId: '_mIOVkk01WAG' })})
-[Post-Rock](${getGenrePath({ genreId: 'TVja92bPs-jK' })})
+They can be copied from the top right menu of the page you want to link to.
+
+You can link to:
+- Releases
+- Artists
+- Labels
+- Genres
+
+You can use them in your text in any of these fields:
+- Profile bios
+- Reviews
+- Genre bios
+- List descriptions
+- Comments
+
+You can also use them in the following dropdowns:
+- Select Artists: Release Artists, Related Artists, Main Artist, Group Members
+- Select Labels: Release Labels
+- Select Genres: Release Genres
 
 ## Discarding Data Submissions
 

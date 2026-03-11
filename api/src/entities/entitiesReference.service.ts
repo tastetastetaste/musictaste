@@ -10,6 +10,7 @@ import {
   getGenrePath,
   getLabelPath,
   getReleasePath,
+  ENTITY_REFERENCE_PATTERN,
 } from 'shared';
 
 @Injectable()
@@ -24,12 +25,12 @@ export class EntitiesReferenceService {
     @InjectRepository(Genre)
     private genreRepository: Repository<Genre>,
   ) {}
-  private readonly REFERENCE_PATTERN = /\[\[([^\]]+)\]\]/g;
+
   async parseLinks(source: string): Promise<string> {
     // No source
     if (!source) return null;
 
-    const matches = Array.from(source.matchAll(this.REFERENCE_PATTERN));
+    const matches = Array.from(source.matchAll(ENTITY_REFERENCE_PATTERN));
 
     // No matches
     if (matches.length === 0) return source;
@@ -47,39 +48,42 @@ export class EntitiesReferenceService {
     });
 
     // Replace matches
-    const result = source.replace(this.REFERENCE_PATTERN, (match, content) => {
-      const [type, id] = content.split('/');
+    const result = source.replace(
+      ENTITY_REFERENCE_PATTERN,
+      (match, content) => {
+        const [type, id] = content.split('/');
 
-      if (!type || !id) return `[[${content}]]`; // Invalid format
+        if (!type || !id) return `[[${content}]]`; // Invalid format
 
-      let name: string | undefined;
-      let path: string;
+        let name: string | undefined;
+        let path: string;
 
-      switch (type) {
-        case 'release':
-          name = entityMap.releases.get(id);
-          path = getReleasePath({ releaseId: id });
-          break;
-        case 'artist':
-          name = entityMap.artists.get(id);
-          path = getArtistPath({ artistId: id });
-          break;
-        case 'label':
-          name = entityMap.labels.get(id);
-          path = getLabelPath({ labelId: id });
-          break;
-        case 'genre':
-          name = entityMap.genres.get(id);
-          path = getGenrePath({ genreId: id });
-          break;
-        default:
-          // Unknown type
-          return `[[${content}]]`;
-      }
+        switch (type) {
+          case 'release':
+            name = entityMap.releases.get(id);
+            path = getReleasePath({ releaseId: id });
+            break;
+          case 'artist':
+            name = entityMap.artists.get(id);
+            path = getArtistPath({ artistId: id });
+            break;
+          case 'label':
+            name = entityMap.labels.get(id);
+            path = getLabelPath({ labelId: id });
+            break;
+          case 'genre':
+            name = entityMap.genres.get(id);
+            path = getGenrePath({ genreId: id });
+            break;
+          default:
+            // Unknown type
+            return `[[${content}]]`;
+        }
 
-      const displayName = name || `${type.toUpperCase()} NOT FOUND`;
-      return `[${displayName}](${path})`;
-    });
+        const displayName = name || `${type.toUpperCase()} NOT FOUND`;
+        return `[${displayName}](${path})`;
+      },
+    );
 
     return result;
   }

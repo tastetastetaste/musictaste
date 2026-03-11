@@ -5,3 +5,4 @@ export * from './enums';
 export * from './dtos';
 export * from './paths';
 export * from './constants';
+export * from './references';

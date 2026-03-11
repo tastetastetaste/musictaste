@@ -22,8 +22,6 @@ import AppPageWrapper from '../../layout/app-page-wrapper';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
 import { formatReleaseDateInput } from '../../utils/date-format';
-import { AddByIdArtistDialog } from './add-by-id-artist-dialog';
-import { AddByIdLabelDialog } from './add-by-id-label-dialog';
 import { ExplicitCoverArtOptions } from './add-release-page';
 import CreateArtistDialog from './create-artist-dialog';
 import CreateLabelDialog from './create-label-dialog';
@@ -46,8 +44,6 @@ const EditReleasePage = () => {
 
   const [openCreateArtistDialog, setOpenCreateArtistDialog] = useState(false);
   const [openCreateLabelDialog, setOpenCreateLabelDialog] = useState(false);
-  const [openAddByIdArtistDialog, setOpenAddByIdArtistDialog] = useState(false);
-  const [openAddByIdLabelDialog, setOpenAddByIdLabelDialog] = useState(false);
 
   const [importMessage, setImportMessage] = useState('');
   const [importLoading, setImportLoading] = useState(false);
@@ -251,12 +247,6 @@ const EditReleasePage = () => {
               <Group gap="lg" wrap>
                 <Button
                   variant="text"
-                  onClick={() => setOpenAddByIdArtistDialog(true)}
-                >
-                  Select by ID
-                </Button>
-                <Button
-                  variant="text"
                   onClick={() => setOpenCreateArtistDialog(true)}
                 >
                   Add new artist
@@ -299,12 +289,6 @@ const EditReleasePage = () => {
             <FormInputError error={errors.labelsIds} />
             <FlexChild align="flex-end">
               <Group gap="lg" wrap>
-                <Button
-                  variant="text"
-                  onClick={() => setOpenAddByIdLabelDialog(true)}
-                >
-                  Select by ID
-                </Button>
                 <Button
                   variant="text"
                   onClick={() => setOpenCreateLabelDialog(true)}
@@ -384,34 +368,6 @@ const EditReleasePage = () => {
         <CreateLabelDialog
           isOpen={openCreateLabelDialog}
           onClose={() => setOpenCreateLabelDialog(false)}
-        />
-        <AddByIdArtistDialog
-          isOpen={openAddByIdArtistDialog}
-          onClose={() => setOpenAddByIdArtistDialog(false)}
-          onAddArtist={(artist) => {
-            const currentArtists = getValues('artists') || [];
-            const newArtists = [...currentArtists, artist];
-            setValue('artists', newArtists);
-            setValue(
-              'artistsIds',
-              newArtists.map((a) => a.value),
-            );
-          }}
-          currentArtists={getValues('artists') || []}
-        />
-        <AddByIdLabelDialog
-          isOpen={openAddByIdLabelDialog}
-          onClose={() => setOpenAddByIdLabelDialog(false)}
-          onAddLabel={(label) => {
-            const currentLabels = getValues('labels') || [];
-            const newLabels = [...currentLabels, label];
-            setValue('labels', newLabels);
-            setValue(
-              'labelsIds',
-              newLabels.map((l) => l.value),
-            );
-          }}
-          currentLabels={getValues('labels') || []}
         />
       </Container>
     </AppPageWrapper>

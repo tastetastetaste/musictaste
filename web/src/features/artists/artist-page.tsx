@@ -226,13 +226,7 @@ const ArtistPage = () => {
           label: 'History',
           to: '/history/artist/' + artist?.id,
         },
-        {
-          label: 'Copy ID',
-          action: () => {
-            navigator.clipboard.writeText(artist?.id || '');
-            snackbar('ID copied to clipboard');
-          },
-        },
+
         {
           label: 'Copy Reference',
           action: () => {

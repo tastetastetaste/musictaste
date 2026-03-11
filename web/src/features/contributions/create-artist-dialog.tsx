@@ -14,7 +14,6 @@ import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
 import { ArtistTypeOptions } from './shared';
 import { Textarea } from '../../components/inputs/textarea';
-import { SelectSingleArtist } from './select-single-artist';
 import { SelectGroupArtist } from './select-group-artist';
 import { SelectArtist } from './select-artist';
 import { SelectCountry } from './select-country';
@@ -157,11 +156,11 @@ const CreateArtistDialog: React.FC<{
                 name="mainArtist"
                 control={control}
                 render={({ field }) => (
-                  <SelectSingleArtist
+                  <SelectArtist
                     {...field}
-                    updateMainArtistId={(value) =>
-                      setValue('mainArtistId', value)
-                    }
+                    isMulti={false}
+                    placeholder="Main Artist"
+                    updateArtistId={(value) => setValue('mainArtistId', value)}
                     filterCondition={(a) => a.type !== ArtistType.Alias}
                   />
                 )}

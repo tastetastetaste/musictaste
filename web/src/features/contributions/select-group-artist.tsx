@@ -1,123 +1,83 @@
 import { IconMinus } from '@tabler/icons-react';
-import { useQuery } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
 import { Controller, useFieldArray } from 'react-hook-form';
 import { Group } from '../../components/flex/group';
 import { Stack } from '../../components/flex/stack';
 import { IconButton } from '../../components/icon-button';
-import { Select } from '../../components/inputs/select';
 import { Typography } from '../../components/typography';
-import { api } from '../../utils/api';
-import { cacheKeys } from '../../utils/cache-keys';
 import { Checkbox } from '../../components/inputs/checkbox';
 import { ArtistType } from 'shared';
+import { SelectArtist } from './select-artist';
 
 export const SelectGroupArtist = ({ control }: any) => {
-  const { fields, append, remove, move } = useFieldArray({
+  const { fields, append, remove } = useFieldArray({
     control,
     name: 'groupArtists',
     keyName: '_id',
   });
 
-  const [query, setQuery] = useState('');
-  const [selectedValue, setSelectedValue] = useState(null);
-
-  const { data, isLoading, refetch, fetchStatus } = useQuery(
-    cacheKeys.searchKey({
-      q: query!,
-      type: ['artists'],
-      page: 1,
-      pageSize: 12,
-    }),
-    () =>
-      api.search({
-        q: query!,
-        type: ['artists'],
-        page: 1,
-        pageSize: 12,
-      }),
-    { enabled: !!query },
-  );
-
   return (
     <>
-      <Select
-        value={selectedValue}
+      <SelectArtist
+        name="groupArtistSelect"
+        value={null}
+        onBlur={() => {}}
         onChange={(selected: { value: string; label: string }) => {
+          if (!selected) return;
           append({
             artistId: selected.value,
             artistName: selected.label,
-            alias: '',
             current: true,
           });
-          setSelectedValue(null);
-          setQuery('');
         }}
-        isLoading={isLoading && fetchStatus !== 'idle'}
-        options={
-          data?.artists &&
-          data.artists
-            .filter((a) => a.type !== ArtistType.Group)
-            // @ts-ignore
-            .filter((a) => !fields.some((f) => f.artistId === a.id))
-            .map(({ id, name, nameLatin, disambiguation, mainArtist }) => ({
-              value: id,
-              label:
-                name +
-                (nameLatin ? ` [${nameLatin}]` : '') +
-                (disambiguation || mainArtist
-                  ? ` (${disambiguation || mainArtist?.name})`
-                  : ''),
-            }))
+        isMulti={false}
+        filterCondition={(a) =>
+          a.type !== ArtistType.Group &&
+          !fields.some((f: any) => f.artistId === a.id)
         }
         placeholder="Group Members"
-        onInputChange={(v: any) => {
-          if (v !== '') {
-            setQuery(v);
-            refetch();
-          }
-        }}
       />
-      <Stack gap="sm">
-        {fields.map((item: any, index) => (
-          <Group gap="sm" key={item._id}>
-            <IconButton
-              title="Remove artist"
-              onClick={() => remove(index)}
-              danger
-            >
-              <IconMinus />
-            </IconButton>
-            <div
-              style={{
-                flexGrow: 1,
-                flexBasis: 0,
-              }}
-            >
-              <Typography>{item.artistName}</Typography>
-            </div>
-            <div
-              style={{
-                flexGrow: 1,
-                flexBasis: 0,
-              }}
-            >
-              <Controller
-                name={`groupArtists.${index}.current`}
-                control={control}
-                defaultValue={true}
-                render={({ field }) => (
-                  <Checkbox
-                    {...field}
-                    onChange={(value) => field.onChange(value)}
-                    label="Current"
-                  />
-                )}
-              />
-            </div>
-          </Group>
-        ))}
-      </Stack>
+      {fields.length > 0 && (
+        <Stack gap="sm">
+          {fields.map((item: any, index) => (
+            <Group gap="sm" key={item._id}>
+              <IconButton
+                title="Remove artist"
+                onClick={() => remove(index)}
+                danger
+              >
+                <IconMinus />
+              </IconButton>
+              <div
+                style={{
+                  flexGrow: 1,
+                  flexBasis: 0,
+                }}
+              >
+                <Typography>{item.artistName}</Typography>
+              </div>
+              <div
+                style={{
+                  flexGrow: 1,
+                  flexBasis: 0,
+                }}
+              >
+                <Controller
+                  name={`groupArtists.${index}.current`}
+                  control={control}
+                  defaultValue={true}
+                  render={({ field }) => (
+                    <Checkbox
+                      {...field}
+                      onChange={(value) => field.onChange(value)}
+                      label="Current"
+                    />
+                  )}
+                />
+              </div>
+            </Group>
+          ))}
+        </Stack>
+      )}
     </>
   );
 };

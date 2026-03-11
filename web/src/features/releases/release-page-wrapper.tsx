@@ -229,13 +229,7 @@ export const ReleasePageContainer: React.FC<{
           label: 'History',
           to: '/history/release/' + release.id,
         },
-        {
-          label: 'Copy ID',
-          action: () => {
-            navigator.clipboard.writeText(release.id);
-            snackbar('ID copied to clipboard');
-          },
-        },
+
         {
           label: 'Copy Reference',
           action: () => {

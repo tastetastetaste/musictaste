@@ -38,13 +38,7 @@ const GenrePage = () => {
           label: 'History',
           to: '/history/genre/' + genre?.id,
         },
-        {
-          label: 'Copy ID',
-          action: () => {
-            navigator.clipboard.writeText(genre?.id || '');
-            snackbar('ID copied to clipboard');
-          },
-        },
+
         {
           label: 'Copy Reference',
           action: () => {

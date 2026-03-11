@@ -19,7 +19,6 @@ import AppPageWrapper from '../../layout/app-page-wrapper';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
 import { ArtistTypeOptions } from './shared';
-import { SelectSingleArtist } from './select-single-artist';
 import { Feedback } from '../../components/feedback';
 import { SelectArtist } from './select-artist';
 import { SelectGroupArtist } from './select-group-artist';
@@ -137,6 +136,12 @@ const EditArtistPage = () => {
         relatedArtistsIds:
           artistData.artist.relatedArtists?.map((a) => a.id) || [],
         mainArtistId: artistData.artist.mainArtistId || '',
+        mainArtist: artistData.artist.mainArtist
+          ? {
+              value: artistData.artist.mainArtist.id,
+              label: artistData.artist.mainArtist.name,
+            }
+          : null,
       });
     }
   }, [artistData]);
@@ -256,9 +261,11 @@ const EditArtistPage = () => {
                   name="mainArtist"
                   control={control}
                   render={({ field }) => (
-                    <SelectSingleArtist
+                    <SelectArtist
                       {...field}
-                      updateMainArtistId={(value) =>
+                      placeholder="Main Artist"
+                      isMulti={false}
+                      updateArtistId={(value) =>
                         setValue('mainArtistId', value)
                       }
                       filterCondition={(a) => a.type !== ArtistType.Alias}

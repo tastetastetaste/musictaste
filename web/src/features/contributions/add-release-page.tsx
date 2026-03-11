@@ -19,8 +19,6 @@ import { Link } from '../../components/links/link';
 import { Typography } from '../../components/typography';
 import AppPageWrapper from '../../layout/app-page-wrapper';
 import { api } from '../../utils/api';
-import { AddByIdArtistDialog } from './add-by-id-artist-dialog';
-import { AddByIdLabelDialog } from './add-by-id-label-dialog';
 import CreateArtistDialog from './create-artist-dialog';
 import CreateLabelDialog from './create-label-dialog';
 import { importFromMusicBrainz } from './import-data';
@@ -57,8 +55,6 @@ const AddReleasePage = () => {
 
   const [openCreateArtistDialog, setOpenCreateArtistDialog] = useState(false);
   const [openCreateLabelDialog, setOpenCreateLabelDialog] = useState(false);
-  const [openAddByIdArtistDialog, setOpenAddByIdArtistDialog] = useState(false);
-  const [openAddByIdLabelDialog, setOpenAddByIdLabelDialog] = useState(false);
 
   const defaultValues = {
     mbid: '',
@@ -185,12 +181,6 @@ const AddReleasePage = () => {
               <Group gap="lg" wrap>
                 <Button
                   variant="text"
-                  onClick={() => setOpenAddByIdArtistDialog(true)}
-                >
-                  Select by ID
-                </Button>
-                <Button
-                  variant="text"
                   onClick={() => setOpenCreateArtistDialog(true)}
                 >
                   Add new artist
@@ -233,12 +223,6 @@ const AddReleasePage = () => {
             <FormInputError error={errors.labelsIds} />
             <FlexChild align="flex-end">
               <Group gap="lg" wrap>
-                <Button
-                  variant="text"
-                  onClick={() => setOpenAddByIdLabelDialog(true)}
-                >
-                  Select by ID
-                </Button>
                 <Button
                   variant="text"
                   onClick={() => setOpenCreateLabelDialog(true)}
@@ -320,34 +304,6 @@ const AddReleasePage = () => {
         <CreateLabelDialog
           isOpen={openCreateLabelDialog}
           onClose={() => setOpenCreateLabelDialog(false)}
-        />
-        <AddByIdArtistDialog
-          isOpen={openAddByIdArtistDialog}
-          onClose={() => setOpenAddByIdArtistDialog(false)}
-          onAddArtist={(artist) => {
-            const currentArtists = getValues('artists') || [];
-            const newArtists = [...currentArtists, artist];
-            setValue('artists', newArtists);
-            setValue(
-              'artistsIds',
-              newArtists.map((a) => a.value),
-            );
-          }}
-          currentArtists={getValues('artists') || []}
-        />
-        <AddByIdLabelDialog
-          isOpen={openAddByIdLabelDialog}
-          onClose={() => setOpenAddByIdLabelDialog(false)}
-          onAddLabel={(label) => {
-            const currentLabels = getValues('labels') || [];
-            const newLabels = [...currentLabels, label];
-            setValue('labels', newLabels);
-            setValue(
-              'labelsIds',
-              newLabels.map((l) => l.value),
-            );
-          }}
-          currentLabels={getValues('labels') || []}
         />
       </Container>
     </AppPageWrapper>
