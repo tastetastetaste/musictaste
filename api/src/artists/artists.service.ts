@@ -196,42 +196,41 @@ export class ArtistsService {
     artist.mainArtistId = type === ArtistType.Alias ? mainArtistId : null;
     artist.countryId = type !== ArtistType.Alias ? countryId || null : null;
 
-    if (type !== ArtistType.Alias) {
-      const currentRelatedIds = [
-        ...(artist.relatedTo?.map((ra) => ra.targetId) || []),
-        ...(artist.related?.map((ra) => ra.sourceId) || []),
-      ];
+    // Update related artists
+    const currentRelatedIds = [
+      ...(artist.relatedTo?.map((ra) => ra.targetId) || []),
+      ...(artist.related?.map((ra) => ra.sourceId) || []),
+    ];
 
-      const { addedIds, removedIds } = compareIds(
-        relatedArtistsIds,
-        currentRelatedIds,
+    const { addedIds, removedIds } = compareIds(
+      type === ArtistType.Alias ? [] : relatedArtistsIds, // aliases shouldn't have related artists
+      currentRelatedIds,
+    );
+
+    if (addedIds.length > 0) {
+      const uniqueIds = [...new Set(addedIds)];
+
+      await this.relatedArtistRepository.insert(
+        uniqueIds.map((id) => {
+          const [id1, id2] = [artist.id, id].sort();
+          return {
+            sourceId: id1,
+            targetId: id2,
+          };
+        }),
       );
-
-      if (addedIds.length > 0) {
-        const uniqueIds = [...new Set(addedIds)];
-
-        await this.relatedArtistRepository.insert(
-          uniqueIds.map((id) => {
-            const [id1, id2] = [artist.id, id].sort();
-            return {
-              sourceId: id1,
-              targetId: id2,
-            };
-          }),
-        );
-      }
-      if (removedIds.length > 0) {
-        await this.relatedArtistRepository.delete([
-          ...removedIds.map((id) => ({
-            sourceId: artist.id,
-            targetId: id,
-          })),
-          ...removedIds.map((id) => ({
-            sourceId: id,
-            targetId: artist.id,
-          })),
-        ]);
-      }
+    }
+    if (removedIds.length > 0) {
+      await this.relatedArtistRepository.delete([
+        ...removedIds.map((id) => ({
+          sourceId: artist.id,
+          targetId: id,
+        })),
+        ...removedIds.map((id) => ({
+          sourceId: id,
+          targetId: artist.id,
+        })),
+      ]);
     }
 
     if (type === ArtistType.Group) {
@@ -293,10 +292,13 @@ export class ArtistsService {
         })),
       );
     }
+
+    // Avoid updating relations
     artist.groupArtists = undefined;
     artist.groups = undefined;
     artist.related = undefined;
     artist.relatedTo = undefined;
+    artist.aliases = undefined;
     const savedArtist = await this.artistsRepository.save(artist);
     await this.redisService.invalidateArtistCache(savedArtist.id);
     return savedArtist;
