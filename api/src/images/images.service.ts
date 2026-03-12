@@ -19,7 +19,8 @@ interface ResizedImage {
 
 interface Size {
   suffix: string;
-  size?: number;
+  width?: number;
+  height?: number;
   quality?: number;
 }
 
@@ -39,15 +40,15 @@ export class ImagesService {
 
   private releaseSizes: Size[] = [
     { suffix: 'original', quality: 100 },
-    { suffix: 'lg', size: 600 },
-    { suffix: 'md', size: 350 },
-    { suffix: 'sm', size: 150 },
+    { suffix: 'lg', width: 600 },
+    { suffix: 'md', width: 350 },
+    { suffix: 'sm', width: 150 },
   ];
 
   private userSizes: Size[] = [
     { suffix: 'original', quality: 100 },
-    { suffix: 'md', size: 300 },
-    { suffix: 'sm', size: 100 },
+    { suffix: 'md', width: 300, height: 300 },
+    { suffix: 'sm', width: 100, height: 100 },
   ];
 
   async storeUpload(
@@ -130,10 +131,10 @@ export class ImagesService {
     // Resize and convert to webp
     const processImage = async (size: Size, animate: boolean) => {
       let pipeline = sharp(buffer, { animated: animate });
-      if (size.size) {
+      if (size.width || size.height) {
         pipeline = pipeline.resize({
-          width: size.size,
-          height: size.size,
+          width: size.width,
+          height: size.height,
         });
       }
       return pipeline.webp(animate ? {} : { quality: size.quality }).toBuffer();
