@@ -73,6 +73,7 @@ export const Select = forwardRef((props: any, ref) => {
       ref={ref}
       menuPortalTarget={document.body}
       menuPosition="fixed"
+      classNamePrefix="react-select"
       {...props}
       styles={customStyles(theme)}
     />

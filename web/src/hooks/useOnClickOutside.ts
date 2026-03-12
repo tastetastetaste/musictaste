@@ -6,7 +6,13 @@ type Handler = (event: MouseEvent | TouchEvent) => void;
 export function useOnClickOutside(ref: Ref, handler: Handler): void {
   useEffect(() => {
     const listener = (event: MouseEvent | TouchEvent) => {
-      if (!ref.current || ref.current.contains(event.target as Node)) {
+      const target = event.target as Element;
+
+      if (!ref.current || ref.current.contains(target as Node)) {
+        return;
+      }
+
+      if (target.closest && target.closest('.react-select__menu')) {
         return;
       }
 
