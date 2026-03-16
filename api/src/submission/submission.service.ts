@@ -2165,6 +2165,7 @@ export class SubmissionService {
   }
 
   async updateTrustedContributorStatuses() {
+    // Account is at least 2 months old
     // At least 200 release submissions (all time)
     // At least 5 release submissions in the last 30 days
     const result = await this.releaseSubmissionRepository
@@ -2176,6 +2177,7 @@ export class SubmissionService {
           .subQuery()
           .select('rs.userId', 'userId')
           .where('rs.submissionStatus IN (:...submissionStatuses)')
+          .andWhere("u.createdAt <= now() - INTERVAL '60 days'")
           .andWhere('u.accountStatus = :accountStatus')
           .andWhere('u.contributorStatus in (:...contributorStatuses)')
           .from(ReleaseSubmission, 'rs')

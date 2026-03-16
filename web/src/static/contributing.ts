@@ -168,11 +168,11 @@ Each user is assigned one of the following roles:
   - Can vote on contributions submitted by other users
       - Release, artist, and label submissions require 3 upvotes to approve and 3 downvotes to disapprove
       - Genre submissions require 5 upvotes to approve and 5 downvotes to disapprove
-  - This role is automatically assigned every 24 hours to users who:
-    - Have the Contributor role
-    - Made at least 200 release contributions (all time)
-    - Made at least 5 release contributions in the last 30 days
-    - Have no account warnings
+  - This role is automatically assigned to users who meet the following:
+    - At least 200 release contributions (all time)
+    - At least 5 release contributions in the last 30 days
+    - Account older than 2 months
+    - No warnings
 - **Editor**
   - Can add and edit music data directly without review
   - Can approve or disapprove contributions submitted by other users
