@@ -26,6 +26,7 @@ import { cacheKeys } from '../../utils/cache-keys';
 import { useAuth } from '../account/useAuth';
 import { ReportDialog } from '../reports/report-dialog';
 import Comment from './comment';
+import { ConfirmDialog } from '../../components/dialog/confirm-dialog';
 
 const CreateCommentForm = ({
   entityType,
@@ -124,6 +125,9 @@ export const Comments = ({
   const { snackbar } = useSnackbar();
 
   const [openReportComment, setOpenReportComment] = useState<string>(null);
+
+  const [openDeleteComment, setOpenDeleteComment] = useState<string>(null);
+
   const [replyTo, setReplyTo] = useState<string | null>(null);
 
   const roomId = `${entityType}:${entityId}`;
@@ -137,10 +141,10 @@ export const Comments = ({
         queryClient.invalidateQueries(
           cacheKeys.commentsKey(entityType, entityId),
         );
-        snackbar('Comment removed');
+        snackbar('Comment deleted');
       },
       onError: () => {
-        snackbar('Failed to remove comment', { isError: true });
+        snackbar('Failed to delete comment', { isError: true });
       },
     },
   );
@@ -203,17 +207,6 @@ export const Comments = ({
     };
   }, [isConnected, roomId, joinRoom, leaveRoom]);
 
-  const handleRemove = async (commentId: string) => {
-    try {
-      const confirmed = confirm(
-        'Are you sure you want to remove this comment?',
-      );
-      if (confirmed) await deleteComment(commentId);
-    } catch (error) {
-      snackbar('Failed to remove comment', { isError: true });
-    }
-  };
-
   return (
     <Stack gap="md">
       {isLoggedIn ? (
@@ -243,9 +236,9 @@ export const Comments = ({
                     ? () => setOpenReportComment(comment.id)
                     : null
                 }
-                onRemove={
+                onDelete={
                   isLoggedIn && me?.id === comment.user.id
-                    ? () => handleRemove(comment.id)
+                    ? () => setOpenDeleteComment(comment.id)
                     : null
                 }
                 onReply={
@@ -268,6 +261,14 @@ export const Comments = ({
         onClose={() => setOpenReportComment(null)}
         type={ReportType.COMMENT}
         id={openReportComment || ''}
+      />
+      <ConfirmDialog
+        isOpen={!!openDeleteComment}
+        onClose={() => setOpenDeleteComment(null)}
+        title="Delete Comment"
+        description="Are you sure you want to delete this comment?"
+        onConfirm={() => deleteComment(openDeleteComment)}
+        danger
       />
     </Stack>
   );

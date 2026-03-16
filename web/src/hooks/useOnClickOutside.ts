@@ -12,6 +12,7 @@ export function useOnClickOutside(ref: Ref, handler: Handler): void {
         return;
       }
 
+      // prevent select component from closing the dialog on dropdown click
       if (target.closest && target.closest('.react-select__menu')) {
         return;
       }

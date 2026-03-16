@@ -8,6 +8,7 @@ import { Stack } from '../../components/flex/stack';
 import { IconButton } from '../../components/icon-button';
 import { Input } from '../../components/inputs/input';
 import { Typography } from '../../components/typography';
+import { Dialog } from '../../components/dialog';
 
 export function millisecondsToTimeString(ms: string | number) {
   if (ms == null) return '';
@@ -91,6 +92,9 @@ const DurationInput = forwardRef(({ value, onChange, ...field }: any, ref) => {
 });
 
 const ReleaseTracksFields = ({ control, register }: any) => {
+  const [tracksToAdd, setTracksToAdd] = useState('1');
+  const [showTracksToAddDialog, setShowTracksToAddDialog] = useState(false);
+
   const { fields, append, remove, move } = useFieldArray({
     control,
     name: 'tracks',
@@ -122,21 +126,46 @@ const ReleaseTracksFields = ({ control, register }: any) => {
   return (
     <Fragment>
       {fields.length === 0 ? (
-        <Button
-          variant="main"
-          onClick={() => {
-            const n = Number(prompt('Number of tracks'));
+        <>
+          <Button variant="main" onClick={() => setShowTracksToAddDialog(true)}>
+            Add tracks
+          </Button>
 
-            append(
-              Array.from({ length: n }, (_, i) => ({
-                track: (i + 1).toString(),
-                title: '',
-              })),
-            );
-          }}
-        >
-          Add tracks
-        </Button>
+          <Dialog
+            isOpen={showTracksToAddDialog}
+            onClose={() => setShowTracksToAddDialog(false)}
+            title="Number of tracks"
+          >
+            <Stack gap="md">
+              <Input
+                type="number"
+                min={1}
+                value={tracksToAdd}
+                onChange={(e: any) => setTracksToAdd(e.target.value)}
+                autoFocus
+              />
+              <Group gap="sm" justify="end">
+                <Button
+                  variant="main"
+                  onClick={() => {
+                    const n = Number(tracksToAdd);
+                    if (n > 0) {
+                      append(
+                        Array.from({ length: n }, (_, i) => ({
+                          track: (i + 1).toString(),
+                          title: '',
+                        })),
+                      );
+                      setShowTracksToAddDialog(false);
+                    }
+                  }}
+                >
+                  Add tracks
+                </Button>
+              </Group>
+            </Stack>
+          </Dialog>
+        </>
       ) : (
         <>
           <DragDropContext onDragStart={onDragStart} onDragEnd={onDragEnd}>

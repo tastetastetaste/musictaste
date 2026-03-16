@@ -32,9 +32,9 @@ import { Comments } from '../comments/comments';
 import { ReportDialog } from '../reports/report-dialog';
 import { UserThemeProvider } from '../theme/user-theme-provider';
 import { User } from '../users/user';
-import DeleteListDialog from './delete-list-dialog';
 import ListItems from './list-items';
 import UpdateListDialog from './update-list-dialog';
+import { ConfirmDialog } from '../../components/dialog/confirm-dialog';
 
 const ListLike = ({
   likedByMe,
@@ -80,6 +80,8 @@ const ListBody = ({
 
   const [showComments, setShowComments] = useState(false);
 
+  const [openPublishDialog, setOpenPublishDialog] = useState(false);
+
   const qc = useQueryClient();
 
   const { mutateAsync: publishListMutation, isLoading } = useMutation(
@@ -90,16 +92,6 @@ const ListBody = ({
   );
 
   const navigate = useNavigate();
-
-  const publish = () => {
-    const confirmed = confirm('Do you want to publish this list?');
-
-    if (!confirmed) {
-      return;
-    }
-
-    publishListMutation(list.id);
-  };
 
   return (
     <Container>
@@ -145,7 +137,7 @@ const ListBody = ({
             <Group gap={5} align="center">
               <IconLock />
               <span>Private</span>
-              <Button variant="text" onClick={publish}>
+              <Button variant="text" onClick={() => setOpenPublishDialog(true)}>
                 {isLoading ? '...' : 'Publish'}
               </Button>
             </Group>
@@ -170,6 +162,13 @@ const ListBody = ({
       {showComments && (
         <Comments entityType={CommentEntityType.LIST} entityId={list.id} />
       )}
+      <ConfirmDialog
+        isOpen={openPublishDialog}
+        onClose={() => setOpenPublishDialog(false)}
+        title="Publish List"
+        description="Are you sure you want to publish this list?"
+        onConfirm={() => publishListMutation(list.id)}
+      />
     </Container>
   );
 };
@@ -185,9 +184,22 @@ const ListPage = () => {
     },
   );
 
-  const list = data && data.list;
+  const navigate = useNavigate();
 
   const { me } = useAuth();
+
+  const qc = useQueryClient();
+
+  const { mutateAsync: deleteListMutation } = useMutation(api.deleteList, {
+    onSettled: () => qc.invalidateQueries(cacheKeys.userListsKey(me.id)),
+  });
+
+  const deleteList = async () => {
+    await deleteListMutation(list.id);
+    navigate(-1);
+  };
+
+  const list = data && data.list;
 
   const isMyList = me && list && list.userId === me.id;
 
@@ -233,10 +245,13 @@ const ListPage = () => {
               IsOpen={editListDialogOpen}
               close={() => setEditListDialogOpen(false)}
             />
-            <DeleteListDialog
-              list={list}
-              IsOpen={deleteListDialogOpen}
-              close={() => setDeleteListDialogOpen(false)}
+            <ConfirmDialog
+              isOpen={deleteListDialogOpen}
+              onClose={() => setDeleteListDialogOpen(false)}
+              title="Delete List"
+              description="Are you sure you want to delete this list?"
+              onConfirm={deleteList}
+              danger
             />
           </Fragment>
         ) : (

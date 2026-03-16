@@ -36,14 +36,14 @@ const Container = styled.div`
 export interface CommentProps {
   comment: IComment;
   onReport: () => void | null;
-  onRemove?: () => void | null;
+  onDelete?: () => void | null;
   onReply?: () => void | null;
 }
 
 export function Comment({
   comment: { user, body, createdAt },
   onReport,
-  onRemove,
+  onDelete,
   onReply,
 }: CommentProps) {
   return (
@@ -85,8 +85,8 @@ export function Comment({
         <Typography size="small">
           {formatRelativeTimeShort(createdAt)}
         </Typography>
-        {onRemove ? (
-          <IconButton onClick={onRemove} title="Remove">
+        {onDelete ? (
+          <IconButton onClick={onDelete} title="Remove">
             <IconTrash size={16} />
           </IconButton>
         ) : onReport ? (

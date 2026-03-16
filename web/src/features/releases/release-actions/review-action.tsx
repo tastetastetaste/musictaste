@@ -8,6 +8,7 @@ import { Stack } from '../../../components/flex/stack';
 import { IconButton } from '../../../components/icon-button';
 import { TextareaWithPreview } from '../../../components/inputs/textarea-with-preview';
 import { useReleaseActions } from './useReleaseActions';
+import { ConfirmDialog } from '../../../components/dialog/confirm-dialog';
 
 const ReviewForm = ({
   releaseId,
@@ -20,6 +21,8 @@ const ReviewForm = ({
     useReleaseActions(releaseId);
   const { handleSubmit, register, reset } = useForm();
 
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+
   useEffect(() => {
     reset({
       body: entry?.review?.bodySource || '',
@@ -31,50 +34,64 @@ const ReviewForm = ({
     onClose();
   };
 
-  const removeReview = async () => {
-    const confirmed = confirm('Do you want to remove your review?');
-    if (confirmed) {
-      await reviewAction();
-      onClose();
-    }
+  const deleteReview = async () => {
+    await reviewAction();
+    onClose();
   };
 
   return (
-    <form onSubmit={handleSubmit(submit)}>
-      <Stack gap="sm">
-        <TextareaWithPreview
-          placeholder="Review"
-          {...register('body')}
-          rows={22}
-        />
-        <Button
-          type="submit"
-          disabled={updateEntryLoading || createEntryLoading}
-        >
-          Save
-        </Button>
-        {entry?.review && (
-          <Group justify="end">
-            <Button variant="text" onClick={removeReview} danger>
-              Remove
-            </Button>
-          </Group>
-        )}
-      </Stack>
-    </form>
+    <>
+      <form onSubmit={handleSubmit(submit)}>
+        <Stack gap="sm">
+          <TextareaWithPreview
+            placeholder="Review"
+            {...register('body')}
+            rows={22}
+          />
+          <Button
+            type="submit"
+            disabled={updateEntryLoading || createEntryLoading}
+          >
+            Save
+          </Button>
+          {entry?.review && (
+            <Group justify="end">
+              <Button
+                variant="text"
+                onClick={() => setOpenDeleteDialog(true)}
+                danger
+              >
+                Delete
+              </Button>
+            </Group>
+          )}
+        </Stack>
+      </form>
+      <ConfirmDialog
+        isOpen={openDeleteDialog}
+        onClose={() => setOpenDeleteDialog(false)}
+        title="Delete Review"
+        description="Are you sure you want to delete this review?"
+        onConfirm={deleteReview}
+        danger
+      />
+    </>
   );
 };
 
 export const ReviewAction = ({ releaseId }: { releaseId: string }) => {
   const [showDialog, setShowDialog] = useState(false);
+  const [showConfirmClose, setShowConfirmClose] = useState(false);
 
   const { entry } = useReleaseActions(releaseId);
 
   const onClose = () => {
-    const confirmed = confirm('Are you sure you want to close?');
-    if (confirmed) {
-      setShowDialog(false);
-    }
+    setShowConfirmClose(true);
+  };
+
+  const handleConfirmClose = () => {
+    setShowDialog(false);
+    setShowConfirmClose(false);
   };
 
   return (
@@ -93,6 +110,13 @@ export const ReviewAction = ({ releaseId }: { releaseId: string }) => {
           onClose={() => setShowDialog(false)}
         />
       </Dialog>
+      <ConfirmDialog
+        isOpen={showConfirmClose}
+        onClose={() => setShowConfirmClose(false)}
+        title="Close Review"
+        description="Are you sure you want to close? Unsaved changes will be lost."
+        onConfirm={handleConfirmClose}
+      />
     </Fragment>
   );
 };

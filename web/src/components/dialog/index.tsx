@@ -2,8 +2,6 @@ import styled from '@emotion/styled';
 import ReactDOM from 'react-dom';
 import { Typography } from '../typography';
 import { Stack } from '../flex/stack';
-import { useOnClickOutside } from '../../hooks/useOnClickOutside';
-import { useRef } from 'react';
 
 const Overlay = styled.div`
   position: fixed;
@@ -37,17 +35,23 @@ interface DialogProps {
 }
 
 export const Dialog = ({ isOpen, onClose, title, children }: DialogProps) => {
-  const ref = useRef<any>();
-
-  useOnClickOutside(ref, onClose);
-
   if (!isOpen) {
     return null;
   }
 
   return ReactDOM.createPortal(
-    <Overlay onClick={(e) => e.stopPropagation()}>
-      <DialogBox ref={ref}>
+    <Overlay
+      onMouseDown={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+      onTouchStart={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
+      <DialogBox
+        onMouseDown={(e) => e.stopPropagation()}
+        onTouchStart={(e) => e.stopPropagation()}
+      >
         <Stack gap="sm">
           <Typography size="title-lg">{title}</Typography>
           {children}

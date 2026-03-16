@@ -5,7 +5,7 @@ import {
   IconMessage,
 } from '@tabler/icons-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import React, { Fragment } from 'react';
+import React, { Fragment, useState } from 'react';
 import {
   getArtistSubmissionPath,
   getGenreSubmissionPath,
@@ -36,6 +36,7 @@ import { formatDateTime } from '../../utils/date-format';
 import { Stack } from '../../components/flex/stack';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../../utils/api';
+import { ConfirmDialog } from '../../components/dialog/confirm-dialog';
 
 const FieldContainer = styled.div`
   display: flex;
@@ -389,13 +390,9 @@ export const SubmissionItemWrapper = ({
     api.discardMyGenreSubmission,
   );
 
+  const [openDiscardDialog, setOpenDiscardDialog] = useState(false);
+
   const handleDiscard = async () => {
-    const confirmed = confirm(
-      'Are you sure you want to discard this contribution?',
-    );
-
-    if (!confirmed) return;
-
     if (submissionType === 'release') {
       await discardReleaseSubmissionFn(submission.id);
       qc.resetQueries(cacheKeys.releaseSubmissionsKey());
@@ -514,12 +511,20 @@ export const SubmissionItemWrapper = ({
             (submission.submissionStatus === SubmissionStatus.OPEN ||
               submission.submissionStatus ===
                 SubmissionStatus.AUTO_APPROVED) && (
-              <Button danger onClick={handleDiscard}>
+              <Button danger onClick={() => setOpenDiscardDialog(true)}>
                 Discard
               </Button>
             )}
         </Group>
       </Group>
+      <ConfirmDialog
+        isOpen={openDiscardDialog}
+        onClose={() => setOpenDiscardDialog(false)}
+        title="Discard Contribution"
+        description="Are you sure you want to discard this contribution?"
+        onConfirm={handleDiscard}
+        danger
+      />
     </div>
   );
 };

@@ -1,6 +1,8 @@
 import { IconPlus, IconX } from '@tabler/icons-react';
 import { IconButton, IconButtonProps } from '../../../components/icon-button';
 import { useReleaseActions } from './useReleaseActions';
+import { ConfirmDialog } from '../../../components/dialog/confirm-dialog';
+import { useState } from 'react';
 
 interface CreateEntryProps {
   createEntry: () => void;
@@ -30,24 +32,29 @@ const RemoveEntry = ({
   removeEntry: () => Promise<any>;
   variant?: IconButtonProps['variant'];
 }) => {
-  const remove = () => {
-    const confirmed = confirm('Remove your all activities on this release?');
-    if (confirmed) {
-      removeEntry();
-    }
-  };
+  const [openRemoveDialog, setOpenRemoveDialog] = useState(false);
 
   return (
-    <IconButton
-      title="Remove"
-      onClick={remove}
-      disabled={loading}
-      danger
-      active
-      variant={variant}
-    >
-      <IconX />
-    </IconButton>
+    <>
+      <IconButton
+        title="Remove"
+        onClick={() => setOpenRemoveDialog(true)}
+        disabled={loading}
+        danger
+        active
+        variant={variant}
+      >
+        <IconX />
+      </IconButton>
+      <ConfirmDialog
+        isOpen={openRemoveDialog}
+        onClose={() => setOpenRemoveDialog(false)}
+        title="Remove Entry"
+        description="Are you sure you want to remove all activities on this release?"
+        onConfirm={removeEntry}
+        danger
+      />
+    </>
   );
 };
 
