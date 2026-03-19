@@ -154,4 +154,5 @@ export enum NotificationType {
   FOLLOW = 10,
   COMMENT = 20,
   MENTION = 30,
+  LIKE = 40,
 }

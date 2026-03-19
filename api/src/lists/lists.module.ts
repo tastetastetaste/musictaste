@@ -10,6 +10,7 @@ import { List } from '../../db/entities/list.entity';
 import { ImagesModule } from '../images/images.module';
 import { CommentsModule } from '../comments/comments.module';
 import { EntitiesModule } from '../entities/entities.module';
+import { NotificationsModule } from '../notifications/notifications.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { EntitiesModule } from '../entities/entities.module';
     ImagesModule,
     CommentsModule,
     EntitiesModule,
+    NotificationsModule,
   ],
   controllers: [ListsController],
   providers: [ListsService],

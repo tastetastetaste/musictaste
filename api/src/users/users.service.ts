@@ -382,6 +382,12 @@ export class UsersService {
 
     await this.userFollowingRepository.delete({ id: uf.id });
 
+    await this.notificationsService.deleteNotification({
+      userId: currentUserId,
+      notifyId: id,
+      notificationType: NotificationType.FOLLOW,
+    });
+
     return true;
   }
 

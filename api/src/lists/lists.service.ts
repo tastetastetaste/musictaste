@@ -12,6 +12,8 @@ import {
   IListsResponse,
   UpdateListDto,
   CommentEntityType,
+  NotificationType,
+  getListPath,
 } from 'shared';
 import { Repository } from 'typeorm';
 import { ReleasesService } from '../releases/releases.service';
@@ -22,6 +24,7 @@ import { List } from '../../db/entities/list.entity';
 import { ImagesService } from '../images/images.service';
 import { CommentsService } from '../comments/comments.service';
 import { EntitiesReferenceService } from '../entities/entitiesReference.service';
+import { NotificationsService } from '../notifications/notifications.service';
 
 @Injectable()
 export class ListsService {
@@ -37,6 +40,7 @@ export class ListsService {
     private imagesService: ImagesService,
     private commentsService: CommentsService,
     private entitiesReferenceService: EntitiesReferenceService,
+    private notificationsService: NotificationsService,
   ) {}
 
   private async getManyByIds(ids: string[]) {
@@ -558,6 +562,16 @@ export class ListsService {
 
     await this.listLikesRepository.save(_ll);
 
+    if (list.userId !== currentUserId) {
+      await this.notificationsService.createNotification({
+        userId: currentUserId,
+        notifyId: list.userId,
+        message: `liked your list`,
+        link: getListPath({ listId }),
+        notificationType: NotificationType.LIKE,
+      });
+    }
+
     return true;
   }
 
@@ -574,6 +588,16 @@ export class ListsService {
     }
 
     await this.listLikesRepository.delete({ id: like.id });
+
+    const list = await this.listsRepository.findOne({ where: { id: listId } });
+    if (list && list.userId !== currentUserId) {
+      await this.notificationsService.deleteNotification({
+        userId: currentUserId,
+        notifyId: list.userId,
+        notificationType: NotificationType.LIKE,
+        link: getListPath({ listId }),
+      });
+    }
 
     return true;
   }

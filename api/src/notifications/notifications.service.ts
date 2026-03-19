@@ -2,7 +2,7 @@ import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Notification } from '../../db/entities/notification.entity';
-import { getUserPath, INotificationsResponse } from 'shared';
+import { getUserPath, INotificationsResponse, NotificationType } from 'shared';
 import { NotificationsGateway } from './notifications.gateway';
 import { UsersService } from '../users/users.service';
 
@@ -42,6 +42,15 @@ export class NotificationsService {
     });
 
     return await this.notificationsRepository.save(notification);
+  }
+
+  async deleteNotification(params: {
+    userId: string;
+    notifyId: string;
+    notificationType: NotificationType;
+    link?: string;
+  }) {
+    return await this.notificationsRepository.delete(params);
   }
 
   async extractMentionedUsers(text: string) {
