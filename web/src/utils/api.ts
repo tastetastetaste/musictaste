@@ -39,6 +39,7 @@ import {
   ILanguage,
   IListItemsResponse,
   IListResponse,
+  IListLikesResponse,
   IListsResponse,
   INotificationsResponse,
   IRelease,
@@ -385,6 +386,8 @@ const createListLike = (id: string) =>
   client.post('lists/' + id + '/likes').json<boolean>();
 const removeListLike = (id: string) =>
   client.delete('lists/' + id + '/likes').json<boolean>();
+const getListLikes = (id: string) =>
+  client.get('lists/' + id + '/likes').json<IListLikesResponse>();
 const getReleaseLists = (releaseId: string, page: number) =>
   client
     .get('lists?sortBy=new&releaseId=' + releaseId + '&page=' + page)
@@ -799,6 +802,7 @@ export const api = {
   reorderListItems,
   createListLike,
   removeListLike,
+  getListLikes,
   getReleaseLists,
   getUserLists,
   getNewLists,

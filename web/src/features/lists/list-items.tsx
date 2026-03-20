@@ -33,7 +33,7 @@ const ListItems: React.FC<{
 
   return (
     <Fragment>
-      {isFetching && !isFetchingNextPage && <Loading />}
+      {isFetching && !isFetchingNextPage && !data && <Loading />}
       {data &&
         (grid ? (
           <ListItemsVirtualGrid

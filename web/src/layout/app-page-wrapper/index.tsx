@@ -9,13 +9,14 @@ import {
   TWITTER_USERNAME,
 } from '../../static/site-info';
 import AppHeader from './app-header';
-import PageHeader from './page-header';
+import PageHeader, { QuickActionType } from './page-header';
 import { CONTENT_MAX_WIDTH, CONTENT_PADDING } from './shared';
 
 interface props {
   title?: string;
   navigation?: NavigationLinkType[];
   menu?: MenuItemType[];
+  quickActions?: QuickActionType[];
   image?: string;
   description?: string;
   children: JSX.Element | JSX.Element[];
@@ -26,6 +27,7 @@ const AppPageWrapper: React.FC<props> = ({
   navigation,
   children,
   menu,
+  quickActions,
   description,
   image,
 }) => {
@@ -83,7 +85,11 @@ const AppPageWrapper: React.FC<props> = ({
           <meta property="og:site_name" content={SITE_NAME} />
         </Helmet>
         <AppHeader />
-        <PageHeader navigation={navigation} menu={menu} />
+        <PageHeader
+          navigation={navigation}
+          menu={menu}
+          quickActions={quickActions}
+        />
         <div
           css={{
             height: '100%',

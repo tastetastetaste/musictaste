@@ -230,6 +230,7 @@ const countriesKey = () => ['countries'];
 // LISTS
 const listKey = (id: string) => ['list', id];
 const listItemsKey = (id: string, page?: number) => ['list', id, 'items', page];
+const listLikesKey = (id: string) => ['list', id, 'likes'];
 
 const releaseListsKey = (releaseId: string, page?: number) => [
   'release',
@@ -305,6 +306,7 @@ export const cacheKeys = {
   countriesKey,
   listKey,
   listItemsKey,
+  listLikesKey,
   releaseListsKey,
   userListsKey,
   newListsKey,

@@ -11,6 +11,7 @@ import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
 import { useRatingColor } from '../ratings/useRatingColor';
 import { useSortBy } from './user-music-page';
+import { StickyContainer } from '../../components/containers/sticky-container';
 
 type Option = { label: string; value: string; count: number };
 
@@ -429,22 +430,7 @@ const UserMusicFilters = ({
   const [query, setQuery] = useSearchParams();
 
   return (
-    <aside
-      css={{
-        width: 280,
-        maxWidth: '100%',
-        minHeight: '100vh',
-        maxHeight: '100vh',
-        overflowY: 'auto',
-        padding: '4px',
-        position: 'sticky',
-        top: '80px',
-        right: 0,
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '8px',
-      }}
-    >
+    <StickyContainer width={280}>
       <Stack gap="md">
         {query.toString() && (
           <button
@@ -506,13 +492,13 @@ const UserMusicFilters = ({
           defaultValue={filterType}
           icon={<IconFilter size={20} />}
         />
+        <div>
+          {FilterComponent && (
+            <FilterComponent userId={userId} ratingsCount={ratingsCount} />
+          )}
+        </div>
       </Stack>
-      <div>
-        {FilterComponent && (
-          <FilterComponent userId={userId} ratingsCount={ratingsCount} />
-        )}
-      </div>
-    </aside>
+    </StickyContainer>
   );
 };
 

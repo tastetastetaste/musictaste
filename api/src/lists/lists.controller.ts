@@ -128,6 +128,11 @@ export class ListsController {
     return this.listsService.removeLike(id, userId);
   }
 
+  @Get(':id/likes')
+  findLikes(@Param('id') id: string) {
+    return this.listsService.findLikes(id);
+  }
+
   @Get('release/:releaseId')
   @UseGuards(AuthenticatedGuard)
   releaseInMyLists(

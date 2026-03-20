@@ -24,7 +24,7 @@ export const ListItemsVirtualGrid: React.FC<{
 
   const defaultItemHeight = 330;
 
-  const itemsPerRow = sm ? 3 : md ? 4 : 6;
+  const itemsPerRow = sm ? 3 : md ? 4 : 5;
 
   const remoteRowCount = Math.ceil(totalItems / itemsPerRow);
 

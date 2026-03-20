@@ -1,84 +1,41 @@
 import {
   IconClock,
-  IconFilePencil,
-  IconHeart,
-  IconHeartFilled,
   IconLayoutGrid,
   IconLayoutList,
   IconLock,
-  IconMessage,
   IconStarFilled,
   IconTransform,
 } from '@tabler/icons-react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Fragment, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { CommentEntityType, IListResponse, ReportType } from 'shared';
+import { IListResponse, ReportType } from 'shared';
 import { Button } from '../../components/button';
-import { Container } from '../../components/containers/container';
+import { StickyContainer } from '../../components/containers/sticky-container';
+import { ConfirmDialog } from '../../components/dialog/confirm-dialog';
 import { Feedback } from '../../components/feedback';
+import { FlexChild } from '../../components/flex/flex-child';
 import { Group } from '../../components/flex/group';
-import { IconButton } from '../../components/icon-button';
+import { Stack } from '../../components/flex/stack';
 import { Loading } from '../../components/loading';
 import { Markdown } from '../../components/markdown';
 import { Typography } from '../../components/typography';
+import { useMediaQuery } from '../../hooks/useMediaQuery';
 import AppPageWrapper from '../../layout/app-page-wrapper';
 import { SOMETHING_WENT_WRONG } from '../../static/feedback';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
 import { formatDate } from '../../utils/date-format';
 import { useAuth } from '../account/useAuth';
-import { Comments } from '../comments/comments';
 import { ReportDialog } from '../reports/report-dialog';
 import { UserThemeProvider } from '../theme/user-theme-provider';
 import { User } from '../users/user';
+import { ListActivity } from './list-activity';
 import ListItems from './list-items';
 import UpdateListDialog from './update-list-dialog';
-import { ConfirmDialog } from '../../components/dialog/confirm-dialog';
 
-const ListLike = ({
-  likedByMe,
-  likesCount,
-  id,
-}: {
-  likedByMe: boolean;
-  id: string;
-  likesCount: number;
-}) => {
-  const qc = useQueryClient();
-
-  const { mutateAsync: removeListLike } = useMutation(api.removeListLike, {
-    onSuccess: () => qc.refetchQueries(cacheKeys.listKey(id)),
-  });
-
-  const { mutateAsync: createListLike } = useMutation(api.createListLike, {
-    onSuccess: () => qc.refetchQueries(cacheKeys.listKey(id)),
-  });
-
-  return (
-    <IconButton
-      title="Like"
-      num={Number(likesCount) || 0}
-      onClick={() => (likedByMe ? removeListLike(id) : createListLike(id))}
-      active={likedByMe}
-    >
-      {likedByMe ? <IconHeartFilled /> : <IconHeart />}
-    </IconButton>
-  );
-};
-
-const ListBody = ({
-  list,
-  isMyList,
-  openEditListDialog,
-}: {
-  list: IListResponse['list'];
-  isMyList?: boolean | null;
-  openEditListDialog: any;
-}) => {
+const ListBody = ({ list }: { list: IListResponse['list'] }) => {
   if (!list) throw new Error('');
-
-  const [showComments, setShowComments] = useState(false);
 
   const [openPublishDialog, setOpenPublishDialog] = useState(false);
 
@@ -91,77 +48,53 @@ const ListBody = ({
     },
   );
 
-  const navigate = useNavigate();
+  const statsIconSize = 16;
 
   return (
-    <Container>
-      <Group justify="apart">
-        <Group gap="sm">
-          <span>List By</span>
-          <User user={list.user} />
-        </Group>
-        {isMyList && (
-          <Group gap={10}>
-            <IconButton
-              title="Reorder"
-              onClick={() => navigate(`/list/${list.id}/edit`)}
-            >
-              <IconTransform />
-            </IconButton>
-            <IconButton title="Edit" onClick={openEditListDialog}>
-              <IconFilePencil />
-            </IconButton>
-          </Group>
-        )}
-      </Group>
-      <Typography size="title-xl">{list.title}</Typography>
-      {list.description && <Markdown>{list.description}</Markdown>}
-      <Group justify="apart">
-        <Group gap={10}>
+    <Stack>
+      <Group justify="apart" wrap gap={10}>
+        <User user={list.user} />
+        <Group gap={10} wrap>
           <Group gap={5}>
-            {list.grid ? <IconLayoutGrid /> : <IconLayoutList />}
-            <span>{list.listItemsCount} Items</span>
+            {list.grid ? (
+              <IconLayoutGrid size={statsIconSize} />
+            ) : (
+              <IconLayoutList size={statsIconSize} />
+            )}
+            <Typography size="small" color="sub">
+              {list.listItemsCount} Items
+            </Typography>
           </Group>
           {list.published ? (
             <Fragment>
               <Group gap={5}>
-                <IconStarFilled />
-                <span>{formatDate(list.publishedDate)}</span>
+                <IconStarFilled size={statsIconSize} />
+                <Typography size="small" color="sub">
+                  {formatDate(list.publishedDate)}
+                </Typography>
               </Group>
               <Group gap={5}>
-                <IconClock />
-                <span>{formatDate(list.updatedAt)}</span>
+                <IconClock size={statsIconSize} />
+                <Typography size="small" color="sub">
+                  {formatDate(list.updatedAt)}
+                </Typography>
               </Group>
             </Fragment>
           ) : (
             <Group gap={5} align="center">
-              <IconLock />
-              <span>Private</span>
-              <Button variant="text" onClick={() => setOpenPublishDialog(true)}>
+              <IconLock size={statsIconSize} />
+              <Typography size="small" color="sub">
+                Private
+              </Typography>
+              <Button variant="main" onClick={() => setOpenPublishDialog(true)}>
                 {isLoading ? '...' : 'Publish'}
               </Button>
             </Group>
           )}
         </Group>
-        <Group gap="sm">
-          <ListLike
-            likedByMe={list.likedByMe}
-            likesCount={list.likesCount}
-            id={list.id}
-          />
-          <IconButton
-            title="Comments"
-            num={Number(list.commentsCount) || 0}
-            onClick={() => setShowComments(!showComments)}
-            active={showComments}
-          >
-            <IconMessage />
-          </IconButton>
-        </Group>
       </Group>
-      {showComments && (
-        <Comments entityType={CommentEntityType.LIST} entityId={list.id} />
-      )}
+      <Typography size="title-xl">{list.title}</Typography>
+      {list.description && <Markdown>{list.description}</Markdown>}
       <ConfirmDialog
         isOpen={openPublishDialog}
         onClose={() => setOpenPublishDialog(false)}
@@ -169,7 +102,7 @@ const ListBody = ({
         description="Are you sure you want to publish this list?"
         onConfirm={() => publishListMutation(list.id)}
       />
-    </Container>
+    </Stack>
   );
 };
 
@@ -185,6 +118,8 @@ const ListPage = () => {
   );
 
   const navigate = useNavigate();
+
+  const isMobile = useMediaQuery({ down: 'lg' });
 
   const { me } = useAuth();
 
@@ -211,30 +146,64 @@ const ListPage = () => {
   const openEditListDialog = () => setEditListDialogOpen(true);
 
   const menu = isMyList
-    ? [{ label: 'Delete List', action: () => setDeleteListDialogOpen(true) }]
-    : [{ label: 'Report', action: () => setOpenReport(true) }];
+    ? [
+        {
+          label: 'Edit List',
+          action: openEditListDialog,
+        },
+        {
+          label: 'Delete List',
+          action: () => setDeleteListDialogOpen(true),
+        },
+      ]
+    : [
+        {
+          label: 'Report',
+          action: () => setOpenReport(true),
+        },
+      ];
+
+  const quickActions = isMyList
+    ? [
+        {
+          label: 'Reorder Items',
+          action: () => navigate(`/list/${list.id}/edit`),
+          icon: IconTransform,
+        },
+      ]
+    : [];
 
   if (!isLoading && !list) {
     return <Feedback message={SOMETHING_WENT_WRONG} />;
   }
   return (
     <UserThemeProvider user={list?.user}>
-      <AppPageWrapper title={(list && list.title) || undefined} menu={menu}>
+      <AppPageWrapper
+        title={(list && list.title) || undefined}
+        menu={menu}
+        quickActions={quickActions}
+      >
         {isLoading ? (
           <Loading />
         ) : list ? (
-          <ListItems
-            id={list.id}
-            ranked={list.ranked}
-            grid={list.grid}
-            listItemsCount={list.listItemsCount}
-          >
-            <ListBody
-              list={list}
-              isMyList={isMyList}
-              openEditListDialog={openEditListDialog}
-            />
-          </ListItems>
+          <Group align="start" gap="lg">
+            <FlexChild grow>
+              <ListItems
+                id={list.id}
+                ranked={list.ranked}
+                grid={list.grid}
+                listItemsCount={list.listItemsCount}
+              >
+                <ListBody list={list} />
+                {isMobile ? <ListActivity isMobile list={list} /> : null}
+              </ListItems>
+            </FlexChild>
+            {!isMobile ? (
+              <StickyContainer width={400}>
+                <ListActivity list={list} />
+              </StickyContainer>
+            ) : null}
+          </Group>
         ) : (
           <div></div>
         )}

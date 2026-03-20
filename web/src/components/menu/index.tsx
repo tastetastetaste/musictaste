@@ -107,8 +107,6 @@ export const Menu: React.FC<MenuProps> = ({ toggler, items }) => {
     >
       <div
         css={{
-          width: '50px',
-          height: '50px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',

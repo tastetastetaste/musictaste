@@ -206,8 +206,8 @@ export class ListsService {
 
     const listIds = await listsQB
       .select('list.id', 'id')
-      .take(pageSize)
-      .skip(((page || 1) - 1) * pageSize)
+      .limit(pageSize)
+      .offset(((page || 1) - 1) * pageSize)
       .getRawMany();
 
     const lists = await this.getManyByIds(listIds.map((l) => l.id));
@@ -289,6 +289,24 @@ export class ListsService {
       currentItems: (page - 1) * pageSize + items.length,
       totalPages: Math.ceil(totalItems / pageSize),
     };
+  }
+
+  async findLikes(listId: string) {
+    const likes = await this.listLikesRepository.find({
+      select: ['userId'],
+      where: {
+        listId,
+      },
+      order: {
+        createdAt: 'DESC',
+      },
+    });
+
+    const users = await this.usersService.getUsersByIds(
+      likes.map((l) => l.userId),
+    );
+
+    return { likes: users };
   }
 
   async releaseInMyLists(releaseId: string, currentUserId: string) {

@@ -102,6 +102,10 @@ export interface IListItemsResponse extends IPagination {
   items: IListItem[];
 }
 
+export interface IListLikesResponse extends IPagination {
+  likes: IUserSummary[];
+}
+
 export interface IGenreVote {
   id: string;
   type: VoteType;
