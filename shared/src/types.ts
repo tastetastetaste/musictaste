@@ -1,10 +1,12 @@
 import {
   AccountStatus,
   ArtistType,
+  ArtistVisibility,
   CommentEntityType,
   ContributorStatus,
   DatePrecision,
   ExplicitCoverArt,
+  LabelVisibility,
   NotificationType,
   ReleaseType,
   SupporterStatus,
@@ -48,6 +50,7 @@ export interface IArtist {
   groupArtists?: IGroupArtist[];
   groups?: IGroupArtist[];
   aliases?: IArtistSummary[];
+  visibility: ArtistVisibility;
 }
 
 export interface IArtistResponse {
@@ -138,6 +141,7 @@ export interface ILabel {
   nameLatin?: string;
   shortName?: string;
   disambiguation?: string;
+  visibility: LabelVisibility;
 }
 
 export interface ILabelResponse {

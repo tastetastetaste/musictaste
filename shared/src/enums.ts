@@ -41,6 +41,16 @@ export enum ArtistType {
   Alias = 9,
 }
 
+export enum ArtistVisibility {
+  UNLISTED = 10,
+  PUBLIC = 20,
+}
+
+export enum LabelVisibility {
+  UNLISTED = 10,
+  PUBLIC = 20,
+}
+
 export enum ExplicitCoverArt {
   NUDITY = 'NUDITY',
   EXPLICIT_SEXUAL_CONTENT = 'EXPLICIT_SEXUAL_CONTENT',

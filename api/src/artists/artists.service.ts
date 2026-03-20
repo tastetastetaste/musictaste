@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ArtistType, IArtistResponse } from 'shared';
+import { ArtistType, ArtistVisibility, IArtistResponse } from 'shared';
 import { In, Repository } from 'typeorm';
 import {
   ArtistChanges,
@@ -111,12 +111,24 @@ export class ArtistsService {
   }: ArtistChanges) {
     const id = genId();
 
+    let visibility = ArtistVisibility.PUBLIC;
+
+    if (type === ArtistType.Alias && mainArtistId) {
+      const mainArtist = await this.artistsRepository.findOne({
+        where: { id: mainArtistId },
+      });
+      if (mainArtist) {
+        visibility = mainArtist.visibility;
+      }
+    }
+
     // use `insert` to prevent accidental overwrite
     await this.artistsRepository.insert({
       id,
       name,
       nameLatin,
       type,
+      visibility,
       disambiguation,
       mainArtistId,
       countryId: countryId || null,
@@ -336,6 +348,32 @@ export class ArtistsService {
     return {
       mergedFrom: mergeFrom.name,
       mergedInto: mergeInto.name,
+    };
+  }
+
+  async updateVisibility(id: string, visibility: ArtistVisibility) {
+    const artist = await this.artistsRepository.findOne({
+      where: { id },
+      relations: ['aliases'],
+    });
+
+    if (!artist) {
+      throw new NotFoundException('Artist not found');
+    }
+
+    const idsToUpdate = [artist.id];
+
+    if (artist.aliases && artist.aliases.length > 0) {
+      idsToUpdate.push(...artist.aliases.map((a) => a.id));
+    }
+
+    await this.artistsRepository.update(
+      { id: In(idsToUpdate) },
+      { visibility },
+    );
+
+    return {
+      success: true,
     };
   }
 }

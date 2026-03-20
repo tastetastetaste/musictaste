@@ -1,4 +1,4 @@
-import { ArtistType } from 'shared';
+import { ArtistType, ArtistVisibility } from 'shared';
 import {
   Column,
   CreateDateColumn,
@@ -24,6 +24,9 @@ export class Artist extends SharedBaseEntity {
 
   @Column('int', { default: ArtistType.Person })
   type: ArtistType;
+
+  @Column('int', { default: ArtistVisibility.PUBLIC })
+  visibility: ArtistVisibility;
 
   @Column({ nullable: true })
   disambiguation?: string;

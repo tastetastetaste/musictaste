@@ -79,6 +79,8 @@ import {
   UpdateUserSupporterStatusDto,
   UpdateUserThemeDto,
   VoteType,
+  UpdateArtistVisibilityDto,
+  UpdateLabelVisibilityDto,
 } from 'shared';
 import { buildFormData } from './build-form-data';
 
@@ -722,6 +724,12 @@ const updateAccountStatus = (data: UpdateAccountStatusDto) =>
 const sendNotification = (data: SendNotificationDto) =>
   client.post('admin/user/notification', { json: data }).json<boolean>();
 
+const updateArtistVisibility = (data: UpdateArtistVisibilityDto) =>
+  client.patch('admin/artist/visibility', { json: data }).json<boolean>();
+
+const updateLabelVisibility = (data: UpdateLabelVisibilityDto) =>
+  client.patch('admin/label/visibility', { json: data }).json<boolean>();
+
 const findUsers = (type: FindUsersType) => {
   return client
     .get(`users?${type ? `type=${type}` : ''}`)
@@ -855,6 +863,8 @@ export const api = {
   updateUserSupporterStatus,
   updateAccountStatus,
   sendNotification,
+  updateArtistVisibility,
+  updateLabelVisibility,
   findUsers,
   mergeEntities,
   parseLinks,

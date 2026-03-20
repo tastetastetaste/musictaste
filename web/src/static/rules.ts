@@ -18,6 +18,12 @@ You're not allowed to have multiple accounts unless you're using them for differ
 
 You're not allowed to create an account to manipulate ratings. This includes accounts that give many unfairly low or high scores, or groups that join around the same time and give very similar ratings.
 
+### 5. Self-Promotion
+
+MusicTaste is not a promotional tool. Do not use reviews, comments, or lists to spam self-promotion for your own releases or labels. 
+
+*Note: releases from new artists or labels with very small audiences may be kept unlisted from main feeds until they gain more traction.*
+
 ## Enforcement
 
 Failure to comply with any of the rules will result in a warning or a permanent ban.

@@ -20,8 +20,10 @@ import {
   TOP_RELEASES_OAT_MIN_RATINGS_COUNT,
   TOP_RELEASES_OTY_MAX_RATINGS_COUNT,
   TOP_RELEASES_OTY_MIN_RATINGS_COUNT,
+  ArtistVisibility,
+  LabelVisibility,
 } from 'shared';
-import { In, Repository } from 'typeorm';
+import { In, Repository, SelectQueryBuilder } from 'typeorm';
 import { Artist } from '../../db/entities/artist.entity';
 import { ReleaseArtist } from '../../db/entities/release-artist.entity';
 import { ReleaseGenre } from '../../db/entities/release-genre.entity';
@@ -50,6 +52,13 @@ export type ReleaseCountType =
   | 'ratings'
   | 'reviews'
   | 'lists';
+
+export const GENERAL_ARTISTS_IDS = [
+  'DHuQs9aXH6Zd', // various artists
+];
+export const GENERAL_LABELS_IDS = [
+  'luKQZ_HOH2-I', // no label
+];
 
 @Injectable()
 export class ReleasesService {
@@ -282,6 +291,39 @@ export class ReleasesService {
     }));
   }
 
+  /**
+   * Assumes release alias is 'release'
+   */
+  private filterOutUnlisted(qb: SelectQueryBuilder<any>) {
+    return qb
+      .andWhere((qb) => {
+        const artistSubQuery = qb
+          .subQuery()
+          .select('1')
+          .from('release_artist', 'ra')
+          .innerJoin('artist', 'a', 'a.id = ra."artistId"')
+          .where('ra."releaseId" = release.id')
+          .andWhere('a.visibility = :unlistedArtist')
+          .getQuery();
+
+        return `NOT EXISTS ${artistSubQuery}`;
+      })
+      .andWhere((qb) => {
+        const labelSubQuery = qb
+          .subQuery()
+          .select('1')
+          .from('release_label', 'rl')
+          .innerJoin('label', 'l', 'l.id = rl."labelId"')
+          .where('rl."releaseId" = release.id')
+          .andWhere('l.visibility = :unlistedLabel')
+          .getQuery();
+
+        return `NOT EXISTS ${labelSubQuery}`;
+      })
+      .setParameter('unlistedArtist', ArtistVisibility.UNLISTED)
+      .setParameter('unlistedLabel', LabelVisibility.UNLISTED);
+  }
+
   async findNewReleases(
     page: number = 1,
     pageSize: number = 48,
@@ -341,6 +383,15 @@ export class ReleasesService {
       qb.andWhere('release.type = :releaseType', { releaseType });
     }
 
+    // Show unlisted in artist/label pages if not general artist/label
+    const viewUnlisted =
+      (artistId && !GENERAL_ARTISTS_IDS.includes(artistId)) ||
+      (labelId && !GENERAL_LABELS_IDS.includes(labelId));
+
+    if (!viewUnlisted) {
+      this.filterOutUnlisted(qb);
+    }
+
     const qb2 = qb.clone();
 
     const res = await qb
@@ -367,6 +418,8 @@ export class ReleasesService {
       .select('release.id', 'id')
       .where('release.date > CURRENT_DATE');
 
+    this.filterOutUnlisted(qb);
+
     const qb2 = qb.clone();
 
     const res = await qb
@@ -390,6 +443,8 @@ export class ReleasesService {
     const qb = this.releasesRepository
       .createQueryBuilder('release')
       .select('release.id', 'id');
+
+    this.filterOutUnlisted(qb);
 
     const totalItems = await qb.clone().getCount();
 
@@ -420,6 +475,8 @@ export class ReleasesService {
       .limit(pageSize)
       .offset((page - 1) * pageSize);
 
+    this.filterOutUnlisted(qb);
+
     const qb2 = qb.clone();
 
     const releases = await this.getReleasesByIdsWithStats(
@@ -447,6 +504,8 @@ export class ReleasesService {
       .addOrderBy('release.id', 'DESC')
       .limit(pageSize)
       .offset((page - 1) * pageSize);
+
+    this.filterOutUnlisted(qb);
 
     const qb2 = qb.clone();
 
@@ -496,6 +555,8 @@ export class ReleasesService {
         releaseTypes: [ReleaseType.LP, ReleaseType.Live, ReleaseType.Mixtape],
       })
       .groupBy('ur.releaseId');
+
+    this.filterOutUnlisted(query);
 
     if (minRatingsCount && maxRatingsCount) {
       query
@@ -587,6 +648,8 @@ export class ReleasesService {
         releaseTypes: [ReleaseType.LP, ReleaseType.Live, ReleaseType.Mixtape],
       })
       .groupBy('ur.releaseId');
+
+    this.filterOutUnlisted(query);
 
     if (minRatingsCount && maxRatingsCount) {
       query

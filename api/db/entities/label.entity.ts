@@ -1,3 +1,4 @@
+import { LabelVisibility } from 'shared';
 import { Column, CreateDateColumn, Entity, OneToMany } from 'typeorm';
 import { SharedBaseEntity } from '../shared/base-entity';
 import { LabelSubmission } from './label-submission.entity';
@@ -16,6 +17,9 @@ export class Label extends SharedBaseEntity {
 
   @Column({ nullable: true })
   shortName: string;
+
+  @Column('int', { default: LabelVisibility.PUBLIC })
+  visibility: LabelVisibility;
 
   @OneToMany(() => ReleaseLabel, (rl) => rl.label)
   releaseConnection: Promise<ReleaseLabel[]>;

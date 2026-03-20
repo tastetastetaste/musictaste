@@ -16,6 +16,8 @@ import {
   NotificationType,
   AccountStatus,
   SupporterStatus,
+  UpdateArtistVisibilityDto,
+  UpdateLabelVisibilityDto,
 } from 'shared';
 
 @Injectable()
@@ -118,5 +120,19 @@ export class AdminService {
       default:
         throw new Error('Invalid entity type');
     }
+  }
+
+  async updateArtistVisibility({
+    artistId,
+    visibility,
+  }: UpdateArtistVisibilityDto) {
+    return this.artistsService.updateVisibility(artistId, visibility);
+  }
+
+  async updateLabelVisibility({
+    labelId,
+    visibility,
+  }: UpdateLabelVisibilityDto) {
+    return this.labelsService.updateVisibility(labelId, visibility);
   }
 }

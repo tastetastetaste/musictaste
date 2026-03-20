@@ -36,6 +36,8 @@ import {
   AccountStatus,
   VoteType,
   ArtistType,
+  ArtistVisibility,
+  LabelVisibility,
 } from './enums';
 
 export function IsDayjsDateString(validationOptions?: ValidationOptions) {
@@ -560,6 +562,22 @@ export class SendNotificationDto {
   @IsOptional()
   @IsString()
   link?: string;
+}
+
+export class UpdateArtistVisibilityDto {
+  @IsString()
+  artistId: string;
+  @Type(() => Number)
+  @IsEnum(ArtistVisibility)
+  visibility: ArtistVisibility;
+}
+
+export class UpdateLabelVisibilityDto {
+  @IsString()
+  labelId: string;
+  @Type(() => Number)
+  @IsEnum(LabelVisibility)
+  visibility: LabelVisibility;
 }
 
 export class FindUsersDto {
