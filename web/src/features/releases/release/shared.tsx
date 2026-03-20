@@ -117,19 +117,21 @@ export const ReleaseTitleLink = ({
 export const ArtistsLinks = ({ artists }: { artists: IArtistSummary[] }) => {
   return (
     <Typography color="sub">
-      {artists.map(({ id, name, nameLatin }, i) => (
-        <Fragment key={id}>
-          {i > 0 && ', '}
-          <Link to={getArtistPath({ artistId: id })}>
-            {name}
-            {nameLatin ? (
-              <span css={{ fontStyle: 'italic' }}> [{nameLatin}]</span>
-            ) : (
-              ''
-            )}
-          </Link>
-        </Fragment>
-      ))}
+      {artists
+        .sort((a, b) => a.name.localeCompare(b.name))
+        .map(({ id, name, nameLatin }, i) => (
+          <Fragment key={id}>
+            {i > 0 && ', '}
+            <Link to={getArtistPath({ artistId: id })}>
+              {name}
+              {nameLatin ? (
+                <span css={{ fontStyle: 'italic' }}> [{nameLatin}]</span>
+              ) : (
+                ''
+              )}
+            </Link>
+          </Fragment>
+        ))}
     </Typography>
   );
 };
@@ -137,19 +139,23 @@ export const ArtistsLinks = ({ artists }: { artists: IArtistSummary[] }) => {
 export const LabelsLinks = ({ labels }: { labels: ILabelSummary[] }) => {
   return (
     <Typography color="sub">
-      {labels.map(({ id, name, nameLatin, shortName }, i) => (
-        <Fragment key={id}>
-          {i > 0 && ', '}
-          <Link to={getLabelPath({ labelId: id })}>
-            {shortName || name}
-            {nameLatin ? (
-              <span css={{ fontStyle: 'italic' }}> [{nameLatin}]</span>
-            ) : (
-              ''
-            )}
-          </Link>
-        </Fragment>
-      ))}
+      {labels
+        .sort((a, b) =>
+          (a.shortName || a.name).localeCompare(b.shortName || b.name),
+        )
+        .map(({ id, name, nameLatin, shortName }, i) => (
+          <Fragment key={id}>
+            {i > 0 && ', '}
+            <Link to={getLabelPath({ labelId: id })}>
+              {shortName || name}
+              {nameLatin ? (
+                <span css={{ fontStyle: 'italic' }}> [{nameLatin}]</span>
+              ) : (
+                ''
+              )}
+            </Link>
+          </Fragment>
+        ))}
     </Typography>
   );
 };
