@@ -123,7 +123,7 @@ export const EditListItem: React.FC<
         </FlexChild>
         <FlexChild grow shrink>
           <Stack gap="sm">
-            <ArtistsLinks artists={release.artists} />
+            <ArtistsLinks artists={release.artists} truncate />
             <ReleaseTitleLink
               to={getReleasePath({ releaseId: release.id })}
               title={release.title}

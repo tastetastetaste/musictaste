@@ -44,7 +44,7 @@ export const Release: React.FC<IReleaseProps> = ({ release, entry }) => {
       <Stack gap="sm">
         <ReleaseImageLink release={release} size={'md'} />
         <Stack gap="sm">
-          <ArtistsLinks artists={release.artists} />
+          <ArtistsLinks artists={release.artists} truncate />
           <ReleaseTitleLink
             to={getReleasePath({ releaseId: release.id })}
             title={release.title}
@@ -89,7 +89,7 @@ export const ReleaseSmall: React.FC<IReleaseProps> = ({ release }) => {
       </div>
       <FlexChild grow>
         <Stack gap="sm">
-          <ArtistsLinks artists={release.artists} />
+          <ArtistsLinks artists={release.artists} truncate />
           <ReleaseTitleLink
             to={getReleasePath({ releaseId: release.id })}
             title={release.title}

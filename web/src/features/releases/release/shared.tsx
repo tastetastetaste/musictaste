@@ -105,7 +105,7 @@ export const ReleaseTitleLink = ({
   latinTitle?: string;
 }) => {
   return (
-    <Link to={to} size="title">
+    <Link to={to} size="title" maxLines={2}>
       {title}
       <span css={{ fontStyle: 'italic' }}>
         {latinTitle && ` [${latinTitle}]`}
@@ -114,9 +114,15 @@ export const ReleaseTitleLink = ({
   );
 };
 
-export const ArtistsLinks = ({ artists }: { artists: IArtistSummary[] }) => {
+export const ArtistsLinks = ({
+  artists,
+  truncate = false,
+}: {
+  artists: IArtistSummary[];
+  truncate?: boolean;
+}) => {
   return (
-    <Typography color="sub">
+    <Typography color="sub" maxLines={truncate ? 2 : undefined}>
       {artists
         .sort((a, b) => a.name.localeCompare(b.name))
         .map(({ id, name, nameLatin }, i) => (

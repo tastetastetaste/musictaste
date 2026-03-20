@@ -5,6 +5,7 @@ interface TypographyProps {
   color?: 'main' | 'sub' | 'primary' | 'highlight' | 'error' | 'bg' | 'inherit';
   whiteSpace?: 'normal' | 'pre-wrap' | 'nowrap';
   inline?: boolean;
+  maxLines?: number;
 }
 
 export const Typography = styled.span<TypographyProps>`
@@ -44,4 +45,12 @@ export const Typography = styled.span<TypographyProps>`
   overflow-wrap: anywhere;
   text-overflow: ellipsis;
   overflow: hidden;
+
+  ${({ maxLines }) =>
+    maxLines &&
+    `
+    display: -webkit-box;
+    -webkit-line-clamp: ${maxLines};
+    -webkit-box-orient: vertical;
+  `}
 `;

@@ -57,7 +57,7 @@ export const ListItem: React.FC<IListItemProps> = ({
         </Group>
         <FlexChild grow>
           <Stack gap="sm">
-            <ArtistsLinks artists={release.artists} />
+            <ArtistsLinks artists={release.artists} truncate />
             <ReleaseTitleLink
               to={getReleasePath({ releaseId: release.id })}
               title={release.title}

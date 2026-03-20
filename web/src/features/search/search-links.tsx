@@ -64,7 +64,7 @@ export const ReleaseSearchLink = ({
       <ReleaseImageLink release={release} size="xs" />
     </div>
     <Stack gap="sm">
-      <ArtistsLinks artists={release.artists} />
+      <ArtistsLinks artists={release.artists} truncate />
       <Typography inline whiteSpace="nowrap">
         <Link to={getReleasePath({ releaseId: release.id })}>
           {release.title}

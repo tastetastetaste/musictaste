@@ -5,6 +5,7 @@ interface LinkProps {
   size?: 'title-lg' | 'title' | 'body' | 'small';
   whiteSpace?: 'normal' | 'pre-wrap' | 'nowrap';
   highlight?: boolean;
+  maxLines?: number;
 }
 
 export const Link = styled(ReactRouterLink)<LinkProps>`
@@ -35,4 +36,12 @@ export const Link = styled(ReactRouterLink)<LinkProps>`
     color: ${({ theme }) => theme.colors.primary};
   }
   white-space: ${({ whiteSpace }) => whiteSpace || 'normal'};
+
+  ${({ maxLines }) =>
+    maxLines &&
+    `
+    display: -webkit-box;
+    -webkit-line-clamp: ${maxLines};
+    -webkit-box-orient: vertical;
+  `}
 `;
