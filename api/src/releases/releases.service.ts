@@ -461,8 +461,6 @@ export class ReleasesService {
       .createQueryBuilder('release')
       .select('release.id', 'id');
 
-    this.filterOutArtistVisibility(qb);
-
     const totalItems = await qb.clone().getCount();
 
     const res = await qb
