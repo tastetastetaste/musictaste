@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { FindReleasesType, LabelVisibility, ReportType } from 'shared';
+import { FindReleasesType, ReportType } from 'shared';
 import { Stack } from '../../components/flex/stack';
 import { Loading } from '../../components/loading';
 import { Typography } from '../../components/typography';
@@ -12,7 +12,6 @@ import { cacheKeys } from '../../utils/cache-keys';
 import ReleasesListRenderer from '../releases/releases-list-renderer';
 import { ReportDialog } from '../reports/report-dialog';
 import { useAuth } from '../account/useAuth';
-import { Feedback } from '../../components/feedback';
 
 const LabelPage = () => {
   const { id } = useParams();
@@ -104,9 +103,6 @@ const LabelPage = () => {
               <Typography size="title-lg">{label.nameLatin}</Typography>
             )}
           </div>
-          {label.visibility === LabelVisibility.UNLISTED && (
-            <Feedback message="Releases under this label are currently unlisted from main feeds." />
-          )}
           <ReleasesListRenderer type={FindReleasesType.New} labelId={id} />
         </Stack>
       ) : (

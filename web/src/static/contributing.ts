@@ -168,6 +168,7 @@ Each user is assigned one of the following roles:
   - Can vote on contributions submitted by other users
       - Release, artist, and label submissions require 3 upvotes to approve and 3 downvotes to disapprove
       - Genre submissions require 5 upvotes to approve and 5 downvotes to disapprove
+      - Several incorrect votes may result in a warning and the loss of the trusted contributor role
   - This role is automatically assigned to users who meet the following:
     - At least 200 release contributions (all time)
     - At least 5 release contributions in the last 30 days
@@ -176,6 +177,10 @@ Each user is assigned one of the following roles:
 - **Editor**
   - Can add and edit music data directly without review
   - Can approve or disapprove contributions submitted by other users
+
+## Self-promotion
+
+MusicTaste is not a promotional tool. You're welcome to archive your discography on MusicTaste, but if your artist or label has a limited audience, releases may be kept unlisted from the main feeds until they gain more traction.
 
 ## Feedback
 

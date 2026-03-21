@@ -20,9 +20,7 @@ You're not allowed to create an account to manipulate ratings. This includes acc
 
 ### 5. Self-Promotion
 
-MusicTaste is not a promotional tool. Do not use reviews, comments, or lists to spam self-promotion for your own releases or labels. 
-
-*Note: releases from new artists or labels with very small audiences may be kept unlisted from main feeds until they gain more traction.*
+MusicTaste is not a promotional tool. Do not use reviews, comments, or lists to spam self-promotion of your own releases, artist profiles, or labels.
 
 ## Enforcement
 
