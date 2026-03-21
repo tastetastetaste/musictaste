@@ -2,7 +2,13 @@ import { IconChevronDown, IconChevronRight } from '@tabler/icons-react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { ArtistType, FindReleasesType, ReleaseType, ReportType } from 'shared';
+import {
+  ArtistType,
+  ArtistVisibility,
+  FindReleasesType,
+  ReleaseType,
+  ReportType,
+} from 'shared';
 import { Button } from '../../components/button';
 import { Group } from '../../components/flex/group';
 import { Stack } from '../../components/flex/stack';
@@ -17,6 +23,7 @@ import { ArtistsLinks } from '../releases/release/shared';
 import { ReportDialog } from '../reports/report-dialog';
 import ReleasesListRenderer from '../releases/releases-list-renderer';
 import { useAuth } from '../account/useAuth';
+import { Feedback } from '../../components/feedback';
 
 interface ArtistReleasesSectionProps {
   artistId: string;
@@ -200,28 +207,6 @@ const ArtistPage = () => {
     searchParams.get('includeAliases') === 'true',
   );
 
-  const { mutate: updateArtistVisibilityMutation } = useMutation(
-    api.updateArtistVisibility,
-  );
-
-  const updateArtistVisibility = () => {
-    const visibility = prompt('10-Unlisted, 20-Public');
-
-    if (visibility) {
-      updateArtistVisibilityMutation(
-        {
-          artistId: artist.id,
-          visibility: parseInt(visibility),
-        },
-        {
-          onSuccess: () => {
-            snackbar('Updated');
-          },
-        },
-      );
-    }
-  };
-
   const toggleIncludeAliases = () => {
     setIncludeAliases(!includeAliases);
     const newSearchParams = new URLSearchParams();
@@ -263,9 +248,6 @@ const ArtistPage = () => {
           label: 'Report',
           action: () => setOpenReport(true),
         },
-        ...(isAdmin && artist?.type !== ArtistType.Alias
-          ? [{ label: 'Update visibility', action: updateArtistVisibility }]
-          : []),
       ]}
     >
       {isLoading ? <Loading /> : <div></div>}
@@ -396,6 +378,10 @@ const ArtistPage = () => {
               ) : null}
             </Stack>
           </div>
+          {artist.visibility === ArtistVisibility.COMMUNITY && (
+            <Feedback message="This is a community profile." />
+          )}
+
           <ArtistReleases
             artistId={artist.id}
             includeAliases={includeAliases}

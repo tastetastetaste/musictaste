@@ -1,4 +1,4 @@
-import { ArtistType } from 'shared';
+import { ArtistType, ArtistVisibility } from 'shared';
 
 export const ReleaseTypeOptions = [
   { value: 'LP', label: 'LP' },
@@ -22,4 +22,9 @@ export const ArtistTypeOptions = [
   { value: ArtistType.Person, label: 'Person' },
   { value: ArtistType.Group, label: 'Group' },
   { value: ArtistType.Alias, label: 'Alias' },
+];
+
+export const ArtistVisibilityOptions = [
+  { value: ArtistVisibility.GENERAL, label: 'General Profile' },
+  { value: ArtistVisibility.COMMUNITY, label: 'Community Profile' },
 ];

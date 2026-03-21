@@ -42,13 +42,13 @@ export enum ArtistType {
 }
 
 export enum ArtistVisibility {
-  UNLISTED = 10,
-  PUBLIC = 20,
+  GENERAL = 20,
+  COMMUNITY = 50,
 }
 
 export enum LabelVisibility {
-  UNLISTED = 10,
-  PUBLIC = 20,
+  GENERAL = 20,
+  COMMUNITY = 50,
 }
 
 export enum ExplicitCoverArt {
@@ -108,6 +108,7 @@ export enum FindReleasesType {
   RecentlyAdded = 'recently-added',
   Top = 'top',
   TopOTY = 'top-oty',
+  Community = 'community',
 }
 
 export enum FindUsersType {

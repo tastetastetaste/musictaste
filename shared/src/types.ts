@@ -6,7 +6,6 @@ import {
   ContributorStatus,
   DatePrecision,
   ExplicitCoverArt,
-  LabelVisibility,
   NotificationType,
   ReleaseType,
   SupporterStatus,
@@ -141,7 +140,6 @@ export interface ILabel {
   nameLatin?: string;
   shortName?: string;
   disambiguation?: string;
-  visibility: LabelVisibility;
 }
 
 export interface ILabelResponse {
@@ -522,6 +520,7 @@ export interface IArtistChanges {
   name: string;
   nameLatin?: string;
   type: ArtistType;
+  visibility: ArtistVisibility;
   disambiguation?: string;
   mainArtistId?: string;
   mainArtist?: IArtistSummary;

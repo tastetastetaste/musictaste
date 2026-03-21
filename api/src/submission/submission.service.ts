@@ -108,6 +108,7 @@ export class SubmissionService {
   async createArtistSubmission(
     {
       type,
+      visibility,
       note,
       mainArtistId,
       countryId,
@@ -166,6 +167,7 @@ export class SubmissionService {
       name,
       nameLatin,
       type,
+      visibility,
       disambiguation,
       mainArtistId: type === ArtistType.Alias ? mainArtistId : null,
       countryId: type !== ArtistType.Alias ? countryId : null,
@@ -200,6 +202,7 @@ export class SubmissionService {
     artistId: string,
     {
       type,
+      visibility,
       note,
       mainArtistId,
       countryId,
@@ -293,6 +296,7 @@ export class SubmissionService {
       name,
       nameLatin,
       type,
+      visibility,
       disambiguation,
       mainArtistId: type === ArtistType.Alias ? mainArtistId : null,
       countryId: type !== ArtistType.Alias ? countryId : null,
@@ -306,6 +310,7 @@ export class SubmissionService {
       name: artist.name,
       nameLatin: artist.nameLatin,
       type: artist.type,
+      visibility: artist.visibility,
       disambiguation: artist.disambiguation,
       mainArtistId: artist.mainArtistId,
       countryId: artist.countryId,

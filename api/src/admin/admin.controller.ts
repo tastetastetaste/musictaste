@@ -17,8 +17,6 @@ import {
   UpdateUserSupporterStatusDto,
   UpdateAccountStatusDto,
   SendNotificationDto,
-  UpdateArtistVisibilityDto,
-  UpdateLabelVisibilityDto,
 } from 'shared';
 
 @Controller('admin')
@@ -79,32 +77,6 @@ export class AdminController {
     }
 
     return this.adminService.sendNotification(sendNotificationDto, user.id);
-  }
-
-  @Patch('artist/visibility')
-  @UseGuards(AuthenticatedGuard)
-  updateArtistVisibility(
-    @Body() updateDto: UpdateArtistVisibilityDto,
-    @CurUser() user: CurrentUserPayload,
-  ) {
-    if (user.contributorStatus !== ContributorStatus.ADMIN) {
-      throw new UnauthorizedException();
-    }
-
-    return this.adminService.updateArtistVisibility(updateDto);
-  }
-
-  @Patch('label/visibility')
-  @UseGuards(AuthenticatedGuard)
-  updateLabelVisibility(
-    @Body() updateDto: UpdateLabelVisibilityDto,
-    @CurUser() user: CurrentUserPayload,
-  ) {
-    if (user.contributorStatus !== ContributorStatus.ADMIN) {
-      throw new UnauthorizedException();
-    }
-
-    return this.adminService.updateLabelVisibility(updateDto);
   }
 
   @Post('merge')

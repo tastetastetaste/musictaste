@@ -3,6 +3,7 @@ import { Fragment } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import {
   ArtistType,
+  ArtistVisibility,
   getArtistPath,
   IArtistSubmission,
   SubmissionSortByEnum,
@@ -70,6 +71,13 @@ export const ArtistSubmissionItem = ({
         changedValue={changes?.type}
         showOriginal={hasOriginal}
         renderValue={(v) => <span>{ArtistType[v]}</span>}
+      />
+      <SubmissionField
+        label="Visibility"
+        originalValue={original?.visibility}
+        changedValue={changes?.visibility}
+        showOriginal={hasOriginal}
+        renderValue={(v) => <span>{ArtistVisibility[v]}</span>}
       />
       <SubmissionField
         label="Main Artist"

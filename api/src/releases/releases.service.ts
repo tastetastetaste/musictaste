@@ -21,7 +21,6 @@ import {
   TOP_RELEASES_OTY_MAX_RATINGS_COUNT,
   TOP_RELEASES_OTY_MIN_RATINGS_COUNT,
   ArtistVisibility,
-  LabelVisibility,
 } from 'shared';
 import { In, Repository, SelectQueryBuilder } from 'typeorm';
 import { Artist } from '../../db/entities/artist.entity';
@@ -294,7 +293,10 @@ export class ReleasesService {
   /**
    * Assumes release alias is 'release'
    */
-  private filterOutUnlisted(qb: SelectQueryBuilder<any>) {
+  private filterOutArtistVisibility(
+    qb: SelectQueryBuilder<any>,
+    visibility: ArtistVisibility = ArtistVisibility.COMMUNITY,
+  ) {
     return qb
       .andWhere((qb) => {
         const artistSubQuery = qb
@@ -308,20 +310,7 @@ export class ReleasesService {
 
         return `NOT EXISTS ${artistSubQuery}`;
       })
-      .andWhere((qb) => {
-        const labelSubQuery = qb
-          .subQuery()
-          .select('1')
-          .from('release_label', 'rl')
-          .innerJoin('label', 'l', 'l.id = rl."labelId"')
-          .where('rl."releaseId" = release.id')
-          .andWhere('l.visibility = :unlistedLabel')
-          .getQuery();
-
-        return `NOT EXISTS ${labelSubQuery}`;
-      })
-      .setParameter('unlistedArtist', ArtistVisibility.UNLISTED)
-      .setParameter('unlistedLabel', LabelVisibility.UNLISTED);
+      .setParameter('unlistedArtist', visibility);
   }
 
   async findNewReleases(
@@ -389,7 +378,7 @@ export class ReleasesService {
       (labelId && !GENERAL_LABELS_IDS.includes(labelId));
 
     if (!viewUnlisted) {
-      this.filterOutUnlisted(qb);
+      this.filterOutArtistVisibility(qb);
     }
 
     const qb2 = qb.clone();
@@ -418,7 +407,7 @@ export class ReleasesService {
       .select('release.id', 'id')
       .where('release.date > CURRENT_DATE');
 
-    this.filterOutUnlisted(qb);
+    this.filterOutArtistVisibility(qb);
 
     const qb2 = qb.clone();
 
@@ -439,12 +428,40 @@ export class ReleasesService {
     };
   }
 
+  async findCommunityReleases(page: number = 1, pageSize: number = 48) {
+    const qb = this.releasesRepository
+      .createQueryBuilder('release')
+      .select('release.id', 'id')
+      .addSelect('release.date', 'date');
+
+    this.filterOutArtistVisibility(qb, ArtistVisibility.GENERAL);
+
+    const qb2 = qb.clone();
+
+    const res = await qb
+      .distinct(true)
+      .orderBy('release.date', 'DESC')
+      .addOrderBy('release.id', 'ASC')
+      .limit(pageSize)
+      .offset((page - 1) * pageSize)
+      .getRawMany();
+
+    const releases = await this.getReleasesByIdsWithStats(res.map((r) => r.id));
+
+    const totalItems = await qb2.getCount();
+
+    return {
+      releases,
+      totalItems,
+    };
+  }
+
   async findRecentlyAddedReleases(page: number = 1, pageSize: number = 48) {
     const qb = this.releasesRepository
       .createQueryBuilder('release')
       .select('release.id', 'id');
 
-    this.filterOutUnlisted(qb);
+    this.filterOutArtistVisibility(qb);
 
     const totalItems = await qb.clone().getCount();
 
@@ -475,7 +492,7 @@ export class ReleasesService {
       .limit(pageSize)
       .offset((page - 1) * pageSize);
 
-    this.filterOutUnlisted(qb);
+    this.filterOutArtistVisibility(qb);
 
     const qb2 = qb.clone();
 
@@ -505,7 +522,7 @@ export class ReleasesService {
       .limit(pageSize)
       .offset((page - 1) * pageSize);
 
-    this.filterOutUnlisted(qb);
+    this.filterOutArtistVisibility(qb);
 
     const qb2 = qb.clone();
 
@@ -556,7 +573,7 @@ export class ReleasesService {
       })
       .groupBy('ur.releaseId');
 
-    this.filterOutUnlisted(query);
+    this.filterOutArtistVisibility(query);
 
     if (minRatingsCount && maxRatingsCount) {
       query
@@ -649,7 +666,7 @@ export class ReleasesService {
       })
       .groupBy('ur.releaseId');
 
-    this.filterOutUnlisted(query);
+    this.filterOutArtistVisibility(query);
 
     if (minRatingsCount && maxRatingsCount) {
       query

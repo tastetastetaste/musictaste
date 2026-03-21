@@ -25,7 +25,7 @@ export class Artist extends SharedBaseEntity {
   @Column('int', { default: ArtistType.Person })
   type: ArtistType;
 
-  @Column('int', { default: ArtistVisibility.PUBLIC })
+  @Column('int', { default: ArtistVisibility.GENERAL })
   visibility: ArtistVisibility;
 
   @Column({ nullable: true })

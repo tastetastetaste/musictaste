@@ -18,7 +18,8 @@ export class Label extends SharedBaseEntity {
   @Column({ nullable: true })
   shortName: string;
 
-  @Column('int', { default: LabelVisibility.PUBLIC })
+  // @deprecated
+  @Column('int', { default: LabelVisibility.GENERAL })
   visibility: LabelVisibility;
 
   @OneToMany(() => ReleaseLabel, (rl) => rl.label)

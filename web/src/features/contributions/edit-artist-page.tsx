@@ -3,7 +3,12 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArtistType, SubmissionStatus, UpdateArtistDto } from 'shared';
+import {
+  ArtistType,
+  ArtistVisibility,
+  SubmissionStatus,
+  UpdateArtistDto,
+} from 'shared';
 import { Button } from '../../components/button';
 import { Container } from '../../components/containers/container';
 import { Group } from '../../components/flex/group';
@@ -18,7 +23,7 @@ import { useSnackbar } from '../../hooks/useSnackbar';
 import AppPageWrapper from '../../layout/app-page-wrapper';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
-import { ArtistTypeOptions } from './shared';
+import { ArtistTypeOptions, ArtistVisibilityOptions } from './shared';
 import { Feedback } from '../../components/feedback';
 import { SelectArtist } from './select-artist';
 import { SelectGroupArtist } from './select-group-artist';
@@ -38,6 +43,7 @@ const EditArtistPage = () => {
     name: '',
     nameLatin: '',
     type: ArtistType.Person,
+    visibility: ArtistVisibility.GENERAL,
     disambiguation: '',
     relatedArtists: [],
     relatedArtistsIds: [],
@@ -114,6 +120,7 @@ const EditArtistPage = () => {
         name: artistData.artist.name,
         nameLatin: artistData.artist.nameLatin || '',
         type: artistData.artist.type,
+        visibility: artistData.artist.visibility,
         disambiguation: artistData.artist.disambiguation || '',
         country: artistData.artist.country
           ? {
@@ -213,6 +220,31 @@ const EditArtistPage = () => {
                 />
               )}
             />
+
+            {artistType !== ArtistType.Alias && (
+              <>
+                <Controller
+                  name="visibility"
+                  control={control}
+                  render={({ field: { value, onChange, ...field } }) => (
+                    <Select
+                      {...field}
+                      options={ArtistVisibilityOptions}
+                      placeholder="Visibility"
+                      value={
+                        ArtistVisibilityOptions.find(
+                          (c) => c.value === value,
+                        ) || null
+                      }
+                      onChange={(val: { value: number; label: string }) =>
+                        onChange(val.value)
+                      }
+                    />
+                  )}
+                />
+                <FormInputError error={errors.visibility} />
+              </>
+            )}
             <FormInputError error={errors.type} />
             <Input placeholder="Name" {...register('name')} />
             <FormInputError error={errors.name} />

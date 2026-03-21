@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { FindReleasesType, ReportType } from 'shared';
@@ -11,12 +11,9 @@ import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
 import ReleasesListRenderer from '../releases/releases-list-renderer';
 import { ReportDialog } from '../reports/report-dialog';
-import { useAuth } from '../account/useAuth';
 
 const LabelPage = () => {
   const { id } = useParams();
-
-  const { isAdmin } = useAuth();
 
   const { snackbar } = useSnackbar();
 
@@ -29,28 +26,6 @@ const LabelPage = () => {
       enabled: !!id,
     },
   );
-
-  const { mutate: updateLabelVisibilityMutation } = useMutation(
-    api.updateLabelVisibility,
-  );
-
-  const updateLabelVisibility = () => {
-    const visibility = prompt('10-Unlisted, 20-Public');
-
-    if (visibility) {
-      updateLabelVisibilityMutation(
-        {
-          labelId: label.id,
-          visibility: parseInt(visibility),
-        },
-        {
-          onSuccess: () => {
-            snackbar('Updated');
-          },
-        },
-      );
-    }
-  };
 
   const label = data && data.label;
 
@@ -78,9 +53,6 @@ const LabelPage = () => {
           label: 'Report',
           action: () => setOpenReport(true),
         },
-        ...(isAdmin
-          ? [{ label: 'Update visibility', action: updateLabelVisibility }]
-          : []),
       ]}
     >
       {isLoading ? <Loading /> : <div></div>}

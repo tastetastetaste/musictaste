@@ -21,8 +21,8 @@ export class ReleasesController {
   constructor(private readonly releasesService: ReleasesService) {}
 
   @Get()
-  @UseInterceptors(CacheInterceptor)
-  @CacheTTL(1000 * 60 * 5) // 5 minutes
+  // @UseInterceptors(CacheInterceptor)
+  // @CacheTTL(1000 * 60 * 5) // 5 minutes
   async find(
     @Query() query: FindReleasesDto,
     @CurUser('id') userId: string,
@@ -42,6 +42,12 @@ export class ReleasesController {
           query.artistId,
           query.includeAliases,
           query.releaseType,
+        );
+        break;
+      case FindReleasesType.Community:
+        result = await this.releasesService.findCommunityReleases(
+          page,
+          pageSize,
         );
         break;
       case FindReleasesType.Popular:

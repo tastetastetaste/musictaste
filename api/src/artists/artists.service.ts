@@ -103,6 +103,7 @@ export class ArtistsService {
     name,
     nameLatin,
     type,
+    visibility,
     disambiguation,
     mainArtistId,
     relatedArtistsIds,
@@ -111,14 +112,15 @@ export class ArtistsService {
   }: ArtistChanges) {
     const id = genId();
 
-    let visibility = ArtistVisibility.PUBLIC;
+    let newVisibility = visibility;
 
+    // Alias visibility should be the same as main artist
     if (type === ArtistType.Alias && mainArtistId) {
       const mainArtist = await this.artistsRepository.findOne({
         where: { id: mainArtistId },
       });
       if (mainArtist) {
-        visibility = mainArtist.visibility;
+        newVisibility = mainArtist.visibility;
       }
     }
 
@@ -128,7 +130,7 @@ export class ArtistsService {
       name,
       nameLatin,
       type,
-      visibility,
+      visibility: newVisibility,
       disambiguation,
       mainArtistId,
       countryId: countryId || null,
@@ -172,6 +174,7 @@ export class ArtistsService {
       name,
       nameLatin,
       type,
+      visibility,
       disambiguation,
       mainArtistId,
       relatedArtistsIds,
@@ -201,9 +204,33 @@ export class ArtistsService {
       );
     }
 
+    let newVisibility = visibility;
+
+    // Alias visibility should be the same as main artist
+    if (type === ArtistType.Alias && mainArtistId) {
+      const mainArtist = await this.artistsRepository.findOne({
+        where: { id: mainArtistId },
+      });
+      if (mainArtist) {
+        newVisibility = mainArtist.visibility;
+      }
+    } else if (artist.aliases.length > 0) {
+      // Check if aliases need to be updated
+      const aliasVisibility = artist.aliases.every(
+        (alias) => alias.visibility === newVisibility,
+      );
+      if (!aliasVisibility) {
+        await this.artistsRepository.update(
+          artist.aliases.map((alias) => alias.id),
+          { visibility: newVisibility },
+        );
+      }
+    }
+
     artist.name = name;
     artist.nameLatin = nameLatin;
     artist.type = type;
+    artist.visibility = newVisibility;
     artist.disambiguation = disambiguation;
     artist.mainArtistId = type === ArtistType.Alias ? mainArtistId : null;
     artist.countryId = type !== ArtistType.Alias ? countryId || null : null;

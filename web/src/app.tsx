@@ -636,6 +636,14 @@ const router = createBrowserRouter([
               </Suspense>
             ),
           },
+          {
+            path: 'community',
+            element: (
+              <Suspense fallback={<Fallback />}>
+                <ReleasesListRenderer type={FindReleasesType.Community} />
+              </Suspense>
+            ),
+          },
         ],
       },
       {

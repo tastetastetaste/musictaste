@@ -60,6 +60,9 @@ You can autofill the fields by importing from MusicBrainz.
 
 - **Type**: Select "Person", "Group", or "Alias".
   - Artists can have only one "Person" profile and as many "Alias" profiles as needed, all linked to the main artist profile.
+- **Visibility**: Select "General Profile" or "Community Profile".
+  - **General Profile**: for artists who are established enough that people may recognize them or find them very quickly in a Google search..
+  - **Community Profile**: for artists with limited audience or if you're adding your own artist, group, or artists you're associated with (friends, artists you manage, etc.).
 - **Name**: The original name of the artist.
 - **English / Latin-script name (if applicable)**: The name of the artist in English or Latin-script if the original name is in non-Latin script.
 - **Disambiguation**: A very short description of the artist to distinguish them from other artists with the same name. Required only if there's an artist with the same name in the database.
@@ -177,10 +180,6 @@ Each user is assigned one of the following roles:
 - **Editor**
   - Can add and edit music data directly without review
   - Can approve or disapprove contributions submitted by other users
-
-## Self-promotion
-
-MusicTaste is not a promotional tool. You're welcome to archive your discography on MusicTaste, but if your artist or label has a limited audience, releases may be kept unlisted from the main feeds until they gain more traction.
 
 ## Feedback
 

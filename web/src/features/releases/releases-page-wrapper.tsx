@@ -11,6 +11,7 @@ const ReleasesPageWrapper: React.FC = () => {
         { to: `/releases/popular`, label: 'Popular' },
         { to: `/releases/top`, label: 'Top OAT' },
         { to: `/releases/top-oty`, label: 'Top OTY' },
+        { to: `/releases/community`, label: 'Community' },
         { to: `/releases/recently-added`, label: 'Recently added' },
       ]}
     >

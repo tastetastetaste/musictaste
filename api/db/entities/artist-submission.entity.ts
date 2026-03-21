@@ -1,6 +1,7 @@
 import { IsString, IsOptional, IsEnum } from 'class-validator';
 import {
   ArtistType,
+  ArtistVisibility,
   GroupArtistDto,
   SubmissionStatus,
   SubmissionType,
@@ -29,6 +30,9 @@ export class ArtistChanges {
 
   @IsEnum(ArtistType)
   type: ArtistType;
+
+  @IsEnum(ArtistVisibility)
+  visibility: ArtistVisibility;
 
   @IsString()
   @IsOptional()

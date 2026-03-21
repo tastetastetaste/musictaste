@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ILabelResponse, LabelVisibility } from 'shared';
+import { ILabelResponse } from 'shared';
 import { Repository } from 'typeorm';
 import { LabelChanges } from '../../db/entities/label-submission.entity';
 import { Label } from '../../db/entities/label.entity';
@@ -95,22 +95,6 @@ export class LabelsService {
     return {
       mergedFrom: mergeFrom.name,
       mergedInto: mergeInto.name,
-    };
-  }
-
-  async updateVisibility(id: string, visibility: LabelVisibility) {
-    const label = await this.labelRepository.findOne({
-      where: { id },
-    });
-
-    if (!label) {
-      throw new NotFoundException('Label not found');
-    }
-
-    await this.labelRepository.update({ id }, { visibility });
-
-    return {
-      success: true,
     };
   }
 }

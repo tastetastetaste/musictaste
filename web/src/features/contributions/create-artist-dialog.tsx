@@ -1,7 +1,12 @@
 import { classValidatorResolver } from '@hookform/resolvers/class-validator';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Controller, useForm } from 'react-hook-form';
-import { ArtistType, CreateArtistDto, getArtistPath } from 'shared';
+import {
+  ArtistType,
+  ArtistVisibility,
+  CreateArtistDto,
+  getArtistPath,
+} from 'shared';
 import { Button } from '../../components/button';
 import { Dialog } from '../../components/dialog';
 import { Stack } from '../../components/flex/stack';
@@ -12,11 +17,12 @@ import { Link } from '../../components/links/link';
 import { Typography } from '../../components/typography';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
-import { ArtistTypeOptions } from './shared';
+import { ArtistTypeOptions, ArtistVisibilityOptions } from './shared';
 import { Textarea } from '../../components/inputs/textarea';
 import { SelectGroupArtist } from './select-group-artist';
 import { SelectArtist } from './select-artist';
 import { SelectCountry } from './select-country';
+import { Checkbox } from '../../components/inputs/checkbox';
 
 export interface CreateArtistFormValues extends CreateArtistDto {
   mainArtist: { value: string; label: string };
@@ -34,6 +40,7 @@ const CreateArtistDialog: React.FC<{
     name: '',
     nameLatin: '',
     type: ArtistType.Person,
+    visibility: ArtistVisibility.GENERAL,
     disambiguation: '',
     relatedArtists: [],
     mainArtistId: '',
@@ -98,6 +105,30 @@ const CreateArtistDialog: React.FC<{
             )}
           />
           <FormInputError error={errors.type} />
+          {artistType !== ArtistType.Alias && (
+            <>
+              <Controller
+                name="visibility"
+                control={control}
+                render={({ field: { value, onChange, ...field } }) => (
+                  <Select
+                    {...field}
+                    options={ArtistVisibilityOptions}
+                    placeholder="Visibility"
+                    value={
+                      ArtistVisibilityOptions.find((c) => c.value === value) ||
+                      null
+                    }
+                    onChange={(val: { value: number; label: string }) =>
+                      onChange(val.value)
+                    }
+                  />
+                )}
+              />
+              <FormInputError error={errors.visibility} />
+            </>
+          )}
+
           <Input placeholder="Name" {...register('name')} />
           <FormInputError error={errors.name} />
           <Input
