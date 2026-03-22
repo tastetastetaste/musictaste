@@ -432,7 +432,25 @@ export class ReleasesService {
     const qb = this.releasesRepository
       .createQueryBuilder('release')
       .select('release.id', 'id')
-      .addSelect('release.date', 'date');
+      .addSelect('release.date', 'date')
+      .leftJoinAndSelect('release.artistConnection', 'releaseArtists')
+      .leftJoinAndSelect('releaseArtists.artist', 'artist')
+      .innerJoin(
+        (sq) => {
+          return sq
+            .select('r.id', 'releaseId')
+            .addSelect(
+              'ROW_NUMBER() OVER(PARTITION BY COALESCE(a."mainArtistId", a.id) ORDER BY r.date DESC)',
+              'rn',
+            )
+            .from(Release, 'r')
+            .leftJoin('r.artistConnection', 'ra')
+            .leftJoin('ra.artist', 'a');
+        },
+        'ranked',
+        'ranked."releaseId" = release.id AND ranked.rn <= :limit',
+        { limit: 5 },
+      );
 
     this.filterOutArtistVisibility(qb, ArtistVisibility.GENERAL);
 

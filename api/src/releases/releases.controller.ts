@@ -21,8 +21,8 @@ export class ReleasesController {
   constructor(private readonly releasesService: ReleasesService) {}
 
   @Get()
-  // @UseInterceptors(CacheInterceptor)
-  // @CacheTTL(1000 * 60 * 5) // 5 minutes
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(1000 * 60 * 10) // 10 minutes
   async find(
     @Query() query: FindReleasesDto,
     @CurUser('id') userId: string,

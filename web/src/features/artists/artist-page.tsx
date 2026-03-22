@@ -1,4 +1,8 @@
-import { IconChevronDown, IconChevronRight } from '@tabler/icons-react';
+import {
+  IconChevronDown,
+  IconChevronRight,
+  IconUsers,
+} from '@tabler/icons-react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
@@ -24,6 +28,8 @@ import { ReportDialog } from '../reports/report-dialog';
 import ReleasesListRenderer from '../releases/releases-list-renderer';
 import { useAuth } from '../account/useAuth';
 import { Feedback } from '../../components/feedback';
+import { Popover } from '../../components/popover';
+import { Tooltip } from '../../components/popover/tooltip';
 
 interface ArtistReleasesSectionProps {
   artistId: string;
@@ -264,16 +270,31 @@ const ArtistPage = () => {
             }}
           >
             <Stack>
-              <Stack>
-                <Typography size="title-xl" as="h1">
-                  {artist.name}
-                </Typography>
-                {artist.nameLatin ? (
-                  <Typography size="title-lg">{artist.nameLatin}</Typography>
-                ) : (
-                  ''
+              <Group justify="apart" align="start">
+                <Stack>
+                  <Typography size="title-xl" as="h1">
+                    {artist.name}
+                  </Typography>
+                  {artist.nameLatin ? (
+                    <Typography size="title-lg">{artist.nameLatin}</Typography>
+                  ) : (
+                    ''
+                  )}
+                </Stack>
+                {artist.visibility === ArtistVisibility.COMMUNITY && (
+                  <Tooltip content={'This is a community profile'}>
+                    <div
+                      css={{
+                        padding: '18px 6px',
+                        display: 'flex',
+                        alignItems: 'center',
+                      }}
+                    >
+                      <IconUsers />
+                    </div>
+                  </Tooltip>
                 )}
-              </Stack>
+              </Group>
               {artist.country ? (
                 <InfoRow label="Country">{artist.country.name}</InfoRow>
               ) : null}
@@ -368,19 +389,16 @@ const ArtistPage = () => {
                 </InfoRow>
               ) : null}
               {artist.aliases?.length > 0 ? (
-                <div css={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <Group justify="end">
                   <Button variant="main" onClick={toggleIncludeAliases}>
                     {includeAliases
                       ? 'Hide Alias Releases'
                       : 'Show Alias Releases'}
                   </Button>
-                </div>
+                </Group>
               ) : null}
             </Stack>
           </div>
-          {artist.visibility === ArtistVisibility.COMMUNITY && (
-            <Feedback message="This is a community profile." />
-          )}
 
           <ArtistReleases
             artistId={artist.id}
