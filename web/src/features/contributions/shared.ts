@@ -23,8 +23,3 @@ export const ArtistTypeOptions = [
   { value: ArtistType.Group, label: 'Group' },
   { value: ArtistType.Alias, label: 'Alias' },
 ];
-
-export const ArtistVisibilityOptions = [
-  { value: ArtistVisibility.GENERAL, label: 'General Profile' },
-  { value: ArtistVisibility.COMMUNITY, label: 'Community Profile' },
-];

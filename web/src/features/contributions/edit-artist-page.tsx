@@ -23,13 +23,14 @@ import { useSnackbar } from '../../hooks/useSnackbar';
 import AppPageWrapper from '../../layout/app-page-wrapper';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
-import { ArtistTypeOptions, ArtistVisibilityOptions } from './shared';
+import { ArtistTypeOptions } from './shared';
 import { Feedback } from '../../components/feedback';
 import { SelectArtist } from './select-artist';
 import { SelectGroupArtist } from './select-group-artist';
 import CreateArtistDialog from './create-artist-dialog';
 import { FlexChild } from '../../components/flex/flex-child';
 import { SelectCountry } from './select-country';
+import { Checkbox } from '../../components/inputs/checkbox';
 
 export interface EditArtistFormValues extends UpdateArtistDto {
   mainArtist: { value: string; label: string };
@@ -227,17 +228,16 @@ const EditArtistPage = () => {
                   name="visibility"
                   control={control}
                   render={({ field: { value, onChange, ...field } }) => (
-                    <Select
+                    <Checkbox
                       {...field}
-                      options={ArtistVisibilityOptions}
-                      placeholder="Visibility"
-                      value={
-                        ArtistVisibilityOptions.find(
-                          (c) => c.value === value,
-                        ) || null
-                      }
-                      onChange={(val: { value: number; label: string }) =>
-                        onChange(val.value)
+                      label="This is a community profile"
+                      value={value === ArtistVisibility.COMMUNITY}
+                      onChange={(v) =>
+                        onChange(
+                          v
+                            ? ArtistVisibility.COMMUNITY
+                            : ArtistVisibility.GENERAL,
+                        )
                       }
                     />
                   )}

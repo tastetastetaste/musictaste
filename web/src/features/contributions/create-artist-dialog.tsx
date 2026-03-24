@@ -17,7 +17,7 @@ import { Link } from '../../components/links/link';
 import { Typography } from '../../components/typography';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
-import { ArtistTypeOptions, ArtistVisibilityOptions } from './shared';
+import { ArtistTypeOptions } from './shared';
 import { Textarea } from '../../components/inputs/textarea';
 import { SelectGroupArtist } from './select-group-artist';
 import { SelectArtist } from './select-artist';
@@ -111,16 +111,16 @@ const CreateArtistDialog: React.FC<{
                 name="visibility"
                 control={control}
                 render={({ field: { value, onChange, ...field } }) => (
-                  <Select
+                  <Checkbox
                     {...field}
-                    options={ArtistVisibilityOptions}
-                    placeholder="Visibility"
-                    value={
-                      ArtistVisibilityOptions.find((c) => c.value === value) ||
-                      null
-                    }
-                    onChange={(val: { value: number; label: string }) =>
-                      onChange(val.value)
+                    label="This is a community profile"
+                    value={value === ArtistVisibility.COMMUNITY}
+                    onChange={(v) =>
+                      onChange(
+                        v
+                          ? ArtistVisibility.COMMUNITY
+                          : ArtistVisibility.GENERAL,
+                      )
                     }
                   />
                 )}
