@@ -1,15 +1,10 @@
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { GENRE_REFERENCE_PATTERN, IGenreSummary } from 'shared';
+import { useQuery } from '@tanstack/react-query';
+import { GENRE_REFERENCE_PATTERN } from 'shared';
 import { cacheKeys } from '../../utils/cache-keys';
 import { useSnackbar } from '../../hooks/useSnackbar';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Select } from '../../components/inputs/select';
 import { api } from '../../utils/api';
-
-export type SelectGenresValue = {
-  value: string;
-  label: string;
-};
 
 export const SelectGenres = ({
   onChange,
@@ -17,35 +12,30 @@ export const SelectGenres = ({
   isMulti = false,
   value = null,
 }: {
-  onChange: (value: SelectGenresValue | SelectGenresValue[]) => void;
-  filter?: (value: SelectGenresValue) => boolean;
+  onChange: (value: string | string[]) => void;
+  filter?: (value: string) => boolean;
   isMulti?: boolean;
-  value?: SelectGenresValue | SelectGenresValue[];
+  value?: string | string[];
 }) => {
-  const queryClient = useQueryClient();
   const { snackbar } = useSnackbar();
   const [query, setQuery] = useState('');
 
-  const {
-    data: searchData,
-    isLoading,
-    fetchStatus,
-  } = useQuery(
-    cacheKeys.searchKey({
-      q: query!,
-      type: ['genres'],
-      page: 1,
-      pageSize: 12,
-    }),
-    () =>
-      api.search({
-        q: query!,
-        type: ['genres'],
-        page: 1,
-        pageSize: 12,
-      }),
-    { enabled: !!query },
+  const { data, isLoading, fetchStatus } = useQuery(cacheKeys.genresKey(), () =>
+    api.getGenres(),
   );
+
+  const selectedGenres = useMemo(() => {
+    if (!value) return null;
+    return Array.isArray(value)
+      ? value.map((v) => ({
+          value: v,
+          label: data?.genres.find((g) => g.id === v)?.name || v,
+        }))
+      : {
+          value,
+          label: data?.genres.find((g) => g.id === value)?.name || value,
+        };
+  }, [value, data]);
 
   const handleInputChange = (v: any) => {
     const match = v.match(GENRE_REFERENCE_PATTERN);
@@ -53,21 +43,19 @@ export const SelectGenres = ({
       const genreId = match[1];
       setQuery('');
 
-      queryClient
-        .fetchQuery(cacheKeys.genreKey(genreId), () => api.getGenre(genreId))
-        .then(({ genre }) => {
-          const newValue = { value: genre.id, label: genre.name };
-          onChange(
-            isMulti && Array.isArray(value)
-              ? [...value, newValue]
-              : isMulti
-                ? [newValue]
-                : newValue,
-          );
-        })
-        .catch(() => {
-          snackbar('Failed to select genre');
-        });
+      const genre = data?.genres.find((g) => g.id === genreId);
+      if (genre) {
+        const newValue = genre.id;
+        onChange(
+          isMulti && Array.isArray(value)
+            ? [...value, newValue]
+            : isMulti
+              ? [newValue]
+              : newValue,
+        );
+      } else {
+        snackbar('Failed to select genre');
+      }
     } else {
       setQuery(v);
     }
@@ -75,27 +63,27 @@ export const SelectGenres = ({
   return (
     <Select
       name="genreSelect"
-      value={value}
+      value={selectedGenres}
       onChange={(selected: { value: string; label: string }) => {
         if (!selected) return;
-        onChange(selected);
+        const newValue = Array.isArray(selected)
+          ? selected.map((s) => s.value)
+          : selected.value;
+        onChange(newValue);
         setQuery('');
       }}
       isLoading={isLoading && fetchStatus !== 'idle'}
       isMulti={isMulti}
       options={
-        searchData?.genres &&
-        (filter
-          ? searchData.genres.filter((g) =>
-              filter({ value: g.id, label: g.name }),
-            )
-          : searchData.genres
-        ).map((g) => ({
-          value: g.id,
-          label: g.name,
-        }))
+        data?.genres &&
+        (filter ? data.genres.filter((g) => filter(g.id)) : data.genres).map(
+          (g) => ({
+            value: g.id,
+            label: g.name,
+          }),
+        )
       }
-      placeholder="Release Genre"
+      placeholder="Select genre..."
       inputValue={query}
       onInputChange={handleInputChange}
     />

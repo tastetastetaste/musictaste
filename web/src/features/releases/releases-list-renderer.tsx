@@ -1,4 +1,4 @@
-import { useInfiniteQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import {
   FindReleasesType,
   ReleaseType,
@@ -19,9 +19,9 @@ import { Button } from '../../components/button';
 import { IconAdjustmentsHorizontal } from '@tabler/icons-react';
 import { Stack } from '../../components/flex/stack';
 import { useDebounce } from '../../hooks/useDebounce';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { FlexChild } from '../../components/flex/flex-child';
-import { SelectGenres, SelectGenresValue } from '../genres/select-genres';
+import { SelectGenres } from '../genres/select-genres';
 import { Checkbox } from '../../components/inputs/checkbox';
 
 export interface ReleasesListRendererProps {
@@ -46,12 +46,26 @@ export function ReleasesListRenderer({
   const { isSupporter } = useAuth();
 
   const navigate = useNavigate();
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [minRatings, setMinRatings] = useState<number | undefined>(undefined);
-  const [maxRatings, setMaxRatings] = useState<number | undefined>(undefined);
-  const [genres, setGenres] = useState<SelectGenresValue[]>([]);
-  const [includeAllGenres, setIncludeAllGenres] = useState(false);
+
+  const [genreIds, setGenreIds] = useState<string[]>(
+    () => params.get('genres')?.split(',') || [],
+  );
+
+  const [includeAllGenres, setIncludeAllGenres] = useState(
+    () => params.get('includeAll') === 'true',
+  );
+
+  const [minRatings, setMinRatings] = useState<number | undefined>(() =>
+    params.has('minRatings') ? Number(params.get('minRatings')) : undefined,
+  );
+
+  const [maxRatings, setMaxRatings] = useState<number | undefined>(() =>
+    params.has('maxRatings') ? Number(params.get('maxRatings')) : undefined,
+  );
 
   const debouncedMinRatings = useDebounce(minRatings, 300);
   const debouncedMaxRatings = useDebounce(maxRatings, 300);
@@ -61,7 +75,7 @@ export function ReleasesListRenderer({
     genreId,
     labelId,
     artistId,
-    genreIds: genres.map((g) => g.value),
+    genreIds,
     includeAllGenres,
     releaseType,
     includeAliases,
@@ -80,7 +94,7 @@ export function ReleasesListRenderer({
           genreId,
           labelId,
           artistId,
-          genres.map((g) => g.value),
+          genreIds,
           includeAllGenres,
           releaseType,
           includeAliases,
@@ -97,40 +111,40 @@ export function ReleasesListRenderer({
     );
 
   useEffect(() => {
-    // update query params
-
     const params = new URLSearchParams(window.location.search);
-    if (debouncedMaxRatings) {
+
+    if (debouncedMaxRatings !== undefined) {
       params.set('maxRatings', debouncedMaxRatings.toString());
     } else {
       params.delete('maxRatings');
     }
-    if (debouncedMinRatings) {
+
+    if (debouncedMinRatings !== undefined) {
       params.set('minRatings', debouncedMinRatings.toString());
     } else {
       params.delete('minRatings');
     }
+
+    if (genreIds.length > 0) {
+      params.set('genres', genreIds.join(','));
+    } else {
+      params.delete('genres');
+    }
+
+    if (includeAllGenres) {
+      params.set('includeAll', 'true');
+    } else {
+      params.delete('includeAll');
+    }
+
     navigate(`?${params.toString()}`, { replace: true });
-  }, [debouncedMaxRatings, debouncedMinRatings]);
-
-  useEffect(() => {
-    // update query params
-    const params = new URLSearchParams(window.location.search);
-    if (params.has('maxRatings')) {
-      setMaxRatings(Number(params.get('maxRatings')));
-    }
-    if (params.has('minRatings')) {
-      setMinRatings(Number(params.get('minRatings')));
-    }
-  }, []);
-
-  useEffect(() => {
-    // reset on props change
-    if (maxRatings || minRatings) {
-      setMinRatings(undefined);
-      setMaxRatings(undefined);
-    }
-  }, [type]);
+  }, [
+    debouncedMaxRatings,
+    debouncedMinRatings,
+    genreIds,
+    includeAllGenres,
+    navigate,
+  ]);
 
   const showMinAndMaxRatingsFilter =
     isSupporter &&
@@ -163,11 +177,11 @@ export function ReleasesListRenderer({
       <Stack>
         <label>Genres</label>
         <SelectGenres
-          onChange={(g: SelectGenresValue[]) => {
-            setGenres(g);
+          onChange={(g: string[]) => {
+            setGenreIds(g);
           }}
           isMulti
-          value={genres}
+          value={genreIds}
         />
       </Stack>
       <Stack>
@@ -201,22 +215,19 @@ export function ReleasesListRenderer({
   return (
     <Stack gap="md">
       {sidebar}
-      <Group gap="lg" align="start">
-        <FlexChild grow>
-          {isFetching && !isFetchingNextPage ? (
-            <Loading />
-          ) : data && data.pages[0].totalItems > 0 ? (
-            <ReleasesVirtualGrid
-              releases={data}
-              loadMore={fetchNextPage}
-              hasMore={hasNextPage || false}
-              manualLoad={manualLoad}
-            />
-          ) : (
-            <Feedback message="There are no releases" />
-          )}
-        </FlexChild>
-      </Group>
+      {isFetching && !isFetchingNextPage ? <Loading /> : null}
+      {!isFetching && !isFetchingNextPage && !data?.pages[0].totalItems ? (
+        <Feedback message="There are no releases" />
+      ) : null}
+
+      {data && data.pages[0].totalItems > 0 ? (
+        <ReleasesVirtualGrid
+          releases={data}
+          loadMore={fetchNextPage}
+          hasMore={hasNextPage || false}
+          manualLoad={manualLoad}
+        />
+      ) : null}
     </Stack>
   );
 }

@@ -3,23 +3,21 @@ import {
   IconArrowBigUp,
   IconPencil,
 } from '@tabler/icons-react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { Fragment, useState } from 'react';
-import { IReleaseGenre, VoteType, GENRE_REFERENCE_PATTERN } from 'shared';
+import removeMarkdown from 'remove-markdown';
+import { IReleaseGenre, VoteType } from 'shared';
 import { Dialog } from '../../components/dialog';
 import { Group } from '../../components/flex/group';
+import { Stack } from '../../components/flex/stack';
 import { IconButton } from '../../components/icon-button';
-import { Select } from '../../components/inputs/select';
 import { Loading } from '../../components/loading';
-import { useSnackbar } from '../../hooks/useSnackbar';
+import { Typography } from '../../components/typography';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
 import { useAuth } from '../account/useAuth';
+import { SelectGenres } from '../genres/select-genres';
 import { User } from '../users/user';
-import { Stack } from '../../components/flex/stack';
-import { Typography } from '../../components/typography';
-import removeMarkdown from 'remove-markdown';
-import { SelectGenres, SelectGenresValue } from '../genres/select-genres';
 
 type VoteFuT = typeof api.createReleaseGenreVote;
 type RemoveVoteFuT = typeof api.removeReleaseGenreVote;
@@ -155,14 +153,14 @@ const DialogContent = ({ releaseId }: { releaseId: string }) => {
         <Fragment>
           <div style={{ paddingBottom: '16px' }}>
             <SelectGenres
-              onChange={(g: SelectGenresValue) =>
+              onChange={(genreId: string) =>
                 vote({
                   releaseId,
-                  genreId: g.value,
+                  genreId,
                   voteType: VoteType.UP,
                 })
               }
-              filter={(g) => !data.some((rg) => rg.genre.id === g.value)}
+              filter={(genreId) => !data.some((rg) => rg.genre.id === genreId)}
             />
           </div>
           <div css={{ maxHeight: '300px', overflowY: 'auto' }}>
