@@ -48,6 +48,8 @@ export class ReleasesController {
         result = await this.releasesService.findCommunityReleases(
           page,
           pageSize,
+          query.genreIds,
+          query.includeAllGenres,
         );
         break;
       case FindReleasesType.Popular:

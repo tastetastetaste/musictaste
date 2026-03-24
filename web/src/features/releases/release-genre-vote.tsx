@@ -19,6 +19,7 @@ import { User } from '../users/user';
 import { Stack } from '../../components/flex/stack';
 import { Typography } from '../../components/typography';
 import removeMarkdown from 'remove-markdown';
+import { SelectGenres, SelectGenresValue } from '../genres/select-genres';
 
 type VoteFuT = typeof api.createReleaseGenreVote;
 type RemoveVoteFuT = typeof api.removeReleaseGenreVote;
@@ -130,10 +131,6 @@ const ReleaseGenreItem: React.FC<ReleaseGenreItemProps> = ({
 
 const DialogContent = ({ releaseId }: { releaseId: string }) => {
   const { me } = useAuth();
-  const queryClient = useQueryClient();
-  const { snackbar } = useSnackbar();
-
-  const [query, setQuery] = useState('');
 
   const {
     data,
@@ -143,56 +140,12 @@ const DialogContent = ({ releaseId }: { releaseId: string }) => {
     api.getReleaseGenres(releaseId),
   );
 
-  const {
-    data: searchData,
-    isLoading,
-    fetchStatus,
-  } = useQuery(
-    cacheKeys.searchKey({
-      q: query!,
-      type: ['genres'],
-      page: 1,
-      pageSize: 12,
-    }),
-    () =>
-      api.search({
-        q: query!,
-        type: ['genres'],
-        page: 1,
-        pageSize: 12,
-      }),
-    { enabled: !!query },
-  );
-
   const { mutateAsync: vote } = useMutation(api.createReleaseGenreVote, {
     onSettled: refetch,
   });
   const { mutateAsync: removeVote } = useMutation(api.removeReleaseGenreVote, {
     onSettled: refetch,
   });
-
-  const handleInputChange = (v: any) => {
-    const match = v.match(GENRE_REFERENCE_PATTERN);
-    if (match) {
-      const genreId = match[1];
-      setQuery('');
-
-      queryClient
-        .fetchQuery(cacheKeys.genreKey(genreId), () => api.getGenre(genreId))
-        .then(({ genre }) => {
-          vote({
-            releaseId,
-            genreId: genre.id,
-            voteType: VoteType.UP,
-          });
-        })
-        .catch(() => {
-          snackbar('Failed to select genre');
-        });
-    } else {
-      setQuery(v);
-    }
-  };
 
   return (
     <div>
@@ -201,32 +154,15 @@ const DialogContent = ({ releaseId }: { releaseId: string }) => {
       {data && (
         <Fragment>
           <div style={{ paddingBottom: '16px' }}>
-            <Select
-              name="genreSelect"
-              value={null}
-              onChange={(selected: { value: string; label: string }) => {
-                if (!selected) return;
+            <SelectGenres
+              onChange={(g: SelectGenresValue) =>
                 vote({
                   releaseId,
-                  genreId: selected.value,
+                  genreId: g.value,
                   voteType: VoteType.UP,
-                });
-                setQuery('');
-              }}
-              isLoading={isLoading && fetchStatus !== 'idle'}
-              isMulti={false}
-              options={
-                searchData?.genres &&
-                searchData.genres
-                  .filter((sg) => !data.some((rg) => sg.id === rg.genre.id))
-                  .map((g) => ({
-                    value: g.id,
-                    label: g.name,
-                  }))
+                })
               }
-              placeholder="Release Genre"
-              inputValue={query}
-              onInputChange={handleInputChange}
+              filter={(g) => !data.some((rg) => rg.genre.id === g.value)}
             />
           </div>
           <div css={{ maxHeight: '300px', overflowY: 'auto' }}>

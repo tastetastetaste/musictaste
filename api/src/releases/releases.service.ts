@@ -428,14 +428,41 @@ export class ReleasesService {
     };
   }
 
-  async findCommunityReleases(page: number = 1, pageSize: number = 48) {
+  async findCommunityReleases(
+    page: number = 1,
+    pageSize: number = 48,
+    genreIds?: string[],
+    includeAllGenres?: boolean,
+  ) {
     const qb = this.releasesRepository
       .createQueryBuilder('release')
       .select('release.id', 'id')
       .addSelect('release.date', 'date')
       .leftJoinAndSelect('release.artistConnection', 'releaseArtists')
-      .leftJoinAndSelect('releaseArtists.artist', 'artist')
-      .innerJoin(
+      .leftJoinAndSelect('releaseArtists.artist', 'artist');
+
+    // filter by genre
+    if (genreIds && genreIds.length > 0) {
+      if (includeAllGenres) {
+        genreIds.forEach((genreId, index) => {
+          qb.innerJoin(
+            ReleaseGenre,
+            `rg${index}`,
+            `rg${index}.releaseId = release.id AND rg${index}.votesAvg > 0 AND rg${index}.genreId = :genreId${index}`,
+            { [`genreId${index}`]: genreId },
+          );
+        });
+      } else {
+        qb.innerJoin(
+          ReleaseGenre,
+          'rg',
+          'rg.releaseId = release.id AND rg.votesAvg > 0 AND rg.genreId IN (:...genreIds)',
+          { genreIds },
+        );
+      }
+    } else {
+      // limit to 5 releases per artist
+      qb.innerJoin(
         (sq) => {
           return sq
             .select('r.id', 'releaseId')
@@ -451,6 +478,7 @@ export class ReleasesService {
         'ranked."releaseId" = release.id AND ranked.rn <= :limit',
         { limit: 5 },
       );
+    }
 
     this.filterOutArtistVisibility(qb, ArtistVisibility.GENERAL);
 

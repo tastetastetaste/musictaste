@@ -1,4 +1,4 @@
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
   ArrayMinSize,
   IsArray,
@@ -447,6 +447,14 @@ export class FindReleasesDto {
   @IsOptional()
   @IsString()
   artistId?: string;
+  @IsOptional()
+  @Transform(({ value }) => value.split(','))
+  @IsArray()
+  genreIds?: string[]; // used for community releases
+  @IsOptional()
+  @Type(() => Boolean)
+  @IsBoolean()
+  includeAllGenres?: boolean; // used for community releases
   @IsOptional()
   @Type(() => Boolean)
   @IsBoolean()
