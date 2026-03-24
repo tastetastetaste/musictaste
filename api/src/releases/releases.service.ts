@@ -52,13 +52,6 @@ export type ReleaseCountType =
   | 'reviews'
   | 'lists';
 
-export const GENERAL_ARTISTS_IDS = [
-  'DHuQs9aXH6Zd', // various artists
-];
-export const GENERAL_LABELS_IDS = [
-  'luKQZ_HOH2-I', // no label
-];
-
 @Injectable()
 export class ReleasesService {
   constructor(
@@ -372,12 +365,8 @@ export class ReleasesService {
       qb.andWhere('release.type = :releaseType', { releaseType });
     }
 
-    // Show unlisted in artist/label pages if not general artist/label
-    const viewUnlisted =
-      (artistId && !GENERAL_ARTISTS_IDS.includes(artistId)) ||
-      (labelId && !GENERAL_LABELS_IDS.includes(labelId));
-
-    if (!viewUnlisted) {
+    // No filter in artist or label pages
+    if (!artistId && !labelId) {
       this.filterOutArtistVisibility(qb);
     }
 
