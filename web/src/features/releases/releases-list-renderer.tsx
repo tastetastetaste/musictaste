@@ -20,9 +20,9 @@ import { IconAdjustmentsHorizontal } from '@tabler/icons-react';
 import { Stack } from '../../components/flex/stack';
 import { useDebounce } from '../../hooks/useDebounce';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { FlexChild } from '../../components/flex/flex-child';
 import { SelectGenres } from '../genres/select-genres';
 import { Checkbox } from '../../components/inputs/checkbox';
+import { Select } from '../../components/inputs/select';
 
 export interface ReleasesListRendererProps {
   type: FindReleasesType;
@@ -67,6 +67,10 @@ export function ReleasesListRenderer({
     params.has('maxRatings') ? Number(params.get('maxRatings')) : undefined,
   );
 
+  const [onlyUpcoming, setOnlyUpcoming] = useState<boolean>(() =>
+    params.has('status') ? params.get('status') === 'upcoming' : false,
+  );
+
   const debouncedMinRatings = useDebounce(minRatings, 300);
   const debouncedMaxRatings = useDebounce(maxRatings, 300);
 
@@ -77,6 +81,7 @@ export function ReleasesListRenderer({
     artistId,
     genreIds,
     includeAllGenres,
+    onlyUpcoming,
     releaseType,
     includeAliases,
     minRatings: debouncedMinRatings,
@@ -96,6 +101,7 @@ export function ReleasesListRenderer({
           artistId,
           genreIds,
           includeAllGenres,
+          onlyUpcoming,
           releaseType,
           includeAliases,
           debouncedMinRatings,
@@ -110,6 +116,7 @@ export function ReleasesListRenderer({
       },
     );
 
+  // Update URL search params
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
 
@@ -137,12 +144,19 @@ export function ReleasesListRenderer({
       params.delete('includeAll');
     }
 
+    if (onlyUpcoming) {
+      params.set('status', 'upcoming');
+    } else {
+      params.delete('status');
+    }
+
     navigate(`?${params.toString()}`, { replace: true });
   }, [
     debouncedMaxRatings,
     debouncedMinRatings,
     genreIds,
     includeAllGenres,
+    onlyUpcoming,
     navigate,
   ]);
 
@@ -150,50 +164,78 @@ export function ReleasesListRenderer({
     isSupporter &&
     (type === FindReleasesType.Top || type === FindReleasesType.TopOTY);
   const showGenresFilter = type === FindReleasesType.Community;
+  const showCommunityReleaseStatusFilter = type === FindReleasesType.Community;
 
-  const sidebarContent = showMinAndMaxRatingsFilter ? (
-    <Stack gap="sm">
-      <Stack>
-        <label>Min ratings</label>
-        <Input
-          placeholder={`Min ratings (default: ${type === FindReleasesType.Top ? TOP_RELEASES_OAT_MIN_RATINGS_COUNT : type === FindReleasesType.TopOTY ? TOP_RELEASES_OTY_MIN_RATINGS_COUNT : 0})`}
-          type="number"
-          value={minRatings}
-          onChange={(e) => setMinRatings(Number(e.target.value) || undefined)}
-        />
+  const sidebarContent =
+    showMinAndMaxRatingsFilter ||
+    showGenresFilter ||
+    showCommunityReleaseStatusFilter ? (
+      <Stack gap="lg">
+        {showMinAndMaxRatingsFilter ? (
+          <>
+            <Stack>
+              <label>Min ratings</label>
+              <Input
+                placeholder={`Min ratings (default: ${type === FindReleasesType.Top ? TOP_RELEASES_OAT_MIN_RATINGS_COUNT : type === FindReleasesType.TopOTY ? TOP_RELEASES_OTY_MIN_RATINGS_COUNT : 0})`}
+                type="number"
+                value={minRatings}
+                onChange={(e) =>
+                  setMinRatings(Number(e.target.value) || undefined)
+                }
+              />
+            </Stack>
+            <Stack>
+              <label>Max ratings</label>
+              <Input
+                placeholder="Max ratings"
+                type="number"
+                value={maxRatings}
+                onChange={(e) =>
+                  setMaxRatings(Number(e.target.value) || undefined)
+                }
+              />
+            </Stack>
+          </>
+        ) : null}
+        {showCommunityReleaseStatusFilter ? (
+          <Stack>
+            <label>Status</label>
+            <Select
+              options={[
+                { value: '', label: 'Released' },
+                { value: 'upcoming', label: 'Upcoming' },
+              ]}
+              value={
+                onlyUpcoming
+                  ? { value: 'upcoming', label: 'Upcoming' }
+                  : { value: '', label: 'Released' }
+              }
+              onChange={(v) => setOnlyUpcoming(v?.value === 'upcoming')}
+            />
+          </Stack>
+        ) : null}
+        {showGenresFilter ? (
+          <>
+            <Stack>
+              <label>Genres</label>
+              <SelectGenres
+                onChange={(g: string[]) => {
+                  setGenreIds(g);
+                }}
+                isMulti
+                value={genreIds}
+              />
+              <Checkbox
+                label="Include all genres"
+                name="includeAllGenres"
+                value={includeAllGenres}
+                onChange={(v) => setIncludeAllGenres(v)}
+              />
+            </Stack>
+          </>
+        ) : null}
       </Stack>
-      <Stack>
-        <label>Max ratings</label>
-        <Input
-          placeholder="Max ratings"
-          type="number"
-          value={maxRatings}
-          onChange={(e) => setMaxRatings(Number(e.target.value) || undefined)}
-        />
-      </Stack>
-    </Stack>
-  ) : showGenresFilter ? (
-    <Stack gap="sm">
-      <Stack>
-        <label>Genres</label>
-        <SelectGenres
-          onChange={(g: string[]) => {
-            setGenreIds(g);
-          }}
-          isMulti
-          value={genreIds}
-        />
-      </Stack>
-      <Stack>
-        <Checkbox
-          label="Include all genres"
-          name="includeAllGenres"
-          value={includeAllGenres}
-          onChange={(v) => setIncludeAllGenres(v)}
-        />
-      </Stack>
-    </Stack>
-  ) : null;
+    ) : null;
 
   const sidebar = sidebarContent ? (
     <>

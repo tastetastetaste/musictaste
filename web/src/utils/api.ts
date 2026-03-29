@@ -421,6 +421,7 @@ const getReleases = (
   artistId?: string,
   genreIds?: string[],
   includeAllGenres?: boolean,
+  onlyUpcoming?: boolean,
   releaseType?: ReleaseType,
   includeAliases?: boolean,
   minRatings?: number,
@@ -428,7 +429,7 @@ const getReleases = (
 ) =>
   client
     .get(
-      `releases?type=${type}&page=${page}${pageSize ? `&pageSize=${pageSize}` : ''}${genreId ? `&genreId=${genreId}` : ''}${labelId ? `&labelId=${labelId}` : ''}${artistId ? `&artistId=${artistId}` : ''}${genreIds?.length ? `&genreIds=${genreIds.join(',')}` : ''}${includeAllGenres ? `&includeAllGenres=${includeAllGenres}` : ''}${releaseType ? `&releaseType=${releaseType}` : ''}${includeAliases ? `&includeAliases=true` : ''}${minRatings ? `&minRatings=${minRatings}` : ''}${maxRatings ? `&maxRatings=${maxRatings}` : ''}`,
+      `releases?type=${type}&page=${page}${pageSize ? `&pageSize=${pageSize}` : ''}${genreId ? `&genreId=${genreId}` : ''}${labelId ? `&labelId=${labelId}` : ''}${artistId ? `&artistId=${artistId}` : ''}${genreIds?.length ? `&genreIds=${genreIds.join(',')}` : ''}${includeAllGenres ? `&includeAllGenres=${includeAllGenres}` : ''}${onlyUpcoming ? `&onlyUpcoming=true` : ''}${releaseType ? `&releaseType=${releaseType}` : ''}${includeAliases ? `&includeAliases=true` : ''}${minRatings ? `&minRatings=${minRatings}` : ''}${maxRatings ? `&maxRatings=${maxRatings}` : ''}`,
     )
     .json<IReleasesResponse>();
 

@@ -50,6 +50,7 @@ export class ReleasesController {
           pageSize,
           query.genreIds,
           query.includeAllGenres,
+          query.onlyUpcoming,
         );
         break;
       case FindReleasesType.Popular:

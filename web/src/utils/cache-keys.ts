@@ -85,6 +85,7 @@ const releasesKey = ({
   artistId,
   genreIds,
   includeAllGenres,
+  onlyUpcoming,
   releaseType,
   includeAliases,
   minRatings,
@@ -98,6 +99,7 @@ const releasesKey = ({
   artistId?: string;
   genreIds?: string[];
   includeAllGenres?: boolean;
+  onlyUpcoming?: boolean;
   releaseType?: ReleaseType;
   includeAliases?: boolean;
   minRatings?: number;
@@ -113,6 +115,7 @@ const releasesKey = ({
     artistId,
     ...(genreIds ? ['genreIds', genreIds.join(',')] : []),
     includeAllGenres,
+    onlyUpcoming,
     releaseType,
     includeAliases,
     minRatings,

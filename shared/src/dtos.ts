@@ -458,6 +458,10 @@ export class FindReleasesDto {
   @IsOptional()
   @Type(() => Boolean)
   @IsBoolean()
+  onlyUpcoming?: boolean; // used for community releases
+  @IsOptional()
+  @Type(() => Boolean)
+  @IsBoolean()
   includeAliases?: boolean; // used for artist releases
   @IsOptional()
   @Type(() => Number)

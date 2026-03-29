@@ -422,6 +422,7 @@ export class ReleasesService {
     pageSize: number = 48,
     genreIds?: string[],
     includeAllGenres?: boolean,
+    onlyUpcoming?: boolean,
   ) {
     const qb = this.releasesRepository
       .createQueryBuilder('release')
@@ -429,6 +430,13 @@ export class ReleasesService {
       .addSelect('release.date', 'date')
       .leftJoinAndSelect('release.artistConnection', 'releaseArtists')
       .leftJoinAndSelect('releaseArtists.artist', 'artist');
+
+    // filter by release status
+    if (onlyUpcoming) {
+      qb.andWhere('release.date > current_date');
+    } else {
+      qb.andWhere('release.date <= current_date');
+    }
 
     // filter by genre
     if (genreIds && genreIds.length > 0) {
@@ -473,9 +481,14 @@ export class ReleasesService {
 
     const qb2 = qb.clone();
 
+    if (onlyUpcoming) {
+      qb.orderBy('release.date', 'ASC');
+    } else {
+      qb.orderBy('release.date', 'DESC');
+    }
+
     const res = await qb
       .distinct(true)
-      .orderBy('release.date', 'DESC')
       .addOrderBy('release.id', 'ASC')
       .limit(pageSize)
       .offset((page - 1) * pageSize)
