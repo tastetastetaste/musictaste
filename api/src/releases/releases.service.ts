@@ -427,9 +427,7 @@ export class ReleasesService {
     const qb = this.releasesRepository
       .createQueryBuilder('release')
       .select('release.id', 'id')
-      .addSelect('release.date', 'date')
-      .leftJoinAndSelect('release.artistConnection', 'releaseArtists')
-      .leftJoinAndSelect('releaseArtists.artist', 'artist');
+      .addSelect('release.date', 'date');
 
     // filter by release status
     if (onlyUpcoming) {
@@ -493,6 +491,8 @@ export class ReleasesService {
       .limit(pageSize)
       .offset((page - 1) * pageSize)
       .getRawMany();
+
+    console.log(res);
 
     const releases = await this.getReleasesByIdsWithStats(res.map((r) => r.id));
 
