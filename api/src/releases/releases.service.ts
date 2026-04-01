@@ -313,6 +313,7 @@ export class ReleasesService {
     labelId?: string,
     artistId?: string,
     includeAliases?: boolean,
+    includeCommunity?: boolean,
     releaseType?: ReleaseType,
   ) {
     const qb = this.releasesRepository
@@ -366,7 +367,7 @@ export class ReleasesService {
     }
 
     // No filter in artist or label pages
-    if (!artistId && !labelId) {
+    if (!artistId && !labelId && !includeCommunity) {
       this.filterOutArtistVisibility(qb);
     }
 
@@ -491,8 +492,6 @@ export class ReleasesService {
       .limit(pageSize)
       .offset((page - 1) * pageSize)
       .getRawMany();
-
-    console.log(res);
 
     const releases = await this.getReleasesByIdsWithStats(res.map((r) => r.id));
 

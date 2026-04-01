@@ -41,6 +41,7 @@ export class ReleasesController {
           query.labelId,
           query.artistId,
           query.includeAliases,
+          query.includeCommunity,
           query.releaseType,
         );
         break;

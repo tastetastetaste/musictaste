@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { FindReleasesType } from 'shared';
 import { Stack } from '../../components/flex/stack';
 import { Loading } from '../../components/loading';
@@ -10,6 +10,9 @@ import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
 import ReleasesListRenderer from '../releases/releases-list-renderer';
 import { Markdown } from '../../components/markdown';
+import { Group } from '../../components/flex/group';
+import { Button } from '../../components/button';
+import { useState } from 'react';
 
 const GenrePage = () => {
   const { id } = useParams();
@@ -23,6 +26,23 @@ const GenrePage = () => {
       enabled: !!id,
     },
   );
+
+  const navigate = useNavigate();
+
+  const [searchParams] = useSearchParams();
+
+  const [includeCommunity, setIncludeCommunity] = useState(
+    searchParams.get('includeCommunity') === 'true',
+  );
+
+  const toggleIncludeCommunity = () => {
+    setIncludeCommunity(!includeCommunity);
+    const newSearchParams = new URLSearchParams();
+    if (!includeCommunity) {
+      newSearchParams.set('includeCommunity', 'true');
+    }
+    navigate(`?${newSearchParams.toString()}`, { replace: true });
+  };
 
   const genre = data && data.genre;
 
@@ -65,8 +85,17 @@ const GenrePage = () => {
               {genre.name}
             </Typography>
             {genre.bio ? <Markdown>{genre.bio}</Markdown> : null}
+            <Group justify="end">
+              <Button variant="main" onClick={toggleIncludeCommunity}>
+                Show Community Releases
+              </Button>
+            </Group>
           </div>
-          <ReleasesListRenderer type={FindReleasesType.New} genreId={id} />
+          <ReleasesListRenderer
+            type={FindReleasesType.New}
+            genreId={id}
+            includeCommunity={includeCommunity}
+          />
         </Stack>
       ) : (
         <div></div>

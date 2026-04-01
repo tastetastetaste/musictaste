@@ -60,7 +60,7 @@ You can autofill the fields by importing from MusicBrainz.
 
 - **Type**: Select "Person", "Group", or "Alias".
   - Artists can have only one "Person" profile and as many "Alias" profiles as needed, all linked to the main artist profile.
-- **This is a community profile**: Community profiles are for artist pages that exist on MusicTaste mainly because the artist, their friends, or people who know them personally are part of the community. Check this box if you're adding your own artist or groups you're part of or if you're adding friends, family, and people you know personally. 
+- **This is a community profile**: Check this box if you are adding your own artist profile, a group you're a part of, an artist you know personally, or an extremely obscure artist. 
 - **Name**: The original name of the artist.
 - **English / Latin-script name (if applicable)**: The name of the artist in English or Latin-script if the original name is in non-Latin script.
 - **Disambiguation**: A very short description of the artist to distinguish them from other artists with the same name. Required only if there's an artist with the same name in the database.

@@ -88,6 +88,7 @@ const releasesKey = ({
   onlyUpcoming,
   releaseType,
   includeAliases,
+  includeCommunity,
   minRatings,
   maxRatings,
 }: {
@@ -102,6 +103,7 @@ const releasesKey = ({
   onlyUpcoming?: boolean;
   releaseType?: ReleaseType;
   includeAliases?: boolean;
+  includeCommunity?: boolean;
   minRatings?: number;
   maxRatings?: number;
 }) =>
@@ -118,6 +120,7 @@ const releasesKey = ({
     onlyUpcoming,
     releaseType,
     includeAliases,
+    includeCommunity,
     minRatings,
     maxRatings,
   ].filter(Boolean);

@@ -1,7 +1,7 @@
 import {
   IconChevronDown,
   IconChevronRight,
-  IconUsers,
+  IconSeedingFilled,
 } from '@tabler/icons-react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
@@ -282,7 +282,15 @@ const ArtistPage = () => {
                   )}
                 </Stack>
                 {artist.visibility === ArtistVisibility.COMMUNITY && (
-                  <Tooltip content={'This is a community profile'}>
+                  <Tooltip
+                    content={
+                      'Emerging ' +
+                      (artist.type === ArtistType.Person ||
+                      artist.type === ArtistType.Alias
+                        ? 'Artist'
+                        : 'Group')
+                    }
+                  >
                     <div
                       css={{
                         padding: '18px 6px',
@@ -290,7 +298,7 @@ const ArtistPage = () => {
                         alignItems: 'center',
                       }}
                     >
-                      <IconUsers />
+                      <IconSeedingFilled />
                     </div>
                   </Tooltip>
                 )}

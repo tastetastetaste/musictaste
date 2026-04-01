@@ -30,7 +30,8 @@ export interface ReleasesListRendererProps {
   labelId?: string;
   artistId?: string;
   releaseType?: ReleaseType;
-  includeAliases?: boolean;
+  includeAliases?: boolean; // used for artist
+  includeCommunity?: boolean; // used for genre
   manualLoad?: boolean;
 }
 
@@ -41,6 +42,7 @@ export function ReleasesListRenderer({
   artistId,
   releaseType,
   includeAliases,
+  includeCommunity,
   manualLoad,
 }: ReleasesListRendererProps) {
   const { isSupporter } = useAuth();
@@ -84,6 +86,7 @@ export function ReleasesListRenderer({
     onlyUpcoming,
     releaseType,
     includeAliases,
+    includeCommunity,
     minRatings: debouncedMinRatings,
     maxRatings: debouncedMaxRatings,
   });
@@ -104,6 +107,7 @@ export function ReleasesListRenderer({
           onlyUpcoming,
           releaseType,
           includeAliases,
+          includeCommunity,
           debouncedMinRatings,
           debouncedMaxRatings,
         ),
