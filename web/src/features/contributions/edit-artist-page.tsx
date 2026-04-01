@@ -230,7 +230,7 @@ const EditArtistPage = () => {
                   render={({ field: { value, onChange, ...field } }) => (
                     <Checkbox
                       {...field}
-                      label="This is a community profile"
+                      label="Community artist or extremely obscure artist"
                       value={value === ArtistVisibility.COMMUNITY}
                       onChange={(v) =>
                         onChange(

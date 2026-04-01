@@ -87,7 +87,9 @@ const GenrePage = () => {
             {genre.bio ? <Markdown>{genre.bio}</Markdown> : null}
             <Group justify="end">
               <Button variant="main" onClick={toggleIncludeCommunity}>
-                Show Community Releases
+                {includeCommunity
+                  ? 'Hide Community Releases'
+                  : 'Show Community Releases'}
               </Button>
             </Group>
           </div>

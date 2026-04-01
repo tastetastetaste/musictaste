@@ -60,7 +60,7 @@ You can autofill the fields by importing from MusicBrainz.
 
 - **Type**: Select "Person", "Group", or "Alias".
   - Artists can have only one "Person" profile and as many "Alias" profiles as needed, all linked to the main artist profile.
-- **This is a community profile**: Check this box if you are adding your own artist profile, a group you're a part of, an artist you know personally, or an extremely obscure artist. 
+- **Community artist or extremely obscure artist**: Check this box if you are adding your own artist profile, a group you're a part of, an artist you know personally, or an extremely obscure artist. 
 - **Name**: The original name of the artist.
 - **English / Latin-script name (if applicable)**: The name of the artist in English or Latin-script if the original name is in non-Latin script.
 - **Disambiguation**: A very short description of the artist to distinguish them from other artists with the same name. Required only if there's an artist with the same name in the database.
