@@ -287,8 +287,8 @@ importers:
         specifier: ^1.12.0
         version: 1.12.0
       markdown-to-jsx:
-        specifier: ^9.1.1
-        version: 9.1.1(react@18.3.1)
+        specifier: ^9.7.13
+        version: 9.7.13(react@18.3.1)
       react:
         specifier: ^18.2.0
         version: 18.3.1
@@ -5245,13 +5245,22 @@ packages:
   makeerror@1.0.12:
     resolution: {integrity: sha512-JmqCvUhmt43madlpFzG4BQzG2Z3m6tvQDNKdClZnO3VbIudJYmxsT0FNJMeiB2+JTSlTQTSbU8QdesVmwJcmLg==}
 
-  markdown-to-jsx@9.1.1:
-    resolution: {integrity: sha512-WaSfdSX+jg0zdei7OakNLhplH5zhXqrabTmy8sKkguwR2QgjvQEsKUPAEji859kVKaKtGyYcj2V0TUGKKdSA1g==}
+  markdown-to-jsx@9.7.13:
+    resolution: {integrity: sha512-twSoD1A2RMx+wyYTNvHvf4JTzEr4SfkgycoSRwjbezejKhqdIXHrHaA3uEm24ET/ZLWrwSzOyWahmVULC+tTbw==}
     engines: {node: '>= 18'}
     peerDependencies:
       react: '>= 16.0.0'
+      react-native: '*'
+      solid-js: '>=1.0.0'
+      vue: '>=3.0.0'
     peerDependenciesMeta:
       react:
+        optional: true
+      react-native:
+        optional: true
+      solid-js:
+        optional: true
+      vue:
         optional: true
 
   math-intrinsics@1.1.0:
@@ -13247,7 +13256,7 @@ snapshots:
     dependencies:
       tmpl: 1.0.5
 
-  markdown-to-jsx@9.1.1(react@18.3.1):
+  markdown-to-jsx@9.7.13(react@18.3.1):
     optionalDependencies:
       react: 18.3.1
 

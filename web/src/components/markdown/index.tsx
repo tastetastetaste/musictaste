@@ -1,9 +1,36 @@
+import React from 'react';
 import styled from '@emotion/styled';
 import MarkdownToJsx from 'markdown-to-jsx';
 import { Link } from 'react-router-dom';
 import { SITE_DOMAIN } from '../../static/site-info';
 import { isValidURL } from '../../utils/is-valid-url';
 import { IconExternalLink, IconPhoto } from '@tabler/icons-react';
+
+class MarkdownErrorBoundary extends React.Component<
+  { children: React.ReactNode; fallbackText: string },
+  { hasError: boolean }
+> {
+  constructor(props: { children: React.ReactNode; fallbackText: string }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error: any) {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: any, errorInfo: any) {
+    console.error('Markdown rendering error:', error);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return <p>{this.props.fallbackText}</p>;
+    }
+
+    return this.props.children;
+  }
+}
 
 const MarkdownContainer = styled.div<{ variant?: 'default' | 'compact' }>`
   h1,
@@ -127,16 +154,17 @@ export function Markdown({
 }: MarkdownProps) {
   return (
     <MarkdownContainer variant={variant}>
-      <MarkdownToJsx
-        options={{
-          disableParsingRawHTML: true,
-          forceBlock: true,
-          overrides: {
-            a: {
-              component: ({ children, href, title }) => {
-                let external = false;
-                let to;
-                let target = undefined;
+      <MarkdownErrorBoundary fallbackText={child}>
+        <MarkdownToJsx
+          options={{
+            disableParsingRawHTML: true,
+            forceBlock: true,
+            overrides: {
+              a: {
+                component: ({ children, href, title }) => {
+                  let external = false;
+                  let to;
+                  let target = undefined;
 
                 if (
                   (isValidURL(href) || href.includes(':')) &&
@@ -202,11 +230,12 @@ export function Markdown({
                 );
               },
             },
-          },
+          }
         }}
       >
         {child}
       </MarkdownToJsx>
+      </MarkdownErrorBoundary>
     </MarkdownContainer>
   );
 }
