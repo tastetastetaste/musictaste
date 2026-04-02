@@ -1,10 +1,15 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   CreateGenreVoteDto,
   IGenreResponse,
   IGenresResponse,
   IReleaseGenre,
+  VoteType,
 } from 'shared';
 import { Repository } from 'typeorm';
 import { GenreSubmission } from '../../db/entities/genre-submission.entity';
@@ -151,6 +156,21 @@ export class GenresService {
     if (rg.votesCount === 1) {
       this.releaseGenresRepository.delete({ id: rg.id });
     } else {
+      const firstVote = await this.releaseGenreVotesRepository.findOne({
+        where: { releaseGenreId: rg.id },
+        order: { createdAt: 'ASC' },
+      });
+
+      if (
+        firstVote &&
+        firstVote.userId === userId &&
+        firstVote.type === VoteType.UP
+      ) {
+        throw new BadRequestException(
+          'The original upvote for a genre cannot be removed.',
+        );
+      }
+
       await this.releaseGenreVotesRepository.delete({
         releaseGenreId,
         userId,
