@@ -59,6 +59,7 @@ import { CommentsService } from '../comments/comments.service';
 import { EntitiesReferenceService } from '../entities/entitiesReference.service';
 import { formatReleaseDateInput, normalizeDate } from '../common/normalizeDate';
 import { Country } from '../../db/entities/country.entity';
+import { ReleaseGenreVote } from '../../db/entities/release-genre-vote.entity';
 
 @Injectable()
 export class SubmissionService {
@@ -93,6 +94,8 @@ export class SubmissionService {
     private genreSubmissionVoteRepository: Repository<GenreSubmissionVote>,
     @InjectRepository(Country)
     private countriesRepository: Repository<Country>,
+    @InjectRepository(ReleaseGenreVote)
+    private releaseGenreVoteRepository: Repository<ReleaseGenreVote>,
     private releasesService: ReleasesService,
     private imagesService: ImagesService,
     private usersService: UsersService,
@@ -1482,28 +1485,37 @@ export class SubmissionService {
   }
   async getReleaseSubmissions({
     status,
+    type,
     releaseId,
     userId,
+    voteByUserId,
     page,
     sortBy,
   }: FindReleaseSubmissionsDto): Promise<IReleaseSubmissionsResponse> {
     const pageSize = 24;
-    const where: any = {};
+    const qb = this.releaseSubmissionRepository.createQueryBuilder('rs');
 
-    if (status) where.submissionStatus = status;
-    if (releaseId) where.releaseId = releaseId;
-    if (userId) where.userId = userId;
-
-    const [rss, totalItems] =
-      await this.releaseSubmissionRepository.findAndCount({
-        where,
-        relations: ['votes'],
-        order: {
-          createdAt: sortBy === SubmissionSortByEnum.Oldest ? 'ASC' : 'DESC',
-        },
-        take: pageSize,
-        skip: (page - 1) * pageSize,
+    if (voteByUserId) {
+      qb.innerJoinAndSelect('rs.votes', 'v', 'v.userId = :userId', {
+        userId: voteByUserId,
       });
+    } else {
+      qb.leftJoinAndSelect('rs.votes', 'v');
+    }
+
+    if (status) qb.andWhere('rs.submissionStatus = :status', { status });
+    if (type) qb.andWhere('rs.submissionType = :type', { type });
+    if (releaseId) qb.andWhere('rs.releaseId = :releaseId', { releaseId });
+    if (userId) qb.andWhere('rs.userId = :userId', { userId });
+
+    const [rss, totalItems] = await qb
+      .orderBy(
+        'rs.createdAt',
+        sortBy === SubmissionSortByEnum.Oldest ? 'ASC' : 'DESC',
+      )
+      .take(pageSize)
+      .skip((page - 1) * pageSize)
+      .getManyAndCount();
 
     const { releases } = await this.buildReleaseSubmission(rss);
 
@@ -1544,27 +1556,36 @@ export class SubmissionService {
   async getArtistSubmissions({
     page,
     status,
+    type,
     artistId,
     userId,
+    voteByUserId,
     sortBy,
   }: FindArtistSubmissionsDto): Promise<IArtistSubmissionsResponse> {
     const pageSize = 24;
-    const where: any = {};
+    const qb = this.artistSubmissionRepository.createQueryBuilder('rs');
 
-    if (status) where.submissionStatus = status;
-    if (artistId) where.artistId = artistId;
-    if (userId) where.userId = userId;
-
-    const [rss, totalItems] =
-      await this.artistSubmissionRepository.findAndCount({
-        where,
-        relations: ['votes'],
-        order: {
-          createdAt: sortBy === SubmissionSortByEnum.Oldest ? 'ASC' : 'DESC',
-        },
-        take: pageSize,
-        skip: (page - 1) * pageSize,
+    if (voteByUserId) {
+      qb.innerJoinAndSelect('rs.votes', 'v', 'v.userId = :userId', {
+        userId: voteByUserId,
       });
+    } else {
+      qb.leftJoinAndSelect('rs.votes', 'v');
+    }
+
+    if (status) qb.andWhere('rs.submissionStatus = :status', { status });
+    if (type) qb.andWhere('rs.submissionType = :type', { type });
+    if (artistId) qb.andWhere('rs.artistId = :artistId', { artistId });
+    if (userId) qb.andWhere('rs.userId = :userId', { userId });
+
+    const [rss, totalItems] = await qb
+      .orderBy(
+        'rs.createdAt',
+        sortBy === SubmissionSortByEnum.Oldest ? 'ASC' : 'DESC',
+      )
+      .take(pageSize)
+      .skip((page - 1) * pageSize)
+      .getManyAndCount();
 
     const uniqueUserIds = [
       ...new Set([
@@ -1774,28 +1795,36 @@ export class SubmissionService {
   async getLabelSubmissions({
     page,
     status,
+    type,
     labelId,
     userId,
+    voteByUserId,
     sortBy,
   }: FindLabelSubmissionsDto): Promise<ILabelSubmissionsResponse> {
     const pageSize = 24;
-    const where: any = {};
+    const qb = this.labelSubmissionRepository.createQueryBuilder('rs');
 
-    if (status) where.submissionStatus = status;
-    if (labelId) where.labelId = labelId;
-    if (userId) where.userId = userId;
+    if (voteByUserId) {
+      qb.innerJoinAndSelect('rs.votes', 'v', 'v.userId = :userId', {
+        userId: voteByUserId,
+      });
+    } else {
+      qb.leftJoinAndSelect('rs.votes', 'v');
+    }
 
-    const [rss, totalItems] = await this.labelSubmissionRepository.findAndCount(
-      {
-        where,
-        relations: ['votes'],
-        order: {
-          createdAt: sortBy === SubmissionSortByEnum.Oldest ? 'ASC' : 'DESC',
-        },
-        take: pageSize,
-        skip: (page - 1) * pageSize,
-      },
-    );
+    if (status) qb.andWhere('rs.submissionStatus = :status', { status });
+    if (type) qb.andWhere('rs.submissionType = :type', { type });
+    if (labelId) qb.andWhere('rs.labelId = :labelId', { labelId });
+    if (userId) qb.andWhere('rs.userId = :userId', { userId });
+
+    const [rss, totalItems] = await qb
+      .orderBy(
+        'rs.createdAt',
+        sortBy === SubmissionSortByEnum.Oldest ? 'ASC' : 'DESC',
+      )
+      .take(pageSize)
+      .skip((page - 1) * pageSize)
+      .getManyAndCount();
 
     const uniqueUserIds = [
       ...new Set([
@@ -1866,28 +1895,36 @@ export class SubmissionService {
   async getGenreSubmissions({
     page,
     status,
+    type,
     genreId,
     userId,
+    voteByUserId,
     sortBy,
   }: FindGenreSubmissionsDto): Promise<IGenreSubmissionsResponse> {
     const pageSize = 24;
-    const where: any = {};
+    const qb = this.genreSubmissionRepository.createQueryBuilder('rs');
 
-    if (status) where.submissionStatus = status;
-    if (genreId) where.genreId = genreId;
-    if (userId) where.userId = userId;
+    if (voteByUserId) {
+      qb.innerJoinAndSelect('rs.votes', 'v', 'v.userId = :userId', {
+        userId: voteByUserId,
+      });
+    } else {
+      qb.leftJoinAndSelect('rs.votes', 'v');
+    }
 
-    const [rss, totalItems] = await this.genreSubmissionRepository.findAndCount(
-      {
-        where,
-        relations: ['votes'],
-        order: {
-          createdAt: sortBy === SubmissionSortByEnum.Oldest ? 'ASC' : 'DESC',
-        },
-        take: pageSize,
-        skip: (page - 1) * pageSize,
-      },
-    );
+    if (status) qb.andWhere('rs.submissionStatus = :status', { status });
+    if (type) qb.andWhere('rs.submissionType = :type', { type });
+    if (genreId) qb.andWhere('rs.genreId = :genreId', { genreId });
+    if (userId) qb.andWhere('rs.userId = :userId', { userId });
+
+    const [rss, totalItems] = await qb
+      .orderBy(
+        'rs.createdAt',
+        sortBy === SubmissionSortByEnum.Oldest ? 'ASC' : 'DESC',
+      )
+      .take(pageSize)
+      .skip((page - 1) * pageSize)
+      .getManyAndCount();
 
     const uniqueUserIds = [
       ...new Set([
@@ -1963,9 +2000,16 @@ export class SubmissionService {
       addedReleases,
       addedArtists,
       addedLabels,
+      addedGenres,
       editedReleases,
       editedArtists,
       editedLabels,
+      editedGenres,
+      genreVotes,
+      releaseSubmissionVotes,
+      artistSubmissionVotes,
+      labelSubmissionVotes,
+      genreSubmissionVotes,
     ] = await Promise.all([
       this.releaseSubmissionRepository.count({
         where: {
@@ -1997,6 +2041,16 @@ export class SubmissionService {
           ]),
         },
       }),
+      this.genreSubmissionRepository.count({
+        where: {
+          userId,
+          submissionType: SubmissionType.CREATE,
+          submissionStatus: In([
+            SubmissionStatus.APPROVED,
+            SubmissionStatus.AUTO_APPROVED,
+          ]),
+        },
+      }),
       this.releaseSubmissionRepository.count({
         where: {
           userId,
@@ -2027,15 +2081,57 @@ export class SubmissionService {
           ]),
         },
       }),
+      this.genreSubmissionRepository.count({
+        where: {
+          userId,
+          submissionType: SubmissionType.UPDATE,
+          submissionStatus: In([
+            SubmissionStatus.APPROVED,
+            SubmissionStatus.AUTO_APPROVED,
+          ]),
+        },
+      }),
+      this.releaseGenreVoteRepository.count({
+        where: {
+          userId,
+        },
+      }),
+      this.releaseSubmissionVoteRepository.count({
+        where: {
+          userId,
+        },
+      }),
+      this.artistSubmissionVoteRepository.count({
+        where: {
+          userId,
+        },
+      }),
+      this.labelSubmissionVoteRepository.count({
+        where: {
+          userId,
+        },
+      }),
+      this.genreSubmissionVoteRepository.count({
+        where: {
+          userId,
+        },
+      }),
     ]);
 
     return {
       addedReleases,
       addedArtists,
       addedLabels,
+      addedGenres,
       editedReleases,
       editedArtists,
       editedLabels,
+      editedGenres,
+      genreVotes,
+      releaseSubmissionVotes,
+      artistSubmissionVotes,
+      labelSubmissionVotes,
+      genreSubmissionVotes,
     };
   }
 

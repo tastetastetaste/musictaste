@@ -5,6 +5,7 @@ import {
   IGenreSubmission,
   SubmissionSortByEnum,
   SubmissionStatus,
+  SubmissionType,
 } from 'shared';
 import { FetchMore } from '../../components/fetch-more';
 import { Stack } from '../../components/flex/stack';
@@ -17,8 +18,10 @@ import { SubmissionField, SubmissionItemWrapper } from './submission-item';
 
 class GenreSubmissionListOutletContext {
   status?: SubmissionStatus;
+  type?: SubmissionType;
   userId?: string;
   genreId?: string;
+  voteByUserId?: string;
   sortBy?: SubmissionSortByEnum;
 }
 
@@ -72,23 +75,27 @@ export const GenreSubmissionItem = ({
 };
 
 const GenreSubmissionsList: React.FC = () => {
-  const { status, genreId, userId, sortBy } =
+  const { status, type, genreId, userId, voteByUserId, sortBy } =
     useOutletContext<GenreSubmissionListOutletContext>();
 
   const { data, isFetching, isFetchingNextPage, fetchNextPage, hasNextPage } =
     useInfiniteQuery(
       cacheKeys.genreSubmissionsKey({
         status,
+        type,
         genreId,
         userId,
+        voteByUserId,
         sortBy,
       }),
       async ({ pageParam = 1 }) =>
         api.getGenreSubmissions({
           page: pageParam,
           status,
+          type,
           genreId,
           userId,
+          voteByUserId,
           sortBy,
         }),
       {

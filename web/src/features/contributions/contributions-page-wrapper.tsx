@@ -11,19 +11,19 @@ const ContributionsPageWrapper = () => {
         <Navigation
           links={[
             {
-              label: 'releases',
+              label: 'Releases',
               to: `/contributions/releases`,
             },
             {
-              label: 'artists',
+              label: 'Artists',
               to: `/contributions/artists`,
             },
             {
-              label: 'labels',
+              label: 'Labels',
               to: `/contributions/labels`,
             },
             {
-              label: 'genres',
+              label: 'Genres',
               to: `/contributions/genres`,
             },
           ]}

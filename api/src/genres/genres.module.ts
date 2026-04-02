@@ -6,11 +6,13 @@ import { GenresService } from './genres.service';
 import { ReleaseGenreVote } from '../../db/entities/release-genre-vote.entity';
 import { ReleaseGenre } from '../../db/entities/release-genre.entity';
 import { Genre } from '../../db/entities/genre.entity';
+import { ReleasesModule } from '../releases/releases.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([ReleaseGenre, ReleaseGenreVote, Genre]),
     UsersModule,
+    ReleasesModule,
   ],
   controllers: [GenresController],
   providers: [GenresService],

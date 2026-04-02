@@ -37,6 +37,7 @@ import {
   VoteType,
   ArtistType,
   ArtistVisibility,
+  SubmissionType,
 } from './enums';
 
 export function IsDayjsDateString(validationOptions?: ValidationOptions) {
@@ -731,9 +732,16 @@ export class FindReleaseSubmissionsDto {
   @IsString()
   releaseId?: string;
   @IsOptional()
+  @IsString()
+  voteByUserId?: string;
+  @IsOptional()
   @Type(() => Number)
   @IsEnum(SubmissionStatus)
   status?: number;
+  @IsOptional()
+  @Type(() => Number)
+  @IsEnum(SubmissionType)
+  type?: number;
   @IsOptional()
   @IsEnum(SubmissionSortByEnum)
   sortBy?: SubmissionSortByEnum;
@@ -750,9 +758,16 @@ export class FindArtistSubmissionsDto {
   @IsString()
   artistId?: string;
   @IsOptional()
+  @IsString()
+  voteByUserId?: string;
+  @IsOptional()
   @Type(() => Number)
   @IsEnum(SubmissionStatus)
   status?: number;
+  @IsOptional()
+  @Type(() => Number)
+  @IsEnum(SubmissionType)
+  type?: number;
   @IsOptional()
   @IsEnum(SubmissionSortByEnum)
   sortBy?: SubmissionSortByEnum;
@@ -769,9 +784,16 @@ export class FindLabelSubmissionsDto {
   @IsString()
   labelId?: string;
   @IsOptional()
+  @IsString()
+  voteByUserId?: string;
+  @IsOptional()
   @Type(() => Number)
   @IsEnum(SubmissionStatus)
   status?: number;
+  @IsOptional()
+  @Type(() => Number)
+  @IsEnum(SubmissionType)
+  type?: number;
   @IsOptional()
   @IsEnum(SubmissionSortByEnum)
   sortBy?: SubmissionSortByEnum;
@@ -788,9 +810,16 @@ export class FindGenreSubmissionsDto {
   @IsString()
   genreId?: string;
   @IsOptional()
+  @IsString()
+  voteByUserId?: string;
+  @IsOptional()
   @Type(() => Number)
   @IsEnum(SubmissionStatus)
   status?: number;
+  @IsOptional()
+  @Type(() => Number)
+  @IsEnum(SubmissionType)
+  type?: number;
   @IsOptional()
   @IsEnum(SubmissionSortByEnum)
   sortBy?: SubmissionSortByEnum;
@@ -825,6 +854,15 @@ export class CreateGenreVoteDto {
   @Type(() => Number)
   @IsEnum(VoteType)
   voteType: VoteType;
+}
+
+export class FindUserGenreVotesDto {
+  @IsOptional()
+  @IsString()
+  genreId?: string;
+  @Type(() => Number)
+  @IsInt()
+  page: number;
 }
 
 // --- REPORTS

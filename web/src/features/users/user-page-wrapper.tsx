@@ -141,7 +141,7 @@ const UserPageWrapper: React.FC = () => {
         menu={[
           {
             label: 'Contributions',
-            to: `/${data.user.username}/contributions/releases`,
+            to: `/${data.user.username}/contributions/release-add`,
           },
           ...(!isUserMyself
             ? [

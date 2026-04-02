@@ -195,6 +195,10 @@ const GenreSubmissionPage = lazy(
   () => import('./features/contributions/genre-submission-page'),
 );
 
+const UserGenreVotesPage = lazy(
+  () => import('./features/genres/user-genre-votes'),
+);
+
 const QueryProvider = ({ children }: { children: any }) => {
   const { snackbar } = useSnackbar();
 
@@ -347,7 +351,7 @@ const router = createBrowserRouter([
         ),
         children: [
           {
-            path: 'releases',
+            path: 'release-add',
             element: (
               <Suspense fallback={<Fallback />}>
                 <ReleaseSubmissionsList />
@@ -355,7 +359,15 @@ const router = createBrowserRouter([
             ),
           },
           {
-            path: 'artists',
+            path: 'release-edit',
+            element: (
+              <Suspense fallback={<Fallback />}>
+                <ReleaseSubmissionsList />
+              </Suspense>
+            ),
+          },
+          {
+            path: 'artist-add',
             element: (
               <Suspense fallback={<Fallback />}>
                 <ArtistSubmissionsList />
@@ -363,7 +375,15 @@ const router = createBrowserRouter([
             ),
           },
           {
-            path: 'labels',
+            path: 'artist-edit',
+            element: (
+              <Suspense fallback={<Fallback />}>
+                <ArtistSubmissionsList />
+              </Suspense>
+            ),
+          },
+          {
+            path: 'label-add',
             element: (
               <Suspense fallback={<Fallback />}>
                 <LabelSubmissionsList />
@@ -371,7 +391,63 @@ const router = createBrowserRouter([
             ),
           },
           {
-            path: 'genres',
+            path: 'label-edit',
+            element: (
+              <Suspense fallback={<Fallback />}>
+                <LabelSubmissionsList />
+              </Suspense>
+            ),
+          },
+          {
+            path: 'genre-add',
+            element: (
+              <Suspense fallback={<Fallback />}>
+                <GenreSubmissionsList />
+              </Suspense>
+            ),
+          },
+          {
+            path: 'genre-edit',
+            element: (
+              <Suspense fallback={<Fallback />}>
+                <GenreSubmissionsList />
+              </Suspense>
+            ),
+          },
+          {
+            path: 'genre-vote',
+            element: (
+              <Suspense fallback={<Fallback />}>
+                <UserGenreVotesPage />
+              </Suspense>
+            ),
+          },
+          {
+            path: 'release-submission-vote',
+            element: (
+              <Suspense fallback={<Fallback />}>
+                <ReleaseSubmissionsList />
+              </Suspense>
+            ),
+          },
+          {
+            path: 'artist-submission-vote',
+            element: (
+              <Suspense fallback={<Fallback />}>
+                <ArtistSubmissionsList />
+              </Suspense>
+            ),
+          },
+          {
+            path: 'label-submission-vote',
+            element: (
+              <Suspense fallback={<Fallback />}>
+                <LabelSubmissionsList />
+              </Suspense>
+            ),
+          },
+          {
+            path: 'genre-submission-vote',
             element: (
               <Suspense fallback={<Fallback />}>
                 <GenreSubmissionsList />

@@ -6,17 +6,20 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   CreateGenreVoteDto,
+  FindUserGenreVotesDto,
+  IFindUserGenreVotesResponse,
   IGenreResponse,
   IGenresResponse,
   IReleaseGenre,
   VoteType,
 } from 'shared';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { GenreSubmission } from '../../db/entities/genre-submission.entity';
 import { Genre } from '../../db/entities/genre.entity';
 import { ReleaseGenreVote } from '../../db/entities/release-genre-vote.entity';
 import { ReleaseGenre } from '../../db/entities/release-genre.entity';
 import { UsersService } from '../users/users.service';
+import { ReleasesService } from '../releases/releases.service';
 
 @Injectable()
 export class GenresService {
@@ -32,6 +35,7 @@ export class GenresService {
     @InjectRepository(ReleaseGenre)
     private releaseGenreRepository: Repository<ReleaseGenre>,
     private usersService: UsersService,
+    private releasesService: ReleasesService,
   ) {}
 
   async findAll(): Promise<IGenresResponse> {
@@ -55,6 +59,15 @@ export class GenresService {
     return {
       genre,
     };
+  }
+
+  async getGenresByIds(ids: string[]) {
+    return this.genreRepository.find({
+      select: ['id', 'name'],
+      where: {
+        id: In(ids),
+      },
+    });
   }
 
   async releaseGenres(releaseId: string): Promise<IReleaseGenre[]> {
@@ -219,5 +232,52 @@ export class GenresService {
     genre.bio = bio;
     genre.bioSource = bioSource;
     return this.genreRepository.save(genre);
+  }
+
+  async getUserGenreVotes(
+    userId: string,
+    { page, genreId }: FindUserGenreVotesDto,
+  ): Promise<IFindUserGenreVotesResponse> {
+    const pageSize = 40;
+
+    const qb = this.releaseGenreRepository
+      .createQueryBuilder('rg')
+      .innerJoinAndSelect(
+        'rg.genreVotes',
+        'genreVote',
+        'genreVote.userId = :userId',
+        {
+          userId,
+        },
+      );
+
+    if (genreId) qb.andWhere('rg.genreId = :genreId', { genreId });
+
+    const [releaseGenres, totalItems] = await qb
+      .orderBy('genreVote.createdAt', 'DESC')
+      .limit(pageSize)
+      .offset((page - 1) * pageSize)
+      .getManyAndCount();
+
+    const releases = await this.releasesService.getReleasesByIds(
+      releaseGenres.map((rg) => rg.releaseId),
+    );
+    const genres = await this.getGenresByIds(
+      releaseGenres.map((rg) => rg.genreId),
+    );
+
+    return {
+      votes: releaseGenres.map((rg) => ({
+        ...rg,
+        release: releases.find((r) => r.id === rg.releaseId),
+        genre: genres.find((g) => g.id === rg.genreId),
+        type: rg.genreVotes[0].type,
+      })),
+      totalItems,
+      currentPage: page,
+      currentItems: (page - 1) * pageSize + releaseGenres.length,
+      itemsPerPage: pageSize,
+      totalPages: Math.ceil(totalItems / pageSize),
+    };
   }
 }

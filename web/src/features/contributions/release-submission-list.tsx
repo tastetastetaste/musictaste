@@ -6,6 +6,7 @@ import {
   IReleaseSubmission,
   SubmissionSortByEnum,
   SubmissionStatus,
+  SubmissionType,
 } from 'shared';
 import { FetchMore } from '../../components/fetch-more';
 import { Stack } from '../../components/flex/stack';
@@ -159,29 +160,35 @@ export const ReleaseSubmissionItem = ({
 
 export class ReleaseSubmissionListOutletContext {
   status?: SubmissionStatus;
+  type?: SubmissionType;
   userId?: string;
   releaseId?: string;
+  voteByUserId?: string;
   sortBy?: SubmissionSortByEnum;
 }
 
 const ReleaseSubmissionsList = () => {
-  const { userId, releaseId, status, sortBy } =
+  const { userId, releaseId, status, type, sortBy, voteByUserId } =
     useOutletContext<ReleaseSubmissionListOutletContext>();
 
   const { data, isFetching, isFetchingNextPage, fetchNextPage, hasNextPage } =
     useInfiniteQuery(
       cacheKeys.releaseSubmissionsKey({
         status,
+        type,
         releaseId,
         userId,
+        voteByUserId,
         sortBy,
       }),
       async ({ pageParam = 1 }) =>
         api.getReleaseSubmissions({
           page: pageParam,
           status,
+          type,
           releaseId,
           userId,
+          voteByUserId,
           sortBy,
         }),
       {

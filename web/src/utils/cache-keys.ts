@@ -130,16 +130,19 @@ const releasesKey = ({
 const releaseSubmissionsKey = (filters?: {
   page?: number;
   status?: number;
+  type?: number;
   releaseId?: string;
   userId?: string;
+  voteByUserId?: string;
   sortBy?: string;
 }) =>
   filters
     ? [
         'releaseSubmissions',
-        filters.status,
+        `${filters.status}-${filters.type}`,
         filters.releaseId,
         filters.userId,
+        filters.voteByUserId,
         filters.sortBy,
         filters.page,
       ]
@@ -147,16 +150,19 @@ const releaseSubmissionsKey = (filters?: {
 const artistSubmissionsKey = (filters?: {
   page?: number;
   status?: number;
+  type?: number;
   artistId?: string;
   userId?: string;
+  voteByUserId?: string;
   sortBy?: string;
 }) =>
   filters
     ? [
         'artistSubmissions',
-        filters.status,
+        `${filters.status}-${filters.type}`,
         filters.artistId,
         filters.userId,
+        filters.voteByUserId,
         filters.sortBy,
         filters.page,
       ]
@@ -165,16 +171,19 @@ const artistSubmissionsKey = (filters?: {
 const labelSubmissionsKey = (filters?: {
   page?: number;
   status?: number;
+  type?: number;
   labelId?: string;
   userId?: string;
+  voteByUserId?: string;
   sortBy?: string;
 }) =>
   filters
     ? [
         'labelSubmissions',
-        filters.status,
+        `${filters.status}-${filters.type}`,
         filters.labelId,
         filters.userId,
+        filters.voteByUserId,
         filters.sortBy,
         filters.page,
       ]
@@ -183,16 +192,19 @@ const labelSubmissionsKey = (filters?: {
 const genreSubmissionsKey = (filters?: {
   page?: number;
   status?: number;
+  type?: number;
   genreId?: string;
   userId?: string;
+  voteByUserId?: string;
   sortBy?: string;
 }) =>
   filters
     ? [
         'genreSubmissions',
-        filters.status,
+        `${filters.status}-${filters.type}`,
         filters.genreId,
         filters.userId,
+        filters.voteByUserId,
         filters.sortBy,
         filters.page,
       ]
@@ -284,6 +296,14 @@ const userTagsKey = (userId: string) => ['user', userId, 'tags'];
 // GENRES
 const releaseGenresKey = (releaseId: string) => ['releaseGenres', releaseId];
 
+const userGenreVotesKey = (userId: string, page: number, genreId?: string) => [
+  'user',
+  userId,
+  'genreVotes',
+  page,
+  genreId,
+];
+
 // AUTOFILL
 const musicBrainzReleaseKey = (id: string) => ['musicBrainzRelease', id];
 
@@ -347,6 +367,7 @@ export const cacheKeys = {
   userReleaseDatesKey,
   userTagsKey,
   releaseGenresKey,
+  userGenreVotesKey,
   musicBrainzReleaseKey,
   searchKey,
   commentsKey,

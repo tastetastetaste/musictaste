@@ -79,6 +79,8 @@ import {
   UpdateUserSupporterStatusDto,
   UpdateUserThemeDto,
   VoteType,
+  FindUserGenreVotesDto,
+  IFindUserGenreVotesResponse,
 } from 'shared';
 import { buildFormData } from './build-form-data';
 
@@ -479,58 +481,74 @@ const updateGenre = ({ id, data }: { id: string; data: UpdateGenreDto }) =>
 const getReleaseSubmissions = ({
   page,
   status,
+  type,
   releaseId,
   userId,
+  voteByUserId,
   sortBy,
 }: FindReleaseSubmissionsDto) =>
   client
     .get(
       `submissions/releases?page=${page}${status ? '&status=' + status : ''}${
+        type ? '&type=' + type : ''
+      }${
         releaseId ? '&releaseId=' + releaseId : ''
-      }${userId ? '&userId=' + userId : ''}${sortBy ? '&sortBy=' + sortBy : ''}`,
+      }${userId ? '&userId=' + userId : ''}${voteByUserId ? '&voteByUserId=' + voteByUserId : ''}${sortBy ? '&sortBy=' + sortBy : ''}`,
     )
     .json<IReleaseSubmissionsResponse>();
 const getArtistSubmissions = ({
   page,
   status,
+  type,
   artistId,
   userId,
+  voteByUserId,
   sortBy,
 }: FindArtistSubmissionsDto) =>
   client
     .get(
       `submissions/artists?page=${page}${status ? '&status=' + status : ''}${
+        type ? '&type=' + type : ''
+      }${
         artistId ? '&artistId=' + artistId : ''
-      }${userId ? '&userId=' + userId : ''}${sortBy ? '&sortBy=' + sortBy : ''}`,
+      }${userId ? '&userId=' + userId : ''}${voteByUserId ? '&voteByUserId=' + voteByUserId : ''}${sortBy ? '&sortBy=' + sortBy : ''}`,
     )
     .json<IArtistSubmissionsResponse>();
 const getLabelSubmissions = ({
   page,
   status,
+  type,
   labelId,
   userId,
+  voteByUserId,
   sortBy,
 }: FindLabelSubmissionsDto) =>
   client
     .get(
       `submissions/labels?page=${page}${status ? '&status=' + status : ''}${
+        type ? '&type=' + type : ''
+      }${
         labelId ? '&labelId=' + labelId : ''
-      }${userId ? '&userId=' + userId : ''}${sortBy ? '&sortBy=' + sortBy : ''}`,
+      }${userId ? '&userId=' + userId : ''}${voteByUserId ? '&voteByUserId=' + voteByUserId : ''}${sortBy ? '&sortBy=' + sortBy : ''}`,
     )
     .json<ILabelSubmissionsResponse>();
 
 const getGenreSubmissions = ({
   page,
   status,
+  type,
   genreId,
   userId,
+  voteByUserId,
   sortBy,
 }: FindGenreSubmissionsDto) =>
   client
     .get(
       `submissions/genres?page=${page}${status ? '&status=' + status : ''}${
+        type ? '&type=' + type : ''
+      }${
         genreId ? '&genreId=' + genreId : ''
-      }${userId ? '&userId=' + userId : ''}${sortBy ? '&sortBy=' + sortBy : ''}`,
+      }${userId ? '&userId=' + userId : ''}${voteByUserId ? '&voteByUserId=' + voteByUserId : ''}${sortBy ? '&sortBy=' + sortBy : ''}`,
     )
     .json<IGenreSubmissionsResponse>();
 
@@ -622,6 +640,16 @@ const createReleaseGenreVote = (data: CreateGenreVoteDto) =>
 
 const removeReleaseGenreVote = ({ id }: { id: string }) =>
   client.delete('genres/rg/' + id).json<any>();
+
+const getUserGenreVotes = (
+  userId: string,
+  { page, genreId }: FindUserGenreVotesDto,
+) =>
+  client
+    .get(
+      `genres/user/${userId}?page=${page}${genreId ? '&genreId=' + genreId : ''}`,
+    )
+    .json<IFindUserGenreVotesResponse>();
 
 // ----------------
 //     AUTOFILL
@@ -841,6 +869,7 @@ export const api = {
   getReleaseGenres,
   createReleaseGenreVote,
   removeReleaseGenreVote,
+  getUserGenreVotes,
   getSpotifyRelease,
   getMusicBrainzRelease,
   search,

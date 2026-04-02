@@ -8,6 +8,7 @@ import {
   IArtistSubmission,
   SubmissionSortByEnum,
   SubmissionStatus,
+  SubmissionType,
 } from 'shared';
 import { FetchMore } from '../../components/fetch-more';
 import { Stack } from '../../components/flex/stack';
@@ -19,8 +20,10 @@ import { SubmissionField, SubmissionItemWrapper } from './submission-item';
 
 class ArtistSubmissionListOutletContext {
   status?: SubmissionStatus;
+  type?: SubmissionType;
   userId?: string;
   artistId?: string;
+  voteByUserId?: string;
   sortBy?: SubmissionSortByEnum;
 }
 
@@ -200,23 +203,27 @@ export const ArtistSubmissionItem = ({
 };
 
 const ArtistSubmissionsList: React.FC = () => {
-  const { status, artistId, userId, sortBy } =
+  const { status, type, artistId, userId, voteByUserId, sortBy } =
     useOutletContext<ArtistSubmissionListOutletContext>();
 
   const { data, isFetching, isFetchingNextPage, fetchNextPage, hasNextPage } =
     useInfiniteQuery(
       cacheKeys.artistSubmissionsKey({
         status,
+        type,
         artistId,
         userId,
+        voteByUserId,
         sortBy,
       }),
       async ({ pageParam = 1 }) =>
         api.getArtistSubmissions({
           page: pageParam,
           status,
+          type,
           artistId,
           userId,
+          voteByUserId,
           sortBy,
         }),
       {

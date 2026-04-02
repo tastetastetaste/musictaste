@@ -6,6 +6,7 @@ import {
   ILabelSubmission,
   SubmissionSortByEnum,
   SubmissionStatus,
+  SubmissionType,
 } from 'shared';
 import { FetchMore } from '../../components/fetch-more';
 import { Stack } from '../../components/flex/stack';
@@ -17,8 +18,10 @@ import { SubmissionField, SubmissionItemWrapper } from './submission-item';
 
 class LabelSubmissionListOutletContext {
   status?: SubmissionStatus;
+  type?: SubmissionType;
   userId?: string;
   labelId?: string;
+  voteByUserId?: string;
   sortBy?: SubmissionSortByEnum;
 }
 
@@ -89,23 +92,27 @@ export const LabelSubmissionItem = ({
 };
 
 const LabelSubmissionsList: React.FC = () => {
-  const { status, labelId, userId, sortBy } =
+  const { status, type, labelId, userId, voteByUserId, sortBy } =
     useOutletContext<LabelSubmissionListOutletContext>();
 
   const { data, isFetching, isFetchingNextPage, fetchNextPage, hasNextPage } =
     useInfiniteQuery(
       cacheKeys.labelSubmissionsKey({
         status,
+        type,
         labelId,
         userId,
+        voteByUserId,
         sortBy,
       }),
       async ({ pageParam = 1 }) =>
         api.getLabelSubmissions({
           page: pageParam,
           status,
+          type,
           labelId,
           userId,
+          voteByUserId,
           sortBy,
         }),
       {

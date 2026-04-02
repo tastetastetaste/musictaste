@@ -24,6 +24,7 @@ import { Genre } from '../../db/entities/genre.entity';
 import { CommentsModule } from '../comments/comments.module';
 import { EntitiesModule } from '../entities/entities.module';
 import { Country } from '../../db/entities/country.entity';
+import { ReleaseGenreVote } from '../../db/entities/release-genre-vote.entity';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { Country } from '../../db/entities/country.entity';
       GenreSubmission,
       GenreSubmissionVote,
       Country,
+      ReleaseGenreVote,
     ]),
     ReleasesModule,
     ImagesModule,

@@ -108,18 +108,33 @@ export interface IListLikesResponse extends IPagination {
   likes: IUserSummary[];
 }
 
-export interface IGenreVote {
+export interface IReleaseGenreVote {
   id: string;
   type: VoteType;
   userId: string;
   user: IUserSummary;
 }
 
+export interface IUserReleaseGenreVote {
+  id: string;
+  type: VoteType;
+  releaseId: string;
+  release: IRelease;
+  genreId: string;
+  genre: IGenreSummary;
+  votesAvg: number;
+  votesCount: number;
+}
+
+export interface IFindUserGenreVotesResponse extends IPagination {
+  votes: IUserReleaseGenreVote[];
+}
+
 export interface IReleaseGenre {
   id: string;
   valid: boolean;
   genre: IGenre;
-  genreVotes: IGenreVote[];
+  genreVotes: IReleaseGenreVote[];
 }
 
 export interface IGenre {
@@ -628,9 +643,16 @@ export interface IUserContributionsStatsResponse {
   addedReleases: number;
   addedArtists: number;
   addedLabels: number;
+  addedGenres: number;
   editedReleases: number;
   editedArtists: number;
   editedLabels: number;
+  editedGenres: number;
+  genreVotes: number;
+  releaseSubmissionVotes: number;
+  artistSubmissionVotes: number;
+  labelSubmissionVotes: number;
+  genreSubmissionVotes: number;
 }
 
 export interface IAutofillRelease {

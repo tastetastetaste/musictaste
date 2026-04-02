@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   Post,
+  Query,
   UnauthorizedException,
   UseGuards,
   UseInterceptors,
@@ -12,6 +13,7 @@ import {
 import {
   ContributorStatus,
   CreateGenreVoteDto,
+  FindUserGenreVotesDto,
   IGenreResponse,
   IGenresResponse,
 } from 'shared';
@@ -58,5 +60,11 @@ export class GenresController {
       throw new UnauthorizedException();
 
     return this.genresService.removeGenreVote({ releaseGenreId: id }, user.id);
+  }
+
+  @Get('user/:id')
+  @UseGuards(AuthenticatedGuard)
+  userVotes(@Param('id') id: string, @Query() query: FindUserGenreVotesDto) {
+    return this.genresService.getUserGenreVotes(id, query);
   }
 }

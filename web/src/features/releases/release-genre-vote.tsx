@@ -55,10 +55,10 @@ const ReleaseGenreItem: React.FC<ReleaseGenreItemProps> = ({
     <Fragment>
       <Stack gap="sm">
         <span
-          style={
+          css={(theme) =>
             !appliedToRelease
               ? {
-                  color: 'red',
+                  color: theme.colors.error,
                   textDecoration: 'line-through',
                   fontWeight: 'bold',
                 }

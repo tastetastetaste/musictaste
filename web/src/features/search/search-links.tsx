@@ -65,7 +65,7 @@ export const ReleaseSearchLink = ({
     </div>
     <Stack gap="sm">
       <ArtistsLinks artists={release.artists} truncate />
-      <Typography inline whiteSpace="nowrap">
+      <Typography inline whiteSpace="nowrap" maxLines={2}>
         <Link to={getReleasePath({ releaseId: release.id })}>
           {release.title}
           <span css={{ fontStyle: 'italic' }}>
