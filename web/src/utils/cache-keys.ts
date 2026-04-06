@@ -321,10 +321,6 @@ const searchKey = (filters: {
     : []),
 ];
 
-// HOME
-
-const communityHighlightKey = () => ['community-highlight'];
-
 export const cacheKeys = {
   artistKey,
   labelKey,
@@ -373,5 +369,4 @@ export const cacheKeys = {
   commentsKey,
   notificationsKey,
   unreadNotificationsCountKey,
-  communityHighlightKey,
 };

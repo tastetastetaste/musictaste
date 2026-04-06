@@ -25,7 +25,6 @@ import { cacheKeys } from '../utils/cache-keys';
 import FeaturesOverview from './features-overview';
 import ReviewsListRenderer from '../features/reviews/reviews-list-renderer';
 import { useOnScreen } from '../hooks/useOnScreen';
-import { CommunityHighlight } from './community-highlight';
 import { ResponsiveRow } from '../components/flex/responsive-row';
 import { FlexChild } from '../components/flex/flex-child';
 
@@ -228,11 +227,6 @@ const HomePage = () => {
   //   }),
   // );
 
-  const { isLoading: isLoadingCommunityHighlight } = useQuery(
-    cacheKeys.communityHighlightKey(),
-    () => api.getCommunityHighlight(),
-  );
-
   const { isLoggedIn, isLoading } = useAuth();
 
   return (
@@ -241,7 +235,7 @@ const HomePage = () => {
         {!isLoading && !isLoggedIn && <FeaturesOverview />}
 
         {/* minimize layout shift */}
-        {!isLoadingNewPopularReleases && !isLoadingCommunityHighlight ? (
+        {!isLoadingNewPopularReleases ? (
           <Fragment>
             <NewReleasesSection />
             <Support />
@@ -250,10 +244,7 @@ const HomePage = () => {
                 <TopReviewsSection />
               </FlexChild>
               <FlexChild grow={1}>
-                <Stack gap="lg">
-                  <CommunityHighlight />
-                  <LatestListsSection />
-                </Stack>
+                <LatestListsSection />
               </FlexChild>
             </ResponsiveRow>
             <RecentlyAddedReleasesSection />

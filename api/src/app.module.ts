@@ -35,7 +35,6 @@ import { TasksModule } from './tasks/tasks.module';
 import KeyvRedis from '@keyv/redis';
 import { ScheduleModule } from '@nestjs/schedule';
 import { CountriesModule } from './countries/countries.module';
-import { HomeModule } from './home/home.module';
 
 @Module({
   imports: [
@@ -124,7 +123,6 @@ import { HomeModule } from './home/home.module';
     EntitiesModule,
     TasksModule,
     CountriesModule,
-    HomeModule,
   ],
   controllers: [],
   providers: [

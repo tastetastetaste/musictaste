@@ -774,12 +774,6 @@ const parseLinks = (text: string) =>
     .post('entities/parse-links', { json: { text } })
     .json<{ text: string }>();
 
-// ----------------
-//     HOME
-// ----------------
-const getCommunityHighlight = () =>
-  client.get('home/community-highlight').json<IRelease>();
-
 export const api = {
   getArtist,
   getLabel,
@@ -891,5 +885,4 @@ export const api = {
   findUsers,
   mergeEntities,
   parseLinks,
-  getCommunityHighlight,
 };
