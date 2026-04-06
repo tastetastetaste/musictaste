@@ -27,6 +27,9 @@ import ReviewsListRenderer from '../features/reviews/reviews-list-renderer';
 import { useOnScreen } from '../hooks/useOnScreen';
 import { ResponsiveRow } from '../components/flex/responsive-row';
 import { FlexChild } from '../components/flex/flex-child';
+import { StickyContainer } from '../components/containers/sticky-container';
+import { Group } from '../components/flex/group';
+import { useMediaQuery } from '../hooks/useMediaQuery';
 
 const ROOT_MARGIN = '100px';
 const SECTION_MIN_HEIGHT = '500px';
@@ -211,23 +214,9 @@ const HomePage = () => {
     () => api.getReleases(FindReleasesType.NewPopular, 1, 10),
   );
 
-  // const reviewsCacheKey = cacheKeys.entriesKey({
-  //   page: 1,
-  //   pageSize: 12,
-  //   withReview: true,
-  //   sortBy: EntriesSortByEnum.ReviewTop,
-  // });
-
-  // const { isLoading: isLoadingTopReviews } = useQuery(reviewsCacheKey, () =>
-  //   api.getEntries({
-  //     page: 1,
-  //     pageSize: 12,
-  //     withReview: true,
-  //     sortBy: EntriesSortByEnum.ReviewTop,
-  //   }),
-  // );
-
   const { isLoggedIn, isLoading } = useAuth();
+
+  const isMobile = useMediaQuery({ down: 'lg' });
 
   return (
     <AppPageWrapper>
@@ -239,14 +228,17 @@ const HomePage = () => {
           <Fragment>
             <NewReleasesSection />
             <Support />
-            <ResponsiveRow breakpoint="lg" gap="md">
-              <FlexChild grow={3}>
+            <Group gap="lg" align="start">
+              <FlexChild grow>
                 <TopReviewsSection />
+                {isMobile ? <LatestListsSection /> : null}
               </FlexChild>
-              <FlexChild grow={1}>
-                <LatestListsSection />
-              </FlexChild>
-            </ResponsiveRow>
+              {!isMobile ? (
+                <StickyContainer width={400}>
+                  <LatestListsSection />
+                </StickyContainer>
+              ) : null}
+            </Group>
             <RecentlyAddedReleasesSection />
             <RecentReviewsSection />
           </Fragment>
