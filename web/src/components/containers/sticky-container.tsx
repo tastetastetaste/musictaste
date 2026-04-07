@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useElementHeight } from '../../hooks/useElementHeight';
 
 export const StickyContainer = ({
   width,
@@ -7,19 +7,7 @@ export const StickyContainer = ({
   width: number | string;
   children: React.ReactNode;
 }) => {
-  const [height, setHeight] = useState(0);
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!ref.current) return;
-    const observer = new ResizeObserver(() => {
-      if (ref.current) {
-        setHeight(ref.current.offsetHeight);
-      }
-    });
-    observer.observe(ref.current);
-    return () => observer.disconnect();
-  }, []);
+  const { height, ref } = useElementHeight();
 
   return (
     <div

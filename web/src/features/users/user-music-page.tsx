@@ -86,19 +86,19 @@ const Ratings = ({
     );
 
   return (
-    <div style={{ minHeight: '100vh' }}>
-      {isFetching && !isFetchingNextPage ? (
-        <Loading />
-      ) : data?.pages[0].totalItems > 0 ? (
+    <Stack>
+      {isFetching && !isFetchingNextPage && !data ? <Loading /> : null}
+      {!isFetching && !isFetchingNextPage && !data?.pages[0].totalItems ? (
+        <Feedback message="There are no releases" />
+      ) : null}
+      {data && data.pages[0].totalItems > 0 ? (
         <UserMusicVirtualGrid
           ratings={data}
           loadMore={fetchNextPage}
           hasMore={!!hasNextPage}
         />
-      ) : (
-        <Feedback message="There are no releases" />
-      )}
-    </div>
+      ) : null}
+    </Stack>
   );
 };
 

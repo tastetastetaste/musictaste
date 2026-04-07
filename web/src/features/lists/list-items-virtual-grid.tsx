@@ -7,6 +7,9 @@ import { useMediaQuery } from '../../hooks/useMediaQuery';
 import { Release } from '../releases/release';
 import { RELEASE_GRID_PADDING } from '../releases/releases-virtual-grid';
 import { getRowIndexes } from '../users/user-music-virtual-grid';
+import { useElementHeight } from '../../hooks/useElementHeight';
+import { useLocalStorage } from '../../hooks/useLocalStorage';
+import { useEffect } from 'react';
 
 export const ListItemsVirtualGrid: React.FC<{
   data: InfiniteData<IListItemsResponse>;
@@ -19,10 +22,21 @@ export const ListItemsVirtualGrid: React.FC<{
 
   const md = useMediaQuery({ down: 'md' });
 
+  const { height: firstRowHeight, ref: firstRowRef } = useElementHeight();
+
+  const [defaultRowHeight, setDefaultRowHeight] = useLocalStorage(
+    'listItemsDefaultRowHeight',
+    230,
+  );
+
+  useEffect(() => {
+    if (firstRowHeight !== 0 && firstRowHeight !== defaultRowHeight) {
+      setDefaultRowHeight(firstRowHeight);
+    }
+  }, [firstRowHeight]);
+
   const { currentItems, totalItems, itemsPerPage, totalPages } =
     data.pages[data.pages.length - 1];
-
-  const defaultItemHeight = 330;
 
   const itemsPerRow = sm ? 3 : md ? 4 : 5;
 
@@ -40,14 +54,20 @@ export const ListItemsVirtualGrid: React.FC<{
         style={{
           display: 'flex',
           flexDirection: 'column',
-          minHeight: loadedRowCount * defaultItemHeight,
+          alignItems: 'stretch',
+          justifyContent: 'center',
+          minHeight: loadedRowCount * defaultRowHeight,
         }}
         endReached={hasMore ? loadMore : undefined}
         itemContent={(n) => {
           const inx = getRowIndexes(n, itemsPerRow, currentItems);
 
           return (
-            <Group justify="start" align="start">
+            <Group
+              justify="start"
+              align="start"
+              ref={n === 0 ? firstRowRef : undefined}
+            >
               {inx.map((i) => {
                 const page = Math.floor(i / itemsPerPage);
 
@@ -79,7 +99,7 @@ export const ListItemsVirtualGrid: React.FC<{
             </Group>
           );
         }}
-        defaultItemHeight={defaultItemHeight}
+        defaultItemHeight={defaultRowHeight}
       />
     </div>
   );

@@ -51,16 +51,18 @@ export const FollowingUserEntry = ({ entry }: { entry: IEntry }) => {
 
 export const UserEntryOnRelease = ({ entry }: { entry: IEntry }) => {
   return (
-    <Group wrap>
-      <UserRating rating={entry.rating} />
-      <Group>
-        {entry.hasTrackVotes && <FavoriteTracksPopover entryId={entry.id} />}
-        {!!entry.reviewId && <ReviewLink entryId={entry.id} />}
+    <div css={{ minHeight: '36px', display: 'flex', alignItems: 'center' }}>
+      <Group wrap>
+        <UserRating rating={entry.rating} />
+        <Group>
+          {entry.hasTrackVotes && <FavoriteTracksPopover entryId={entry.id} />}
+          {!!entry.reviewId && <ReviewLink entryId={entry.id} />}
+        </Group>
+        <Tooltip content={`Added ${formatRelativeTime(entry.createdAt)}`}>
+          <Typography>{formatRelativeTimeShort(entry.createdAt)}</Typography>
+        </Tooltip>
       </Group>
-      <Tooltip content={`Added ${formatRelativeTime(entry.createdAt)}`}>
-        <Typography>{formatRelativeTimeShort(entry.createdAt)}</Typography>
-      </Tooltip>
-    </Group>
+    </div>
   );
 };
 

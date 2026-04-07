@@ -1,3 +1,5 @@
+import { forwardRef } from 'react';
+
 interface GroupProps {
   children: React.ReactNode;
   align?: 'start' | 'end' | 'center';
@@ -7,47 +9,43 @@ interface GroupProps {
   overflow?: 'hidden';
 }
 
-export const Group: React.FC<GroupProps> = ({
-  children,
-  align,
-  justify,
-  gap,
-  wrap,
-  overflow,
-}) => {
-  return (
-    <div
-      css={{
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems:
-          align === 'start'
-            ? 'flex-start'
-            : align === 'end'
+export const Group = forwardRef(
+  ({ children, align, justify, gap, wrap, overflow }: GroupProps, ref) => {
+    return (
+      <div
+        ref={ref as any}
+        css={{
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems:
+            align === 'start'
+              ? 'flex-start'
+              : align === 'end'
+                ? 'flex-end'
+                : 'center',
+          justifyContent:
+            justify === 'end'
               ? 'flex-end'
-              : 'center',
-        justifyContent:
-          justify === 'end'
-            ? 'flex-end'
-            : justify === 'center'
-              ? 'center'
-              : justify === 'apart'
-                ? 'space-between'
-                : 'flex-start',
-        gap:
-          gap === 'sm'
-            ? '4px'
-            : gap === 'md'
-              ? '8px'
-              : gap === 'lg'
-                ? '16px'
-                : gap,
-        flexWrap: wrap ? 'wrap' : 'nowrap',
-        width: justify === 'apart' ? '100%' : undefined,
-        overflow,
-      }}
-    >
-      {children}
-    </div>
-  );
-};
+              : justify === 'center'
+                ? 'center'
+                : justify === 'apart'
+                  ? 'space-between'
+                  : 'flex-start',
+          gap:
+            gap === 'sm'
+              ? '4px'
+              : gap === 'md'
+                ? '8px'
+                : gap === 'lg'
+                  ? '16px'
+                  : gap,
+          flexWrap: wrap ? 'wrap' : 'nowrap',
+          width: justify === 'apart' ? '100%' : undefined,
+          overflow,
+        }}
+      >
+        {children}
+      </div>
+    );
+  },
+);

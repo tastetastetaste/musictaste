@@ -62,7 +62,7 @@ const RecentlyAddedReleases: React.FC<{ userId: string; username: string }> = ({
             size="title-lg"
             to={{
               pathname: `/${username}/music`,
-              search: 'sb?dateAdded',
+              search: 'sb=EntryDate',
             }}
           >
             Recently Added

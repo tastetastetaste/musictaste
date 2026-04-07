@@ -5,6 +5,9 @@ import { Group } from '../../components/flex/group';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
 import { Release } from '../releases/release';
 import { RELEASE_GRID_PADDING } from '../releases/releases-virtual-grid';
+import { useLocalStorage } from '../../hooks/useLocalStorage';
+import { useElementHeight } from '../../hooks/useElementHeight';
+import { useEffect } from 'react';
 
 interface Props {
   ratings: InfiniteData<IEntriesResponse>;
@@ -42,10 +45,21 @@ export const UserMusicVirtualGrid: React.FC<Props> = ({
 
   const lg = useMediaQuery({ down: 'lg' });
 
+  const { height: firstRowHeight, ref: firstRowRef } = useElementHeight();
+
+  const [defaultRowHeight, setDefaultRowHeight] = useLocalStorage(
+    'userMusicDefaultRowHeight',
+    230,
+  );
+
+  useEffect(() => {
+    if (firstRowHeight !== 0 && firstRowHeight !== defaultRowHeight) {
+      setDefaultRowHeight(firstRowHeight);
+    }
+  }, [firstRowHeight]);
+
   const { currentItems, totalItems, itemsPerPage, totalPages } =
     ratings.pages[ratings.pages.length - 1];
-
-  const defaultItemHeight = 330;
 
   const itemsPerRow = sm ? 3 : md ? 4 : lg ? 4 : 5;
 
@@ -63,14 +77,18 @@ export const UserMusicVirtualGrid: React.FC<Props> = ({
         flexDirection: 'column',
         alignItems: 'stretch',
         justifyContent: 'center',
-        minHeight: loadedRowCount * defaultItemHeight,
+        minHeight: loadedRowCount * defaultRowHeight,
       }}
       endReached={hasMore ? loadMore : undefined}
       itemContent={(n) => {
         const inx = getRowIndexes(n, itemsPerRow, currentItems);
 
         return (
-          <Group justify="start">
+          <Group
+            justify="start"
+            align="start"
+            ref={n === 0 ? firstRowRef : undefined}
+          >
             {inx.map((i) => {
               const page = Math.floor(i / itemsPerPage);
 
@@ -95,7 +113,7 @@ export const UserMusicVirtualGrid: React.FC<Props> = ({
           </Group>
         );
       }}
-      defaultItemHeight={defaultItemHeight}
+      defaultItemHeight={defaultRowHeight}
     />
   );
 };
