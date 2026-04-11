@@ -1,6 +1,6 @@
 import { Theme, useTheme } from '@emotion/react';
 import { forwardRef } from 'react';
-import ReactSelect, { StylesConfig } from 'react-select';
+import ReactSelect, { createFilter, StylesConfig } from 'react-select';
 
 const customStyles: (theme: Theme) => StylesConfig = (theme) => ({
   container: (provided, state) => ({
@@ -74,6 +74,9 @@ export const Select = forwardRef((props: any, ref) => {
       menuPortalTarget={document.body}
       menuPosition="fixed"
       classNamePrefix="react-select"
+      filterOption={createFilter({
+        stringify: (option) => option.label,
+      })}
       {...props}
       styles={customStyles(theme)}
     />
