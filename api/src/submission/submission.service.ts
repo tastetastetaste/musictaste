@@ -700,7 +700,7 @@ export class SubmissionService {
       ? (await this.imagesService.storeUpload(rest.image, 'release')).path
       : rest.imageUrl &&
           rest.imageUrl !==
-            this.imagesService.getReleaseCover(release.imagePath).original
+            this.imagesService.getReleaseCover(release.imagePath)?.original
         ? (
             await this.imagesService.storeUploadFromUrl(
               rest.imageUrl,
