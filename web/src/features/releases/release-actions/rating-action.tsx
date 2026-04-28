@@ -213,17 +213,6 @@ export const RatingAction: React.FC<{
 
   const isRated = !!entry?.rating;
   
-  useEffect(() => {
-    if (!isDragging) return;
-    const handleGlobalMouseUp = () => setTimeout(() => setIsDragging(false), 0);
-    window.addEventListener('mouseup', handleGlobalMouseUp);
-    window.addEventListener('touchend', handleGlobalMouseUp);
-    return () => {
-      window.removeEventListener('mouseup', handleGlobalMouseUp);
-      window.removeEventListener('touchend', handleGlobalMouseUp);
-    };
-  }, [isDragging]);
-
   const handleClose = () => {
     if (!isDragging) {
       setOpen(false);
