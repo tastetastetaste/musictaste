@@ -113,6 +113,7 @@ const RELEASE_SECTIONS = [
   { title: 'Mixtapes', releaseType: ReleaseType.Mixtape },
   { title: 'EPs', releaseType: ReleaseType.EP },
   { title: 'Singles', releaseType: ReleaseType.Single },
+  { title: 'Music Videos', releaseType: ReleaseType.MusicVideo },
   { title: 'Live', releaseType: ReleaseType.Live },
   { title: 'DJ Mixes', releaseType: ReleaseType.DJMix },
   {

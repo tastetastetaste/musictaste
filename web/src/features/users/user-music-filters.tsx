@@ -12,6 +12,7 @@ import { cacheKeys } from '../../utils/cache-keys';
 import { useRatingColor } from '../ratings/useRatingColor';
 import { useSortBy } from './user-music-page';
 import { StickyContainer } from '../../components/containers/sticky-container';
+import { ReleaseTypeOptions } from '../contributions/shared';
 
 type Option = { label: string; value: string; count: number };
 
@@ -391,12 +392,10 @@ const SORT_BY_OPTIONS = [
 
 const RELEASE_TYPE_OPTIONS = [
   { label: 'All Types', value: undefined },
-  ...Object.entries(ReleaseType)
-    .filter(([key, value]) => typeof value === 'number')
-    .map(([key, value]) => ({
-      label: key,
-      value: value.toString(),
-    })),
+  ...ReleaseTypeOptions.map((option) => ({
+    label: option.label,
+    value: ReleaseType[option.value],
+  })),
 ];
 
 const FILTER_TYPES = [
@@ -482,7 +481,7 @@ const UserMusicFilters = ({
             );
           }}
           name="type"
-          defaultValue={query.get('type') || undefined}
+          defaultValue={Number(query.get('type')) || undefined}
           icon={<IconDisc size={20} />}
         />
         <Dropdown
