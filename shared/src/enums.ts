@@ -26,6 +26,7 @@ export enum ReleaseType {
   Unofficial = 13,
   Video = 14,
   Reissue = 15,
+  MusicVideo = 16,
   Other = 25,
 }
 

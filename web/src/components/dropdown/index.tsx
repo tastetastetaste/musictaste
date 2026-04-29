@@ -77,7 +77,7 @@ const customStyles: (theme: Theme) => StylesConfig = (theme) => ({
 export interface DropdownProps {
   name?: string;
   options: { value: string; label: string }[];
-  defaultValue?: string;
+  defaultValue?: any;
   onChange: (selected: { value: string; label: string }) => void;
   placeholder?: string | null;
   label?: any;

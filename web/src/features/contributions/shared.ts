@@ -5,6 +5,7 @@ export const ReleaseTypeOptions = [
   { value: 'EP', label: 'EP' },
   { value: 'Mixtape', label: 'Mixtape' },
   { value: 'Single', label: 'Single' },
+  { value: 'MusicVideo', label: 'Music Video' },
   { value: 'Live', label: 'Live' },
   { value: 'Remix', label: 'Remix' },
   { value: 'Instrumental', label: 'Instrumental' },
