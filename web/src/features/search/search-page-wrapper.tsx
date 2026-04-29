@@ -12,16 +12,19 @@ export type SearchPageOutletContext = {
 const SearchPageWrapper: React.FC = () => {
   const [params, setParams] = useSearchParams();
 
-  const q = params.get('q') || '';
+  const [q, setQ] = useState(params.get('q') || '');
   const debouncedValue = useDebounce(q, 300);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value; // grab text from current field
-    if (value) {
-      setParams({ q: value }, { replace: true });
+  useEffect(() => {
+    if (debouncedValue) {
+      setParams({ q: debouncedValue });
     } else {
       setParams({});
     }
+  }, [debouncedValue, setParams]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setQ(e.target.value);
   };
 
   return (
