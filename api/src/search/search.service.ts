@@ -28,15 +28,8 @@ export class SearchService {
     page,
     pageSize,
   }: SearchDto): Promise<ISearchResponse> {
-    const normalizeQuery = (q: string) => {
-      q = q.toLowerCase();
-      q = q.replace(/[^\w\s]/g, '');
-      q = q.replace(/\s+/g, ' ');
-      q = q.trim();
-      return q;
-    };
-
-    const q = normalizeQuery(query);
+    
+    const q = query.trim();
     const curPageSize = pageSize || 10;
     const take = (page || 1) * curPageSize;
     const skip = ((page || 1) - 1) * curPageSize;
