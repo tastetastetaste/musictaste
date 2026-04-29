@@ -28,6 +28,7 @@ export class SearchService {
     page,
     pageSize,
   }: SearchDto): Promise<ISearchResponse> {
+    
     const q = query.trim();
     const curPageSize = pageSize || 10;
     const take = (page || 1) * curPageSize;

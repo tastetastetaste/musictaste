@@ -117,6 +117,15 @@ export const RatingPopoverContent: React.FC<{
           renderTrack={({ props, children }) => (
             <div
               {...props}
+              // Records input anywhere on rating bar
+              onMouseDown={(e) => {
+                props.onMouseDown?.(e);
+                onDragStart?.();
+              }}
+              onTouchStart={(e) => {
+                props.onTouchStart?.(e);
+                onDragStart?.();
+              }}
               style={{
                 ...props.style,
                 height: '6px',
@@ -136,9 +145,15 @@ export const RatingPopoverContent: React.FC<{
                 width: '20px',
                 backgroundColor: theme.colors.highlight,
                 border: '1px solid currentColor',
+              }} // Records input anywhere on rating bar
+              onMouseDown={(e: any) => {
+                (props as any).onMouseDown?.(e);
+                onDragStart?.();
               }}
-              onMouseDown={onDragStart}
-              onTouchStart={onDragStart}
+              onTouchStart={(e: any) => {
+                (props as any).onTouchStart?.(e);
+                onDragStart?.();
+              }}
             />
           )}
         />
@@ -197,7 +212,7 @@ export const RatingAction: React.FC<{
   const [isDragging, setIsDragging] = useState(false);
 
   const isRated = !!entry?.rating;
-
+  
   const handleClose = () => {
     if (!isDragging) {
       setOpen(false);
