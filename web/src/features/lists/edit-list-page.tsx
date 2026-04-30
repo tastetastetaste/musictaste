@@ -12,10 +12,12 @@ import DraggableList from './draggable-list';
 import { IconArrowLeft } from '@tabler/icons-react';
 import { Typography } from '../../components/typography';
 import { IconButton } from '../../components/icon-button';
+import { useTheme } from '@emotion/react';
 
 const EditListPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { colors } = useTheme();
 
   const { data, isLoading } = useQuery(
     cacheKeys.listKey(id),
@@ -25,9 +27,7 @@ const EditListPage = () => {
     },
   );
   const list = data && data.list;
-
   const { me } = useAuth();
-
   const isMyList = me && list && list.userId === me.id;
 
   const {
@@ -63,9 +63,9 @@ const EditListPage = () => {
     >
       {isMyList && data2 ? (
         <div>
-          <div style={{ display: 'flex', alignItems: 'center', marginBottom: 12 }}>
+          <div style={{ display: 'flex', alignItems: 'center', marginBottom: 12, marginTop: -12 }}> 
             <IconButton onClick={() => navigate(`/list/${id}`)} title="Back">
-              <IconArrowLeft />
+              <IconArrowLeft color={colors.highlight} />
             </IconButton>
 
             <Typography size="title" css={{ marginLeft: 8 }}>
