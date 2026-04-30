@@ -1,5 +1,5 @@
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Feedback } from '../../components/feedback';
 import { FetchMore } from '../../components/fetch-more';
 import { Loading } from '../../components/loading';
@@ -9,9 +9,12 @@ import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
 import { useAuth } from '../account/useAuth';
 import DraggableList from './draggable-list';
+import { IconTransform } from '@tabler/icons-react';
+import { Typography } from '../../components/typography';
 
 const EditListPage = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
 
   const { data, isLoading } = useQuery(
     cacheKeys.listKey(id),
@@ -45,6 +48,14 @@ const EditListPage = () => {
     },
   );
 
+  const quickActions = [
+    {
+      label: 'Done Reordering', // dont really know what this should be
+      action: () => navigate(`/list/${id}`),
+      icon: IconTransform,
+    },
+  ];
+
   if (isLoading) {
     return <Loading />;
   }
@@ -56,9 +67,13 @@ const EditListPage = () => {
   return (
     <AppPageWrapper
       title={`${(data && data.list && data.list.title) || ''} | Edit List`}
+      quickActions={quickActions}
     >
       {isMyList && data2 ? (
         <div>
+          <Typography size="title" css={{ marginBottom: 12 }}>
+            Reorder Items
+          </Typography>
           <DraggableList
             list={{
               id: id!,
