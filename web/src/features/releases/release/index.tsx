@@ -6,6 +6,7 @@ import { Stack } from '../../../components/flex/stack';
 import { Typography } from '../../../components/typography';
 import { getYearFromDate } from '../../../utils/date-format';
 import { getReleasePath } from 'shared';
+import { AllUsersRating } from '../../ratings/rating';
 import { formatReleaseType } from '../format-release-type';
 import { ReleaseActions } from '../release-actions/release-actions';
 import { UserEntryOnRelease } from '../user-entry';
