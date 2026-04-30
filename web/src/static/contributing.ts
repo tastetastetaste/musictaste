@@ -39,6 +39,7 @@ You can start contributing data by selecting **"Add Release"** from the dropdown
 - **Language**: Select the language.  
   - If the language isn't listed, please send feedback (contact information is in the sidebar).  
 - **Cover Art**: Drag and drop, or click to select cover art.
+  - For **"Music Video"** release type, it's *preferred* to use an official thumbnail without logos or watermarks. If you can't find an official thumbnail without logos or watermarks, you can take a screenshot from the video itself.
 - **Explicit Cover Art**: Select all that apply.
 - **Add Tracks**: Click, then enter the number of tracks you want to add. Fill in the titles and (optionally) the length for each track.  
   - For compilations that consist of various artists, list the artist next to the song title. (see this [example](https://www.musictaste.xyz/release/tYKIC5MZ1R-F))
