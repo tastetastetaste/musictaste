@@ -50,7 +50,7 @@ const EditListPage = () => {
 
   const quickActions = [
     {
-      label: 'Done Reordering', // dont really know what this should be
+      label: 'Done Editing', // dont really know what this should be
       action: () => navigate(`/list/${id}`),
       icon: IconTransform,
     },
@@ -72,7 +72,7 @@ const EditListPage = () => {
       {isMyList && data2 ? (
         <div>
           <Typography size="title" css={{ marginBottom: 12 }}>
-            Reorder Items
+            Edit Items
           </Typography>
           <DraggableList
             list={{
