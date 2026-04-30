@@ -6,7 +6,6 @@ import { Stack } from '../../../components/flex/stack';
 import { Typography } from '../../../components/typography';
 import { getYearFromDate } from '../../../utils/date-format';
 import { getReleasePath } from 'shared';
-import { AllUsersRating } from '../../ratings/rating';
 import { formatReleaseType } from '../format-release-type';
 import { ReleaseActions } from '../release-actions/release-actions';
 import { UserEntryOnRelease } from '../user-entry';
@@ -15,6 +14,7 @@ import {
   ReleaseImageLink,
   releaseImageWidthMap,
   ReleaseTitleLink,
+  ReleaseRatingsLink,
 } from './shared';
 
 export interface IReleaseProps {
@@ -57,12 +57,13 @@ export const Release: React.FC<IReleaseProps> = ({ release, entry }) => {
                   <UserEntryOnRelease entry={entry} />
                 ) : isReleaseWithStats(release) &&
                   release.stats?.ratingsCount > 0 ? (
-                  <AllUsersRating
+                  <ReleaseRatingsLink
+                    releaseId={release.id}
                     rating={release.stats.ratingsAvg}
                     count={release.stats.ratingsCount}
                   />
                 ) : (
-                  <div></div>
+                  <div />
                 )}
                 <Typography size="small" color="sub">
                   {`${getYearFromDate(release.date)} · ${formatReleaseType(release.type)}`}

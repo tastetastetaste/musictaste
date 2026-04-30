@@ -13,6 +13,7 @@ import { Link } from '../../../components/links/link';
 import { Typography } from '../../../components/typography';
 import { getArtistPath, getReleasePath } from 'shared';
 import { useAuth } from '../../account/useAuth';
+import { AllUsersRating } from '../../ratings/rating';
 
 export type ReleaseImageSizeT = 'lg' | 'md' | 'sm' | 'xs';
 
@@ -110,6 +111,22 @@ export const ReleaseTitleLink = ({
       <span css={{ fontStyle: 'italic' }}>
         {latinTitle && ` [${latinTitle}]`}
       </span>
+    </Link>
+  );
+};
+
+export const ReleaseRatingsLink = ({
+  releaseId,
+  rating,
+  count,
+}: {
+  releaseId: string;
+  rating: number;
+  count: number;
+}) => {
+  return (
+    <Link to={`${getReleasePath({ releaseId })}/ratings`}>
+      <AllUsersRating rating={rating} count={count} />
     </Link>
   );
 };
