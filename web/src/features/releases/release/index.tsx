@@ -15,6 +15,7 @@ import {
   ReleaseImageLink,
   releaseImageWidthMap,
   ReleaseTitleLink,
+  ReleaseRatingsLink,
 } from './shared';
 
 export interface IReleaseProps {
@@ -57,12 +58,13 @@ export const Release: React.FC<IReleaseProps> = ({ release, entry }) => {
                   <UserEntryOnRelease entry={entry} />
                 ) : isReleaseWithStats(release) &&
                   release.stats?.ratingsCount > 0 ? (
-                  <AllUsersRating
+                  <ReleaseRatingsLink
+                    releaseId={release.id}
                     rating={release.stats.ratingsAvg}
                     count={release.stats.ratingsCount}
                   />
                 ) : (
-                  <div></div>
+                  <div />
                 )}
                 <Typography size="small" color="sub">
                   {`${getYearFromDate(release.date)} · ${formatReleaseType(release.type)}`}
