@@ -9,8 +9,9 @@ import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
 import { useAuth } from '../account/useAuth';
 import DraggableList from './draggable-list';
-import { IconTransform } from '@tabler/icons-react';
+import { IconArrowLeft } from '@tabler/icons-react';
 import { Typography } from '../../components/typography';
+import { IconButton } from '../../components/icon-button';
 
 const EditListPage = () => {
   const { id } = useParams();
@@ -48,14 +49,6 @@ const EditListPage = () => {
     },
   );
 
-  const quickActions = [
-    {
-      label: 'Done Editing', // dont really know what this should be
-      action: () => navigate(`/list/${id}`),
-      icon: IconTransform,
-    },
-  ];
-
   if (isLoading) {
     return <Loading />;
   }
@@ -67,13 +60,18 @@ const EditListPage = () => {
   return (
     <AppPageWrapper
       title={`${(data && data.list && data.list.title) || ''} | Edit List`}
-      quickActions={quickActions}
     >
       {isMyList && data2 ? (
         <div>
-          <Typography size="title" css={{ marginBottom: 12 }}>
-            Edit Items
-          </Typography>
+          <div style={{ display: 'flex', alignItems: 'center', marginBottom: 12 }}>
+            <IconButton onClick={() => navigate(`/list/${id}`)} title="Back">
+              <IconArrowLeft />
+            </IconButton>
+
+            <Typography size="title" css={{ marginLeft: 8 }}>
+              Edit Items
+            </Typography>
+          </div>
           <DraggableList
             list={{
               id: id!,
