@@ -26,7 +26,7 @@ const EmailNotConfirmedPage = () => {
   }, [me, navigate]);
 
   return (
-    <AppPageWrapper title="Confirm your email">
+    <AppPageWrapper title="Confirm your email" hideBackButton>
       <Container>
         <Markdown>{message}</Markdown>
       </Container>

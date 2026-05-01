@@ -26,7 +26,7 @@ Donations are made through our **Ko-fi** and **Buy Me a Coffee** pages.`;
 const SupportUsPage = () => {
   const [openDialog, setOpenDialog] = useState(false);
   return (
-    <AppPageWrapper title="support us">
+    <AppPageWrapper title="support us" hideBackButton>
       <Container>
         <Stack gap="lg">
           <Stack>

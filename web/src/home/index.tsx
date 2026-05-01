@@ -219,7 +219,7 @@ const HomePage = () => {
   const isMobile = useMediaQuery({ down: 'lg' });
 
   return (
-    <AppPageWrapper>
+    <AppPageWrapper hideBackButton>
       <Stack gap="lg">
         {!isLoading && !isLoggedIn && <FeaturesOverview />}
 

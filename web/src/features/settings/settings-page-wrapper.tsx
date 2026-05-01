@@ -25,7 +25,7 @@ const SettingsPageWrapper: React.FC = () => {
   ];
 
   return (
-    <AppPageWrapper title="Settings" navigation={arr}>
+    <AppPageWrapper title="Settings" navigation={arr} hideBackButton>
       {me ? <Outlet context={{ user: me }} /> : <div></div>}
     </AppPageWrapper>
   );

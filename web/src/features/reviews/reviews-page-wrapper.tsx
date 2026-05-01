@@ -10,6 +10,7 @@ const ReviewsPageWrapper: React.FC<{
         { to: `/reviews/new`, label: 'New' },
         { to: `/reviews/top`, label: 'Top' },
       ]}
+      hideBackButton
     >
       {children}
     </AppPageWrapper>

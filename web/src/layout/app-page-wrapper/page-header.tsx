@@ -33,14 +33,33 @@ interface PageHeaderProps {
   navigation: NavigationLinkType[];
   quickActions?: QuickActionType[];
   menu?: MenuItemType[];
+  hideBackButton?: boolean;
 }
 
-const PageHeader = ({ navigation, quickActions, menu }: PageHeaderProps) => {
+const PageHeader = ({
+  navigation,
+  quickActions,
+  menu,
+  hideBackButton,
+}: PageHeaderProps) => {
   const navigate = useNavigate();
+
+  const canGoBack = window.history.state.idx !== 0;
+
   return (
     <StyledPageHeader>
       <Group justify="apart">
-        <div>{navigation && <Navigation links={navigation} />}</div>
+        <Group gap="sm">
+          {!hideBackButton && (
+            <IconButton
+              title="Back"
+              onClick={() => (canGoBack ? navigate(-1) : navigate('/'))}
+            >
+              <IconArrowLeft />
+            </IconButton>
+          )}
+          <div>{navigation && <Navigation links={navigation} />}</div>
+        </Group>
         <Group>
           {quickActions?.map(({ icon: Icon, label, action, to }) => (
             <IconButton
