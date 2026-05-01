@@ -9,9 +9,8 @@ import { cacheKeys } from '../../utils/cache-keys';
 import { getGenrePath } from 'shared';
 
 const GenresPage = () => {
-  const { data, isLoading } = useQuery(
-    cacheKeys.genresKey(),
-    () => api.getGenres(),
+  const { data, isLoading } = useQuery(cacheKeys.genresKey(), () =>
+    api.getGenres(),
   );
 
   if (isLoading) {
@@ -23,7 +22,7 @@ const GenresPage = () => {
   }
 
   return (
-    <AppPageWrapper title="Genres">
+    <AppPageWrapper title="Genres" hideBackButton>
       {data && data.genres.length > 0 ? (
         <div
           css={{
@@ -34,9 +33,7 @@ const GenresPage = () => {
         >
           {data.genres.map((genre) => (
             <Typography key={genre.id}>
-              <Link to={getGenrePath({ genreId: genre.id })}>
-                {genre.name}
-              </Link>
+              <Link to={getGenrePath({ genreId: genre.id })}>{genre.name}</Link>
             </Typography>
           ))}
         </div>

@@ -14,6 +14,7 @@ const ReleasesPageWrapper: React.FC = () => {
         { to: `/releases/community`, label: 'Community' },
         { to: `/releases/recently-added`, label: 'Recently added' },
       ]}
+      hideBackButton
     >
       <Outlet />
     </AppPageWrapper>

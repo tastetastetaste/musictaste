@@ -10,6 +10,7 @@ const ListsPageWrapper: React.FC<{ children: JSX.Element | JSX.Element[] }> = ({
         { to: `/lists/new`, label: 'New' },
         { to: `/lists/popular`, label: 'Popular' },
       ]}
+      hideBackButton
     >
       {children}
     </AppPageWrapper>

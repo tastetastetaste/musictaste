@@ -20,6 +20,7 @@ interface props {
   image?: string;
   description?: string;
   children: JSX.Element | JSX.Element[];
+  hideBackButton?: boolean;
 }
 
 const AppPageWrapper: React.FC<props> = ({
@@ -30,6 +31,7 @@ const AppPageWrapper: React.FC<props> = ({
   quickActions,
   description,
   image,
+  hideBackButton,
 }) => {
   const location = useLocation();
 
@@ -89,6 +91,7 @@ const AppPageWrapper: React.FC<props> = ({
           navigation={navigation}
           menu={menu}
           quickActions={quickActions}
+          hideBackButton={hideBackButton}
         />
         <div
           css={{
