@@ -16,6 +16,7 @@ import { SOMETHING_WENT_WRONG } from '../../static/feedback';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
 import { EditListItem } from './edit-list-item';
+import { IconMenu2 } from '@tabler/icons-react';
 
 export type RemoveItemFu = (index: number) => void;
 
@@ -56,7 +57,7 @@ const ListItem = memo(function ListItem({
       ref={provided.innerRef}
       {...provided.draggableProps}
       {...provided.dragHandleProps}
-      style={{ ...provided.draggableProps.style }}
+      style={{ ...provided.draggableProps.style, display: 'flex', alignItems: 'center' }}
       data-is-dragging={isDragging}
       data-testid={item.id}
       data-index={index}
@@ -64,6 +65,7 @@ const ListItem = memo(function ListItem({
         item.release.artists && item.release.artists.map((a) => a.name)
       }`}
     >
+    <IconMenu2 size={24} style={{ flexShrink: 0, marginRight: '4px', opacity: 0.4}} />
       <EditListItem
         id={item.id}
         release={item.release}
