@@ -94,7 +94,7 @@ const AddReleasePage = () => {
     ),
     defaultValues,
   });
-
+  const mbidValue = watch('mbid');
   const {
     mutateAsync: createRelease,
     isLoading,
@@ -149,15 +149,35 @@ const AddReleasePage = () => {
               {...register('mbid')}
             />
             <FormInputError error={errors.mbid} />
-            <FlexChild align="flex-end">
-              <Button
-                variant="text"
-                onClick={mbImport}
-                disabled={importLoading}
-              >
-                Import
-              </Button>
-            </FlexChild>
+
+            <Group justify="end" align="center">
+              <FlexChild align="flex-end">
+                <Button
+                  variant="text"
+                  onClick={() => {
+                    if (!mbidValue) {
+                      window.open(
+                        'https://musicbrainz.org/',
+                        'noreferrer'
+                      );
+                    } else {
+                      mbImport();
+                    }
+                  }}
+                  disabled={importLoading}
+                >
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                    {mbidValue ? 'Import' : (
+                      <>
+                        MusicBrainz
+                        <span style={{ fontSize: '0.7em' }}>↗</span>
+                      </>
+                    )}
+                  </span>
+                </Button>
+              </FlexChild>
+            </Group>
+
             {importMessage?.length > 0 && <Feedback message={importMessage} />}
             <Input placeholder="Title" {...register('title')} />
             <FormInputError error={errors.title} />
