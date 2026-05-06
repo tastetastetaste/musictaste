@@ -25,7 +25,6 @@ import { cacheKeys } from '../utils/cache-keys';
 import FeaturesOverview from './features-overview';
 import ReviewsListRenderer from '../features/reviews/reviews-list-renderer';
 import { useOnScreen } from '../hooks/useOnScreen';
-import { ResponsiveRow } from '../components/flex/responsive-row';
 import { FlexChild } from '../components/flex/flex-child';
 import { StickyContainer } from '../components/containers/sticky-container';
 import { Group } from '../components/flex/group';
@@ -167,12 +166,9 @@ const NewReleasesSection = () => {
     cacheKeys.releasesKey({
       type: FindReleasesType.NewPopular,
       page: 1,
-      pageSize: 10,
+      pageSize: 6,
     }),
-    () => api.getReleases(FindReleasesType.NewPopular, 1, 10),
-    // {
-    //   enabled: isIntersecting,
-    // },
+    () => api.getReleases(FindReleasesType.NewPopular, 1, 6),
   );
 
   const newReleases = newPopularReleasesData?.releases;
@@ -189,12 +185,6 @@ const NewReleasesSection = () => {
           <Grid cols={[3, 6, 6]} gap={RELEASE_GRID_GAP}>
             {newReleases &&
               newReleases
-                .filter(
-                  (r) =>
-                    !r.explicitCoverArt?.includes(
-                      ExplicitCoverArt.EXPLICIT_SEXUAL_CONTENT,
-                    ) && ReleaseType[r.type] !== ReleaseType.Single,
-                )
                 .slice(0, 6)
                 .map((r) => <Release key={r.id} release={r} />)}
           </Grid>
