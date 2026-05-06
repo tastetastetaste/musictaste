@@ -928,9 +928,9 @@ export class ReleasesService {
     }
 
     // These fields can be null
-    _release.titleLatin = titleLatin;
-    _release.imagePath = imagePath;
-    _release.explicitCoverArt = explicitCoverArt;
+    _release.titleLatin = titleLatin || null;
+    _release.imagePath = imagePath || null;
+    _release.explicitCoverArt = explicitCoverArt || null;
 
     // labels
     const releaseLabels = await this.releaseLabelRepository.find({
