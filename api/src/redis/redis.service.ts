@@ -157,6 +157,10 @@ export class RedisService {
     await this.invalidateKeys(`/artists/${id}*`);
   }
 
+  async invalidateGenresCache() {
+    await this.invalidateKeys(`/genres*`);
+  }
+
   private async invalidateKeys(pattern: string) {
     const keysArray = [];
 

@@ -11,11 +11,13 @@ export const SelectGenres = ({
   filter,
   isMulti = false,
   value = null,
+  placeholder,
 }: {
   onChange: (value: string | string[]) => void;
   filter?: (value: string) => boolean;
   isMulti?: boolean;
   value?: string | string[];
+  placeholder?: string;
 }) => {
   const { snackbar } = useSnackbar();
   const [query, setQuery] = useState('');
@@ -83,7 +85,7 @@ export const SelectGenres = ({
           }),
         )
       }
-      placeholder="Select genre..."
+      placeholder={placeholder || 'Select genre...'}
       inputValue={query}
       onInputChange={handleInputChange}
     />

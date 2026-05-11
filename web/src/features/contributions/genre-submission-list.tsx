@@ -1,4 +1,8 @@
-import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  useInfiniteQuery,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 import { Fragment } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import {
@@ -11,7 +15,6 @@ import { FetchMore } from '../../components/fetch-more';
 import { Stack } from '../../components/flex/stack';
 import { Loading } from '../../components/loading';
 import { Markdown } from '../../components/markdown';
-import { Typography } from '../../components/typography';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
 import { SubmissionField, SubmissionItemWrapper } from './submission-item';
@@ -38,6 +41,10 @@ export const GenreSubmissionItem = ({
   fullPage,
   onUpdate,
 }: GenreSubmissionItemProps) => {
+  const { data: genresData } = useQuery(cacheKeys.genresKey(), () =>
+    api.getGenres(),
+  );
+
   const { original, changes } = submission;
   const hasOriginal = !!original;
   return (
@@ -55,6 +62,20 @@ export const GenreSubmissionItem = ({
         changedValue={changes?.name}
         showOriginal={hasOriginal}
         renderValue={(v) => <span>{v}</span>}
+      />
+      <SubmissionField
+        label="Parent genres"
+        originalValue={original?.parentIds}
+        changedValue={changes?.parentIds}
+        showOriginal={hasOriginal}
+        renderValue={(v: any) =>
+          v?.map((id: string, i: number) => (
+            <Fragment key={id}>
+              {i > 0 && ', '}
+              {genresData?.genres?.find((g) => g.id === id).name}
+            </Fragment>
+          ))
+        }
       />
       <SubmissionField
         label="Bio"

@@ -21,6 +21,9 @@ export class GenreChanges {
   @IsString()
   @IsOptional()
   bioSource?: string;
+  @IsString({ each: true })
+  @IsOptional()
+  parentIds?: string[];
 }
 
 @Entity()

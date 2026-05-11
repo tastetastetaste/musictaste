@@ -13,6 +13,8 @@ import { Markdown } from '../../components/markdown';
 import { Group } from '../../components/flex/group';
 import { Button } from '../../components/button';
 import { useState } from 'react';
+import { InfoRow } from '../../components/info-row';
+import { GenresLinks } from '../releases/release/shared';
 
 const GenrePage = () => {
   const { id } = useParams();
@@ -25,6 +27,10 @@ const GenrePage = () => {
     {
       enabled: !!id,
     },
+  );
+
+  const { data: genresData } = useQuery(cacheKeys.genresKey(), () =>
+    api.getGenres(),
   );
 
   const navigate = useNavigate();
@@ -84,6 +90,20 @@ const GenrePage = () => {
             <Typography size="title-xl" as="h1">
               {genre.name}
             </Typography>
+            {genre.parentIds.length > 0 ? (
+              <InfoRow
+                label={genre.parentIds.length > 1 ? 'Parents' : 'Parent'}
+              >
+                <GenresLinks genreIds={genre.parentIds} />
+              </InfoRow>
+            ) : null}
+            {genre.subgenreIds.length > 0 ? (
+              <InfoRow
+                label={genre.subgenreIds.length > 1 ? 'Subgenres' : 'Subgenre'}
+              >
+                <GenresLinks genreIds={genre.subgenreIds} />
+              </InfoRow>
+            ) : null}
             {genre.bio ? <Markdown>{genre.bio}</Markdown> : null}
             <Group justify="end">
               <Button variant="main" onClick={toggleIncludeCommunity}>

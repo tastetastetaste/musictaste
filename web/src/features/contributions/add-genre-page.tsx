@@ -1,7 +1,6 @@
 import { classValidatorResolver } from '@hookform/resolvers/class-validator';
 import { useMutation } from '@tanstack/react-query';
-import { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { CreateGenreDto } from 'shared';
 import { Button } from '../../components/button';
 import { Container } from '../../components/containers/container';
@@ -14,17 +13,20 @@ import { Link } from '../../components/links/link';
 import { Typography } from '../../components/typography';
 import AppPageWrapper from '../../layout/app-page-wrapper';
 import { api } from '../../utils/api';
+import { SelectGenres } from '../genres/select-genres';
 
 const AddGenrePage = () => {
   const defaultValues = {
     name: '',
     bio: '',
     note: '',
+    parentIds: [],
   };
 
   const {
     handleSubmit,
     register,
+    control,
     reset,
     formState: { errors },
   } = useForm<CreateGenreDto>({
@@ -68,6 +70,19 @@ const AddGenrePage = () => {
             </Group>
             <Input placeholder="Name" {...register('name')} />
             <FormInputError error={errors.name} />
+            <Controller
+              name="parentIds"
+              control={control}
+              render={({ field }) => (
+                <SelectGenres
+                  value={field.value}
+                  onChange={(v) => field.onChange(v)}
+                  isMulti
+                  placeholder="Parent genres"
+                />
+              )}
+            />
+            <FormInputError error={errors.parentIds} />
             <Textarea {...register('bio')} placeholder="Bio" rows={5} />
             <FormInputError error={errors.bio} />
             <Textarea

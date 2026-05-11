@@ -1,9 +1,9 @@
 import { classValidatorResolver } from '@hookform/resolvers/class-validator';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
-import { CreateGenreDto, SubmissionStatus } from 'shared';
+import { SubmissionStatus, UpdateGenreDto } from 'shared';
 import { Button } from '../../components/button';
 import { Container } from '../../components/containers/container';
 import { Group } from '../../components/flex/group';
@@ -18,6 +18,7 @@ import { useSnackbar } from '../../hooks/useSnackbar';
 import AppPageWrapper from '../../layout/app-page-wrapper';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
+import { SelectGenres } from '../genres/select-genres';
 
 const EditGenrePage = () => {
   const { id: genreId } = useParams();
@@ -25,16 +26,18 @@ const EditGenrePage = () => {
     name: '',
     bio: '',
     note: '',
+    parentIds: [],
   };
 
   const {
     handleSubmit,
     register,
+    control,
     reset,
     formState: { isSubmitSuccessful, errors },
-  } = useForm<CreateGenreDto>({
+  } = useForm<UpdateGenreDto>({
     resolver: classValidatorResolver(
-      CreateGenreDto,
+      UpdateGenreDto,
       {},
       {
         rawValues: true,
@@ -89,6 +92,7 @@ const EditGenrePage = () => {
         ...defaultValues,
         name: genreData.genre.name,
         bio: genreData.genre.bioSource,
+        parentIds: genreData.genre.parentIds || [],
       });
     }
   }, [genreData]);
@@ -115,6 +119,20 @@ const EditGenrePage = () => {
             </Group>
             <Input placeholder="Name" {...register('name')} />
             <FormInputError error={errors.name} />
+            <Controller
+              name="parentIds"
+              control={control}
+              render={({ field }) => (
+                <SelectGenres
+                  value={field.value}
+                  onChange={(v) => field.onChange(v)}
+                  filter={(id) => id !== genreId}
+                  isMulti
+                  placeholder="Parent genres"
+                />
+              )}
+            />
+            <FormInputError error={errors.parentIds} />
             <TextareaWithPreview
               {...register('bio')}
               placeholder="Bio"

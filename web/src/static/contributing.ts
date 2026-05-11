@@ -1,10 +1,3 @@
-import {
-  getArtistPath,
-  getGenrePath,
-  getLabelPath,
-  getReleasePath,
-} from 'shared';
-
 export const CONTRIBUTING_MD = `# Contributing to the Database
 
 ## General Guidelines
@@ -78,6 +71,7 @@ You can autofill the fields by importing from MusicBrainz.
 You can contribute genres from [this page](/contributions/genres/new).
 
 - **Name**: The name of the genre.
+- **Parent Genres**: The parent genres of the genre.
 - **Bio**: The bio of the genre (must not be copied from other sources / **supports references**).
 - **Note/Source**: Add sources and a note for the person reviewing your contribution (must provide multiple sources).
 - **Submit**: Click **"Submit"** to add the genre.

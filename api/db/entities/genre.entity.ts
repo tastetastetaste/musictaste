@@ -2,6 +2,7 @@ import { Column, CreateDateColumn, Entity, OneToMany } from 'typeorm';
 import { SharedBaseEntity } from '../shared/base-entity';
 import { GenreSubmission } from './genre-submission.entity';
 import { ReleaseGenre } from './release-genre.entity';
+import { GenreParent } from './genre-parent.entity';
 
 @Entity()
 export class Genre extends SharedBaseEntity {
@@ -21,4 +22,10 @@ export class Genre extends SharedBaseEntity {
   genreSubmissions: GenreSubmission[];
   @CreateDateColumn()
   createdAt: string;
+
+  @OneToMany(() => GenreParent, (gp) => gp.genre)
+  parentsConnection: Promise<GenreParent[]>;
+
+  @OneToMany(() => GenreParent, (gp) => gp.parent)
+  childrenConnection: Promise<GenreParent[]>;
 }

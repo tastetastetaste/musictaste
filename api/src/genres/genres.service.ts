@@ -16,10 +16,13 @@ import {
 import { In, Repository } from 'typeorm';
 import { GenreSubmission } from '../../db/entities/genre-submission.entity';
 import { Genre } from '../../db/entities/genre.entity';
+import { GenreParent } from '../../db/entities/genre-parent.entity';
 import { ReleaseGenreVote } from '../../db/entities/release-genre-vote.entity';
 import { ReleaseGenre } from '../../db/entities/release-genre.entity';
 import { UsersService } from '../users/users.service';
 import { ReleasesService } from '../releases/releases.service';
+import { compareIds } from '../common/compareIds';
+import { RedisService } from '../redis/redis.service';
 
 @Injectable()
 export class GenresService {
@@ -34,40 +37,64 @@ export class GenresService {
     private genreRepository: Repository<Genre>,
     @InjectRepository(ReleaseGenre)
     private releaseGenreRepository: Repository<ReleaseGenre>,
+    @InjectRepository(GenreParent)
+    private genreParentRepository: Repository<GenreParent>,
     private usersService: UsersService,
     private releasesService: ReleasesService,
+    private redisService: RedisService,
   ) {}
 
   async findAll(): Promise<IGenresResponse> {
     const genres = await this.genreRepository.find({
       select: ['id', 'name'],
+      relations: ['parentsConnection'],
       order: {
         name: 'ASC',
       },
     });
 
     return {
-      genres,
+      genres: genres.map((genre: any) => ({
+        id: genre.id,
+        name: genre.name,
+        parentIds: genre.__parentsConnection__?.map((p) => p.parentId) || [],
+      })),
     };
   }
 
   async findOne(id: string): Promise<IGenreResponse> {
-    const genre = await this.genreRepository.findOne({ where: { id } });
+    const genre = (await this.genreRepository.findOne({
+      where: { id },
+      relations: ['parentsConnection', 'childrenConnection'],
+    })) as any;
 
     if (!genre) throw new NotFoundException();
 
     return {
-      genre,
+      genre: {
+        id: genre.id,
+        name: genre.name,
+        bio: genre.bio,
+        bioSource: genre.bioSource,
+        parentIds: genre.__parentsConnection__?.map((p) => p.parentId) || [],
+        subgenreIds: genre.__childrenConnection__?.map((p) => p.genreId) || [],
+      },
     };
   }
 
   async getGenresByIds(ids: string[]) {
-    return this.genreRepository.find({
+    const genres = await this.genreRepository.find({
       select: ['id', 'name'],
+      relations: ['parentsConnection'],
       where: {
         id: In(ids),
       },
     });
+    return genres.map((g: any) => ({
+      id: g.id,
+      name: g.name,
+      parentIds: g.__parentsConnection__?.map((p) => p.parentId) || [],
+    }));
   }
 
   async releaseGenres(releaseId: string): Promise<IReleaseGenre[]> {
@@ -208,30 +235,71 @@ export class GenresService {
   }
 
   async createGenre({
-    changes: { name, bio, bioSource },
+    changes: { name, bio, bioSource, parentIds },
   }: GenreSubmission): Promise<Genre> {
     const genre = new Genre();
     genre.name = name;
     genre.bio = bio;
     genre.bioSource = bioSource;
 
-    return this.genreRepository.save(genre);
+    const savedGenre = await this.genreRepository.save(genre);
+
+    if (parentIds && parentIds.length > 0) {
+      const genreParents = parentIds.map((parentId) => {
+        return this.genreParentRepository.create({
+          genreId: savedGenre.id,
+          parentId,
+        });
+      });
+      await this.genreParentRepository.save(genreParents);
+    }
+
+    await this.redisService.invalidateGenresCache();
+
+    return savedGenre;
   }
 
   async updateGenre({
     genreId,
-    changes: { name, bio, bioSource },
+    changes: { name, bio, bioSource, parentIds },
   }: GenreSubmission): Promise<Genre> {
-    const genre = await this.genreRepository.findOne({
+    const genre = (await this.genreRepository.findOne({
       where: { id: genreId },
-    });
+      relations: ['parentsConnection'],
+    })) as any;
 
     if (!genre) throw new NotFoundException();
 
     genre.name = name;
     genre.bio = bio;
     genre.bioSource = bioSource;
-    return this.genreRepository.save(genre);
+
+    const savedGenre = await this.genreRepository.save(genre);
+
+    const oldParentIds = genre.__parentsConnection__?.map((p) => p.parentId);
+
+    const { addedIds, removedIds } = compareIds(parentIds, oldParentIds);
+
+    if (removedIds && removedIds.length > 0) {
+      await this.genreParentRepository.delete({
+        genreId: savedGenre.id,
+        parentId: In(removedIds),
+      });
+    }
+
+    if (addedIds && addedIds.length > 0) {
+      const genreParents = addedIds.map((parentId) => {
+        return this.genreParentRepository.create({
+          genreId: savedGenre.id,
+          parentId,
+        });
+      });
+      await this.genreParentRepository.save(genreParents);
+    }
+
+    await this.redisService.invalidateGenresCache();
+
+    return savedGenre;
   }
 
   async getUserGenreVotes(

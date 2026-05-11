@@ -822,6 +822,7 @@ export class SubmissionService {
       name,
       bio: bio,
       bioSource: rest.bio,
+      parentIds: rest.parentIds,
     };
     genreSubmission.submissionType = SubmissionType.CREATE;
     genreSubmission.submissionStatus = SubmissionStatus.OPEN;
@@ -848,6 +849,7 @@ export class SubmissionService {
 
     const genre = await this.genresRepository.findOne({
       where: { id: genreId },
+      relations: ['parentsConnection'],
     });
 
     if (!genre) throw new NotFoundException();
@@ -870,11 +872,12 @@ export class SubmissionService {
 
     const bio = await this.entitiesReferenceService.parseLinks(rest.bio);
 
-    gs.changes = { name, bio, bioSource: rest.bio };
+    gs.changes = { name, bio, bioSource: rest.bio, parentIds: rest.parentIds };
     gs.original = {
       name: genre.name,
       bio: genre.bio,
       bioSource: genre.bioSource,
+      parentIds: (genre as any).__parentsConnection__?.map((gp) => gp.parentId),
     };
     gs.submissionType = SubmissionType.UPDATE;
     gs.submissionStatus = SubmissionStatus.OPEN;

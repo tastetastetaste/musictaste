@@ -97,12 +97,7 @@ const ReleaseInfo: React.FC<{
       <InfoRow label="Genre">
         {/* <Typography>{genresStr}</Typography> */}
 
-        <GenresLinks
-          links={genres.map((a) => ({
-            label: a.name,
-            href: getGenrePath({ genreId: a.id }),
-          }))}
-        />
+        <GenresLinks genres={genres} />
         {isLoggedIn && <ReleaseGenreVote releaseId={releaseId} />}
       </InfoRow>
     </Stack>

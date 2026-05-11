@@ -414,6 +414,9 @@ export class CreateGenreDto {
   @IsString()
   @MinLength(1)
   note: string;
+  @IsOptional()
+  @IsString({ each: true })
+  parentIds?: string[];
 }
 
 export class UpdateGenreDto {
@@ -421,11 +424,14 @@ export class UpdateGenreDto {
   @MinLength(1)
   name: string;
   @IsString()
-  @MinLength(1)
-  bio: string;
+  @IsOptional()
+  bio?: string;
   @IsString()
   @MinLength(1)
   note: string;
+  @IsOptional()
+  @IsString({ each: true })
+  parentIds?: string[];
 }
 
 export class FindReleasesDto {

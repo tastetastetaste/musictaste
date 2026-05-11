@@ -142,11 +142,14 @@ export interface IGenre {
   name: string;
   bio?: string;
   bioSource?: string;
+  parentIds?: string[];
+  subgenreIds?: string[];
 }
 
 export interface IGenreSummary {
   id: string;
   name: string;
+  parentIds?: string[];
 }
 
 export interface ILabel {
@@ -463,11 +466,6 @@ export interface ILabelSummary {
   disambiguation?: string;
 }
 
-export interface IGenreSummary {
-  id: string;
-  name: string;
-}
-
 export interface ICreateReleaseResponse {
   message: string;
   release: IReleaseSummary;
@@ -602,6 +600,7 @@ export interface IGenreChanges {
   name: string;
   bio: string;
   bioSource?: string;
+  parentIds?: string[];
 }
 
 export interface IGenreSubmissionVote {

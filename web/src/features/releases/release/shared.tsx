@@ -1,10 +1,12 @@
 import styled from '@emotion/styled';
-import { Fragment } from 'react';
+import { Fragment, useMemo } from 'react';
 import { LinkProps } from 'react-router-dom';
 import {
   ExplicitCoverArt,
+  getGenrePath,
   getLabelPath,
   IArtistSummary,
+  IGenreSummary,
   ILabelSummary,
   IReleaseSummary,
 } from 'shared';
@@ -14,6 +16,9 @@ import { Typography } from '../../../components/typography';
 import { getArtistPath, getReleasePath } from 'shared';
 import { useAuth } from '../../account/useAuth';
 import { AllUsersRating } from '../../ratings/rating';
+import { useQuery } from '@tanstack/react-query';
+import { cacheKeys } from '../../../utils/cache-keys';
+import { api } from '../../../utils/api';
 
 export type ReleaseImageSizeT = 'lg' | 'md' | 'sm' | 'xs';
 
@@ -184,10 +189,39 @@ export const LabelsLinks = ({ labels }: { labels: ILabelSummary[] }) => {
 };
 
 export const GenresLinks = ({
-  links,
+  genres,
+  genreIds,
 }: {
-  links: { label: string; href: string }[];
+  genres?: IGenreSummary[];
+  genreIds?: string[];
 }) => {
+  const { data: genresData } = useQuery(
+    cacheKeys.genresKey(),
+    () => api.getGenres(),
+    {
+      enabled: !!genreIds && genreIds.length > 0,
+    },
+  );
+
+  const links = useMemo(() => {
+    let result = [];
+    if (genres) {
+      result = genres.map((g) => ({
+        label: g.name,
+        href: getGenrePath({ genreId: g.id }),
+      }));
+    } else if (genreIds) {
+      result = genreIds.map((id) => ({
+        label: genresData?.genres.find((g) => g.id === id)?.name,
+        href: getGenrePath({ genreId: id }),
+      }));
+    }
+
+    result.sort((a, b) => a.label.localeCompare(b.label));
+
+    return result;
+  }, [genres, genreIds, genresData]);
+
   return (
     <Typography color="sub">
       {links.map(({ label, href }, i) => (

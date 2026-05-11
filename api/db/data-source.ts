@@ -7,6 +7,7 @@ import { Artist } from './entities/artist.entity';
 import { Country } from './entities/country.entity';
 import { GenreSubmission } from './entities/genre-submission.entity';
 import { Genre } from './entities/genre.entity';
+import { GenreParent } from './entities/genre-parent.entity';
 import { LabelSubmission } from './entities/label-submission.entity';
 import { Label } from './entities/label.entity';
 import { Language } from './entities/language.entity';
@@ -63,6 +64,7 @@ export const dataSourceOptions: DataSourceOptions = {
     GenreSubmission,
     GenreSubmissionVote,
     Genre,
+    GenreParent,
     LabelSubmission,
     LabelSubmissionVote,
     Label,
