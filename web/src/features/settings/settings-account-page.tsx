@@ -56,6 +56,18 @@ const SettingsAccountPage = () => {
           <Button type="submit" disabled={isLoading}>
             Save
           </Button>
+
+          <div
+            css={{
+              marginTop: '10px',
+            }}
+          >
+            <Typography>
+              If you wish to update your email address, or delete your account,
+              please contact support. Contact information can be found in the
+              sidebar.
+            </Typography>
+          </div>
         </Stack>
       </form>
     </Container>
