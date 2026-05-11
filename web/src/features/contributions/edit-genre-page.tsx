@@ -91,7 +91,7 @@ const EditGenrePage = () => {
       reset({
         ...defaultValues,
         name: genreData.genre.name,
-        bio: genreData.genre.bioSource,
+        bio: genreData.genre.bioSource || genreData.genre.bio,
         parentIds: genreData.genre.parentIds || [],
       });
     }
