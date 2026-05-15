@@ -553,6 +553,7 @@ export class ReleasesService {
     };
   }
 
+  // home page section
   async findNewPopularReleases(page: number = 1, pageSize: number = 48) {
     const qb = this.releasesRepository
       .createQueryBuilder('release')
@@ -568,6 +569,11 @@ export class ReleasesService {
       .offset((page - 1) * pageSize);
 
     this.filterOutArtistVisibility(qb);
+
+    // Filter out single and music video types
+    qb.andWhere('release.type NOT IN (:...types)', {
+      types: [ReleaseType.Single, ReleaseType.MusicVideo],
+    });
 
     const qb2 = qb.clone();
 
