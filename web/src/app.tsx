@@ -668,7 +668,7 @@ const router = createBrowserRouter([
             path: 'new',
             element: (
               <Suspense fallback={<Fallback />}>
-                <ReleasesListRenderer type={FindReleasesType.NewPopular} />
+                <ReleasesListRenderer type={FindReleasesType.New} />
               </Suspense>
             ),
           },
