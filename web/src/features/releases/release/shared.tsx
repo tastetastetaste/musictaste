@@ -210,9 +210,9 @@ export const GenresLinks = ({
         label: g.name,
         href: getGenrePath({ genreId: g.id }),
       }));
-    } else if (genreIds) {
+    } else if (genreIds && genresData) {
       result = genreIds.map((id) => ({
-        label: genresData?.genres.find((g) => g.id === id)?.name,
+        label: genresData.genres.find((g) => g.id === id)?.name || '',
         href: getGenrePath({ genreId: id }),
       }));
     }
