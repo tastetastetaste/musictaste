@@ -12,10 +12,11 @@ import { ReleaseLabel } from '../../db/entities/release-label.entity';
 import { ReviewVote } from '../../db/entities/review-vote.entity';
 import { Review } from '../../db/entities/review.entity';
 import { TrackVote } from '../../db/entities/track-vote.entity';
-import { Track } from '../../db/entities/track.entity';
 import { UserReleaseTag } from '../../db/entities/user-release-tag.entity';
 import { UserRelease } from '../../db/entities/user-release.entity';
 import { CommentsModule } from '../comments/comments.module';
+import { ReviewsController } from './reviews.controller';
+import { ReviewsService } from './reviews.service';
 
 @Module({
   imports: [
@@ -28,7 +29,6 @@ import { CommentsModule } from '../comments/comments.module';
       ReleaseGenre,
       ReleaseLabel,
       UserReleaseTag,
-      Track,
       TrackVote,
     ]),
     ReleasesModule,
@@ -36,7 +36,7 @@ import { CommentsModule } from '../comments/comments.module';
     CommentsModule,
     EntitiesModule,
   ],
-  controllers: [EntriesController],
-  providers: [EntriesService],
+  controllers: [EntriesController, ReviewsController],
+  providers: [EntriesService, ReviewsService],
 })
 export class EntriesModule {}

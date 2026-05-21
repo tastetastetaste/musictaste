@@ -1,7 +1,7 @@
 import { useOutletContext } from 'react-router-dom';
+import { ReviewsSortByEnum } from 'shared';
 import ReviewsListRenderer from '../reviews/reviews-list-renderer';
 import { UserPageOutletContext } from './user-page-wrapper';
-import { EntriesSortByEnum } from 'shared';
 
 const UserReviewsPage = () => {
   const { user, isUserMyself } = useOutletContext<UserPageOutletContext>();
@@ -9,7 +9,7 @@ const UserReviewsPage = () => {
   return (
     <ReviewsListRenderer
       userId={user.id}
-      sortBy={EntriesSortByEnum.ReviewDate}
+      sortBy={ReviewsSortByEnum.ReviewDate}
       user={user}
     />
   );

@@ -1,7 +1,14 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Fragment } from 'react';
+import { Fragment, useMemo } from 'react';
 import { useOutletContext } from 'react-router-dom';
-import { CommentEntityType, EntriesSortByEnum, IUser } from 'shared';
+import {
+  CommentEntityType,
+  EntriesSortByEnum,
+  IUser,
+  ReviewsSortByEnum,
+  VoteType,
+} from 'shared';
+import { useUserReviewVotes } from '../reviews/useUserReviewVotes';
 import { FlexChild } from '../../components/flex/flex-child';
 import { Grid } from '../../components/flex/grid';
 import { ResponsiveRow } from '../../components/flex/responsive-row';
@@ -81,25 +88,40 @@ const RecentlyAddedReleases: React.FC<{ userId: string; username: string }> = ({
 const Reviews: React.FC<{ user: IUser }> = ({ user }) => {
   const qc = useQueryClient();
 
-  const cacheKey = cacheKeys.entriesKey({
+  const cacheKey = cacheKeys.reviewsKey({
     page: 1,
     pageSize: 10,
-    sortBy: EntriesSortByEnum.ReviewDate,
+    sortBy: ReviewsSortByEnum.ReviewDate,
     userId: user.id,
-    withReview: true,
   });
 
   const { data } = useQuery(cacheKey, () =>
-    api.getEntries({
+    api.getReviews({
       page: 1,
       pageSize: 10,
-      sortBy: EntriesSortByEnum.ReviewDate,
+      sortBy: ReviewsSortByEnum.ReviewDate,
       userId: user.id,
-      withReview: true,
     }),
   );
 
-  const reviews = data?.entries?.slice(0, 10) ?? [];
+  const reviewsData = data?.entries?.slice(0, 10) || [];
+
+  const reviewIds = useMemo(() => {
+    return reviewsData.map((r) => r.reviewId);
+  }, [reviewsData]);
+
+  const { data: reviewVotes, updateVote } = useUserReviewVotes(reviewIds);
+
+  const reviews = useMemo(() => {
+    const votesMap = new Map<string, VoteType>();
+    if (reviewVotes) {
+      reviewVotes.forEach((v) => votesMap.set(v.reviewId, v.vote));
+    }
+    return reviewsData.map((r) => ({
+      ...r,
+      review: { ...r.review, userVote: votesMap.get(r.reviewId) },
+    }));
+  }, [reviewsData, reviewVotes]);
 
   return (
     <Fragment>
@@ -109,19 +131,27 @@ const Reviews: React.FC<{ user: IUser }> = ({ user }) => {
             Recent Reviews
           </Link>
           <Stack gap="lg">
-            {reviews.map((r) => (
+            {reviews.map((entry) => (
               <Review
-                key={r.id}
-                entry={r}
+                key={entry.id}
+                entry={entry}
                 user={user}
-                updateAfterVote={(id, vote) =>
+                updateAfterVote={(vote) => {
+                  const id = entry.review.id;
+                  const currentUserVote = entry.review.userVote;
+
+                  updateVote(
+                    id,
+                    typeof currentUserVote === 'number' ? undefined : vote,
+                  );
                   updateReviewAfterVote_2({
                     id,
                     cacheKey,
                     queryClient: qc,
                     vote,
-                  })
-                }
+                    currentUserVote,
+                  });
+                }}
               />
             ))}
           </Stack>

@@ -1,13 +1,12 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Fragment } from 'react';
-import {
-  EntriesSortByEnum,
-  ExplicitCoverArt,
-  FindReleasesType,
-  ReleaseType,
-} from 'shared';
+import { Fragment, useMemo } from 'react';
+import { FindReleasesType, ReviewsSortByEnum, VoteType } from 'shared';
+import { useUserReviewVotes } from '../features/reviews/useUserReviewVotes';
+import { StickyContainer } from '../components/containers/sticky-container';
 import { Feedback } from '../components/feedback';
+import { FlexChild } from '../components/flex/flex-child';
 import { Grid } from '../components/flex/grid';
+import { Group } from '../components/flex/group';
 import { Stack } from '../components/flex/stack';
 import { Link } from '../components/links/link';
 import { Loading } from '../components/loading';
@@ -17,18 +16,15 @@ import { LIST_GRID_PADDING } from '../features/lists/lists-list-renderer';
 import { Release } from '../features/releases/release';
 import { RELEASE_GRID_GAP } from '../features/releases/releases-virtual-grid';
 import { Review } from '../features/reviews/review';
+import ReviewsListRenderer from '../features/reviews/reviews-list-renderer';
 import { updateReviewAfterVote_2 } from '../features/reviews/update-review-after-vote';
 import Support from '../features/supporters/support';
+import { useMediaQuery } from '../hooks/useMediaQuery';
+import { useOnScreen } from '../hooks/useOnScreen';
 import AppPageWrapper from '../layout/app-page-wrapper';
 import { api } from '../utils/api';
 import { cacheKeys } from '../utils/cache-keys';
 import FeaturesOverview from './features-overview';
-import ReviewsListRenderer from '../features/reviews/reviews-list-renderer';
-import { useOnScreen } from '../hooks/useOnScreen';
-import { FlexChild } from '../components/flex/flex-child';
-import { StickyContainer } from '../components/containers/sticky-container';
-import { Group } from '../components/flex/group';
-import { useMediaQuery } from '../hooks/useMediaQuery';
 
 const ROOT_MARGIN = '100px';
 const SECTION_MIN_HEIGHT = '500px';
@@ -36,22 +32,37 @@ const NEW_RELEASES_SECTION_MIN_HEIGHT = '300px';
 
 const TopReviewsSection = () => {
   const queryClient = useQueryClient();
-  const reviewsCacheKey = cacheKeys.entriesKey({
+  const reviewsCacheKey = cacheKeys.reviewsKey({
     page: 1,
     pageSize: 12,
-    withReview: true,
-    sortBy: EntriesSortByEnum.ReviewTop,
+    sortBy: ReviewsSortByEnum.ReviewTop,
   });
 
   const { data: reviewsData } = useQuery(reviewsCacheKey, () =>
-    api.getEntries({
+    api.getReviews({
       page: 1,
       pageSize: 12,
-      withReview: true,
-      sortBy: EntriesSortByEnum.ReviewTop,
+      sortBy: ReviewsSortByEnum.ReviewTop,
     }),
   );
-  const reviews = reviewsData?.entries;
+
+  const reviewIds = useMemo(() => {
+    return reviewsData?.entries?.map((e) => e.reviewId) || [];
+  }, [reviewsData]);
+
+  const { data: reviewVotes, updateVote } = useUserReviewVotes(reviewIds);
+
+  const reviews = useMemo(() => {
+    const votesMap = new Map<string, VoteType>();
+    if (reviewVotes) {
+      reviewVotes.forEach((v) => votesMap.set(v.reviewId, v.vote));
+    }
+    return reviewsData?.entries.map((e) => ({
+      ...e,
+      review: { ...e.review, userVote: votesMap.get(e.reviewId) },
+    }));
+  }, [reviewsData, reviewVotes]);
+
   return (
     <div css={{ minHeight: SECTION_MIN_HEIGHT }}>
       <Stack gap="lg">
@@ -66,14 +77,21 @@ const TopReviewsSection = () => {
             <Review
               key={entry.id}
               entry={entry}
-              updateAfterVote={(id, vote) =>
+              updateAfterVote={(vote) => {
+                const id = entry.review.id;
+                const currentUserVote = entry.review.userVote;
+                updateVote(
+                  id,
+                  typeof currentUserVote === 'number' ? undefined : vote,
+                );
                 updateReviewAfterVote_2({
                   id,
                   vote,
+                  currentUserVote,
                   cacheKey: reviewsCacheKey,
                   queryClient,
-                })
-              }
+                });
+              }}
             />
           ))}
       </Stack>
@@ -149,7 +167,7 @@ const RecentReviewsSection = () => {
           New Reviews
         </Link>
         <ReviewsListRenderer
-          sortBy={EntriesSortByEnum.ReviewDate}
+          sortBy={ReviewsSortByEnum.ReviewDate}
           queryEnabled={isIntersecting}
         />
       </Stack>

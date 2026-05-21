@@ -4,7 +4,6 @@ import {
   Delete,
   Get,
   Param,
-  ParseIntPipe,
   Patch,
   Post,
   Query,
@@ -13,7 +12,6 @@ import {
 import {
   CreateEntryDto,
   FindEntriesDto,
-  ReviewVoteDto,
   TrackVoteDto,
   UpdateEntryDto,
 } from 'shared';
@@ -32,13 +30,13 @@ export class EntriesController {
   }
 
   @Get()
-  find(@Query() query: FindEntriesDto, @CurUser('id') userId: string) {
-    return this.entriesService.find(query, userId);
+  find(@Query() query: FindEntriesDto) {
+    return this.entriesService.find(query);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string, @CurUser('id') userId: string) {
-    return this.entriesService.findOne({ id }, userId);
+  findOne(@Param('id') id: string) {
+    return this.entriesService.findOne({ id });
   }
 
   @Patch(':id')
@@ -63,7 +61,7 @@ export class EntriesController {
     @Param('releaseId') releaseId: string,
     @CurUser('id') userId: string,
   ) {
-    return this.entriesService.findOne({ releaseId, userId }, userId);
+    return this.entriesService.findOne({ releaseId, userId });
   }
 
   @Get('release/:releaseId/following')
@@ -108,24 +106,6 @@ export class EntriesController {
       },
       userId,
     );
-  }
-  @Post('review/:reviewId/votes')
-  @UseGuards(AuthenticatedGuard)
-  reviewVote(
-    @Param('reviewId') reviewId: string,
-    @Body() body: ReviewVoteDto,
-    @CurUser('id') userId: string,
-  ) {
-    return this.entriesService.reviewVote(reviewId, userId, body.vote);
-  }
-
-  @Delete('review/:reviewId/votes')
-  @UseGuards(AuthenticatedGuard)
-  removeReviewVote(
-    @Param('reviewId') reviewId: string,
-    @CurUser('id') userId: string,
-  ) {
-    return this.entriesService.removeReviewVote(reviewId, userId);
   }
 
   @Get('/user/:userId/artists')

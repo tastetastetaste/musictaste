@@ -238,17 +238,21 @@ export interface IEntry {
   id: string;
   userId: string;
   releaseId: string;
-  ratingId: string;
-  reviewId: string;
+  ratingId?: string;
+  reviewId?: string;
   hasTrackVotes: boolean;
   rating?: IRating;
   user?: IUserSummary | null;
   release?: IRelease | null;
-  review?: IReview | null;
   trackVotes?: ITrackVote[] | null;
   tags?: IEntryTag[] | null;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface IEntryWithReview extends IEntry {
+  reviewId: string;
+  review: IReview;
 }
 
 export interface IEntriesResponse extends IPagination {
@@ -256,7 +260,19 @@ export interface IEntriesResponse extends IPagination {
 }
 
 export interface IEntryResonse {
-  entry: IEntry;
+  entry?:
+    | (IEntry & {
+        review?: IReviewSummary;
+      })
+    | null;
+}
+
+export interface IReviewsResponse extends IPagination {
+  entries: IEntryWithReview[];
+}
+
+export interface IReviewResponse {
+  entry?: IEntryWithReview | null;
 }
 
 export interface IComment {
@@ -407,16 +423,23 @@ export interface IUserTag {
   count: number;
 }
 
-export interface IReview {
+export interface IReviewSummary {
   id: string;
   body: string;
   bodySource?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface IReview extends IReviewSummary {
   totalVotes: number;
   netVotes: number;
   commentsCount: number;
-  userVote: VoteType;
-  createdAt: string;
-  updatedAt: string;
+}
+
+export interface IReviewVote {
+  reviewId: string;
+  vote?: VoteType;
 }
 
 export interface IRating {

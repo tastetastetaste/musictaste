@@ -1,11 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ReportType } from 'shared';
+import { useUserReviewVotes } from './useUserReviewVotes';
 import { Feedback } from '../../components/feedback';
 import { Loading } from '../../components/loading';
 import AppPageWrapper from '../../layout/app-page-wrapper';
-import { SOMETHING_WENT_WRONG } from '../../static/feedback';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
 import { useAuth } from '../account/useAuth';
@@ -19,9 +19,9 @@ const ReviewPage = () => {
 
   const qc = useQueryClient();
 
-  const cacheKey = cacheKeys.entryKey(id);
+  const cacheKey = cacheKeys.reviewKey(id);
 
-  const { data, isFetching } = useQuery(cacheKey, () => api.getEntry(id), {
+  const { data, isFetching } = useQuery(cacheKey, () => api.getReview(id), {
     enabled: !!id,
   });
 
@@ -33,10 +33,6 @@ const ReviewPage = () => {
 
   const [openReport, setOpenReport] = useState(false);
 
-  if (!isFetching && (!id || !data || !data.entry || !data.entry.reviewId)) {
-    return <Feedback message={SOMETHING_WENT_WRONG} />;
-  }
-
   const removeReviewAction = async () => {
     await mutateAsync({
       id,
@@ -47,6 +43,24 @@ const ReviewPage = () => {
       navigate(-1);
     });
   };
+
+  const reviewId = data?.entry?.reviewId;
+
+  const { data: reviewVotes, updateVote } = useUserReviewVotes(
+    reviewId ? [reviewId] : [],
+  );
+
+  const entry = useMemo(() => {
+    if (!data?.entry) return null;
+    const userVote = reviewVotes?.find((v) => v.reviewId === reviewId)?.vote;
+    return {
+      ...data.entry,
+      review: {
+        ...data.entry.review,
+        userVote,
+      },
+    };
+  }, [data?.entry, reviewVotes, reviewId]);
 
   const isMyReview = me?.id === data?.entry?.userId;
 
@@ -67,16 +81,24 @@ const ReviewPage = () => {
       >
         {isFetching ? (
           <Loading />
+        ) : !entry ? (
+          <Feedback message="Review is not found" />
         ) : (
           <Review
-            entry={data.entry}
-            updateAfterVote={(_, vote) =>
+            entry={entry}
+            updateAfterVote={(vote) => {
+              const currentUserVote = entry.review.userVote;
+              updateVote(
+                entry.review.id,
+                typeof currentUserVote === 'number' ? undefined : vote,
+              );
               updateReviewAfterVote({
                 vote,
+                currentUserVote,
                 cacheKey,
                 queryClient: qc,
-              })
-            }
+              });
+            }}
             fullPage
           />
         )}

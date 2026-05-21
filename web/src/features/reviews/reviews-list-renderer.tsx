@@ -1,5 +1,10 @@
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
-import { EntriesSortByEnum, IUserSummary } from 'shared';
+import {
+  IEntryWithReview,
+  IUserSummary,
+  ReviewsSortByEnum,
+  VoteType,
+} from 'shared';
 import { Feedback } from '../../components/feedback';
 import { FetchMore } from '../../components/fetch-more';
 import { Stack } from '../../components/flex/stack';
@@ -8,13 +13,69 @@ import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
 import { Review } from './review';
 import { updateReviewAfterVote_3 } from './update-review-after-vote';
+import { useMemo } from 'react';
+import { useUserReviewVotes } from './useUserReviewVotes';
 
 export interface ReviewsListRendererProps {
-  sortBy?: EntriesSortByEnum.ReviewDate | EntriesSortByEnum.ReviewTop;
+  sortBy?: ReviewsSortByEnum;
   userId?: string;
   releaseId?: string;
   user?: IUserSummary;
   queryEnabled?: boolean;
+}
+
+export function ReviewsPageChunk({
+  entries,
+  user,
+  cacheKey,
+}: {
+  entries: IEntryWithReview[];
+  user: IUserSummary;
+  cacheKey: (string | number)[];
+}) {
+  const queryClient = useQueryClient();
+  const { data: reviewVotes, updateVote } = useUserReviewVotes(
+    entries.map((e) => e.reviewId),
+  );
+
+  const entriesWithVotes = useMemo(() => {
+    const votesMap = new Map<string, VoteType>();
+    if (reviewVotes) {
+      reviewVotes.forEach((v) => votesMap.set(v.reviewId, v.vote));
+    }
+
+    return entries.map((e) => ({
+      ...e,
+      review: { ...e.review, userVote: votesMap.get(e.reviewId) },
+    }));
+  }, [entries, reviewVotes]);
+
+  return (
+    <Stack gap="lg">
+      {entriesWithVotes.map((e) => (
+        <Review
+          key={e.id}
+          entry={e}
+          user={user}
+          updateAfterVote={(vote) => {
+            const currentUserVote = e.review.userVote;
+            const id = e.review.id;
+            updateVote(
+              id,
+              typeof currentUserVote === 'number' ? undefined : vote,
+            );
+            updateReviewAfterVote_3({
+              id,
+              vote,
+              currentUserVote,
+              cacheKey,
+              queryClient,
+            });
+          }}
+        />
+      ))}
+    </Stack>
+  );
 }
 
 export function ReviewsListRenderer({
@@ -24,27 +85,23 @@ export function ReviewsListRenderer({
   user,
   queryEnabled,
 }: ReviewsListRendererProps) {
-  const cacheKey = cacheKeys.entriesKey({
+  const cacheKey = cacheKeys.reviewsKey({
     userId,
     releaseId,
     pageSize: 12,
     sortBy,
-    withReview: true,
   });
-
-  const queryClient = useQueryClient();
 
   const { data, isFetching, isFetchingNextPage, fetchNextPage, hasNextPage } =
     useInfiniteQuery(
       cacheKey,
       async ({ pageParam = 1 }) =>
-        api.getEntries({
+        api.getReviews({
           userId,
           releaseId,
           pageSize: 12,
           page: pageParam,
           sortBy,
-          withReview: true,
         }),
       {
         getNextPageParam: (lastPage, pages) =>
@@ -60,26 +117,16 @@ export function ReviewsListRenderer({
       {isFetching && !isFetchingNextPage ? (
         <Loading />
       ) : data && data.pages[0].totalItems > 0 ? (
-        data.pages.map((page) => (
-          <Stack gap="lg" key={page.currentPage}>
-            {page.entries.map((r) => (
-              <Review
-                key={r.id}
-                entry={r}
-                user={user}
-                updateAfterVote={(id, vote) =>
-                  updateReviewAfterVote_3({
-                    id,
-                    vote,
-                    page: page.currentPage,
-                    cacheKey,
-                    queryClient,
-                  })
-                }
-              />
-            ))}
-          </Stack>
-        ))
+        <Stack gap="lg">
+          {data.pages.map((page) => (
+            <ReviewsPageChunk
+              key={page.currentPage}
+              entries={page.entries}
+              user={user}
+              cacheKey={cacheKey}
+            />
+          ))}
+        </Stack>
       ) : (
         <Feedback message="There are no reviews yet" />
       )}

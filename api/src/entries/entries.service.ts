@@ -5,16 +5,12 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
-  CommentEntityType,
   CreateEntryDto,
   EntriesSortByEnum,
   FindEntriesDto,
   IEntriesResponse,
   IEntry,
   IEntryResonse,
-  IRelease,
-  IReview,
-  IUser,
   UpdateEntryDto,
   VoteType,
 } from 'shared';
@@ -23,17 +19,14 @@ import { Rating } from '../../db/entities/rating.entity';
 import { ReleaseArtist } from '../../db/entities/release-artist.entity';
 import { ReleaseGenre } from '../../db/entities/release-genre.entity';
 import { ReleaseLabel } from '../../db/entities/release-label.entity';
-import { ReviewVote } from '../../db/entities/review-vote.entity';
-import { Review } from '../../db/entities/review.entity';
 import { TrackVote } from '../../db/entities/track-vote.entity';
-import { Track } from '../../db/entities/track.entity';
 import { UserFollowing } from '../../db/entities/user-following.entity';
 import { UserReleaseTag } from '../../db/entities/user-release-tag.entity';
 import { UserRelease } from '../../db/entities/user-release.entity';
-import { CommentsService } from '../comments/comments.service';
 import { ReleasesService } from '../releases/releases.service';
 import { UsersService } from '../users/users.service';
-import { EntitiesReferenceService } from '../entities/entitiesReference.service';
+import { mapEntries } from './entries.utils';
+import { ReviewsService } from './reviews.service';
 
 @Injectable()
 export class EntriesService {
@@ -41,10 +34,6 @@ export class EntriesService {
     @InjectRepository(UserRelease)
     private userReleaseRepository: Repository<UserRelease>,
     @InjectRepository(Rating) private ratingsRepository: Repository<Rating>,
-    @InjectRepository(Review) private reviewsRepository: Repository<Review>,
-    @InjectRepository(ReviewVote)
-    private reviewVoteRepository: Repository<ReviewVote>,
-
     @InjectRepository(TrackVote)
     private trackVotesRepository: Repository<TrackVote>,
     @InjectRepository(ReleaseArtist)
@@ -53,13 +42,11 @@ export class EntriesService {
     private releaseGenreRepository: Repository<ReleaseGenre>,
     @InjectRepository(ReleaseLabel)
     private releaseLabelRepository: Repository<ReleaseLabel>,
-    @InjectRepository(Track) private tracksRepository: Repository<Track>,
     @InjectRepository(UserReleaseTag)
     private userReleaseTagRepository: Repository<UserReleaseTag>,
     private releasesService: ReleasesService,
     private usersService: UsersService,
-    private commentsService: CommentsService,
-    private entitiesReferenceService: EntitiesReferenceService,
+    private reviewsService: ReviewsService,
   ) {}
 
   async create(
@@ -70,17 +57,14 @@ export class EntriesService {
     ur.releaseId = releaseId;
     ur.userId = currentUserId;
 
+    if (review) {
+      ur.review = await this.reviewsService.create(review);
+    }
+
     if (rating !== null && rating !== undefined) {
       const _rating = new Rating();
       _rating.rating = rating;
       ur.rating = _rating;
-    }
-
-    if (review) {
-      const _review = new Review();
-      _review.bodySource = review;
-      _review.body = await this.entitiesReferenceService.parseLinks(review);
-      ur.review = _review;
     }
 
     if (tags && tags.length > 0) {
@@ -94,7 +78,11 @@ export class EntriesService {
     const entry = await this.userReleaseRepository.save(ur);
 
     if (entry.reviewId) {
-      this.reviewVote(entry.reviewId, currentUserId, VoteType.UP);
+      await this.reviewsService.reviewVote(
+        entry.reviewId,
+        currentUserId,
+        VoteType.UP,
+      );
     }
 
     return true;
@@ -150,24 +138,16 @@ export class EntriesService {
     if (review) {
       if (!ur.reviewId) {
         // create review
-        const _review = new Review();
-        _review.bodySource = review;
-        _review.body = await this.entitiesReferenceService.parseLinks(review);
-        ur.review = _review;
+        ur.review = await this.reviewsService.create(review);
 
         createReview = true;
       } else {
         // update review
-        ur.review.bodySource = review;
-        ur.review.body = await this.entitiesReferenceService.parseLinks(review);
+        ur.review = await this.reviewsService.update(ur.review, review);
       }
     } else if (ur.reviewId) {
       // remove review
-      await this.commentsService.deleteCommentsByEntity(
-        CommentEntityType.REVIEW,
-        ur.reviewId,
-      );
-      await this.reviewsRepository.delete({ id: ur.reviewId });
+      await this.reviewsService.delete(ur.reviewId);
       ur.review = null;
       ur.reviewId = null;
     }
@@ -175,7 +155,11 @@ export class EntriesService {
     const entry = await this.userReleaseRepository.save(ur);
 
     if (createReview && entry.reviewId) {
-      this.reviewVote(entry.reviewId, currentUserId, VoteType.UP);
+      await this.reviewsService.reviewVote(
+        entry.reviewId,
+        currentUserId,
+        VoteType.UP,
+      );
     }
 
     return true;
@@ -183,15 +167,12 @@ export class EntriesService {
 
   async remove(id: string, currentUserId: string) {
     const ur = await this.userReleaseRepository.findOne({ where: { id } });
-
+    if (!ur) throw new BadRequestException();
     if (ur.userId !== currentUserId) throw new UnauthorizedException();
 
-    // Delete review comments
+    // Delete review
     if (ur.reviewId) {
-      await this.commentsService.deleteCommentsByEntity(
-        CommentEntityType.REVIEW,
-        ur.reviewId,
-      );
+      await this.reviewsService.delete(ur.reviewId);
     }
 
     await this.userReleaseRepository.remove(ur);
@@ -199,14 +180,11 @@ export class EntriesService {
     return true;
   }
 
-  async findOne(
-    where: {
-      id?: string;
-      releaseId?: string;
-      userId?: string;
-    },
-    currentUserId?: string,
-  ): Promise<IEntryResonse> {
+  async findOne(where: {
+    id?: string;
+    releaseId?: string;
+    userId?: string;
+  }): Promise<IEntryResonse> {
     const urQB = this.userReleaseRepository
       .createQueryBuilder('ur')
       .leftJoinAndSelect('ur.rating', 'rating')
@@ -226,36 +204,33 @@ export class EntriesService {
     const ur = await urQB.getOne();
 
     if (!ur) {
-      return null;
+      return {
+        entry: null,
+      };
     }
 
-    const [[release], user, reviews] = await Promise.all([
+    const [[release], user, review] = await Promise.all([
       this.releasesService.getReleasesByIds([ur.releaseId]),
       this.usersService.getUserById(ur.userId),
       ur.reviewId
-        ? this.getReviewsByIds([ur.reviewId], currentUserId)
-        : Promise.resolve([]),
+        ? this.reviewsService.getReviewSummary(ur.reviewId)
+        : Promise.resolve(null),
     ]);
 
-    const entry = this.mapEntry({
-      ur,
-      reviews,
-      users: [user],
-      releases: [release],
-    });
-
     return {
-      entry,
+      entry: {
+        ...ur,
+        user,
+        release,
+        review,
+      },
     };
   }
-  async find(
-    params: FindEntriesDto,
-    currentUserId?: string,
-  ): Promise<IEntriesResponse> {
+
+  async find(params: FindEntriesDto): Promise<IEntriesResponse> {
     const {
       releaseId,
       userId,
-      withReview,
       sortBy,
       year,
       decade,
@@ -300,19 +275,6 @@ export class EntriesService {
 
     if (type !== undefined) {
       urQB.andWhere('release.type = :type', { type });
-    }
-
-    if (
-      sortBy === EntriesSortByEnum.ReviewDate ||
-      sortBy === EntriesSortByEnum.ReviewTop
-    ) {
-      urQB.innerJoin('ur.review', 'review');
-
-      if (sortBy === EntriesSortByEnum.ReviewTop)
-        urQB.leftJoin('review.votes', 'votes');
-
-      if (!userId && !releaseId)
-        urQB.where("review.createdAt >= current_date - interval '72 hours'");
     }
 
     if (genre) {
@@ -413,19 +375,6 @@ export class EntriesService {
 
         break;
 
-      case EntriesSortByEnum.ReviewDate:
-        urQB.orderBy('review.createdAt', 'DESC');
-
-        break;
-
-      case EntriesSortByEnum.ReviewTop:
-        urQB
-          .orderBy('SUM(votes.vote)', 'DESC', 'NULLS LAST')
-          .groupBy('ur.id')
-          .addGroupBy('rating.id');
-
-        break;
-
       default:
         break;
     }
@@ -448,13 +397,7 @@ export class EntriesService {
       };
     }
 
-    const [reviews, releases, users] = await Promise.all([
-      withReview
-        ? this.getReviewsByIds(
-            result.map((ur) => ur.reviewId),
-            currentUserId,
-          )
-        : Promise.resolve(null),
+    const [releases, users] = await Promise.all([
       !releaseId
         ? this.releasesService.getReleasesByIds(
             result.map((ur) => ur.releaseId),
@@ -466,9 +409,7 @@ export class EntriesService {
     ]);
 
     return {
-      entries: result.map((ur) =>
-        this.mapEntry({ ur, reviews, releases, users }),
-      ),
+      entries: mapEntries(result, { releases, users }),
       totalItems,
       currentPage: page,
       currentItems: (page - 1) * pageSize + result.length,
@@ -505,36 +446,9 @@ export class EntriesService {
       result.map((i) => i.userId),
     );
 
-    return result.map((ur) => ({
-      ...ur,
-      user: users.find((u) => u.id === ur.userId),
-    }));
+    return mapEntries(result, { users });
   }
 
-  private mapEntry({
-    ur,
-    reviews,
-    releases,
-    users,
-  }: {
-    ur?: UserRelease;
-    reviews?: IReview[];
-    releases?: IRelease[] | null;
-    users?: IUser[] | null;
-  }): IEntry {
-    const review = reviews?.find((r) => r.id === ur.reviewId);
-    const release = releases
-      ? releases.find((r) => r.id === ur.releaseId)
-      : null;
-    const user = users ? users.find((u) => u.id === ur.userId) : null;
-
-    return {
-      ...ur,
-      release,
-      user,
-      review,
-    };
-  }
   // --- TAGS
   async createTag(tag: string, userId: string): Promise<UserReleaseTag> {
     const newTag = new UserReleaseTag();
@@ -579,89 +493,6 @@ export class EntriesService {
 
     await this.userReleaseRepository.save(tagToDelete.entries);
     await this.userReleaseTagRepository.delete(id);
-  }
-
-  // ---- REVIEWS
-
-  private async getReviewsByIds(
-    ids: string[],
-    currentUserId: string,
-  ): Promise<IReview[]> {
-    const reviews = await this.reviewsRepository
-      .createQueryBuilder('r')
-      .select('r.id', 'id')
-      .addSelect('r.body', 'body')
-      .addSelect('r.bodySource', 'bodySource')
-      .addSelect('r.createdAt', 'createdAt')
-      .addSelect('r.updatedAt', 'updatedAt')
-      .addSelect(
-        (qb) =>
-          qb
-            .select('COUNT(*)')
-            .from(ReviewVote, 'v')
-            .where('v.reviewId = r.id'),
-        'totalVotes',
-      )
-      .addSelect(
-        (qb) =>
-          qb
-            .select('COALESCE(SUM(v.vote), 0)')
-            .from(ReviewVote, 'v')
-            .where('v.reviewId = r.id'),
-        'netVotes',
-      )
-      .leftJoin('r.votes', 'vote')
-      .whereInIds(ids)
-      .groupBy('r.id')
-      .getRawMany();
-
-    const [votes, commentsCounts] = await Promise.all([
-      this.reviewVoteRepository.find({
-        where: {
-          reviewId: In(ids),
-          userId: currentUserId,
-        },
-      }),
-      this.commentsService.findCommentsCount(
-        CommentEntityType.REVIEW,
-        ids,
-      ) as any,
-    ]);
-
-    const commentsCountMap = new Map(
-      commentsCounts.map((item) => [item.entityId, item.count]),
-    );
-
-    return reviews.map((r) => ({
-      ...r,
-      userVote: votes.find((v) => v.reviewId === r.id)?.vote,
-      commentsCount: commentsCountMap.get(r.id) || 0,
-    }));
-  }
-
-  async reviewVote(reviewId: string, currentUserId: string, vote: VoteType) {
-    const rv = new ReviewVote();
-
-    rv.reviewId = reviewId;
-    rv.userId = currentUserId;
-    rv.vote = vote;
-
-    await this.reviewVoteRepository.save(rv);
-
-    return true;
-  }
-
-  async removeReviewVote(reviewId: string, currentUserId: string) {
-    const vote = await this.reviewVoteRepository.findOne({
-      where: {
-        reviewId,
-        userId: currentUserId,
-      },
-    });
-
-    await this.reviewVoteRepository.delete({ id: vote.id });
-
-    return true;
   }
 
   // --- Track votes

@@ -38,6 +38,7 @@ import {
   ArtistType,
   ArtistVisibility,
   SubmissionType,
+  ReviewsSortByEnum,
 } from './enums';
 
 export function IsDayjsDateString(validationOptions?: ValidationOptions) {
@@ -686,9 +687,12 @@ export class UpdateEntryDto {
 }
 
 export class FindEntriesDto {
+  @IsOptional()
+  @IsString()
   releaseId?: string;
+  @IsOptional()
+  @IsString()
   userId?: string;
-  withReview?: boolean;
 
   @IsEnum(EntriesSortByEnum)
   sortBy: EntriesSortByEnum;
@@ -706,6 +710,26 @@ export class FindEntriesDto {
   @Type(() => Number)
   @IsEnum(ReleaseType)
   type?: number;
+
+  @Type(() => Number)
+  @IsInt()
+  page: number;
+
+  @Type(() => Number)
+  @IsInt()
+  pageSize: number;
+}
+
+export class FindReviewsDto {
+  @IsOptional()
+  @IsString()
+  releaseId?: string;
+  @IsOptional()
+  @IsString()
+  userId?: string;
+
+  @IsEnum(ReviewsSortByEnum)
+  sortBy: ReviewsSortByEnum;
 
   @Type(() => Number)
   @IsInt()

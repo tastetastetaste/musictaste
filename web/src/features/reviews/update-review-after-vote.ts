@@ -1,75 +1,77 @@
 import { InfiniteData, QueryClient } from '@tanstack/react-query';
-import { IEntriesResponse, IEntryResonse, IReview, VoteType } from 'shared';
+import { IReview, IReviewResponse, IReviewsResponse, VoteType } from 'shared';
 
-export type UpdateReviewAfterVoteFu = (
-  reviewId: string,
-  vote: VoteType,
-) => void;
+export type UpdateReviewAfterVoteFu = (vote: VoteType) => void;
+
 export const updateReviewAfterVote = ({
   vote,
+  currentUserVote,
   cacheKey,
   queryClient,
 }: {
   vote: VoteType;
+  currentUserVote?: VoteType;
   cacheKey: any;
   queryClient: QueryClient;
 }) => {
-  queryClient.setQueryData<IEntryResonse | undefined>(cacheKey, (oldData) => {
-    if (oldData === undefined) return undefined;
+  const isRemoving = typeof currentUserVote === 'number';
+
+  queryClient.setQueryData<IReviewResponse | undefined>(cacheKey, (oldData) => {
+    if (oldData?.entry?.review === undefined) return undefined;
 
     return {
       entry: {
         ...oldData.entry,
         review: {
           ...(oldData.entry.review as IReview),
-          totalVotes: oldData.entry.review.userVote
+          totalVotes: isRemoving
             ? +oldData.entry.review.totalVotes - 1
             : +oldData.entry.review.totalVotes + 1,
-          netVotes: oldData.entry.review.userVote
-            ? +oldData.entry.review.netVotes - +oldData.entry.review.userVote
+          netVotes: isRemoving
+            ? +oldData.entry.review.netVotes - +currentUserVote
             : +oldData.entry.review.netVotes + vote,
-          userVote: oldData.entry.review.userVote ? null : vote,
         },
       },
     };
   });
 };
+
 export const updateReviewAfterVote_2 = ({
   id,
   vote,
+  currentUserVote,
   cacheKey,
   queryClient,
 }: {
   id: string;
   vote: VoteType;
+  currentUserVote: VoteType | null | undefined;
   cacheKey: any;
   queryClient: QueryClient;
 }) => {
-  queryClient.setQueryData<IEntriesResponse | undefined>(
+  const isRemoving = typeof currentUserVote === 'number';
+
+  queryClient.setQueryData<IReviewsResponse | undefined>(
     cacheKey,
     (oldData) => {
       if (oldData === undefined) return undefined;
 
-      const entries: IEntriesResponse['entries'] = [];
-
-      oldData.entries.forEach((r) => {
+      const entries: IReviewsResponse['entries'] = oldData.entries.map((r) => {
         if (r.reviewId === id) {
-          entries.push({
+          return {
             ...r,
             review: {
               ...(r.review as IReview),
-              totalVotes: r.review.userVote
+              totalVotes: isRemoving
                 ? +r.review.totalVotes - 1
                 : +r.review.totalVotes + 1,
-              netVotes: r.review.userVote
-                ? +r.review.netVotes - +r.review.userVote
+              netVotes: isRemoving
+                ? +r.review.netVotes - +currentUserVote!
                 : +r.review.netVotes + vote,
-              userVote: r.review.userVote ? null : vote,
             },
-          });
-        } else {
-          entries.push(r);
+          };
         }
+        return r;
       });
 
       return {
@@ -79,55 +81,50 @@ export const updateReviewAfterVote_2 = ({
     },
   );
 };
+
 export const updateReviewAfterVote_3 = ({
   id,
   vote,
-  page,
+  currentUserVote,
   cacheKey,
   queryClient,
 }: {
   id: string;
   vote: VoteType;
-  page: number;
+  currentUserVote: VoteType | null | undefined;
   cacheKey: any;
   queryClient: QueryClient;
 }) => {
-  queryClient.setQueryData<InfiniteData<IEntriesResponse> | undefined>(
+  const isRemoving = typeof currentUserVote === 'number';
+
+  queryClient.setQueryData<InfiniteData<IReviewsResponse> | undefined>(
     cacheKey,
     (oldData) => {
       if (oldData === undefined) return undefined;
 
-      const pages: InfiniteData<IEntriesResponse>['pages'] = [];
-
-      oldData.pages.forEach((p) => {
-        if (p.currentPage === page) {
-          const entries: IEntriesResponse['entries'] = [];
-
-          p.entries.forEach((r) => {
+      const pages: InfiniteData<IReviewsResponse>['pages'] = oldData.pages.map(
+        (p) => {
+          const entries: IReviewsResponse['entries'] = p.entries.map((r) => {
             if (r.reviewId === id) {
-              entries.push({
+              return {
                 ...r,
                 review: {
                   ...(r.review as IReview),
-                  totalVotes: r.review.userVote
+                  totalVotes: isRemoving
                     ? +r.review.totalVotes - 1
                     : +r.review.totalVotes + 1,
-                  netVotes: r.review.userVote
-                    ? +r.review.netVotes - +r.review.userVote
+                  netVotes: isRemoving
+                    ? +r.review.netVotes - +currentUserVote!
                     : +r.review.netVotes + vote,
-                  userVote: r.review.userVote ? null : vote,
                 },
-              });
-            } else {
-              entries.push(r);
+              };
             }
+            return r;
           });
 
-          pages.push({ ...p, entries });
-        } else {
-          pages.push(p);
-        }
-      });
+          return { ...p, entries };
+        },
+      );
 
       return {
         ...oldData,

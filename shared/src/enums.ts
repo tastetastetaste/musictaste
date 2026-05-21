@@ -89,9 +89,6 @@ export enum SupporterStatus {
 // other enums
 
 export enum EntriesSortByEnum {
-  // reviews
-  ReviewDate = 'ReviewDate',
-  ReviewTop = 'ReviewTop',
   // ratings
   RatingDate = 'RatingDate',
   RatingHighToLow = 'RatingHighToLow',
@@ -99,6 +96,11 @@ export enum EntriesSortByEnum {
   // entries
   EntryDate = 'EntryDate',
   ReleaseDate = 'ReleaseDate',
+}
+
+export enum ReviewsSortByEnum {
+  ReviewDate = 'ReviewDate',
+  ReviewTop = 'ReviewTop',
 }
 
 export enum FindReleasesType {

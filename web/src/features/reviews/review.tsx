@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   CommentEntityType,
   getReviewPath,
-  IEntry,
+  IEntryWithReview,
   IUserSummary,
   VoteType,
 } from 'shared';
@@ -26,6 +26,12 @@ import { FavoriteTracks } from '../releases/user-entry';
 import { User } from '../users/user';
 import { UpdateReviewAfterVoteFu } from './update-review-after-vote';
 
+type IEntryWithReviewFull = Omit<IEntryWithReview, 'review'> & {
+  review: IEntryWithReview['review'] & {
+    userVote: VoteType;
+  };
+};
+
 const ReviewActions = ({
   reviewId,
   entryId,
@@ -37,7 +43,7 @@ const ReviewActions = ({
   entryId: string;
   updateAfterVote: UpdateReviewAfterVoteFu;
   user: IUserSummary;
-  entry: IEntry;
+  entry: IEntryWithReviewFull;
 }) => {
   const { netVotes, commentsCount, userVote } = entry.review;
   const { isLoggedIn } = useAuth();
@@ -51,7 +57,7 @@ const ReviewActions = ({
     if (typeof userVote !== 'number') await createVote({ reviewId, vote });
     else await removeVote(reviewId);
 
-    updateAfterVote(reviewId, vote);
+    updateAfterVote(vote);
   };
 
   const linkTo = getReviewPath({ entryId });
@@ -119,7 +125,7 @@ const ReviewActions = ({
 };
 
 export interface ReviewProps {
-  entry: IEntry;
+  entry: IEntryWithReviewFull;
   hideRelease?: boolean;
   fullPage?: boolean;
   updateAfterVote: UpdateReviewAfterVoteFu;
@@ -135,11 +141,9 @@ export const Review: React.FC<ReviewProps> = ({
 }) => {
   // user is null in user page
   // release is null in release page
+
   const { review, rating, user, release } = entry;
-
   const smallScreen = useMediaQuery({ down: 'md' });
-
-  if (!review) return <div>no review</div>;
 
   const {
     id,

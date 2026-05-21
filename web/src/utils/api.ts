@@ -81,6 +81,11 @@ import {
   VoteType,
   FindUserGenreVotesDto,
   IFindUserGenreVotesResponse,
+  IReviewResponse,
+  FindReviewsDto,
+  FindEntriesDto,
+  IReviewsResponse,
+  IReviewVote,
 } from 'shared';
 import { buildFormData } from './build-form-data';
 
@@ -182,7 +187,6 @@ const updatePassword = (data: {
 const getEntries = ({
   releaseId,
   userId,
-  withReview,
 
   sortBy,
 
@@ -197,32 +201,12 @@ const getEntries = ({
 
   page,
   pageSize,
-}: {
-  releaseId?: string;
-  userId?: string;
-  withReview?: boolean;
-
-  sortBy: EntriesSortByEnum;
-
-  year?: string;
-  decade?: string;
-  bucket?: string;
-  genre?: string;
-  artist?: string;
-  label?: string;
-  tag?: string;
-  type?: string;
-
-  page: number;
-  pageSize: number;
-}) => {
+}: FindEntriesDto) => {
   return client
     .get(
       `entries?sortBy=${sortBy}&page=${page}&pageSize=${pageSize}${
         releaseId ? '&releaseId=' + releaseId : ''
-      }${userId ? '&userId=' + userId : ''}${
-        withReview ? '&withReview=true' : ''
-      }${year ? '&year=' + year : ''}${
+      }${userId ? '&userId=' + userId : ''}${year ? '&year=' + year : ''}${
         decade ? '&decade=' + decade : ''
       }${bucket ? '&bucket=' + bucket : ''}${genre ? '&genre=' + genre : ''}${
         artist ? '&artist=' + artist : ''
@@ -233,8 +217,34 @@ const getEntries = ({
     .json<IEntriesResponse>();
 };
 
+const getReviews = ({
+  releaseId,
+  userId,
+  sortBy,
+  page,
+  pageSize,
+}: FindReviewsDto) => {
+  return client
+    .get(
+      `reviews?sortBy=${sortBy}&page=${page}&pageSize=${pageSize}${
+        releaseId ? '&releaseId=' + releaseId : ''
+      }${userId ? '&userId=' + userId : ''}`,
+    )
+    .json<IReviewsResponse>();
+};
+
+const getUserReviewVotes = (ids: string[]) => {
+  return client
+    .get(`reviews/votes/me?ids=${ids.join(',')}`)
+    .json<IReviewVote[]>();
+};
+
 const getEntry = (id: string) => {
   return client.get(`entries/${id}`).json<IEntryResonse>();
+};
+
+const getReview = (entryId: string) => {
+  return client.get(`reviews/${entryId}`).json<IReviewResponse>();
 };
 
 const getMyReleaseEntry = (releaseId: string) => {
@@ -262,11 +272,9 @@ const removeEntry = (id: string) =>
   client.delete('entries/' + id).json<boolean>();
 
 const reviewVote = ({ reviewId, vote }: { reviewId: string; vote: VoteType }) =>
-  client
-    .post(`entries/review/${reviewId}/votes`, { json: { vote } })
-    .json<boolean>();
+  client.post(`reviews/votes/${reviewId}`, { json: { vote } }).json<boolean>();
 const reviewRemoveVote = (reviewId: string) =>
-  client.delete(`entries/review/${reviewId}/votes`).json<boolean>();
+  client.delete(`reviews/votes/${reviewId}`).json<boolean>();
 
 const getComments = ({ entityType, entityId, page }: FindCommentsDto) =>
   client
@@ -793,7 +801,10 @@ export const api = {
   forgotPasswordChange,
   updatePassword,
   getEntries,
+  getReviews,
+  getUserReviewVotes,
   getEntry,
+  getReview,
   getMyReleaseEntry,
   getFollowingEntries,
   createEntry,

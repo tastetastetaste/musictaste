@@ -1,30 +1,26 @@
 import {
   CommentEntityType,
+  EntriesSortByEnum,
+  FindEntriesDto,
   FindReleasesType,
+  FindReviewsDto,
   FindUsersType,
   ReleaseType,
+  ReviewsSortByEnum,
 } from 'shared';
 
 // ENTRY
 const entryKey = (id: string) => ['entries', id];
+const reviewKey = (entryId: string) => ['entries', entryId, 'review'];
 const myReleaseEntryKey = (releaseId: string) => ['entries', 'me', releaseId];
 
-const entriesKey = (filters: {
-  releaseId?: string;
-  userId?: string;
-  withReview?: boolean;
-  sortBy?: string;
-  year?: string;
-  decade?: string;
-  bucket?: string;
-  genre?: string;
-  artist?: string;
-  label?: string;
-  tag?: string;
-  type?: string;
-  page?: number;
-  pageSize?: number;
-}) =>
+const entriesKey = (
+  filters: Omit<FindEntriesDto, 'sortBy' | 'page' | 'pageSize'> & {
+    sortBy?: EntriesSortByEnum;
+    page?: number;
+    pageSize?: number;
+  },
+) =>
   [
     'entries',
     ...(filters.releaseId
@@ -32,7 +28,6 @@ const entriesKey = (filters: {
       : filters.userId
         ? ['user', filters.userId]
         : []),
-    filters.withReview,
     ...(filters.sortBy
       ? [
           filters.sortBy,
@@ -48,6 +43,24 @@ const entriesKey = (filters: {
           filters.pageSize,
         ]
       : []),
+  ].filter(Boolean);
+
+const reviewsKey = (
+  filters: Omit<FindReviewsDto, 'sortBy' | 'page' | 'pageSize'> & {
+    sortBy?: ReviewsSortByEnum;
+    page?: number;
+    pageSize?: number;
+  },
+) =>
+  [
+    'entries',
+    ...(filters.releaseId
+      ? ['release', filters.releaseId]
+      : filters.userId
+        ? ['user', filters.userId]
+        : []),
+    'reviews',
+    ...(filters.sortBy ? [filters.sortBy, filters.page, filters.pageSize] : []),
   ].filter(Boolean);
 
 // COMMENTS
@@ -327,8 +340,10 @@ export const cacheKeys = {
   genreKey,
   genresKey,
   entryKey,
+  reviewKey,
   myReleaseEntryKey,
   entriesKey,
+  reviewsKey,
   userLabelsKey,
   languagesKey,
   countriesKey,
