@@ -14,6 +14,7 @@ import { Typography } from '../../components/typography';
 import AppPageWrapper from '../../layout/app-page-wrapper';
 import { api } from '../../utils/api';
 import { SelectGenres } from '../genres/select-genres';
+import { TextareaWithPreview } from '../../components/inputs/textarea-with-preview';
 
 const AddGenrePage = () => {
   const defaultValues = {
@@ -83,7 +84,11 @@ const AddGenrePage = () => {
               )}
             />
             <FormInputError error={errors.parentIds} />
-            <Textarea {...register('bio')} placeholder="Bio" rows={5} />
+            <TextareaWithPreview
+              {...register('bio')}
+              placeholder="Bio"
+              rows={5}
+            />
             <FormInputError error={errors.bio} />
             <Textarea
               {...register('note')}
