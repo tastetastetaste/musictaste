@@ -6,6 +6,7 @@ import {
 import { Fragment } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import {
+  getGenrePath,
   IGenreSubmission,
   SubmissionSortByEnum,
   SubmissionStatus,
@@ -49,6 +50,7 @@ export const GenreSubmissionItem = ({
   const hasOriginal = !!original;
   return (
     <SubmissionItemWrapper
+      link={submission.genreId && getGenrePath({ genreId: submission.genreId })}
       voteFn={api.genreSubmissionVote}
       hideUser={hideUser}
       submission={submission}
