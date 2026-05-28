@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
-import { Outlet, useParams } from 'react-router-dom';
+import { Outlet, useLocation, useParams } from 'react-router-dom';
 import { AccountStatus, IUserProfileResponse, ReportType } from 'shared';
 import { Feedback } from '../../components/feedback';
 import { Stack } from '../../components/flex/stack';
@@ -23,6 +23,8 @@ const UserPageWrapper: React.FC = () => {
   const { username } = useParams();
 
   const { me, isAdmin } = useAuth();
+
+  const location = useLocation();
 
   const [openReport, setOpenReport] = useState(false);
 
@@ -137,7 +139,15 @@ const UserPageWrapper: React.FC = () => {
   return (
     <UserThemeProvider user={data.user}>
       <AppPageWrapper
-        title={data.user.name + ' (@' + data.user.username + ') '}
+        title={
+          data.user.name +
+          ' (@' +
+          data.user.username +
+          ')' +
+          (location.pathname.split('/').length >= 3
+            ? ` ${location.pathname.split('/')[2]}`
+            : '')
+        }
         menu={[
           {
             label: 'Contributions',
@@ -173,6 +183,8 @@ const UserPageWrapper: React.FC = () => {
             : []),
         ]}
         image={data.user.image?.md}
+        canCopyLink
+        canCopyReference
       >
         <Stack>
           <UserOverview

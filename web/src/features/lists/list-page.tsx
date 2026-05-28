@@ -179,9 +179,11 @@ const ListPage = () => {
   return (
     <UserThemeProvider user={list?.user}>
       <AppPageWrapper
-        title={(list && list.title) || undefined}
+        title={list ? `${list.title} list by ${list.user.name}` : undefined}
         menu={menu}
         quickActions={quickActions}
+        canCopyLink
+        canCopyReference
       >
         {isLoading ? (
           <Loading />

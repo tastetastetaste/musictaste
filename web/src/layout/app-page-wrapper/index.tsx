@@ -4,7 +4,7 @@ import { Stack } from '../../components/flex/stack';
 import { MenuItemType } from '../../components/menu';
 import { NavigationLinkType } from '../../components/nav';
 import {
-  SITE_DOMAIN,
+  SITE_FULL_URL,
   SITE_NAME,
   TWITTER_USERNAME,
 } from '../../static/site-info';
@@ -21,6 +21,8 @@ interface props {
   description?: string;
   children: JSX.Element | JSX.Element[];
   hideBackButton?: boolean;
+  canCopyReference?: boolean;
+  canCopyLink?: boolean;
 }
 
 const AppPageWrapper: React.FC<props> = ({
@@ -32,6 +34,8 @@ const AppPageWrapper: React.FC<props> = ({
   description,
   image,
   hideBackButton,
+  canCopyReference,
+  canCopyLink,
 }) => {
   const location = useLocation();
 
@@ -48,10 +52,7 @@ const AppPageWrapper: React.FC<props> = ({
         <Helmet>
           <title>{`${title ? title + ' | ' + SITE_NAME : SITE_NAME}`}</title>
           <meta name="description" content={description} />
-          <link
-            rel="canonical"
-            href={`https://${SITE_DOMAIN}${location.pathname}`}
-          />
+          <link rel="canonical" href={`${SITE_FULL_URL}${location.pathname}`} />
 
           {/* Twitter Card data */}
           <meta name="twitter:card" content="summary_large_image" />
@@ -61,9 +62,7 @@ const AppPageWrapper: React.FC<props> = ({
           <meta
             name="twitter:image"
             content={
-              image
-                ? image
-                : `https://${SITE_DOMAIN}/android-chrome-192x192.png`
+              image ? image : `${SITE_FULL_URL}/android-chrome-192x192.png`
             }
           />
           <meta property="twitter:image:alt" content={title} />
@@ -74,24 +73,25 @@ const AppPageWrapper: React.FC<props> = ({
           <meta property="og:type" content="website" />
           <meta
             property="og:url"
-            content={`https://${SITE_DOMAIN}${location.pathname}`}
+            content={`${SITE_FULL_URL}${location.pathname}`}
           />
           <meta
             property="og:image"
             content={
-              image
-                ? image
-                : `https://${SITE_DOMAIN}/android-chrome-192x192.png`
+              image ? image : `${SITE_FULL_URL}/android-chrome-192x192.png`
             }
           />
           <meta property="og:site_name" content={SITE_NAME} />
         </Helmet>
         <AppHeader />
         <PageHeader
+          title={title}
           navigation={navigation}
           menu={menu}
           quickActions={quickActions}
           hideBackButton={hideBackButton}
+          canCopyReference={canCopyReference}
+          canCopyLink={canCopyLink}
         />
         <div
           css={{

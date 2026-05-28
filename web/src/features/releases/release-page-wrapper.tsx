@@ -1,12 +1,11 @@
 import { useTheme } from '@emotion/react';
+import { IconHistory, IconPencil } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { Outlet, useParams } from 'react-router-dom';
 import {
   CommentEntityType,
-  DatePrecision,
   ExplicitCoverArt,
-  getGenrePath,
   IReleaseCover,
   IReleaseResponse,
   IUserSummary,
@@ -215,23 +214,21 @@ export const ReleasePageContainer: React.FC<{
       title={`${release.title} By ${release.artists
         .map((a) => a.name)
         .join(' & ')}`}
-      menu={[
+      quickActions={[
         {
           label: 'Edit',
           to: '/contributions/releases/' + release.id,
+          icon: IconPencil,
         },
         {
           label: 'History',
           to: '/history/release/' + release.id,
+          icon: IconHistory,
         },
-
-        {
-          label: 'Copy Reference',
-          action: () => {
-            navigator.clipboard.writeText(`[[release/${release.id}]]`);
-            snackbar('Reference copied to clipboard');
-          },
-        },
+      ]}
+      canCopyLink
+      canCopyReference
+      menu={[
         {
           label: 'Report',
           action: () => setOpenReport(true),

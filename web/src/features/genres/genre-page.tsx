@@ -15,6 +15,7 @@ import { Button } from '../../components/button';
 import { useState } from 'react';
 import { InfoRow } from '../../components/info-row';
 import { GenresLinks } from '../releases/release/shared';
+import { IconHistory, IconPencil } from '@tabler/icons-react';
 
 const GenrePage = () => {
   const { id } = useParams();
@@ -55,24 +56,20 @@ const GenrePage = () => {
   return (
     <AppPageWrapper
       title={genre ? genre.name : ''}
-      menu={[
+      quickActions={[
         {
           label: 'Edit',
           to: '/contributions/genres/' + genre?.id,
+          icon: IconPencil,
         },
         {
           label: 'History',
           to: '/history/genre/' + genre?.id,
-        },
-
-        {
-          label: 'Copy Reference',
-          action: () => {
-            navigator.clipboard.writeText(`[[genre/${genre?.id}]]`);
-            snackbar('Reference copied to clipboard');
-          },
+          icon: IconHistory,
         },
       ]}
+      canCopyReference
+      canCopyLink
     >
       {isLoading ? <Loading /> : <div></div>}
 

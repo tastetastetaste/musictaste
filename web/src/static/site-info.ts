@@ -1,4 +1,6 @@
 export const SITE_DOMAIN = 'musictaste.xyz';
+export const SITE_URL = `https://${SITE_DOMAIN}`;
+export const SITE_FULL_URL = `https://www.${SITE_DOMAIN}`;
 export const SITE_NAME = 'MusicTaste';
 export const CONTACT_EMAIL = 'hello@musictaste.xyz';
 export const KOFI_LINK = 'https://ko-fi.com/musictaste';

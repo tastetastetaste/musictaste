@@ -67,7 +67,13 @@ const ReviewPage = () => {
   return (
     <UserThemeProvider user={data?.entry?.user}>
       <AppPageWrapper
-        title="Review"
+        title={
+          entry
+            ? `${entry.release.artists.map((a) => a.name).join(', ')}: ${entry.release.title} review by ${entry.user.name}`
+            : undefined
+        }
+        canCopyLink
+        canCopyReference
         menu={
           isMyReview
             ? [{ label: 'Remove', action: removeReviewAction }]

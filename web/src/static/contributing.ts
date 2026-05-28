@@ -81,7 +81,7 @@ You can contribute genres from [this page](/contributions/genres/new).
 You can edit releases, artists, and genres using a similar process:
 
 - Go to the release, artist, or genre page you want to edit.  
-- Click the dropdown menu in the top right corner and select **"Edit"**.  
+- Click the edit icon in the top right corner.  
 - Make your changes and click **"Submit"**.  
 - Edits may take up to 24 hours to be approved.
 - Edits by the original contributor within one hour of submission override the original.
@@ -90,7 +90,7 @@ You can edit releases, artists, and genres using a similar process:
 
 References are used to link to specific pages in some text fields, and can be used in dropdown fields to select artists, labels, and genres.
 
-They can be copied from the top right menu of the page you want to link to.
+To copy the reference: go to the page you want to link to, click the link icon in the top right corner, and select "Copy Reference"
 
 You can link to:
 - Releases
@@ -116,7 +116,7 @@ If you add or edit data by mistake (or accident), you can discard your submissio
 
 - Find the submission (multiple options)
   - You can fine all your contributions in **your contributions page** (from the top right menu in your profile page)
-  - You can find **history pages** of releases, artists, labels, and genres in their own pages in the top right menu
+  - You can find **history pages** of releases, artists, labels, and genres in their own pages in the top right actions
 - Click the **"Discard"** button.
 - Confirm the action.
 

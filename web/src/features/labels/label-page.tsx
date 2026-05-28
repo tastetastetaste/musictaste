@@ -11,6 +11,7 @@ import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
 import ReleasesListRenderer from '../releases/releases-list-renderer';
 import { ReportDialog } from '../reports/report-dialog';
+import { IconHistory, IconPencil } from '@tabler/icons-react';
 
 const LabelPage = () => {
   const { id } = useParams();
@@ -32,28 +33,26 @@ const LabelPage = () => {
   return (
     <AppPageWrapper
       title={label ? label.name : ''}
-      menu={[
-        {
-          label: 'History',
-          to: '/history/label/' + label?.id,
-        },
+      quickActions={[
         {
           label: 'Edit',
           to: '/contributions/labels/' + label?.id,
+          icon: IconPencil,
         },
-
         {
-          label: 'Copy Reference',
-          action: () => {
-            navigator.clipboard.writeText(`[[label/${label?.id}]]`);
-            snackbar('Reference copied to clipboard');
-          },
+          label: 'History',
+          to: '/history/label/' + label?.id,
+          icon: IconHistory,
         },
+      ]}
+      menu={[
         {
           label: 'Report',
           action: () => setOpenReport(true),
         },
       ]}
+      canCopyLink
+      canCopyReference
     >
       {isLoading ? <Loading /> : <div></div>}
 

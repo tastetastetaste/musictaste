@@ -1,9 +1,11 @@
 import {
   IconChevronDown,
   IconChevronRight,
+  IconHistory,
+  IconPencil,
   IconSeedingFilled,
 } from '@tabler/icons-react';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import {
@@ -18,18 +20,16 @@ import { Group } from '../../components/flex/group';
 import { Stack } from '../../components/flex/stack';
 import { InfoRow } from '../../components/info-row';
 import { Loading } from '../../components/loading';
+import { Tooltip } from '../../components/popover/tooltip';
 import { Typography } from '../../components/typography';
 import { useSnackbar } from '../../hooks/useSnackbar';
 import AppPageWrapper from '../../layout/app-page-wrapper';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
-import { ArtistsLinks } from '../releases/release/shared';
-import { ReportDialog } from '../reports/report-dialog';
-import ReleasesListRenderer from '../releases/releases-list-renderer';
 import { useAuth } from '../account/useAuth';
-import { Feedback } from '../../components/feedback';
-import { Popover } from '../../components/popover';
-import { Tooltip } from '../../components/popover/tooltip';
+import { ArtistsLinks } from '../releases/release/shared';
+import ReleasesListRenderer from '../releases/releases-list-renderer';
+import { ReportDialog } from '../reports/report-dialog';
 
 interface ArtistReleasesSectionProps {
   artistId: string;
@@ -234,23 +234,21 @@ const ArtistPage = () => {
   return (
     <AppPageWrapper
       title={artist ? artist.name : ''}
-      menu={[
+      quickActions={[
         {
           label: 'Edit',
           to: '/contributions/artists/' + artist?.id,
+          icon: IconPencil,
         },
         {
           label: 'History',
           to: '/history/artist/' + artist?.id,
+          icon: IconHistory,
         },
-
-        {
-          label: 'Copy Reference',
-          action: () => {
-            navigator.clipboard.writeText(`[[artist/${artist?.id}]]`);
-            snackbar('Reference copied to clipboard');
-          },
-        },
+      ]}
+      canCopyLink
+      canCopyReference
+      menu={[
         {
           label: 'Report',
           action: () => setOpenReport(true),
