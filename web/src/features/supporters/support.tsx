@@ -13,7 +13,6 @@ const StyledButton = styled.button`
   color: ${({ theme }) => theme.colors.background};
   border-radius: ${({ theme }) => theme.border_radius.base};
   padding: 12px;
-  margin-top: 12px;
   border: none;
   cursor: pointer;
   &:hover {

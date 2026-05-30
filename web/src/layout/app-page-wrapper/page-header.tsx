@@ -1,14 +1,9 @@
 import styled from '@emotion/styled';
-import {
-  IconArrowLeft,
-  IconDots,
-  IconLink,
-  IconQuestionMark,
-} from '@tabler/icons-react';
+import { IconArrowLeft, IconDots, IconLink } from '@tabler/icons-react';
 import { Group } from '../../components/flex/group';
 import { Navigation, NavigationLinkType } from '../../components/nav';
 import { Menu, MenuItemType } from '../../components/menu';
-import { CONTENT_MAX_WIDTH, CONTENT_PADDING } from './shared';
+import { CONTENT_MAX_WIDTH, CONTENT_PADDING } from '../../static/spacing';
 import { IconButton } from '../../components/icon-button';
 import { LinkProps, useLocation, useNavigate } from 'react-router-dom';
 import { useSnackbar } from '../../hooks/useSnackbar';
@@ -21,13 +16,13 @@ const StyledPageHeader = styled.div`
   position: relative;
   flex-grow: 0;
   flex-shrink: 0;
-  flex-basis: 50px;
+  flex-basis: 60px;
   margin-left: 10px;
   margin-right: 10px;
   width: 100%;
   padding: ${CONTENT_PADDING};
   max-width: ${CONTENT_MAX_WIDTH};
-  margin: 0 auto;
+  margin: 0 auto 12px;
 `;
 
 export type QuickActionType = {
@@ -101,7 +96,13 @@ const PageHeader = ({
               <IconArrowLeft />
             </IconButton>
           )}
-          <div>{navigation && <Navigation links={navigation} />}</div>
+          <div
+            css={{
+              margin: '16px 0 8px',
+            }}
+          >
+            {navigation && <Navigation links={navigation} />}
+          </div>
         </Group>
         <Group gap="sm">
           {quickActions?.map(({ icon: Icon, label, action, to }) => (

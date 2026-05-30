@@ -117,8 +117,8 @@ export const UserOverview: React.FC<OverviewSectionProps> = ({
 }) => {
   const { isLoggedIn } = useAuth();
   return (
-    <Stack align="center" justify="center" gap={10}>
-      <Group wrap gap={10}>
+    <Stack align="center" justify="center" gap="xl">
+      <Group wrap gap="lg">
         {image ? (
           <img
             width={ImageSize}

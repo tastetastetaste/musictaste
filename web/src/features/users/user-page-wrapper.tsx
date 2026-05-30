@@ -186,7 +186,7 @@ const UserPageWrapper: React.FC = () => {
         canCopyLink
         canCopyReference
       >
-        <Stack>
+        <Stack gap="lg">
           <UserOverview
             user={data}
             isUserMyself={isUserMyself}

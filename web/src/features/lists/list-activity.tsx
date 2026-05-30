@@ -72,7 +72,7 @@ const ListActivityOnDesktop = ({
 }) => {
   return (
     <Stack gap="lg">
-      <Stack gap="sm">
+      <Stack gap="md">
         <Group justify="apart">
           <Typography size="title">Likes</Typography>
           <ListLikeButton
@@ -83,7 +83,7 @@ const ListActivityOnDesktop = ({
         </Group>
         <ListLikes id={list.id} />
       </Stack>
-      <Stack gap="sm">
+      <Stack gap="md">
         <Typography size="title">Comments</Typography>
         <Comments entityType={CommentEntityType.LIST} entityId={list.id} />
       </Stack>

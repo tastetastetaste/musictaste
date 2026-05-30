@@ -425,7 +425,7 @@ export const SubmissionItemWrapper = ({
         display: 'flex',
         flexDirection: 'column',
         padding: '10px',
-        marginBottom: '6px',
+        marginBottom: '8px',
         backgroundColor: theme.colors.background_sub,
         borderRadius: theme.border_radius.base,
       })}

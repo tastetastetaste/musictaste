@@ -217,7 +217,7 @@ export const Comments = ({
           onFinish={() => setReplyTo(null)}
         />
       ) : (
-        <div css={{ padding: '32px 0' }}>
+        <div css={{ padding: '16px 0' }}>
           <Group justify="center">
             <span>Login or sign up to comment</span>
           </Group>

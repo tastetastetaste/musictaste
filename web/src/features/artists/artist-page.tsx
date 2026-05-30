@@ -74,7 +74,7 @@ const ArtistReleasesSection: React.FC<ArtistReleasesSectionProps> = ({
   };
 
   return (
-    <>
+    <Stack gap="sm">
       <div
         css={{ cursor: 'pointer', padding: '8px 0' }}
         onClick={toggleCollapsed}
@@ -104,7 +104,7 @@ const ArtistReleasesSection: React.FC<ArtistReleasesSectionProps> = ({
           manualLoad
         />
       )}
-    </>
+    </Stack>
   );
 };
 
@@ -160,7 +160,7 @@ const ArtistReleases: React.FC<ArtistReleasesProps> = ({
   let firstSectionExpanded = false;
 
   return (
-    <Stack gap="sm">
+    <Stack gap="lg">
       {RELEASE_SECTIONS.map((section) => {
         const count =
           currentCounts.find((c) => c.type === section.releaseType)?.count || 0;
@@ -258,7 +258,7 @@ const ArtistPage = () => {
       {isLoading ? <Loading /> : <div></div>}
 
       {artist ? (
-        <Stack>
+        <Stack gap="lg">
           <div
             css={{
               minHeight: '130px',

@@ -126,7 +126,7 @@ const UserMusicPage = () => {
       >
         <UserMusicFilters userId={user.id} ratingsCount={stats.ratingsCount} />
       </Sidebar>
-      <Group align="start" gap="lg">
+      <Group align="start" gap="xl">
         <div style={{ flex: 1 }}>
           <Ratings userId={user.id} isUserMyself={isUserMyself} />
         </div>

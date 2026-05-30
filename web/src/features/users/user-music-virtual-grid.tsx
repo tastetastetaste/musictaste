@@ -4,7 +4,7 @@ import { IEntriesResponse } from 'shared';
 import { Group } from '../../components/flex/group';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
 import { Release } from '../releases/release';
-import { RELEASE_GRID_PADDING } from '../releases/releases-virtual-grid';
+import { RELEASE_GRID_PADDING } from '../../static/spacing';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
 import { useElementHeight } from '../../hooks/useElementHeight';
 import { useEffect } from 'react';

@@ -1,12 +1,9 @@
-import { useTheme } from '@emotion/react';
 import { IconHistory, IconPencil } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { Outlet, useParams } from 'react-router-dom';
 import {
   CommentEntityType,
-  ExplicitCoverArt,
-  IReleaseCover,
   IReleaseResponse,
   IUserSummary,
   ReportType,
@@ -16,125 +13,22 @@ import { FlexChild } from '../../components/flex/flex-child';
 import { Group } from '../../components/flex/group';
 import { ResponsiveRow } from '../../components/flex/responsive-row';
 import { Stack } from '../../components/flex/stack';
-import { InfoRow } from '../../components/info-row';
 import { Loading } from '../../components/loading';
 import { Navigation } from '../../components/nav';
 import { Typography } from '../../components/typography';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
-import { useSnackbar } from '../../hooks/useSnackbar';
 import AppPageWrapper from '../../layout/app-page-wrapper';
 import { SOMETHING_WENT_WRONG } from '../../static/feedback';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
-import { formatReleaseDate, getYearFromDate } from '../../utils/date-format';
-import { useAuth } from '../account/useAuth';
+import { getYearFromDate } from '../../utils/date-format';
 import { Comments } from '../comments/comments';
-import { RatingCircle } from '../ratings/rating';
 import { ReportDialog } from '../reports/report-dialog';
 import { User } from '../users/user';
-import { formatReleaseType } from './format-release-type';
-import { ReleaseActionsFullPage } from './release-actions/release-actions-full-page';
-import ReleaseGenreVote from './release-genre-vote';
+import { ReleaseOverview } from './release-overview';
 import ReleaseTracks from './release-tracks';
-import {
-  ArtistsLinks,
-  GenresLinks,
-  hideExplicitCoverArtFn,
-  LabelsLinks,
-} from './release/shared';
 import { FollowingUserEntry } from './user-entry';
-
-const ReleaseInfo: React.FC<{
-  release: any;
-  isLoggedIn?: boolean;
-}> = ({
-  release: {
-    id: releaseId,
-    date,
-    datePrecision,
-    genres,
-    labels,
-    languages,
-    type,
-  },
-  isLoggedIn,
-}) => {
-  const dateStr = formatReleaseDate(date, datePrecision);
-
-  const languagesStr =
-    languages && languages.map((lang: any) => lang.name).join(', ');
-
-  // const labelStr = labels && labels.map((label: any) => label.name).join(', ');
-
-  // const genresStr =
-  //   (genres &&
-  //     genres.length !== 0 &&
-  //     genres.map((genre: any) => genre.name).join(', ')) ||
-  //   '';
-
-  return (
-    <Stack>
-      <InfoRow label="Date">
-        <Typography>{dateStr}</Typography>
-      </InfoRow>
-
-      <InfoRow label="Type">
-        <Typography>{formatReleaseType(type)}</Typography>
-      </InfoRow>
-      {languagesStr && (
-        <InfoRow label="Language">
-          <Typography>{languagesStr}</Typography>
-        </InfoRow>
-      )}
-      {labels.length ? (
-        <InfoRow label="Label">
-          {/* <Typography>{labelStr}</Typography> */}
-
-          <LabelsLinks labels={labels} />
-        </InfoRow>
-      ) : null}
-      <InfoRow label="Genre">
-        {/* <Typography>{genresStr}</Typography> */}
-
-        <GenresLinks genres={genres} />
-        {isLoggedIn && <ReleaseGenreVote releaseId={releaseId} />}
-      </InfoRow>
-    </Stack>
-  );
-};
-
-const ReleaseCover: React.FC<{
-  explicitCoverArt?: ExplicitCoverArt[];
-  src?: IReleaseCover;
-  alt: string;
-}> = ({ src, alt, explicitCoverArt }) => {
-  const { border_radius, colors } = useTheme();
-  const size = 600;
-
-  const hideExplicitCoverArt = hideExplicitCoverArtFn(explicitCoverArt);
-
-  return (
-    <img
-      id="cover"
-      src={
-        hideExplicitCoverArt
-          ? `/placeholder/explicit-lg.jpeg`
-          : src
-            ? src.lg
-            : '/placeholder/lg.jpeg'
-      }
-      width={size}
-      height={size}
-      css={{
-        maxWidth: '100%',
-        borderRadius: border_radius.base,
-        height: 'auto',
-        boxShadow: `${colors.background} 0px 2px 3px`,
-      }}
-      alt={alt}
-    />
-  );
-};
+import { SIDECONTENT_WIDTH } from '../../static/spacing';
 
 const FollowingSection: React.FC<{
   releaseId: string;
@@ -145,18 +39,18 @@ const FollowingSection: React.FC<{
   );
 
   if (!data || data.length === 0) {
-    return <div></div>;
+    return null;
   }
 
   return (
     <div
       css={{
-        width: '360px',
+        width: SIDECONTENT_WIDTH,
         maxWidth: '100%',
         overflow: 'hidden',
       }}
     >
-      <Stack gap="sm">
+      <Stack gap="md">
         <Typography size="title">From Following</Typography>
         <Group wrap gap={10}>
           {data?.map((r) => <FollowingUserEntry entry={r} />)}
@@ -174,13 +68,13 @@ const ReleaseContributors = ({
   return (
     <div
       css={{
-        width: '360px',
+        width: SIDECONTENT_WIDTH,
         maxWidth: '100%',
         overflow: 'hidden',
-        paddingBottom: '24px',
+        paddingBottom: '12px',
       }}
     >
-      <Stack gap="sm">
+      <Stack gap="md">
         <Typography size="title">Contributors</Typography>
         <Group gap="sm">
           {contributors.map((u, i) => (
@@ -196,16 +90,8 @@ export const ReleasePageContainer: React.FC<{
   data: IReleaseResponse;
   children: JSX.Element | JSX.Element[];
 }> = ({ data: { release, tracks, contributors }, children }) => {
-  const { id, title, titleLatin, cover, artists, date } = release;
-
-  const { colors } = useTheme();
-
-  const { isLoggedIn } = useAuth();
-
-  const { snackbar } = useSnackbar();
-
-  const smScreen = useMediaQuery({ down: 'md' });
-  const mdScreen = useMediaQuery({ down: 'lg' });
+  const mdScreen = useMediaQuery({ down: 'md' });
+  const smScreen = useMediaQuery({ down: 'sm' });
 
   const [openReport, setOpenReport] = useState(false);
 
@@ -244,91 +130,40 @@ export const ReleasePageContainer: React.FC<{
         ''
       } Music Reviews, Music Ratings, Music Lists.`}
     >
-      <ResponsiveRow breakpoint="md" gap="lg">
-        <FlexChild grow shrink basis="0">
-          <Group justify="center">
-            <ReleaseCover
-              explicitCoverArt={release.explicitCoverArt}
-              src={release.cover}
-              alt={`${release.artists.map((a) => a.name).join(', ')} - ${release.title}`}
-            />
-          </Group>
-        </FlexChild>
-        <FlexChild
-          grow
-          shrink
-          basis="0"
-          style={{
-            paddingTop: smScreen ? '24px' : '40px',
-          }}
-        >
-          <Stack gap="md">
-            <Group align="center" justify="apart" gap="lg">
-              <Stack>
-                <ArtistsLinks artists={artists} />
-                <Typography size="title-xl">{title}</Typography>
-                {titleLatin && (
-                  <Typography size="title-lg">{titleLatin}</Typography>
-                )}
-              </Stack>
-              {release.stats?.ratingsCount > 0 && (
-                <RatingCircle
-                  rating={release.stats.ratingsAvg}
-                  count={release.stats.ratingsCount}
-                  lg
-                />
-              )}
-            </Group>
-            <ReleaseInfo release={release} isLoggedIn={isLoggedIn} />
-            <div
-              style={{
-                paddingTop: '12px',
-                paddingBottom: '12px',
-              }}
-            >
-              {isLoggedIn && <ReleaseActionsFullPage id={id} date={date} />}
-            </div>
-          </Stack>
-        </FlexChild>
-      </ResponsiveRow>
-      <ResponsiveRow breakpoint="md" gap="lg" reversed>
-        <FlexChild grow>{children}</FlexChild>
-        <FlexChild basis="400px">
-          <div
-            css={{
-              position: 'relative',
-              top: '10px',
-            }}
-          >
-            <Stack align={smScreen ? 'center' : 'end'} gap="lg">
+      <Stack gap="xl">
+        <ReleaseOverview release={release} />
+        <ResponsiveRow breakpoint="md" gap="xl" reversed>
+          <FlexChild grow>{children}</FlexChild>
+          <FlexChild basis={SIDECONTENT_WIDTH}>
+            <Stack align={mdScreen ? 'center' : undefined} gap="xl">
               {tracks && (
                 <ReleaseTracks
-                  releaseId={id}
+                  releaseId={release.id}
                   releaseTracks={tracks}
-                  date={date}
+                  date={release.date}
                 />
               )}
-              <FollowingSection releaseId={id} />
+              <FollowingSection releaseId={release.id} />
               <div
                 css={{
-                  width: '360px',
+                  width: SIDECONTENT_WIDTH,
                   maxWidth: '100%',
                   overflow: 'hidden',
                 }}
               >
-                <Stack gap="sm">
+                <Stack gap="md">
                   <Typography size="title">Comments</Typography>
                   <Comments
                     entityType={CommentEntityType.RELEASE}
-                    entityId={id}
+                    entityId={release.id}
                   />
                 </Stack>
               </div>
               <ReleaseContributors contributors={contributors} />
             </Stack>
-          </div>
-        </FlexChild>
-      </ResponsiveRow>
+          </FlexChild>
+        </ResponsiveRow>
+      </Stack>
       <ReportDialog
         isOpen={openReport}
         onClose={() => setOpenReport(false)}
@@ -364,23 +199,25 @@ const ReleasePageWrapper: React.FC = () => {
 
   return (
     <ReleasePageContainer data={data}>
-      <Navigation
-        links={[
-          {
-            to: `/release/${id}`,
-            label: 'Reviews',
-          },
-          {
-            to: `/release/${id}/lists`,
-            label: 'Lists',
-          },
-          {
-            to: `/release/${id}/ratings`,
-            label: 'Ratings',
-          },
-        ]}
-      />
-      <Outlet context={{ releaseId: data.release.id }} />
+      <Stack gap="lg">
+        <Navigation
+          links={[
+            {
+              to: `/release/${id}`,
+              label: 'Reviews',
+            },
+            {
+              to: `/release/${id}/lists`,
+              label: 'Lists',
+            },
+            {
+              to: `/release/${id}/ratings`,
+              label: 'Ratings',
+            },
+          ]}
+        />
+        <Outlet context={{ releaseId: data.release.id }} />
+      </Stack>
     </ReleasePageContainer>
   );
 };

@@ -33,6 +33,7 @@ import { User } from '../users/user';
 import { ListActivity } from './list-activity';
 import ListItems from './list-items';
 import UpdateListDialog from './update-list-dialog';
+import { SIDECONTENT_WIDTH } from '../../static/spacing';
 
 const ListBody = ({ list }: { list: IListResponse['list'] }) => {
   if (!list) throw new Error('');
@@ -188,7 +189,7 @@ const ListPage = () => {
         {isLoading ? (
           <Loading />
         ) : list ? (
-          <Group align="start" gap="lg">
+          <Group align="start" gap="xl">
             <FlexChild grow>
               <ListItems
                 id={list.id}
@@ -201,7 +202,7 @@ const ListPage = () => {
               </ListItems>
             </FlexChild>
             {!isMobile ? (
-              <StickyContainer width={400}>
+              <StickyContainer width={SIDECONTENT_WIDTH}>
                 <ListActivity list={list} />
               </StickyContainer>
             ) : null}

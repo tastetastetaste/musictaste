@@ -1,10 +1,11 @@
 import { forwardRef } from 'react';
+import { GAP_LG, GAP_MD, GAP_SM, GAP_XL } from '../../static/spacing';
 
 interface GroupProps {
   children: React.ReactNode;
   align?: 'start' | 'end' | 'center';
   justify?: 'start' | 'end' | 'center' | 'apart';
-  gap?: number | 'sm' | 'md' | 'lg';
+  gap?: number | 'sm' | 'md' | 'lg' | 'xl';
   wrap?: boolean;
   overflow?: 'hidden';
 }
@@ -33,12 +34,14 @@ export const Group = forwardRef(
                   : 'flex-start',
           gap:
             gap === 'sm'
-              ? '4px'
+              ? GAP_SM
               : gap === 'md'
-                ? '8px'
+                ? GAP_MD
                 : gap === 'lg'
-                  ? '16px'
-                  : gap,
+                  ? GAP_LG
+                  : gap === 'xl'
+                    ? GAP_XL
+                    : gap,
           flexWrap: wrap ? 'wrap' : 'nowrap',
           width: justify === 'apart' ? '100%' : undefined,
           overflow,

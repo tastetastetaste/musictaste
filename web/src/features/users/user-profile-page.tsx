@@ -8,7 +8,6 @@ import {
   ReviewsSortByEnum,
   VoteType,
 } from 'shared';
-import { useUserReviewVotes } from '../reviews/useUserReviewVotes';
 import { FlexChild } from '../../components/flex/flex-child';
 import { Grid } from '../../components/flex/grid';
 import { ResponsiveRow } from '../../components/flex/responsive-row';
@@ -17,15 +16,19 @@ import { Link } from '../../components/links/link';
 import { Loading } from '../../components/loading';
 import { Markdown } from '../../components/markdown';
 import { Typography } from '../../components/typography';
+import {
+  LIST_GRID_GAP,
+  RELEASE_GRID_GAP,
+  SIDECONTENT_WIDTH,
+} from '../../static/spacing';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
 import { Comments } from '../comments/comments';
 import { List } from '../lists/list';
-import { LIST_GRID_PADDING } from '../lists/lists-list-renderer';
 import { Release } from '../releases/release';
-import { RELEASE_GRID_GAP } from '../releases/releases-virtual-grid';
 import { Review } from '../reviews/review';
 import { updateReviewAfterVote_2 } from '../reviews/update-review-after-vote';
+import { useUserReviewVotes } from '../reviews/useUserReviewVotes';
 import { UserPageOutletContext } from './user-page-wrapper';
 import { UserGenresChart, UserRatingsChart } from './user-profile-charts';
 
@@ -126,7 +129,7 @@ const Reviews: React.FC<{ user: IUser }> = ({ user }) => {
   return (
     <Fragment>
       {reviews.length > 0 && (
-        <Fragment>
+        <Stack gap="lg">
           <Link size="title-lg" to={`/${user.username}/reviews`}>
             Recent Reviews
           </Link>
@@ -155,7 +158,7 @@ const Reviews: React.FC<{ user: IUser }> = ({ user }) => {
               />
             ))}
           </Stack>
-        </Fragment>
+        </Stack>
       )}
     </Fragment>
   );
@@ -174,16 +177,16 @@ const Lists: React.FC<{ username: string; userId: string }> = ({
   return (
     <Fragment>
       {lists.length > 0 && (
-        <Fragment>
+        <Stack gap="lg">
           <Link size="title-lg" to={`/${username}/lists`}>
             Recent Lists
           </Link>
-          <Grid cols={[1, 2, 3]} gap={LIST_GRID_PADDING}>
+          <Grid cols={[1, 2, 3]} gap={LIST_GRID_GAP}>
             {lists.map((list) => (
               <List key={list.id} list={list} withoutUser />
             ))}
           </Grid>
-        </Fragment>
+        </Stack>
       )}
     </Fragment>
   );
@@ -216,7 +219,7 @@ const UserProfilePage = () => {
         </FlexChild>
         {hasRatings || hasGenres ? (
           <FlexChild grow shrink>
-            <ResponsiveRow breakpoint="sm" gap="md">
+            <ResponsiveRow breakpoint="sm">
               <FlexChild grow shrink>
                 {hasRatings && <Typography size="title-lg">Ratings</Typography>}
                 <UserRatingsChart userId={user.id} username={user.username} />
@@ -231,10 +234,10 @@ const UserProfilePage = () => {
           </FlexChild>
         ) : null}
       </ResponsiveRow>
-      <Stack gap="lg">
-        <ResponsiveRow breakpoint="md" gap="md">
+      <Stack gap="xl">
+        <ResponsiveRow breakpoint="md" gap="xl">
           {hasRatings ? (
-            <FlexChild grow={3} shrink>
+            <FlexChild grow shrink>
               <Stack gap="lg">
                 <RecentlyAddedReleases
                   userId={user.id}
@@ -243,7 +246,7 @@ const UserProfilePage = () => {
               </Stack>
             </FlexChild>
           ) : null}
-          <FlexChild grow={1} shrink>
+          <FlexChild shrink basis={SIDECONTENT_WIDTH}>
             <Stack gap="lg">
               <Typography size="title-lg">Shoutbox</Typography>
               <Comments

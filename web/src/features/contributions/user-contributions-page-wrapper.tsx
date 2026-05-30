@@ -47,9 +47,9 @@ const UserContributionsPageWrapper = () => {
 
   return (
     <AppPageWrapper>
-      <Stack gap={10}>
+      <Stack gap="lg">
         <Typography>{`@${username}'s contributions`}</Typography>
-        <Stack align="start">
+        <Stack gap="md" align="start">
           <Navigation
             links={[
               {

@@ -1,11 +1,12 @@
 import React from 'react';
 import { BreakPointKeyT, mediaQueryMinWidth } from '../../hooks/useMediaQuery';
+import { GAP_SM, GAP_MD, GAP_LG, GAP_XL } from '../../static/spacing';
 
 interface ResponsiveRowProps {
   breakpoint?: BreakPointKeyT;
   children?: any;
   reversed?: boolean;
-  gap?: number | 'sm' | 'md' | 'lg';
+  gap?: number | 'sm' | 'md' | 'lg' | 'xl';
 }
 
 export const ResponsiveRow: React.FC<ResponsiveRowProps> = ({
@@ -22,12 +23,14 @@ export const ResponsiveRow: React.FC<ResponsiveRowProps> = ({
         flexDirection: reversed ? 'column-reverse' : 'column',
         gap:
           gap === 'sm'
-            ? '4px'
+            ? GAP_SM
             : gap === 'md'
-              ? '8px'
+              ? GAP_MD
               : gap === 'lg'
-                ? '16px'
-                : gap,
+                ? GAP_LG
+                : gap === 'xl'
+                  ? GAP_XL
+                  : gap,
         [mediaQueryMinWidth[breakpoint]]: {
           flexDirection: 'row',
         },

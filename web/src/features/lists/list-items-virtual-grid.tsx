@@ -5,7 +5,7 @@ import { Group } from '../../components/flex/group';
 import { Typography } from '../../components/typography';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
 import { Release } from '../releases/release';
-import { RELEASE_GRID_PADDING } from '../releases/releases-virtual-grid';
+import { RELEASE_GRID_PADDING } from '../../static/spacing';
 import { getRowIndexes } from '../users/user-music-virtual-grid';
 import { useElementHeight } from '../../hooks/useElementHeight';
 import { useLocalStorage } from '../../hooks/useLocalStorage';

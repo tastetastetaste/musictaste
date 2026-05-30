@@ -18,7 +18,7 @@ const StyledNavLink = styled(NavLink)`
 
 const NavContainer = styled.div`
   padding: 10px;
-  margin: 10px 0;
+  // margin: 10px 0;
   background: ${({ theme }) => theme.colors.background_sub};
   border-radius: ${({ theme }) => theme.border_radius.base};
 `;

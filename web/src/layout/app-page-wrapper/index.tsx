@@ -10,7 +10,7 @@ import {
 } from '../../static/site-info';
 import AppHeader from './app-header';
 import PageHeader, { QuickActionType } from './page-header';
-import { CONTENT_MAX_WIDTH, CONTENT_PADDING } from './shared';
+import { CONTENT_MAX_WIDTH, CONTENT_PADDING } from '../../static/spacing';
 
 interface props {
   title?: string;

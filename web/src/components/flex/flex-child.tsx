@@ -6,6 +6,7 @@ interface FlexChildProps {
   basis?: string;
   align?: 'flex-start' | 'center' | 'flex-end';
   order?: number;
+  maxWidth?: string;
 }
 
 export const FlexChild = styled.div<FlexChildProps>`
@@ -15,5 +16,5 @@ export const FlexChild = styled.div<FlexChildProps>`
   flex-basis: ${({ basis }) => (basis ? basis : 0)};
   align-self: ${({ align }) => align};
   order: ${({ order }) => (order ? order : undefined)};
-  max-width: 100%;
+  max-width: ${({ maxWidth }) => maxWidth || '100%'};
 `;

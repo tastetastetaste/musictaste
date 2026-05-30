@@ -1,7 +1,6 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Fragment, useMemo } from 'react';
 import { FindReleasesType, ReviewsSortByEnum, VoteType } from 'shared';
-import { useUserReviewVotes } from '../features/reviews/useUserReviewVotes';
 import { StickyContainer } from '../components/containers/sticky-container';
 import { Feedback } from '../components/feedback';
 import { FlexChild } from '../components/flex/flex-child';
@@ -12,23 +11,27 @@ import { Link } from '../components/links/link';
 import { Loading } from '../components/loading';
 import { useAuth } from '../features/account/useAuth';
 import { List } from '../features/lists/list';
-import { LIST_GRID_PADDING } from '../features/lists/lists-list-renderer';
 import { Release } from '../features/releases/release';
-import { RELEASE_GRID_GAP } from '../features/releases/releases-virtual-grid';
 import { Review } from '../features/reviews/review';
 import ReviewsListRenderer from '../features/reviews/reviews-list-renderer';
 import { updateReviewAfterVote_2 } from '../features/reviews/update-review-after-vote';
+import { useUserReviewVotes } from '../features/reviews/useUserReviewVotes';
 import Support from '../features/supporters/support';
 import { useMediaQuery } from '../hooks/useMediaQuery';
 import { useOnScreen } from '../hooks/useOnScreen';
 import AppPageWrapper from '../layout/app-page-wrapper';
+import {
+  LIST_GRID_GAP,
+  RELEASE_GRID_GAP,
+  SIDECONTENT_WIDTH,
+} from '../static/spacing';
 import { api } from '../utils/api';
 import { cacheKeys } from '../utils/cache-keys';
 import FeaturesOverview from './features-overview';
 
 const ROOT_MARGIN = '100px';
 const SECTION_MIN_HEIGHT = '500px';
-const NEW_RELEASES_SECTION_MIN_HEIGHT = '300px';
+const NEW_RELEASES_SECTION_MIN_HEIGHT = '250px';
 
 const TopReviewsSection = () => {
   const queryClient = useQueryClient();
@@ -116,7 +119,7 @@ const LatestListsSection = () => {
           Latest Lists
         </Link>
         {lists && lists.length === 0 && <Feedback message="No lists yet" />}
-        <Grid cols={[1, 2, 3, 1]} gap={LIST_GRID_PADDING}>
+        <Grid cols={[1, 2, 3, 1]} gap={LIST_GRID_GAP}>
           {lists &&
             (lists.length > 6 ? lists.slice(0, 6) : lists).map((list) => (
               <List key={list.id} list={list} />
@@ -228,7 +231,7 @@ const HomePage = () => {
 
   return (
     <AppPageWrapper hideBackButton>
-      <Stack gap="lg">
+      <Stack gap="xl">
         {!isLoading && !isLoggedIn && <FeaturesOverview />}
 
         {/* minimize layout shift */}
@@ -236,13 +239,15 @@ const HomePage = () => {
           <Fragment>
             <NewReleasesSection />
             <Support />
-            <Group gap="lg" align="start">
+            <Group gap="xl" align="start">
               <FlexChild grow>
-                <TopReviewsSection />
-                {isMobile ? <LatestListsSection /> : null}
+                <Stack gap="xl">
+                  <TopReviewsSection />
+                  {isMobile ? <LatestListsSection /> : null}
+                </Stack>
               </FlexChild>
               {!isMobile ? (
-                <StickyContainer width={400}>
+                <StickyContainer width={SIDECONTENT_WIDTH}>
                   <LatestListsSection />
                 </StickyContainer>
               ) : null}

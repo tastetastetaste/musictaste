@@ -9,9 +9,7 @@ import { FetchMoreOnClick } from '../../components/fetch-more';
 import { useElementHeight } from '../../hooks/useElementHeight';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
 import { useEffect } from 'react';
-
-export const RELEASE_GRID_PADDING = '4px';
-export const RELEASE_GRID_GAP = '8px';
+import { RELEASE_GRID_PADDING } from '../../static/spacing';
 
 export const ReleasesVirtualGrid: React.FC<{
   releases: InfiniteData<IReleasesResponse>;

@@ -4,7 +4,7 @@ import { Group } from '../../components/flex/group';
 import AppSidebar from '../app-sidebar';
 import UserMenu from './user-menu';
 import { QuickSearch } from '../../features/search/quick-search';
-import { CONTENT_MAX_WIDTH, CONTENT_PADDING } from './shared';
+import { CONTENT_MAX_WIDTH, CONTENT_PADDING } from '../../static/spacing';
 import { useTheme } from '@emotion/react';
 import { IconButton } from '../../components/icon-button';
 import { useNavigate } from 'react-router-dom';
@@ -83,7 +83,7 @@ const AppHeader = memo(function AppHeaderFu() {
         width: CONTENT_MAX_WIDTH,
         padding: CONTENT_PADDING,
         margin: '0 auto',
-        paddingTop: '8px',
+        paddingTop: '12px',
         position: 'sticky',
         top: 0,
         zIndex: 1,

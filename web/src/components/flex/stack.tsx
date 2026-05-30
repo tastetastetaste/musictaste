@@ -1,8 +1,10 @@
+import { GAP_SM, GAP_MD, GAP_LG, GAP_XL } from '../../static/spacing';
+
 interface StackProps {
   children: React.ReactNode;
   align?: 'start' | 'end' | 'center' | 'stretch';
   justify?: 'start' | 'end' | 'center' | 'apart';
-  gap?: number | 'sm' | 'md' | 'lg';
+  gap?: number | 'sm' | 'md' | 'lg' | 'xl';
   wrap?: boolean;
 }
 
@@ -36,12 +38,14 @@ export const Stack: React.FC<StackProps> = ({
                 : 'flex-start',
         gap:
           gap === 'sm'
-            ? '4px'
+            ? GAP_SM
             : gap === 'md'
-              ? '8px'
+              ? GAP_MD
               : gap === 'lg'
-                ? '16px'
-                : gap,
+                ? GAP_LG
+                : gap === 'xl'
+                  ? GAP_XL
+                  : gap,
         flexWrap: wrap ? 'wrap' : 'nowrap',
         height: justify === 'apart' ? '100%' : undefined,
       }}

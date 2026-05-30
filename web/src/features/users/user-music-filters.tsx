@@ -4,15 +4,16 @@ import { useQuery } from '@tanstack/react-query';
 import { Fragment, useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { EntriesSortByEnum, ReleaseType } from 'shared';
+import { StickyContainer } from '../../components/containers/sticky-container';
 import { Dropdown } from '../../components/dropdown';
 import { Stack } from '../../components/flex/stack';
 import { Typography } from '../../components/typography';
+import { SM_SIDECONTENT_WIDTH } from '../../static/spacing';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
+import { ReleaseTypeOptions } from '../contributions/shared';
 import { useRatingColor } from '../ratings/useRatingColor';
 import { useSortBy } from './user-music-page';
-import { StickyContainer } from '../../components/containers/sticky-container';
-import { ReleaseTypeOptions } from '../contributions/shared';
 
 type Option = { label: string; value: string; count: number };
 
@@ -429,7 +430,7 @@ const UserMusicFilters = ({
   const [query, setQuery] = useSearchParams();
 
   return (
-    <StickyContainer width={280}>
+    <StickyContainer width={SM_SIDECONTENT_WIDTH}>
       <Stack gap="md">
         {query.toString() && (
           <button

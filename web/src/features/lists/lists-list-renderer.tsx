@@ -7,16 +7,15 @@ import { Loading } from '../../components/loading';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
 import { List } from './list';
-
-export const LIST_GRID_PADDING = '8px';
+import { LIST_GRID_GAP } from '../../static/spacing';
 
 const Container = styled.div`
   padding: 0;
   margin: 0;
   width: 100%;
   display: grid;
-  grid-column-gap: ${LIST_GRID_PADDING};
-  grid-row-gap: ${LIST_GRID_PADDING};
+  grid-column-gap: ${LIST_GRID_GAP};
+  grid-row-gap: ${LIST_GRID_GAP};
 
   grid-template-columns: repeat(1, minmax(0, 1fr));
   @media only screen and (min-width: 600px) {

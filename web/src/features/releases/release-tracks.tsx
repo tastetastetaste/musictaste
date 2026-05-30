@@ -16,6 +16,7 @@ import dayjs from 'dayjs';
 import { FlexChild } from '../../components/flex/flex-child';
 import Color from 'color';
 import { Tooltip } from '../../components/popover/tooltip';
+import { SIDECONTENT_WIDTH } from '../../static/spacing';
 export const FavIcon = IconThumbUpFilled;
 export const LeastFavIcon = IconThumbDownFilled;
 
@@ -55,7 +56,7 @@ const ReleaseTracks: React.FC<{
   const { entry, createEntry, trackVote, removeTrackVote, createEntryLoading } =
     useReleaseTrackActions(releaseId);
 
-  const [tracks, setTrack] = useState<TrackWithMyVote[]>();
+  const [tracks, setTrack] = useState<TrackWithMyVote[]>([]);
   const isUnreleased = dayjs(date).isAfter(dayjs());
 
   useEffect(() => {
@@ -100,10 +101,12 @@ const ReleaseTracks: React.FC<{
     }
   };
 
+  if (!tracks.length) return null;
+
   return (
     <div
       css={{
-        width: '360px',
+        width: SIDECONTENT_WIDTH,
         maxWidth: '100%',
         overflow: 'hidden',
       }}

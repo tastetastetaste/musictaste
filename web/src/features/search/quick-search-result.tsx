@@ -6,10 +6,7 @@ import { Stack } from '../../components/flex/stack';
 import { Loading } from '../../components/loading';
 import { Tabs } from '../../components/tabs';
 import { mediaQueryMinWidth } from '../../hooks/useMediaQuery';
-import {
-  CONTENT_MAX_WIDTH,
-  CONTENT_PADDING,
-} from '../../layout/app-page-wrapper/shared';
+import { CONTENT_MAX_WIDTH, CONTENT_PADDING } from '../../static/spacing';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
 import {

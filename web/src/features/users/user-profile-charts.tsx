@@ -125,7 +125,9 @@ export const UserRatingsChart: React.FC<{
     : null;
 
   return (
-    <Group justify="center">{ChartData && <Chart data={ChartData} />}</Group>
+    <Group justify="center">
+      <div>{ChartData && <Chart data={ChartData} />}</div>
+    </Group>
   );
 };
 export const UserGenresChart: React.FC<{
@@ -142,16 +144,20 @@ export const UserGenresChart: React.FC<{
 
   return (
     <Group justify="center">
-      {data && (
-        <Chart
-          data={data.slice(0, numberOfGenres).map((g, i) => ({
-            title: g.name,
-            value: g.count,
-            color: getColor(((numberOfGenres - 1 - i) / numberOfGenres) * 100),
-            link: `/${username}/music?genre=${g.id}`,
-          }))}
-        />
-      )}
+      <div>
+        {data && (
+          <Chart
+            data={data.slice(0, numberOfGenres).map((g, i) => ({
+              title: g.name,
+              value: g.count,
+              color: getColor(
+                ((numberOfGenres - 1 - i) / numberOfGenres) * 100,
+              ),
+              link: `/${username}/music?genre=${g.id}`,
+            }))}
+          />
+        )}
+      </div>
     </Group>
   );
 };

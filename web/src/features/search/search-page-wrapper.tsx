@@ -4,6 +4,7 @@ import AppPageWrapper from '../../layout/app-page-wrapper';
 import { Navigation } from '../../components/nav';
 import { useDebounce } from '../../hooks/useDebounce';
 import { SearchInput } from './search-input';
+import { Stack } from '../../components/flex/stack';
 
 export type SearchPageOutletContext = {
   q: string;
@@ -23,48 +24,49 @@ const SearchPageWrapper: React.FC = () => {
       setParams({});
     }
   };
-  
 
   return (
     <AppPageWrapper title="Search">
-      <SearchInput
-        placeholder="Search..."
-        value={q}
-        onChange={handleInputChange}
-      />
-      <Navigation
-        links={[
-          {
-            label: 'All',
-            to: `/search${debouncedValue ? '?q=' + debouncedValue : ''}`,
-          },
-          {
-            label: 'Release',
-            to: `/search/release${debouncedValue ? '?q=' + debouncedValue : ''}`,
-          },
-          {
-            label: 'Artist',
-            to: `/search/artist${debouncedValue ? '?q=' + debouncedValue : ''}`,
-          },
-          {
-            label: 'Label',
-            to: `/search/label${debouncedValue ? '?q=' + debouncedValue : ''}`,
-          },
-          {
-            label: 'Genre',
-            to: `/search/genre${debouncedValue ? '?q=' + debouncedValue : ''}`,
-          },
-          {
-            label: 'User',
-            to: `/search/user${debouncedValue ? '?q=' + debouncedValue : ''}`,
-          },
-        ]}
-      />
-      {debouncedValue ? (
-        <Outlet context={{ q: debouncedValue }} />
-      ) : (
-        <div></div>
-      )}
+      <Stack gap="md">
+        <SearchInput
+          placeholder="Search..."
+          value={q}
+          onChange={handleInputChange}
+        />
+        <Navigation
+          links={[
+            {
+              label: 'All',
+              to: `/search${debouncedValue ? '?q=' + debouncedValue : ''}`,
+            },
+            {
+              label: 'Release',
+              to: `/search/release${debouncedValue ? '?q=' + debouncedValue : ''}`,
+            },
+            {
+              label: 'Artist',
+              to: `/search/artist${debouncedValue ? '?q=' + debouncedValue : ''}`,
+            },
+            {
+              label: 'Label',
+              to: `/search/label${debouncedValue ? '?q=' + debouncedValue : ''}`,
+            },
+            {
+              label: 'Genre',
+              to: `/search/genre${debouncedValue ? '?q=' + debouncedValue : ''}`,
+            },
+            {
+              label: 'User',
+              to: `/search/user${debouncedValue ? '?q=' + debouncedValue : ''}`,
+            },
+          ]}
+        />
+        {debouncedValue ? (
+          <Outlet context={{ q: debouncedValue }} />
+        ) : (
+          <div></div>
+        )}
+      </Stack>
     </AppPageWrapper>
   );
 };
