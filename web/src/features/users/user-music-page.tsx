@@ -47,19 +47,23 @@ const Ratings = ({
 }) => {
   const { sortBy } = useSortBy();
   const [query] = useSearchParams();
-  const filters = [
-    'tag',
-    'year',
-    'decade',
-    'bucket',
-    'genre',
-    'artist',
-    'label',
-    'type',
-  ].reduce(
-    (acc, param) => ({ ...acc, [param]: query.get(param) || undefined }),
-    {},
-  );
+
+  const genresParam = query.getAll('genres');
+  const artistsParam = query.getAll('artists');
+  const labelsParam = query.getAll('labels');
+  const tagsParam = query.getAll('tags');
+  const typesParam = query.getAll('types');
+
+  const filters = {
+    year: query.get('year') || undefined,
+    decade: query.get('decade') || undefined,
+    bucket: query.get('bucket') || undefined,
+    genres: genresParam.length > 0 ? genresParam : undefined,
+    artists: artistsParam.length > 0 ? artistsParam : undefined,
+    labels: labelsParam.length > 0 ? labelsParam : undefined,
+    tags: tagsParam.length > 0 ? tagsParam : undefined,
+    types: typesParam.length > 0 ? typesParam.map(Number) : undefined,
+  };
 
   const { data, isFetching, isFetchingNextPage, fetchNextPage, hasNextPage } =
     useInfiniteQuery(

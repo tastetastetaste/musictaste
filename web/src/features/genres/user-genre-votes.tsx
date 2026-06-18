@@ -88,6 +88,7 @@ const UserGenreVotes = () => {
           <SelectGenres
             value={genreId}
             onChange={(value: string) => setGenreId(value)}
+            isMulti={false}
           />
         </div>
         {genreId && (

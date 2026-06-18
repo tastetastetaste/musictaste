@@ -13,7 +13,7 @@ import { Stack } from '../../components/flex/stack';
 import { Dropzone } from '../../components/inputs/dropzone';
 import { FormInputError } from '../../components/inputs/form-input-error';
 import { Input } from '../../components/inputs/input';
-import { Select } from '../../components/inputs/select';
+import { Select, SelectOption } from '../../components/inputs/select';
 import { Textarea } from '../../components/inputs/textarea';
 import { Link } from '../../components/links/link';
 import { Typography } from '../../components/typography';
@@ -34,9 +34,6 @@ import { ReleaseTypeOptions } from './shared';
 
 export interface EditReleaseFormValues extends UpdateReleaseDto {
   mbid: string;
-  artists: { label: string; value: string }[];
-  labels: { label: string; value: string }[];
-  languages: { label: string; value: string }[];
 }
 
 const EditReleasePage = () => {
@@ -59,9 +56,6 @@ const EditReleasePage = () => {
     artistsIds: [],
     labelsIds: [],
     languagesIds: [],
-    artists: [],
-    labels: [],
-    languages: [],
     type: '',
     explicitCoverArt: [],
   };
@@ -122,24 +116,8 @@ const EditReleasePage = () => {
         ...defaultValues,
         title: release.title,
         titleLatin: release.titleLatin,
-        artists: release.artists.map((a) => ({
-          label: a.name,
-          value: a.id,
-        })),
         artistsIds: release.artists.map((a) => a.id),
-        labels: release.labels
-          ? release.labels.map((l) => ({
-              label: l.name,
-              value: l.id,
-            }))
-          : undefined,
         labelsIds: release.labels.map((l) => l.id),
-        languages: release.languages
-          ? release.languages.map((l) => ({
-              label: l.name,
-              value: l.id,
-            }))
-          : undefined,
         languagesIds: release.languages.map((l) => l.id),
         type: release.type,
         date: formatReleaseDateInput(release.date, release.datePrecision),
@@ -233,16 +211,17 @@ const EditReleasePage = () => {
             />
             <FormInputError error={errors.titleLatin} />
             <Controller
-              name="artists"
+              name="artistsIds"
               control={control}
               render={({ field }) => (
                 <SelectArtist
                   {...field}
-                  updateArtistsIds={(value) => setValue('artistsIds', value)}
+                  isMulti
+                  availableArtists={releaseData?.release.artists}
                 />
               )}
             />
-            <FormInputError error={errors.artists} />
+            <FormInputError error={errors.artistsIds} />
             <FlexChild align="flex-end">
               <Group gap="lg" wrap>
                 <Button
@@ -264,9 +243,7 @@ const EditReleasePage = () => {
                   value={
                     ReleaseTypeOptions.find((c) => c.value === value) || null
                   }
-                  onChange={(val: { value: string; label: string }) =>
-                    onChange(val.value)
-                  }
+                  onChange={(val: SelectOption) => onChange(val?.value)}
                 />
               )}
             />
@@ -277,12 +254,13 @@ const EditReleasePage = () => {
             />
             <FormInputError error={errors.date} />
             <Controller
-              name="labels"
+              name="labelsIds"
               control={control}
               render={({ field }) => (
                 <SelectLabel
                   {...field}
-                  updateLabelsIds={(value) => setValue('labelsIds', value)}
+                  availableLabels={releaseData?.release.labels}
+                  isMulti
                 />
               )}
             />
@@ -298,16 +276,9 @@ const EditReleasePage = () => {
               </Group>
             </FlexChild>
             <Controller
-              name="languages"
+              name="languagesIds"
               control={control}
-              render={({ field }) => (
-                <SelectLanguage
-                  {...field}
-                  updateLanguagesIds={(value) =>
-                    setValue('languagesIds', value)
-                  }
-                />
-              )}
+              render={({ field }) => <SelectLanguage {...field} isMulti />}
             />
             <FormInputError error={errors.languagesIds} />
             <Controller
@@ -340,7 +311,7 @@ const EditReleasePage = () => {
                   value={ExplicitCoverArtOptions.filter((opt) =>
                     value?.includes(opt.value),
                   )}
-                  onChange={(selected) =>
+                  onChange={(selected: SelectOption[]) =>
                     onChange(selected.map((opt) => opt.value))
                   }
                 />

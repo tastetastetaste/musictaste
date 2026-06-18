@@ -3,22 +3,26 @@ import { GENRE_REFERENCE_PATTERN } from 'shared';
 import { cacheKeys } from '../../utils/cache-keys';
 import { useSnackbar } from '../../hooks/useSnackbar';
 import { useMemo, useState } from 'react';
-import { Select } from '../../components/inputs/select';
+import { Select, SelectValue } from '../../components/inputs/select';
 import { api } from '../../utils/api';
+
+interface SelectGenreProps {
+  onChange: (value: SelectValue) => void;
+  filter?: (value: string) => boolean;
+  isMulti: boolean;
+  value?: SelectValue;
+  placeholder?: string;
+  icon?: React.ReactNode;
+}
 
 export const SelectGenres = ({
   onChange,
   filter,
-  isMulti = false,
+  isMulti,
   value = null,
   placeholder,
-}: {
-  onChange: (value: string | string[]) => void;
-  filter?: (value: string) => boolean;
-  isMulti?: boolean;
-  value?: string | string[];
-  placeholder?: string;
-}) => {
+  icon,
+}: SelectGenreProps) => {
   const { snackbar } = useSnackbar();
   const [query, setQuery] = useState('');
 
@@ -39,7 +43,7 @@ export const SelectGenres = ({
         };
   }, [value, data]);
 
-  const handleInputChange = (v: any) => {
+  const handleInputChange = (v: string) => {
     const match = v.match(GENRE_REFERENCE_PATTERN);
     if (match) {
       const genreId = match[1];
@@ -66,7 +70,7 @@ export const SelectGenres = ({
     <Select
       name="genreSelect"
       value={selectedGenres}
-      onChange={(selected: { value: string; label: string }) => {
+      onChange={(selected: any) => {
         if (!selected) return;
         const newValue = Array.isArray(selected)
           ? selected.map((s) => s.value)
@@ -88,6 +92,7 @@ export const SelectGenres = ({
       placeholder={placeholder || 'Select genre...'}
       inputValue={query}
       onInputChange={handleInputChange}
+      icon={icon}
     />
   );
 };

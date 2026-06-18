@@ -701,15 +701,32 @@ export class FindEntriesDto {
   year?: string;
   decade?: string;
   bucket?: string;
-  genre?: string;
-  artist?: string;
-  label?: string;
-  tag?: string;
 
   @IsOptional()
+  @IsString({ each: true })
+  @Transform(({ value }) => (Array.isArray(value) ? value : [value]))
+  genres?: string[];
+
+  @IsOptional()
+  @IsString({ each: true })
+  @Transform(({ value }) => (Array.isArray(value) ? value : [value]))
+  artists?: string[];
+
+  @IsOptional()
+  @IsString({ each: true })
+  @Transform(({ value }) => (Array.isArray(value) ? value : [value]))
+  labels?: string[];
+
+  @IsOptional()
+  @IsString({ each: true })
+  @Transform(({ value }) => (Array.isArray(value) ? value : [value]))
+  tags?: string[];
+
+  @IsOptional()
+  @IsEnum(ReleaseType, { each: true })
   @Type(() => Number)
-  @IsEnum(ReleaseType)
-  type?: number;
+  @Transform(({ value }) => (Array.isArray(value) ? value : [value]))
+  types?: number[];
 
   @Type(() => Number)
   @IsInt()

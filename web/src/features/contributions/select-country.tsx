@@ -1,45 +1,69 @@
 import { useQuery } from '@tanstack/react-query';
-import { forwardRef, useEffect } from 'react';
-import { ControllerRenderProps } from 'react-hook-form';
-import { Select } from '../../components/inputs/select';
+import { forwardRef, useMemo } from 'react';
+import {
+  Select,
+  SelectValue,
+  SelectType,
+} from '../../components/inputs/select';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
 
-export const SelectCountry = forwardRef(
+interface SelectCountryProps {
+  value?: SelectValue;
+  onChange: (value: SelectValue, selected?: SelectType | null) => void;
+  name?: string;
+  placeholder?: string;
+  isMulti?: boolean;
+}
+
+export const SelectCountry = forwardRef<any, SelectCountryProps>(
   (
-    {
-      updateCountryId,
-      onChange,
-      ...field
-    }: ControllerRenderProps<any, 'country'> & { updateCountryId: any },
+    { placeholder = 'Country', onChange, isMulti = false, value, ...rest },
     ref,
   ) => {
     const { data, isLoading } = useQuery(cacheKeys.countriesKey(), () =>
       api.getCountries(),
     );
 
-    useEffect(() => {
-      console.log(data);
-    }, []);
+    const options = useMemo(() => {
+      if (!data?.countries) return [];
+      return data.countries.map(({ id, name }) => ({
+        value: id,
+        label: name,
+      }));
+    }, [data]);
+
+    const selectedCountries = useMemo(() => {
+      if (!value) return isMulti ? [] : null;
+      if (Array.isArray(value)) {
+        return options.filter((opt) => value.includes(opt.value));
+      }
+      return options.find((opt) => opt.value === value) || null;
+    }, [value, options, isMulti]);
+
+    const handleOnChange = (selected: SelectType | null) => {
+      if (!selected) {
+        onChange(isMulti ? [] : null, null);
+        return;
+      }
+
+      const newValue = Array.isArray(selected)
+        ? selected.map((s) => s.value)
+        : selected.value;
+
+      onChange(newValue, selected);
+    };
 
     return (
       <Select
-        {...field}
+        {...rest}
         ref={ref}
-        onChange={(selected: { value: string; label: string }) => {
-          onChange(selected);
-          updateCountryId(selected?.value);
-        }}
+        value={selectedCountries}
+        onChange={handleOnChange}
         isLoading={isLoading}
-        isMulti={false}
-        options={
-          data?.countries &&
-          data.countries.map(({ id, name }) => ({
-            value: id,
-            label: name,
-          }))
-        }
-        placeholder="Country"
+        isMulti={isMulti}
+        options={options}
+        placeholder={placeholder}
       />
     );
   },

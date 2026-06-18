@@ -200,27 +200,43 @@ const getEntries = ({
   year,
   decade,
   bucket,
-  genre,
-  artist,
-  label,
-  tag,
-  type,
+  genres,
+  artists,
+  labels,
+  tags,
+  types,
 
   page,
   pageSize,
 }: FindEntriesDto) => {
+  const queryParams = new URLSearchParams({
+    sortBy,
+    page: page.toString(),
+    pageSize: pageSize.toString(),
+  });
+  if (releaseId) queryParams.append('releaseId', releaseId);
+  if (userId) queryParams.append('userId', userId);
+  if (year) queryParams.append('year', year);
+  if (decade) queryParams.append('decade', decade);
+  if (bucket) queryParams.append('bucket', bucket);
+  if (genres && genres.length > 0) {
+    genres.forEach((g) => queryParams.append('genres', g));
+  }
+  if (artists && artists.length > 0) {
+    artists.forEach((a) => queryParams.append('artists', a));
+  }
+  if (labels && labels.length > 0) {
+    labels.forEach((l) => queryParams.append('labels', l));
+  }
+  if (tags && tags.length > 0) {
+    tags.forEach((t) => queryParams.append('tags', t));
+  }
+  if (types && types.length > 0) {
+    types.forEach((t) => queryParams.append('types', t.toString()));
+  }
+
   return client
-    .get(
-      `entries?sortBy=${sortBy}&page=${page}&pageSize=${pageSize}${
-        releaseId ? '&releaseId=' + releaseId : ''
-      }${userId ? '&userId=' + userId : ''}${year ? '&year=' + year : ''}${
-        decade ? '&decade=' + decade : ''
-      }${bucket ? '&bucket=' + bucket : ''}${genre ? '&genre=' + genre : ''}${
-        artist ? '&artist=' + artist : ''
-      }${label ? '&label=' + label : ''}${tag ? '&tag=' + tag : ''}${
-        type ? '&type=' + type : ''
-      }`,
-    )
+    .get(`entries?${queryParams.toString()}`)
     .json<IEntriesResponse>();
 };
 

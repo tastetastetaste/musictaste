@@ -20,12 +20,11 @@ export const SelectGroupArtist = ({ control }: any) => {
       <SelectArtist
         name="groupArtistSelect"
         value={null}
-        onBlur={() => {}}
-        onChange={(selected: { value: string; label: string }) => {
+        onChange={(val, selected) => {
           if (!selected) return;
           append({
-            artistId: selected.value,
-            artistName: selected.label,
+            artistId: !Array.isArray(selected) && selected.value,
+            artistName: !Array.isArray(selected) && selected.label,
             current: true,
           });
         }}

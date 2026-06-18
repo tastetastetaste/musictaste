@@ -1,31 +1,98 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { forwardRef, useState } from 'react';
-import { ControllerRenderProps } from 'react-hook-form';
-import { Select } from '../../components/inputs/select';
+import { forwardRef, useState, useMemo, useEffect, useRef } from 'react';
+import {
+  Select,
+  SelectValue,
+  SelectOption,
+  SelectType,
+} from '../../components/inputs/select';
 import { useSnackbar } from '../../hooks/useSnackbar';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
-import { LABEL_REFERENCE_PATTERN } from 'shared';
+import { ILabelSummary, LABEL_REFERENCE_PATTERN } from 'shared';
 
-const formatLabelLabel = (label: any) =>
+const formatLabelLabel = (label: ILabelSummary) =>
   label.name +
   (label.nameLatin ? ` [${label.nameLatin}]` : '') +
   (label.disambiguation ? ` (${label.disambiguation})` : '');
 
-export const SelectLabel = forwardRef(
+interface SelectLabelProps {
+  value?: SelectValue;
+  onChange: (value: SelectValue, selected?: SelectType | null) => void;
+  name?: string;
+  placeholder?: string;
+  isMulti: boolean;
+  icon?: React.ReactNode;
+  availableLabels?: ILabelSummary[];
+}
+
+export const SelectLabel = forwardRef<any, SelectLabelProps>(
   (
     {
-      updateLabelsIds,
+      placeholder = 'Labels',
       onChange,
-      ...field
-    }: ControllerRenderProps<any, 'labels'> & { updateLabelsIds: any },
+      isMulti,
+      value,
+      availableLabels,
+      ...rest
+    },
     ref,
   ) => {
     const [query, setQuery] = useState('');
     const { snackbar } = useSnackbar();
     const queryClient = useQueryClient();
 
-    const { data, isLoading, refetch, fetchStatus } = useQuery(
+    const availableOptionsRegistry = useRef<Map<string, SelectOption>>(
+      new Map(),
+    );
+
+    // Add available labels to registry
+    useEffect(() => {
+      if (availableLabels) {
+        availableLabels.forEach(
+          (label) =>
+            !availableOptionsRegistry.current.has(label.id) &&
+            availableOptionsRegistry.current.set(label.id, {
+              value: label.id,
+              label: formatLabelLabel(label),
+            }),
+        );
+      }
+    }, [availableLabels]);
+
+    const selectedLabels = useMemo(() => {
+      return Array.isArray(value)
+        ? value.map((v) => availableOptionsRegistry.current.get(v))
+        : availableOptionsRegistry.current.get(value);
+    }, [value, availableOptionsRegistry]);
+
+    const valueArray = useMemo(() => {
+      if (!value) return [];
+      return Array.isArray(value) ? value : [value];
+    }, [value]);
+
+    const hasAllLocalData = valueArray.every((id) =>
+      availableOptionsRegistry.current.has(id),
+    );
+
+    const { data: fetchedLabels } = useQuery({
+      queryKey: cacheKeys.labelsKey(valueArray),
+      queryFn: () => api.getLabels(valueArray),
+      enabled: valueArray.length > 0 && !hasAllLocalData,
+    });
+
+    useEffect(() => {
+      if (fetchedLabels) {
+        fetchedLabels.forEach((l) => {
+          availableOptionsRegistry.current.set(l.id, {
+            value: l.id,
+            label: formatLabelLabel(l),
+          });
+        });
+      }
+    }, [fetchedLabels]);
+
+    const { data } = useQuery(
       cacheKeys.searchKey({
         q: query!,
         type: ['labels'],
@@ -42,7 +109,30 @@ export const SelectLabel = forwardRef(
       { enabled: !!query },
     );
 
-    const handleInputChange = (v: any) => {
+    const handleOnChange = (selected: SelectType | null) => {
+      if (!selected) {
+        onChange(Array.isArray(value) ? [] : null, null);
+        return;
+      }
+
+      const selectedArray = Array.isArray(selected) ? selected : [selected];
+      selectedArray.forEach(
+        (s) =>
+          !availableOptionsRegistry.current.has(s.value) &&
+          availableOptionsRegistry.current.set(s.value, {
+            value: s.value,
+            label: s.label,
+          }),
+      );
+
+      const newValue = Array.isArray(selected)
+        ? selected.map((s) => s.value)
+        : selected.value;
+
+      onChange(newValue, selected);
+    };
+
+    const handleInputChange = (v: string) => {
       const match = v.match(LABEL_REFERENCE_PATTERN);
       if (match) {
         const labelId = match[1];
@@ -55,14 +145,21 @@ export const SelectLabel = forwardRef(
               value: label.id,
               label: formatLabelLabel(label),
             };
+            if (!availableOptionsRegistry.current.has(newOption.value))
+              availableOptionsRegistry.current.set(newOption.value, newOption);
 
-            const currentValues = Array.isArray(field.value) ? field.value : [];
-            if (
-              !currentValues.some((val: any) => val.value === newOption.value)
-            ) {
-              const newSelected = [...currentValues, newOption];
-              onChange(newSelected);
-              updateLabelsIds(newSelected.map((option: any) => option.value));
+            if (isMulti) {
+              const currentValues = Array.isArray(value) ? value : [];
+              if (!currentValues.some((val) => val === newOption.value)) {
+                const newValues = [...currentValues, newOption.value];
+                const newSelected = Array.isArray(selectedLabels) && [
+                  ...selectedLabels,
+                  newOption,
+                ];
+                onChange(newValues, newSelected);
+              }
+            } else {
+              onChange(newOption.value, newOption);
             }
           })
           .catch(() => {
@@ -75,14 +172,11 @@ export const SelectLabel = forwardRef(
 
     return (
       <Select
-        {...field}
+        {...rest}
+        value={selectedLabels}
         ref={ref}
-        onChange={(selected: { value: string; label: string }[]) => {
-          onChange(selected);
-          updateLabelsIds(selected.map((option) => option.value));
-        }}
-        isLoading={isLoading && fetchStatus !== 'idle'}
-        isMulti={true}
+        onChange={handleOnChange}
+        isMulti={isMulti}
         options={
           data?.labels &&
           data.labels.map((label) => ({
@@ -90,7 +184,7 @@ export const SelectLabel = forwardRef(
             label: formatLabelLabel(label),
           }))
         }
-        placeholder="Labels"
+        placeholder={placeholder}
         inputValue={query}
         onInputChange={handleInputChange}
       />

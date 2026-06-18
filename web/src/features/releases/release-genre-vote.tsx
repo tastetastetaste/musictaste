@@ -161,6 +161,7 @@ const DialogContent = ({ releaseId }: { releaseId: string }) => {
                 })
               }
               filter={(genreId) => !data.some((rg) => rg.genre.id === genreId)}
+              isMulti={false}
             />
           </div>
           <div css={{ maxHeight: '300px', overflowY: 'auto' }}>

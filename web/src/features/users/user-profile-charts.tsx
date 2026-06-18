@@ -153,7 +153,7 @@ export const UserGenresChart: React.FC<{
               color: getColor(
                 ((numberOfGenres - 1 - i) / numberOfGenres) * 100,
               ),
-              link: `/${username}/music?genre=${g.id}`,
+              link: `/${username}/music?genres=${g.id}`,
             }))}
           />
         )}

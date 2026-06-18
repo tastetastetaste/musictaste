@@ -12,7 +12,7 @@ import { Dialog } from '../../components/dialog';
 import { Stack } from '../../components/flex/stack';
 import { FormInputError } from '../../components/inputs/form-input-error';
 import { Input } from '../../components/inputs/input';
-import { Select } from '../../components/inputs/select';
+import { Select, SelectOption } from '../../components/inputs/select';
 import { Link } from '../../components/links/link';
 import { Typography } from '../../components/typography';
 import { api } from '../../utils/api';
@@ -23,12 +23,6 @@ import { SelectGroupArtist } from './select-group-artist';
 import { SelectArtist } from './select-artist';
 import { SelectCountry } from './select-country';
 import { Checkbox } from '../../components/inputs/checkbox';
-
-export interface CreateArtistFormValues extends CreateArtistDto {
-  mainArtist: { value: string; label: string };
-  country: { value: string; label: string };
-  relatedArtists: { value: string; label: string }[];
-}
 
 const CreateArtistDialog: React.FC<{
   isOpen: boolean;
@@ -42,7 +36,7 @@ const CreateArtistDialog: React.FC<{
     type: ArtistType.Person,
     visibility: ArtistVisibility.GENERAL,
     disambiguation: '',
-    relatedArtists: [],
+    relatedArtistsIds: [],
     mainArtistId: '',
     countryId: '',
     note: '',
@@ -55,8 +49,7 @@ const CreateArtistDialog: React.FC<{
     watch,
     formState: { errors },
     reset,
-    setValue,
-  } = useForm<CreateArtistFormValues>({
+  } = useForm<CreateArtistDto>({
     resolver: classValidatorResolver(CreateArtistDto),
     defaultValues,
   });
@@ -98,9 +91,7 @@ const CreateArtistDialog: React.FC<{
                 options={ArtistTypeOptions}
                 placeholder="Type"
                 value={ArtistTypeOptions.find((c) => c.value === value) || null}
-                onChange={(val: { value: number; label: string }) =>
-                  onChange(val.value)
-                }
+                onChange={(val: SelectOption) => onChange(val?.value)}
               />
             )}
           />
@@ -144,16 +135,11 @@ const CreateArtistDialog: React.FC<{
               />
               <FormInputError error={errors.disambiguation} />
               <Controller
-                name="country"
+                name="countryId"
                 control={control}
-                render={({ field }) => (
-                  <SelectCountry
-                    {...field}
-                    updateCountryId={(value) => setValue('countryId', value)}
-                  />
-                )}
+                render={({ field }) => <SelectCountry {...field} />}
               />
-              <FormInputError error={errors.country || errors.countryId} />
+              <FormInputError error={errors.countryId} />
             </>
           )}
           {artistType === ArtistType.Group && (
@@ -165,40 +151,35 @@ const CreateArtistDialog: React.FC<{
           {artistType !== ArtistType.Alias && (
             <>
               <Controller
-                name="relatedArtists"
+                name="relatedArtistsIds"
                 control={control}
                 render={({ field }) => (
                   <SelectArtist
                     {...field}
+                    isMulti
                     placeholder="Related Artists"
                     filterCondition={(a) => a.type !== ArtistType.Alias}
-                    updateArtistsIds={(value) =>
-                      setValue('relatedArtistsIds', value)
-                    }
                   />
                 )}
               />
-              <FormInputError error={errors.relatedArtists} />
+              <FormInputError error={errors.relatedArtistsIds} />
             </>
           )}
           {artistType === ArtistType.Alias && (
             <>
               <Controller
-                name="mainArtist"
+                name="mainArtistId"
                 control={control}
                 render={({ field }) => (
                   <SelectArtist
                     {...field}
                     isMulti={false}
                     placeholder="Main Artist"
-                    updateArtistId={(value) => setValue('mainArtistId', value)}
                     filterCondition={(a) => a.type !== ArtistType.Alias}
                   />
                 )}
               />
-              <FormInputError
-                error={errors.mainArtist || errors.mainArtistId}
-              />
+              <FormInputError error={errors.mainArtistId} />
             </>
           )}
           <Textarea {...register('note')} placeholder="Note/source" rows={2} />

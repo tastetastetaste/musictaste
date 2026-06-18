@@ -14,7 +14,7 @@ import {
   UpdateEntryDto,
   VoteType,
 } from 'shared';
-import { In, Repository } from 'typeorm';
+import { In, Repository, SelectQueryBuilder } from 'typeorm';
 import { Rating } from '../../db/entities/rating.entity';
 import { ReleaseArtist } from '../../db/entities/release-artist.entity';
 import { ReleaseGenre } from '../../db/entities/release-genre.entity';
@@ -27,6 +27,59 @@ import { ReleasesService } from '../releases/releases.service';
 import { UsersService } from '../users/users.service';
 import { mapEntries } from './entries.utils';
 import { ReviewsService } from './reviews.service';
+import dayjs from 'dayjs';
+
+enum RatingFilterEnum {
+  is = 'is',
+  isnot = 'is not',
+  isgreaterthan = 'is greater than',
+  islessthan = 'is less than',
+  inrange = 'in range',
+  hasavalue = 'has a value',
+  hasnovalue = 'has no value',
+}
+
+enum YearFilterEnum {
+  is = 'is',
+  isafter = 'is after',
+  isbefore = 'is before',
+  inrange = 'in range',
+}
+
+enum MultiValueFilterEnum {
+  isanyof = 'is any of',
+  isnotanyof = 'is not any of',
+}
+
+class UserCollectionViewFilters {
+  rating?: RatingFilterEnum;
+  ratingIs?: number; // is, isnot
+  ratingStart?: number; // isgreaterthan, inrange
+  ratingEnd?: number; // islessthan, inrange
+
+  year?: YearFilterEnum;
+  yearIs?: string;
+  yearStart?: string; // isafter, inrange
+  yearEnd?: string; // isbefore, in range
+
+  type?: MultiValueFilterEnum;
+  typeValues?: number[]; // isanyof, isnotanyof
+
+  artist?: MultiValueFilterEnum;
+  artistValues?: string[];
+
+  genre?: MultiValueFilterEnum;
+  genreValues?: string[];
+
+  label?: MultiValueFilterEnum;
+  labelValues?: string[];
+
+  country?: MultiValueFilterEnum;
+  countryValues?: string[];
+
+  tag?: MultiValueFilterEnum;
+  tagValues?: string[];
+}
 
 @Injectable()
 export class EntriesService {
@@ -227,125 +280,237 @@ export class EntriesService {
     };
   }
 
-  async find(params: FindEntriesDto): Promise<IEntriesResponse> {
-    const {
-      releaseId,
-      userId,
-      sortBy,
-      year,
-      decade,
-      bucket,
-      genre,
-      artist,
-      label,
-      tag,
-      type,
-      page,
-      pageSize,
-    } = params;
+  private async applyFilters(
+    urQB: SelectQueryBuilder<UserRelease>,
+    filters: UserCollectionViewFilters,
+    sortBy?: EntriesSortByEnum,
+    skipJoins?: { skipRatingJoin?: boolean },
+  ) {
+    let needRatingJoin = false;
+    let needReleaseJoin = false;
+    let needReleaseArtistJoin = false;
 
-    const urQB = this.userReleaseRepository
-      .createQueryBuilder('ur')
-      .leftJoinAndSelect('ur.rating', 'rating');
+    if (filters.rating) {
+      if (
+        [
+          RatingFilterEnum.is,
+          RatingFilterEnum.isnot,
+          RatingFilterEnum.isgreaterthan,
+          RatingFilterEnum.islessthan,
+          RatingFilterEnum.inrange,
+        ].includes(filters.rating)
+      )
+        needRatingJoin = true;
 
-    if (userId) {
-      urQB.where('ur.userId = :userId', { userId });
-    } else if (releaseId) {
-      urQB.where('ur.releaseId = :releaseId', { releaseId });
-    }
-
-    if (
-      year ||
-      decade ||
-      sortBy === EntriesSortByEnum.ReleaseDate ||
-      type !== undefined
-    ) {
-      urQB.leftJoin('ur.release', 'release');
-    }
-
-    if (year) {
-      urQB.andWhere(`EXTRACT(YEAR FROM release.date) = :year`, { year });
-    }
-
-    if (decade) {
-      urQB.andWhere(`EXTRACT(DECADE FROM release.date) = :decade`, {
-        decade,
-      });
-    }
-
-    if (type !== undefined) {
-      urQB.andWhere('release.type = :type', { type });
-    }
-
-    if (genre) {
-      urQB
-        .leftJoin(
-          ReleaseGenre,
-          'rg',
-          'rg.releaseId = ur.releaseId AND rg.votesAvg > 0.5',
-        )
-        .andWhere('rg.genreId = :genreId', { genreId: genre });
-    }
-
-    if (artist) {
-      urQB
-        .leftJoin(ReleaseArtist, 'ra', 'ra.releaseId = ur.releaseId')
-        .andWhere('ra.artistId = :artistId', { artistId: artist });
-    }
-
-    if (label) {
-      urQB
-        .leftJoin(ReleaseLabel, 'rl', 'rl.releaseId = ur.releaseId')
-        .andWhere('rl.labelId = :labelId', { labelId: label });
-    }
-
-    if (tag) {
-      urQB
-        .leftJoin('ur.tags', 'tags')
-        .andWhere('tags.id = :tagId', { tagId: tag });
-    }
-
-    if (bucket) {
-      const buckets = [
-        { bucket: '1', start: 0, end: 9 },
-        { bucket: '2', start: 10, end: 19 },
-        { bucket: '3', start: 20, end: 29 },
-        { bucket: '4', start: 30, end: 39 },
-        { bucket: '5', start: 40, end: 49 },
-        { bucket: '6', start: 50, end: 59 },
-        { bucket: '7', start: 60, end: 69 },
-        { bucket: '8', start: 70, end: 79 },
-        { bucket: '9', start: 80, end: 89 },
-        { bucket: '10', start: 90, end: 99 },
-        { bucket: '11', is: 100 },
-        { bucket: '-1', is: -1 },
-      ];
-
-      const start = buckets.find((b) => b.bucket === bucket)?.start;
-      const end = buckets.find((b) => b.bucket === bucket)?.end;
-
-      const is = buckets.find((b) => b.bucket === bucket)?.is;
-
-      if (typeof start === 'number' && typeof end === 'number') {
-        urQB.andWhere('rating.rating BETWEEN :start AND :end', {
-          start,
-          end,
+      if (filters.rating === RatingFilterEnum.hasavalue)
+        urQB.andWhere('ur.ratingId IS NOT NULL');
+      else if (filters.rating === RatingFilterEnum.hasnovalue)
+        urQB.andWhere('ur.ratingId IS NULL');
+      else if (
+        filters.rating === RatingFilterEnum.is &&
+        typeof filters.ratingIs === 'number'
+      )
+        urQB.andWhere('rating.rating = :rating', { rating: filters.ratingIs });
+      else if (
+        filters.rating === RatingFilterEnum.isnot &&
+        typeof filters.ratingIs === 'number'
+      )
+        urQB.andWhere('rating.rating <> :rating', { rating: filters.ratingIs });
+      else if (
+        filters.rating === RatingFilterEnum.isgreaterthan &&
+        typeof filters.ratingStart === 'number'
+      )
+        urQB.andWhere('rating.rating > :rating', {
+          rating: filters.ratingStart,
         });
+      else if (
+        filters.rating === RatingFilterEnum.islessthan &&
+        typeof filters.ratingEnd === 'number'
+      )
+        urQB.andWhere('rating.rating < :rating', { rating: filters.ratingEnd });
+      else if (
+        filters.rating === RatingFilterEnum.inrange &&
+        typeof filters.ratingStart === 'number' &&
+        typeof filters.ratingEnd === 'number'
+      )
+        urQB.andWhere('rating.rating BETWEEN :ratingStart AND :ratingEnd', {
+          ratingStart: filters.ratingStart,
+          ratingEnd: filters.ratingEnd,
+        });
+    }
+
+    if (filters.year) {
+      needReleaseJoin = true;
+
+      let startDate;
+      let endDate;
+
+      const formatDate = (djs: dayjs.Dayjs) => djs.format('YYYY-MM-DD');
+
+      if (filters.year === YearFilterEnum.is && filters.yearIs) {
+        // 2026 -> [2026-01-01 to 2027-01-01)
+        startDate = formatDate(dayjs(filters.yearIs, 'YYYY').startOf('year'));
+        endDate = formatDate(
+          dayjs(filters.yearIs, 'YYYY').add(1, 'year').startOf('year'),
+        );
+      } else if (filters.year === YearFilterEnum.isafter && filters.yearStart) {
+        startDate = formatDate(
+          dayjs(filters.yearStart, 'YYYY').add(1, 'year').startOf('year'),
+        );
+      } else if (filters.year === YearFilterEnum.isbefore && filters.yearEnd) {
+        endDate = formatDate(dayjs(filters.yearEnd, 'YYYY').startOf('year'));
+      } else if (
+        filters.year === YearFilterEnum.inrange &&
+        filters.yearStart &&
+        filters.yearEnd
+      ) {
+        // 2020 to 2024 -> [2020-01-01 to 2025-01-01)
+        startDate = formatDate(
+          dayjs(filters.yearStart, 'YYYY').startOf('year'),
+        );
+        endDate = formatDate(
+          dayjs(filters.yearEnd, 'YYYY').add(1, 'year').startOf('year'),
+        );
       }
-      if (typeof is === 'number') {
-        if (is === 100) {
-          urQB.andWhere('rating.rating = :is', {
-            is,
-          });
-        } else {
-          // -1
-          urQB.andWhere('rating.rating is null');
-        }
+
+      if (startDate) {
+        urQB.andWhere('release.date >= :startDate', { startDate });
+      }
+      if (endDate) {
+        urQB.andWhere('release.date < :endDate', { endDate });
       }
     }
 
-    // --- sort by
+    if (filters.type && filters.typeValues?.length) {
+      needReleaseJoin = true;
 
+      if (filters.type === MultiValueFilterEnum.isanyof)
+        urQB.andWhere('release.type IN (:...typeValues)', {
+          typeValues: filters.typeValues,
+        });
+      else if (filters.type === MultiValueFilterEnum.isnotanyof)
+        urQB.andWhere('release.type NOT IN (:...typeValues)', {
+          typeValues: filters.typeValues,
+        });
+    }
+
+    if (filters.artist && filters.artistValues?.length) {
+      if (filters.artist === MultiValueFilterEnum.isanyof) {
+        needReleaseArtistJoin = true;
+        urQB.andWhere('ra.artistId IN (:...artistValues)', {
+          artistValues: filters.artistValues,
+        });
+      } else if (filters.artist === MultiValueFilterEnum.isnotanyof)
+        urQB
+          .andWhere((qb) => {
+            const subQuery = qb
+              .subQuery()
+              .select('1')
+              .from(ReleaseArtist, 'subra')
+              .where('subra.releaseId = ur.releaseId')
+              .andWhere('subra.artistId IN (:...artistValues)')
+              .getQuery();
+
+            return `NOT EXISTS ${subQuery}`;
+          })
+          .setParameter('artistValues', filters.artistValues);
+    }
+
+    if (filters.genre && filters.genreValues?.length) {
+      if (filters.genre === MultiValueFilterEnum.isanyof)
+        urQB
+          .innerJoin(ReleaseGenre, 'rg', 'rg.releaseId = ur.releaseId')
+          .andWhere('rg.votesAvg > 0.5')
+          .andWhere('rg.genreId IN (:...genreValues)', {
+            genreValues: filters.genreValues,
+          });
+      else if (filters.genre === MultiValueFilterEnum.isnotanyof)
+        urQB
+          .andWhere((qb) => {
+            const subQuery = qb
+              .subQuery()
+              .select('1')
+              .from(ReleaseGenre, 'subrg')
+              .where('subrg.releaseId = ur.releaseId')
+              .andWhere('subrg.votesAvg > 0.5')
+              .andWhere('subrg.genreId IN (:...genreValues)')
+              .getQuery();
+
+            return `NOT EXISTS ${subQuery}`;
+          })
+          .setParameter('genreValues', filters.genreValues);
+    }
+
+    if (filters.label && filters.labelValues?.length) {
+      if (filters.label === MultiValueFilterEnum.isanyof)
+        urQB
+          .innerJoin(ReleaseLabel, 'rl', 'rl.releaseId = ur.releaseId')
+          .andWhere('rl.labelId IN (:...labelValues)', {
+            labelValues: filters.labelValues,
+          });
+      else if (filters.label === MultiValueFilterEnum.isnotanyof)
+        urQB
+          .andWhere((qb) => {
+            const subQuery = qb
+              .subQuery()
+              .select('1')
+              .from(ReleaseLabel, 'subrl')
+              .where('subrl.releaseId = ur.releaseId')
+              .andWhere('subrl.labelId IN (:...labelValues)')
+              .getQuery();
+
+            return `NOT EXISTS ${subQuery}`;
+          })
+          .setParameter('labelValues', filters.labelValues);
+    }
+
+    if (filters.country && filters.countryValues?.length) {
+      if (filters.country === MultiValueFilterEnum.isanyof) {
+        needReleaseArtistJoin = true;
+        urQB
+          .innerJoin('ra.artist', 'artist')
+          .andWhere('artist.countryId IN (:...countryValues)', {
+            countryValues: filters.countryValues,
+          });
+      } else if (filters.country === MultiValueFilterEnum.isnotanyof)
+        urQB
+          .andWhere((qb) => {
+            const subQuery = qb
+              .subQuery()
+              .select('1')
+              .from(ReleaseArtist, 'subra')
+              .innerJoin('subra.artist', 'subartist')
+              .where('subra.releaseId = ur.releaseId')
+              .andWhere('subartist.countryId IN (:...countryValues)')
+              .getQuery();
+
+            return `NOT EXISTS ${subQuery}`;
+          })
+          .setParameter('countryValues', filters.countryValues);
+    }
+
+    if (filters.tag && filters.tagValues?.length) {
+      if (filters.tag === MultiValueFilterEnum.isanyof)
+        urQB.innerJoin('ur.tags', 'tag').andWhere('tag.id IN (:...tagValues)', {
+          tagValues: filters.tagValues,
+        });
+      else if (filters.tag === MultiValueFilterEnum.isnotanyof)
+        urQB
+          .andWhere((qb) => {
+            const subQuery = qb
+              .subQuery()
+              .select('1')
+              .from('user_release_user_tag', 'suburt')
+              .where('sub_urt.user_release_id = ur.id')
+              .andWhere('sub_urt.user_release_tag_id IN (:...tagValues)')
+              .getQuery();
+
+            return `NOT EXISTS ${subQuery}`;
+          })
+          .setParameter('tagValues', filters.tagValues);
+    }
+
+    // sort by
     switch (sortBy) {
       case EntriesSortByEnum.RatingDate:
         urQB.orderBy('rating.updatedAt', 'DESC', 'NULLS LAST');
@@ -366,6 +531,7 @@ export class EntriesService {
         break;
 
       case EntriesSortByEnum.ReleaseDate:
+        needReleaseJoin = true;
         urQB.orderBy('release.date', 'DESC').addOrderBy('release.id', 'ASC');
 
         break;
@@ -379,7 +545,95 @@ export class EntriesService {
         break;
     }
 
-    // --
+    // joins
+
+    if (needRatingJoin && !skipJoins?.skipRatingJoin)
+      urQB.leftJoin('ur.rating', 'rating');
+
+    if (needReleaseJoin) urQB.innerJoin('ur.release', 'release');
+
+    if (needReleaseArtistJoin)
+      urQB.innerJoin(ReleaseArtist, 'ra', 'ra.releaseId = ur.releaseId');
+  }
+
+  async find(params: FindEntriesDto): Promise<IEntriesResponse> {
+    const {
+      releaseId,
+      userId,
+      sortBy,
+      year,
+      decade,
+      bucket,
+      genres,
+      artists,
+      labels,
+      tags,
+      types,
+      page,
+      pageSize,
+    } = params;
+
+    const urQB = this.userReleaseRepository
+      .createQueryBuilder('ur')
+      .leftJoinAndSelect('ur.rating', 'rating');
+
+    if (userId) {
+      urQB.where('ur.userId = :userId', { userId });
+    } else if (releaseId) {
+      urQB.where('ur.releaseId = :releaseId', { releaseId });
+    }
+
+    this.applyFilters(
+      urQB,
+      {
+        year: year
+          ? YearFilterEnum.is
+          : decade
+            ? YearFilterEnum.inrange
+            : undefined,
+        yearIs: year,
+        yearStart: decade ? dayjs(decade, 'YYYY').format('YYYY') : undefined,
+        yearEnd: decade
+          ? dayjs(decade, 'YYYY').add(9, 'year').format('YYYY')
+          : undefined,
+        type: types?.length ? MultiValueFilterEnum.isanyof : undefined,
+        typeValues: types,
+        genre: genres?.length ? MultiValueFilterEnum.isanyof : undefined,
+        genreValues: genres,
+        artist: artists?.length ? MultiValueFilterEnum.isanyof : undefined,
+        artistValues: artists,
+        label: labels?.length ? MultiValueFilterEnum.isanyof : undefined,
+        labelValues: labels,
+        tag: tags?.length ? MultiValueFilterEnum.isanyof : undefined,
+        tagValues: tags,
+
+        rating:
+          bucket === '-1'
+            ? RatingFilterEnum.hasnovalue
+            : bucket === '11'
+              ? RatingFilterEnum.is
+              : bucket
+                ? RatingFilterEnum.inrange
+                : undefined,
+        ratingIs: bucket === '11' ? 100 : undefined,
+        /*
+        { bucket: '1', start: 0, end: 9 },
+        { bucket: '2', start: 10, end: 19 },
+        { bucket: '3', start: 20, end: 29 },
+        { bucket: '4', start: 30, end: 39 },
+        { bucket: '5', start: 40, end: 49 },
+        { bucket: '6', start: 50, end: 59 },
+        { bucket: '7', start: 60, end: 69 },
+        { bucket: '8', start: 70, end: 79 },
+        { bucket: '9', start: 80, end: 89 },
+        { bucket: '10', start: 90, end: 99 },
+      */
+        ratingStart: bucket ? Number(`${bucket}0`) - 10 : undefined,
+        ratingEnd: bucket ? Number(`${bucket}0`) - 1 : undefined,
+      },
+      sortBy,
+      { skipRatingJoin: true },
+    );
 
     const [result, totalItems] = await urQB
       .limit(pageSize)

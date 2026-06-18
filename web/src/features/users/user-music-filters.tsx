@@ -1,11 +1,19 @@
 import { useTheme } from '@emotion/react';
-import { IconDisc, IconFilter, IconSortDescending } from '@tabler/icons-react';
+import {
+  IconBuilding,
+  IconDisc,
+  IconMusic,
+  IconSortDescending,
+  IconTags,
+  IconUser,
+  IconCalendarTime,
+} from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
-import { Fragment, useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { EntriesSortByEnum, ReleaseType } from 'shared';
 import { StickyContainer } from '../../components/containers/sticky-container';
-import { Dropdown } from '../../components/dropdown';
+import { Select, SelectOption } from '../../components/inputs/select';
 import { Stack } from '../../components/flex/stack';
 import { Typography } from '../../components/typography';
 import { SM_SIDECONTENT_WIDTH } from '../../static/spacing';
@@ -14,8 +22,10 @@ import { cacheKeys } from '../../utils/cache-keys';
 import { ReleaseTypeOptions } from '../contributions/shared';
 import { useRatingColor } from '../ratings/useRatingColor';
 import { useSortBy } from './user-music-page';
-
-type Option = { label: string; value: string; count: number };
+import { SelectArtist } from '../contributions/select-artist';
+import { SelectLabel } from '../contributions/select-label';
+import { SelectGenres } from '../genres/select-genres';
+import dayjs from 'dayjs';
 
 const FilterButton: React.FC<{
   selected: boolean;
@@ -63,36 +73,6 @@ const FilterButton: React.FC<{
   );
 };
 
-const Filter: React.FC<{
-  name: string;
-  options?: Option[] | null;
-}> = ({ name, options }) => {
-  const [query, setQuery] = useSearchParams();
-  return (
-    <Stack gap="sm" align="stretch">
-      {options?.map((o) => (
-        <FilterButton
-          key={o.value}
-          selected={query.get(name) === o.value}
-          onClick={() =>
-            setQuery(
-              { ...Object.fromEntries(query.entries()), [name]: o.value },
-              { replace: true, preventScrollReset: true },
-            )
-          }
-        >
-          <Typography whiteSpace="nowrap" color="inherit">
-            {o.label}
-          </Typography>
-          <Typography whiteSpace="nowrap" color="inherit">
-            {o.count}
-          </Typography>
-        </FilterButton>
-      ))}
-    </Stack>
-  );
-};
-
 const FilterByRating: React.FC<{
   name: string;
   buckets?: RatingBucket[];
@@ -112,15 +92,17 @@ const FilterByRating: React.FC<{
           <FilterButton
             key={bucket.bucket}
             selected={selected === bucket.bucket.toString()}
-            onClick={() =>
-              setQuery(
-                {
-                  ...Object.fromEntries(query.entries()),
-                  [name]: bucket.bucket.toString(),
-                },
-                { replace: true, preventScrollReset: true },
-              )
-            }
+            onClick={() => {
+              const newParams = new URLSearchParams(query);
+              selected === bucket.bucket.toString()
+                ? newParams.delete(name)
+                : newParams.set(name, bucket.bucket.toString());
+
+              setQuery(Object.fromEntries(newParams.entries()), {
+                replace: true,
+                preventScrollReset: true,
+              });
+            }}
             customCss={{
               padding: 0,
               overflow: 'hidden',
@@ -163,70 +145,6 @@ const FilterByRating: React.FC<{
           </FilterButton>
         );
       })}
-    </Stack>
-  );
-};
-
-const FilterByDate: React.FC<{
-  decades?: Decade[] | null;
-}> = ({ decades }) => {
-  const [query, setQuery] = useSearchParams();
-  const selectedDecade = query.get('decade');
-  const selectedYear = query.get('year');
-
-  return (
-    <Stack gap="sm" align="stretch">
-      {decades?.map(({ decade, count, years }) => (
-        <Fragment key={decade}>
-          <FilterButton
-            selected={selectedDecade === decade.toString() && !selectedYear}
-            onClick={() =>
-              setQuery(
-                (() => {
-                  const params = { ...Object.fromEntries(query.entries()) };
-                  delete params.year;
-                  return { ...params, decade: decade.toString() };
-                })(),
-                { preventScrollReset: true, replace: true },
-              )
-            }
-          >
-            <Typography whiteSpace="nowrap" color="inherit">
-              {decade + '0s'}
-            </Typography>
-            <Typography whiteSpace="nowrap" color="inherit">
-              {count}
-            </Typography>
-          </FilterButton>
-          {years.map(({ year, count }) => (
-            <FilterButton
-              key={year}
-              selected={selectedYear === year.toString()}
-              onClick={() =>
-                setQuery(
-                  (() => {
-                    const params = { ...Object.fromEntries(query.entries()) };
-                    delete params.decade;
-                    return { ...params, year: year.toString() };
-                  })(),
-                  { preventScrollReset: true, replace: true },
-                )
-              }
-              customCss={{
-                width: 'calc(100% - 20px)',
-                marginLeft: 20,
-              }}
-            >
-              <Typography whiteSpace="nowrap" color="inherit">
-                {year}
-              </Typography>
-              <Typography whiteSpace="nowrap" color="inherit">
-                {count}
-              </Typography>
-            </FilterButton>
-          ))}
-        </Fragment>
-      ))}
     </Stack>
   );
 };
@@ -278,104 +196,6 @@ const MusicByRating = ({
     />
   );
 };
-type Decade = {
-  decade: number;
-  count: number;
-  years: { year: number; count: number }[];
-};
-
-const MusicByReleaseDate = ({ userId }: { userId: string }) => {
-  const { data } = useQuery(cacheKeys.userReleaseDatesKey(userId), () =>
-    api.getUserReleaseDates(userId),
-  );
-  const [decades, setDecades] = useState<Decade[] | null>(null);
-
-  useEffect(() => {
-    if (data?.length) {
-      const decadesArr: Decade[] = [];
-      data.forEach(({ decade, year, count }) => {
-        const existingDecade = decadesArr.find((d) => d.decade === decade);
-        if (existingDecade) {
-          existingDecade.count += count;
-          existingDecade.years.push({ year, count });
-        } else {
-          decadesArr.push({ decade, count, years: [{ year, count }] });
-        }
-      });
-      setDecades(decadesArr);
-    }
-  }, [data]);
-
-  return <FilterByDate decades={decades} />;
-};
-
-const MusicByArtist = ({ userId }: { userId: string }) => {
-  const { data } = useQuery(cacheKeys.userArtistsKey(userId), () =>
-    api.getUserArtists(userId),
-  );
-
-  return (
-    <Filter
-      name="artist"
-      options={data?.map((a) => ({
-        label: a.name,
-        value: a.id,
-        count: a.count,
-      }))}
-    />
-  );
-};
-
-const MusicByLabel = ({ userId }: { userId: string }) => {
-  const { data } = useQuery(cacheKeys.userLabelsKey(userId), () =>
-    api.getUserLabels(userId),
-  );
-
-  return (
-    <Filter
-      name="label"
-      options={data?.map((l) => ({
-        label: l.name,
-        value: l.id,
-        count: l.count,
-      }))}
-    />
-  );
-};
-
-const MusicByGenre = ({ userId }: { userId: string }) => {
-  const { data } = useQuery(cacheKeys.userGenresKey(userId), () =>
-    api.getUserGenres(userId),
-  );
-
-  return (
-    <Filter
-      name="genre"
-      options={data?.map((g) => ({
-        label: g.name,
-        value: g.id,
-        count: g.count,
-      }))}
-    />
-  );
-};
-
-const MusicByTag = ({ userId }: { userId: string }) => {
-  const { data } = useQuery(cacheKeys.userTagsKey(userId), () =>
-    api.getUserTags(userId),
-  );
-
-  return (
-    <Filter
-      name="tag"
-      options={data?.map((t) => ({
-        label: t.tag,
-        value: t.id,
-        count: t.count,
-      }))}
-    />
-  );
-};
 
 const SORT_BY_OPTIONS = [
   { label: 'Release Date', value: EntriesSortByEnum.ReleaseDate },
@@ -391,31 +211,10 @@ const SORT_BY_OPTIONS = [
   },
 ];
 
-const RELEASE_TYPE_OPTIONS = [
-  { label: 'All Types', value: undefined },
-  ...ReleaseTypeOptions.map((option) => ({
-    label: option.label,
-    value: ReleaseType[option.value],
-  })),
-];
-
-const FILTER_TYPES = [
-  { label: 'Rating', value: 'rating' },
-  { label: 'Genre', value: 'genre' },
-  { label: 'Tag', value: 'tag' },
-  { label: 'Artist', value: 'artist' },
-  { label: 'Label', value: 'label' },
-  { label: 'Date', value: 'date' },
-];
-
-const FilterComponentMap = {
-  rating: MusicByRating,
-  genre: MusicByGenre,
-  tag: MusicByTag,
-  artist: MusicByArtist,
-  label: MusicByLabel,
-  date: MusicByReleaseDate,
-};
+const RELEASE_TYPE_OPTIONS = ReleaseTypeOptions.map((option) => ({
+  label: option.label,
+  value: ReleaseType[option.value],
+}));
 
 const UserMusicFilters = ({
   userId,
@@ -425,9 +224,69 @@ const UserMusicFilters = ({
   ratingsCount: number;
 }) => {
   const { sortBy, handleChange } = useSortBy();
-  const [filterType, setFilterType] = useState('rating');
-  const FilterComponent = FilterComponentMap[filterType];
   const [query, setQuery] = useSearchParams();
+
+  const [tagsOpened, setTagsOpened] = useState(false);
+
+  const hasTagsFilter = query.getAll('tags').length > 0;
+
+  const { data: tagsData, isLoading: isTagsLoading } = useQuery(
+    cacheKeys.userTagsKey(userId),
+    () => api.getUserTags(userId),
+    { enabled: hasTagsFilter || tagsOpened },
+  );
+
+  const tagsOptions = tagsData
+    ? tagsData.map((t) => ({
+        label: `${t.tag} (${t.count})`,
+        value: t.id,
+      }))
+    : [];
+
+  const currentYear = dayjs().year();
+
+  const currentDecade = Math.floor(currentYear / 10) * 10;
+
+  const startingYear = 1877;
+
+  const startingDecade = Math.ceil(startingYear / 10) * 10;
+
+  const decadeOptions = useMemo((): { label: string; value: string }[] => {
+    const options = [];
+
+    for (let decade = startingDecade; decade <= currentDecade; decade += 10) {
+      options.push({
+        value: decade.toString(),
+        label: `${decade}s`,
+      });
+    }
+
+    return options.reverse();
+  }, [currentDecade, startingDecade]);
+
+  const yearOptions = useMemo(() => {
+    const selectedDecade = query.get('decade');
+    if (!selectedDecade) return [];
+
+    const startYear = Number(selectedDecade);
+
+    const options = [];
+
+    for (let i = 0; i < 10; i++) {
+      const year = startYear + i;
+
+      if (year > currentYear) break;
+
+      if (year < 1877) continue;
+
+      options.push({
+        value: year.toString(),
+        label: year.toString(),
+      });
+    }
+
+    return options.reverse();
+  }, [query.get('decade')]);
 
   return (
     <StickyContainer width={SM_SIDECONTENT_WIDTH}>
@@ -458,44 +317,157 @@ const UserMusicFilters = ({
             Reset
           </button>
         )}
-        <Dropdown
-          onChange={({ value }) =>
-            handleChange({ value: value as EntriesSortByEnum })
-          }
+        <Select
+          onChange={(selected: SelectOption) => {
+            if (selected) {
+              handleChange({ value: selected.value as EntriesSortByEnum });
+            }
+          }}
           name="sb"
           options={SORT_BY_OPTIONS}
-          defaultValue={sortBy}
+          value={SORT_BY_OPTIONS.find((o) => o.value === sortBy) || null}
           icon={<IconSortDescending size={20} />}
         />
-        <Dropdown
+        <Select
+          isMulti
           options={RELEASE_TYPE_OPTIONS}
-          onChange={({ value }) => {
-            setQuery(
-              value === undefined
-                ? (() => {
-                    const params = { ...Object.fromEntries(query.entries()) };
-                    delete params.type;
-                    return params;
-                  })()
-                : { ...Object.fromEntries(query.entries()), type: value },
-              { replace: true, preventScrollReset: true },
-            );
+          onChange={(selected) => {
+            const params = new URLSearchParams(query);
+            params.delete('types');
+            if (selected && Array.isArray(selected)) {
+              selected.forEach((option) => {
+                if (option.value !== undefined) {
+                  params.append('types', option.value.toString());
+                }
+              });
+            }
+            setQuery(params, { replace: true, preventScrollReset: true });
           }}
-          name="type"
-          defaultValue={Number(query.get('type')) || undefined}
+          name="types"
+          placeholder="Type"
+          value={RELEASE_TYPE_OPTIONS.filter((option) =>
+            query.getAll('types').map(Number).includes(option.value),
+          )}
           icon={<IconDisc size={20} />}
         />
-        <Dropdown
-          onChange={({ value }) => setFilterType(value)}
-          name="filterType"
-          options={FILTER_TYPES}
-          defaultValue={filterType}
-          icon={<IconFilter size={20} />}
+        <Select
+          isClearable
+          isSearchable
+          options={decadeOptions}
+          onChange={(selected: SelectOption) => {
+            const params = new URLSearchParams(query);
+            if (selected && selected.value !== undefined) {
+              params.set('decade', selected.value);
+            } else {
+              params.delete('decade');
+            }
+            params.delete('year');
+            setQuery(params, { replace: true, preventScrollReset: true });
+          }}
+          name="decade"
+          placeholder="Decade"
+          value={
+            query.get('decade')
+              ? decadeOptions.find(
+                  (decade) => decade.value === query.get('decade'),
+                )
+              : null
+          }
+          icon={<IconCalendarTime size={20} />}
+        />
+        {query.get('decade') && (
+          <Select
+            isClearable
+            isSearchable
+            options={yearOptions}
+            onChange={(selected: SelectOption) => {
+              const params = new URLSearchParams(query);
+              if (selected && selected.value !== undefined) {
+                params.set('year', selected.value);
+              } else {
+                params.delete('year');
+              }
+              setQuery(params, { replace: true, preventScrollReset: true });
+            }}
+            name="year"
+            placeholder="Year"
+            value={yearOptions.find((year) => year.value === query.get('year'))}
+            icon={<IconCalendarTime size={20} />}
+          />
+        )}
+        <SelectGenres
+          isMulti
+          value={query.getAll('genres')}
+          onChange={(selected) => {
+            const params = new URLSearchParams(query);
+            params.delete('genres');
+            if (selected && Array.isArray(selected))
+              selected.forEach(
+                (value) => value && params.append('genres', value),
+              );
+            setQuery(params, { replace: true, preventScrollReset: true });
+          }}
+          placeholder="Genre"
+          icon={<IconMusic size={20} />}
+        />
+        <SelectArtist
+          isMulti
+          value={query.getAll('artists')}
+          onChange={(selected) => {
+            const params = new URLSearchParams(query);
+            params.delete('artists');
+            if (selected && Array.isArray(selected))
+              selected.forEach(
+                (value) => value && params.append('artists', value),
+              );
+            setQuery(params, { replace: true, preventScrollReset: true });
+          }}
+          name="artists"
+          placeholder="Artist"
+          icon={<IconUser size={20} />}
+        />
+        <SelectLabel
+          isMulti
+          value={query.getAll('labels')}
+          onChange={(selected) => {
+            const params = new URLSearchParams(query);
+            params.delete('labels');
+            if (selected && Array.isArray(selected))
+              selected.forEach(
+                (value) => value && params.append('labels', value),
+              );
+            setQuery(params, { replace: true, preventScrollReset: true });
+          }}
+          name="labels"
+          placeholder="Label"
+          icon={<IconBuilding size={20} />}
+        />
+        <Select
+          isMulti
+          isSearchable
+          options={tagsOptions}
+          onMenuOpen={() => setTagsOpened(true)}
+          onChange={(selected) => {
+            const params = new URLSearchParams(query);
+            params.delete('tags');
+            if (selected && Array.isArray(selected)) {
+              selected.forEach((option) => {
+                if (option.value !== undefined) {
+                  params.append('tags', option.value.toString());
+                }
+              });
+            }
+            setQuery(params, { replace: true, preventScrollReset: true });
+          }}
+          name="tags"
+          placeholder="Tag"
+          value={tagsOptions.filter((option) =>
+            query.getAll('tags').includes(option.value),
+          )}
+          icon={<IconTags size={20} />}
         />
         <div>
-          {FilterComponent && (
-            <FilterComponent userId={userId} ratingsCount={ratingsCount} />
-          )}
+          <MusicByRating userId={userId} ratingsCount={ratingsCount} />
         </div>
       </Stack>
     </StickyContainer>

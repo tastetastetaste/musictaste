@@ -15,7 +15,7 @@ import { Group } from '../../components/flex/group';
 import { Stack } from '../../components/flex/stack';
 import { FormInputError } from '../../components/inputs/form-input-error';
 import { Input } from '../../components/inputs/input';
-import { Select } from '../../components/inputs/select';
+import { Select, SelectOption } from '../../components/inputs/select';
 import { Textarea } from '../../components/inputs/textarea';
 import { Link } from '../../components/links/link';
 import { Typography } from '../../components/typography';
@@ -32,12 +32,6 @@ import { FlexChild } from '../../components/flex/flex-child';
 import { SelectCountry } from './select-country';
 import { Checkbox } from '../../components/inputs/checkbox';
 
-export interface EditArtistFormValues extends UpdateArtistDto {
-  mainArtist: { value: string; label: string };
-  country: { value: string; label: string };
-  relatedArtists: { value: string; label: string }[];
-}
-
 const EditArtistPage = () => {
   const { id: artistId } = useParams();
   const defaultValues = {
@@ -46,7 +40,6 @@ const EditArtistPage = () => {
     type: ArtistType.Person,
     visibility: ArtistVisibility.GENERAL,
     disambiguation: '',
-    relatedArtists: [],
     relatedArtistsIds: [],
     mainArtistId: '',
     countryId: '',
@@ -63,7 +56,7 @@ const EditArtistPage = () => {
     control,
     watch,
     formState: { errors },
-  } = useForm<EditArtistFormValues>({
+  } = useForm<UpdateArtistDto>({
     resolver: classValidatorResolver(
       UpdateArtistDto,
       {},
@@ -123,12 +116,6 @@ const EditArtistPage = () => {
         type: artistData.artist.type,
         visibility: artistData.artist.visibility,
         disambiguation: artistData.artist.disambiguation || '',
-        country: artistData.artist.country
-          ? {
-              value: artistData.artist.country.id,
-              label: artistData.artist.country.name,
-            }
-          : null,
         countryId: artistData.artist.country?.id,
         groupArtists:
           artistData.artist.groupArtists?.map((ga) => ({
@@ -136,20 +123,9 @@ const EditArtistPage = () => {
             artistId: ga.artist.id,
             current: ga.current,
           })) || [],
-        relatedArtists:
-          artistData.artist.relatedArtists?.map((a) => ({
-            label: a.name,
-            value: a.id,
-          })) || [],
         relatedArtistsIds:
           artistData.artist.relatedArtists?.map((a) => a.id) || [],
         mainArtistId: artistData.artist.mainArtistId || '',
-        mainArtist: artistData.artist.mainArtist
-          ? {
-              value: artistData.artist.mainArtist.id,
-              label: artistData.artist.mainArtist.name,
-            }
-          : null,
       });
     }
   }, [artistData]);
@@ -193,26 +169,17 @@ const EditArtistPage = () => {
                   value={
                     ArtistTypeOptions.find((c) => c.value === value) || null
                   }
-                  onChange={(val: { value: number; label: string }) => {
-                    onChange(val.value);
+                  onChange={(val: SelectOption) => {
+                    onChange(val?.value);
                     setValue(
                       'mainArtistId',
-                      val.value === ArtistType.Alias
+                      Number(val?.value) === ArtistType.Alias
                         ? artistData?.artist.mainArtistId || ''
                         : '',
                     );
                     setValue(
-                      'relatedArtists',
-                      val.value !== ArtistType.Alias
-                        ? artistData?.artist.relatedArtists.map((a) => ({
-                            label: a.name,
-                            value: a.id,
-                          })) || []
-                        : [],
-                    );
-                    setValue(
                       'relatedArtistsIds',
-                      val.value !== ArtistType.Alias
+                      Number(val?.value) !== ArtistType.Alias
                         ? artistData?.artist.relatedArtists.map((a) => a.id) ||
                             []
                         : [],
@@ -261,16 +228,11 @@ const EditArtistPage = () => {
                 />
                 <FormInputError error={errors.disambiguation} />
                 <Controller
-                  name="country"
+                  name="countryId"
                   control={control}
-                  render={({ field }) => (
-                    <SelectCountry
-                      {...field}
-                      updateCountryId={(value) => setValue('countryId', value)}
-                    />
-                  )}
+                  render={({ field }) => <SelectCountry {...field} />}
                 />
-                <FormInputError error={errors.country || errors.countryId} />
+                <FormInputError error={errors.countryId} />
               </>
             )}
             {artistType === ArtistType.Group && (
@@ -290,44 +252,41 @@ const EditArtistPage = () => {
             {artistType === ArtistType.Alias && (
               <>
                 <Controller
-                  name="mainArtist"
+                  name="mainArtistId"
                   control={control}
                   render={({ field }) => (
                     <SelectArtist
                       {...field}
                       placeholder="Main Artist"
                       isMulti={false}
-                      updateArtistId={(value) =>
-                        setValue('mainArtistId', value)
-                      }
                       filterCondition={(a) => a.type !== ArtistType.Alias}
+                      availableArtists={
+                        artistData?.artist.mainArtist
+                          ? [artistData.artist.mainArtist]
+                          : []
+                      }
                     />
                   )}
                 />
-                <FormInputError
-                  error={errors.mainArtist || errors.mainArtistId}
-                />
+                <FormInputError error={errors.mainArtistId} />
               </>
             )}
             {artistType !== ArtistType.Alias && (
               <>
                 <Controller
-                  name="relatedArtists"
+                  name="relatedArtistsIds"
                   control={control}
                   render={({ field }) => (
                     <SelectArtist
+                      isMulti
                       placeholder="Related Artists"
                       filterCondition={(a) => a.type !== ArtistType.Alias}
                       {...field}
-                      updateArtistsIds={(value) =>
-                        setValue('relatedArtistsIds', value)
-                      }
+                      availableArtists={artistData?.artist.relatedArtists}
                     />
                   )}
                 />
-                <FormInputError
-                  error={errors.relatedArtistsIds || errors.relatedArtists}
-                />
+                <FormInputError error={errors.relatedArtistsIds} />
               </>
             )}
             <Textarea

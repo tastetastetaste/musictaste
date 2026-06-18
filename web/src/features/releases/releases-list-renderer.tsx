@@ -22,7 +22,7 @@ import { useDebounce } from '../../hooks/useDebounce';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { SelectGenres } from '../genres/select-genres';
 import { Checkbox } from '../../components/inputs/checkbox';
-import { Select } from '../../components/inputs/select';
+import { Select, SelectOption } from '../../components/inputs/select';
 
 export interface ReleasesListRendererProps {
   type: FindReleasesType;
@@ -214,7 +214,9 @@ export function ReleasesListRenderer({
                   ? { value: 'upcoming', label: 'Upcoming' }
                   : { value: '', label: 'Released' }
               }
-              onChange={(v) => setOnlyUpcoming(v?.value === 'upcoming')}
+              onChange={(v: SelectOption) =>
+                setOnlyUpcoming(v?.value === 'upcoming')
+              }
             />
           </Stack>
         ) : null}

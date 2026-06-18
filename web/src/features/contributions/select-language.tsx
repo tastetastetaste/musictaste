@@ -1,42 +1,66 @@
 import { useQuery } from '@tanstack/react-query';
-import { forwardRef } from 'react';
-import { ControllerRenderProps } from 'react-hook-form';
-import { Select } from '../../components/inputs/select';
+import { forwardRef, useMemo } from 'react';
+import {
+  Select,
+  SelectValue,
+  SelectType,
+} from '../../components/inputs/select';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
 
-export const SelectLanguage = forwardRef(
-  (
-    {
-      updateLanguagesIds,
-      onChange,
-      ...field
-    }: ControllerRenderProps<any, 'languages'> & { updateLanguagesIds: any },
-    ref,
-  ) => {
-    const { data, isLoading, refetch } = useQuery(
-      cacheKeys.languagesKey(),
-      () => api.getLanguages(),
+interface SelectLanguageProps {
+  value?: SelectValue;
+  onChange: (value: SelectValue, selected?: SelectType | null) => void;
+  name?: string;
+  placeholder?: string;
+  isMulti: boolean;
+}
+
+export const SelectLanguage = forwardRef<any, SelectLanguageProps>(
+  ({ placeholder = 'Language', onChange, isMulti, value, ...rest }, ref) => {
+    const { data, isLoading } = useQuery(cacheKeys.languagesKey(), () =>
+      api.getLanguages(),
     );
+
+    const options = useMemo(() => {
+      if (!data?.languages) return [];
+      return data.languages.map(({ id, name }) => ({
+        value: id,
+        label: name,
+      }));
+    }, [data]);
+
+    const selectedLanguages = useMemo(() => {
+      if (!value) return isMulti ? [] : null;
+      if (Array.isArray(value)) {
+        return options.filter((opt) => value.includes(opt.value));
+      }
+      return options.find((opt) => opt.value === value) || null;
+    }, [value, options, isMulti]);
+
+    const handleOnChange = (selected: SelectType | null) => {
+      if (!selected) {
+        onChange(isMulti ? [] : null, null);
+        return;
+      }
+
+      const newValue = Array.isArray(selected)
+        ? selected.map((s) => s.value)
+        : selected.value;
+
+      onChange(newValue, selected);
+    };
 
     return (
       <Select
-        {...field}
+        {...rest}
         ref={ref}
-        onChange={(selected: { value: string; language: string }[]) => {
-          onChange(selected);
-          updateLanguagesIds(selected.map((option) => option.value));
-        }}
+        value={selectedLanguages}
+        onChange={handleOnChange}
         isLoading={isLoading}
-        isMulti={true}
-        options={
-          data?.languages &&
-          data.languages.map(({ id, name }) => ({
-            value: id,
-            label: name,
-          }))
-        }
-        placeholder="Language"
+        isMulti={isMulti}
+        options={options}
+        placeholder={placeholder}
       />
     );
   },

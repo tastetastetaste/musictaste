@@ -1,6 +1,24 @@
 import { Theme, useTheme } from '@emotion/react';
 import { forwardRef } from 'react';
-import ReactSelect, { createFilter, StylesConfig } from 'react-select';
+import ReactSelect, {
+  createFilter,
+  StylesConfig,
+  components,
+  Props as ReactSelectProps,
+} from 'react-select';
+
+export type SelectValue = string | string[] | null;
+
+export interface SelectOption {
+  value: string;
+  label: string;
+}
+
+export type SelectType = SelectOption | SelectOption[];
+
+export interface SelectProps extends ReactSelectProps {
+  icon?: React.ReactNode;
+}
 
 const customStyles: (theme: Theme) => StylesConfig = (theme) => ({
   container: (provided, state) => ({
@@ -64,12 +82,43 @@ const customStyles: (theme: Theme) => StylesConfig = (theme) => ({
     ...provided,
     zIndex: 9999,
   }),
+  valueContainer: (provided) => ({
+    ...provided,
+    display: 'flex',
+    alignItems: 'center',
+  }),
 });
-export const Select = forwardRef((props: any, ref) => {
+const ValueContainer = (props: any) => {
+  const theme = useTheme();
+  const icon = props.selectProps?.icon;
+
+  return (
+    <components.ValueContainer {...props}>
+      {icon && (
+        <span
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            background: theme.colors.background_sub,
+            borderRadius: '50%',
+            padding: 2,
+            marginRight: 6,
+          }}
+        >
+          {icon}
+        </span>
+      )}
+      {props.children}
+    </components.ValueContainer>
+  );
+};
+
+export const Select = forwardRef<any, SelectProps>((props, ref) => {
   const theme = useTheme();
 
   return (
     <ReactSelect
+      {...props}
       ref={ref}
       menuPortalTarget={document.body}
       menuPosition="fixed"
@@ -77,8 +126,8 @@ export const Select = forwardRef((props: any, ref) => {
       filterOption={createFilter({
         stringify: (option) => option.label,
       })}
-      {...props}
       styles={customStyles(theme)}
+      components={props.icon ? { ValueContainer } : undefined}
     />
   );
 });

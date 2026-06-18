@@ -13,7 +13,7 @@ import { Stack } from '../../components/flex/stack';
 import { Dropzone } from '../../components/inputs/dropzone';
 import { FormInputError } from '../../components/inputs/form-input-error';
 import { Input } from '../../components/inputs/input';
-import { Select } from '../../components/inputs/select';
+import { Select, SelectOption } from '../../components/inputs/select';
 import { Textarea } from '../../components/inputs/textarea';
 import { Link } from '../../components/links/link';
 import { Typography } from '../../components/typography';
@@ -43,9 +43,6 @@ export const ExplicitCoverArtOptions = [
 
 export interface CreateReleaseFormValues extends CreateReleaseDto {
   mbid: string;
-  artists: { label: string; value: string }[];
-  labels: { label: string; value: string }[];
-  languages: { label: string; value: string }[];
 }
 const AddReleasePage = () => {
   const navigate = useNavigate();
@@ -67,9 +64,6 @@ const AddReleasePage = () => {
     artistsIds: [],
     labelsIds: [],
     languagesIds: [],
-    artists: [],
-    labels: [],
-    languages: [],
     type: '',
     note: '',
     explicitCoverArt: [],
@@ -156,18 +150,23 @@ const AddReleasePage = () => {
                   variant="text"
                   onClick={() => {
                     if (!mbidValue) {
-                      window.open(
-                        'https://musicbrainz.org/',
-                        'noreferrer'
-                      );
+                      window.open('https://musicbrainz.org/', 'noreferrer');
                     } else {
                       mbImport();
                     }
                   }}
                   disabled={importLoading}
                 >
-                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                    {mbidValue ? 'Import' : (
+                  <span
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                    }}
+                  >
+                    {mbidValue ? (
+                      'Import'
+                    ) : (
                       <>
                         MusicBrainz
                         <span style={{ fontSize: '0.7em' }}>↗</span>
@@ -187,16 +186,11 @@ const AddReleasePage = () => {
             />
             <FormInputError error={errors.titleLatin} />
             <Controller
-              name="artists"
+              name="artistsIds"
               control={control}
-              render={({ field }) => (
-                <SelectArtist
-                  {...field}
-                  updateArtistsIds={(value) => setValue('artistsIds', value)}
-                />
-              )}
+              render={({ field }) => <SelectArtist {...field} isMulti />}
             />
-            <FormInputError error={errors.artists} />
+            <FormInputError error={errors.artistsIds} />
             <FlexChild align="flex-end">
               <Group gap="lg" wrap>
                 <Button
@@ -215,12 +209,11 @@ const AddReleasePage = () => {
                   {...field}
                   options={ReleaseTypeOptions}
                   placeholder="Type"
+                  isMulti={false}
                   value={
                     ReleaseTypeOptions.find((c) => c.value === value) || null
                   }
-                  onChange={(val: { value: string; label: string }) =>
-                    onChange(val.value)
-                  }
+                  onChange={(val: SelectOption) => onChange(val?.value)}
                 />
               )}
             />
@@ -231,14 +224,9 @@ const AddReleasePage = () => {
             />
             <FormInputError error={errors.date} />
             <Controller
-              name="labels"
+              name="labelsIds"
               control={control}
-              render={({ field }) => (
-                <SelectLabel
-                  {...field}
-                  updateLabelsIds={(value) => setValue('labelsIds', value)}
-                />
-              )}
+              render={({ field }) => <SelectLabel {...field} isMulti />}
             />
             <FormInputError error={errors.labelsIds} />
             <FlexChild align="flex-end">
@@ -252,16 +240,9 @@ const AddReleasePage = () => {
               </Group>
             </FlexChild>
             <Controller
-              name="languages"
+              name="languagesIds"
               control={control}
-              render={({ field }) => (
-                <SelectLanguage
-                  {...field}
-                  updateLanguagesIds={(value) =>
-                    setValue('languagesIds', value)
-                  }
-                />
-              )}
+              render={({ field }) => <SelectLanguage {...field} isMulti />}
             />
             <FormInputError error={errors.languagesIds} />
             <Controller
@@ -294,7 +275,7 @@ const AddReleasePage = () => {
                   value={ExplicitCoverArtOptions.filter((opt) =>
                     value?.includes(opt.value),
                   )}
-                  onChange={(selected) =>
+                  onChange={(selected: SelectOption[]) =>
                     onChange(selected.map((opt) => opt.value))
                   }
                 />
