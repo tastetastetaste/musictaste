@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ILabelResponse } from 'shared';
-import { Repository } from 'typeorm';
+import { ILabelResponse, ILabelSummary } from 'shared';
+import { In, Repository } from 'typeorm';
 import { LabelChanges } from '../../db/entities/label-submission.entity';
 import { Label } from '../../db/entities/label.entity';
 import { ReleaseLabel } from '../../db/entities/release-label.entity';
@@ -25,6 +25,14 @@ export class LabelsService {
     return {
       label,
     };
+  }
+
+  async findByIds(ids: string[]): Promise<ILabelSummary[]> {
+    if (!ids || ids.length === 0) return [];
+
+    return this.labelRepository.find({
+      where: { id: In(ids) },
+    });
   }
 
   async createLabel({

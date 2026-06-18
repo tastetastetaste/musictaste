@@ -254,6 +254,7 @@ const artistsKey = (ids: string[]) => ['artists', ids.join(',')];
 
 // LABELS
 const labelKey = (id: string) => ['label', id];
+const labelsKey = (ids: string[]) => ['labels', ids.join(',')];
 
 // GENRES
 const genreKey = (id: string) => ['genre', id];
@@ -339,6 +340,7 @@ export const cacheKeys = {
   artistKey,
   artistsKey,
   labelKey,
+  labelsKey,
   genreKey,
   genresKey,
   entryKey,

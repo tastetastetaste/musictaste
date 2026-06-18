@@ -86,6 +86,7 @@ import {
   FindEntriesDto,
   IReviewsResponse,
   IReviewVote,
+  ILabelSummary,
 } from 'shared';
 import { buildFormData } from './build-form-data';
 
@@ -130,6 +131,9 @@ const getArtists = (ids: string[]) =>
 // ----------------
 const getLabel = (id: string) =>
   client.get('labels/' + id).json<ILabelResponse>();
+
+const getLabels = (ids: string[]) =>
+  client.get(`labels?ids=${ids.join(',')}`).json<ILabelSummary[]>();
 
 // ----------------
 //     GENRE
@@ -789,6 +793,7 @@ export const api = {
   getArtist,
   getArtists,
   getLabel,
+  getLabels,
   getGenre,
   getGenres,
   createArtist,
