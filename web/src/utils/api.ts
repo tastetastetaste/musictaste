@@ -7,7 +7,6 @@ import {
   CreateLabelDto,
   CreateReleaseDto,
   CreateReportDto,
-  EntriesSortByEnum,
   FindArtistSubmissionsDto,
   FindCommentsDto,
   FindGenreSubmissionsDto,
@@ -16,6 +15,7 @@ import {
   FindReleaseSubmissionsDto,
   FindUsersType,
   IArtistResponse,
+  IArtistSummary,
   IArtistSubmission,
   IArtistSubmissionsResponse,
   IAutofillRelease,
@@ -121,6 +121,9 @@ const client = ky.create({
 // ----------------
 const getArtist = (id: string) =>
   client.get('artists/' + id).json<IArtistResponse>();
+
+const getArtists = (ids: string[]) =>
+  client.get(`artists?ids=${ids.join(',')}`).json<IArtistSummary[]>();
 
 // ----------------
 //     LABEL
@@ -784,6 +787,7 @@ const parseLinks = (text: string) =>
 
 export const api = {
   getArtist,
+  getArtists,
   getLabel,
   getGenre,
   getGenres,

@@ -250,6 +250,7 @@ const userContributionsStatsKey = (userId: string) => [
 
 // ARTIST
 const artistKey = (id: string) => ['artist', id];
+const artistsKey = (ids: string[]) => ['artists', ids.join(',')];
 
 // LABELS
 const labelKey = (id: string) => ['label', id];
@@ -336,6 +337,7 @@ const searchKey = (filters: {
 
 export const cacheKeys = {
   artistKey,
+  artistsKey,
   labelKey,
   genreKey,
   genresKey,

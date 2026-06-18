@@ -4,7 +4,12 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ArtistType, ArtistVisibility, IArtistResponse } from 'shared';
+import {
+  ArtistType,
+  ArtistVisibility,
+  IArtistResponse,
+  IArtistSummary,
+} from 'shared';
 import { In, Repository } from 'typeorm';
 import {
   ArtistChanges,
@@ -97,6 +102,15 @@ export class ArtistsService {
       releaseCounts,
       releaseCountsWithAliases,
     };
+  }
+
+  async findByIds(ids: string[]): Promise<IArtistSummary[]> {
+    if (!ids || ids.length === 0) return [];
+    return this.artistsRepository.find({
+      select: ['id', 'name', 'nameLatin', 'disambiguation', 'type'],
+      where: { id: In(ids) },
+      relations: ['mainArtist'],
+    });
   }
 
   async create({
