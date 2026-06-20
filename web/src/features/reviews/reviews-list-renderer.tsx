@@ -1,4 +1,6 @@
+import { IconSortDescending } from '@tabler/icons-react';
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
+import { useMemo, useState } from 'react';
 import {
   IEntryWithReview,
   IUserSummary,
@@ -7,13 +9,15 @@ import {
 } from 'shared';
 import { Feedback } from '../../components/feedback';
 import { FetchMore } from '../../components/fetch-more';
+import { Group } from '../../components/flex/group';
 import { Stack } from '../../components/flex/stack';
+import { Select } from '../../components/inputs/select';
 import { Loading } from '../../components/loading';
+import { useMediaQuery } from '../../hooks/useMediaQuery';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
 import { Review } from './review';
 import { updateReviewAfterVote_3 } from './update-review-after-vote';
-import { useMemo } from 'react';
 import { useUserReviewVotes } from './useUserReviewVotes';
 
 export interface ReviewsListRendererProps {
@@ -78,18 +82,33 @@ export function ReviewsPageChunk({
   );
 }
 
+const reviewSortByOption = [
+  { value: ReviewsSortByEnum.ReviewDate, label: 'Latest' },
+  { value: ReviewsSortByEnum.ReviewTop, label: 'Top' },
+];
+
 export function ReviewsListRenderer({
-  sortBy,
+  sortBy: defaultSortBy,
   releaseId,
   userId,
   user,
   queryEnabled,
 }: ReviewsListRendererProps) {
+  const smallScreen = useMediaQuery({ down: 'sm' });
+
+  const [sortBy, setSortBy] = useState(
+    defaultSortBy && defaultSortBy === ReviewsSortByEnum.ReviewTop
+      ? reviewSortByOption.find((r) => r.value === ReviewsSortByEnum.ReviewTop)
+      : reviewSortByOption.find(
+          (r) => r.value === ReviewsSortByEnum.ReviewDate,
+        ),
+  );
+
   const cacheKey = cacheKeys.reviewsKey({
     userId,
     releaseId,
     pageSize: 12,
-    sortBy,
+    sortBy: sortBy.value,
   });
 
   const { data, isFetching, isFetchingNextPage, fetchNextPage, hasNextPage } =
@@ -101,7 +120,7 @@ export function ReviewsListRenderer({
           releaseId,
           pageSize: 12,
           page: pageParam,
-          sortBy,
+          sortBy: sortBy.value,
         }),
       {
         getNextPageParam: (lastPage, pages) =>
@@ -118,6 +137,23 @@ export function ReviewsListRenderer({
         <Loading />
       ) : data && data.pages[0].totalItems > 0 ? (
         <Stack gap="lg">
+          {/* show sort by on release page and user page */}
+          {userId || releaseId ? (
+            <Group align="end" justify="end">
+              <div
+                css={{
+                  width: smallScreen ? '100%' : '280px',
+                }}
+              >
+                <Select
+                  options={reviewSortByOption}
+                  value={sortBy}
+                  onChange={(selected: any) => setSortBy(selected)}
+                  icon={<IconSortDescending size={20} />}
+                />
+              </div>
+            </Group>
+          ) : null}
           {data.pages.map((page) => (
             <ReviewsPageChunk
               key={page.currentPage}
