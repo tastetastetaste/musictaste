@@ -1,92 +1,8 @@
-import { useTheme } from '@emotion/react';
-import styled from '@emotion/styled';
 import { useQuery } from '@tanstack/react-query';
-import Color from 'color';
-import { memo, useCallback, useState } from 'react';
-import { PieChart, pieChartDefaultProps } from 'react-minimal-pie-chart';
-import { useNavigate } from 'react-router-dom';
+import { Chart } from '../../components/charts/chart';
 import { Group } from '../../components/flex/group';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
-
-const StyledText = styled.text`
-  font-size: 3px;
-  font-family: ${({ theme }) => theme.font.family.base};
-  color: ${({ theme }) => theme.colors.primary};
-  pointer-events: none;
-`;
-
-export const useChartColor = () => {
-  const theme = useTheme();
-
-  const getColor = useCallback(
-    (percentage: number) => {
-      if (percentage < 0) {
-        return Color(theme.colors.background_sub).hex();
-      }
-
-      return Color(theme.colors.background_sub)
-        .mix(Color(theme.colors.highlight), percentage / 100)
-        .hex();
-    },
-    [theme],
-  );
-
-  return getColor;
-};
-
-const Chart = memo<{
-  data: { title: string; value: number; color: string; link: string }[];
-}>(function ChartFu({ data }) {
-  const [hovered, setHovered] = useState<number | undefined>(undefined);
-  const navigate = useNavigate();
-
-  return (
-    <PieChart
-      data={data.map((entry, i) => ({
-        ...entry,
-      }))}
-      startAngle={-90}
-      lengthAngle={-360}
-      style={{
-        fill: 'currentcolor',
-        userSelect: 'none',
-        overflow: 'visible',
-        cursor: 'pointer',
-      }}
-      radius={pieChartDefaultProps.radius - 5}
-      segmentsShift={(index) => (index === hovered ? 2 : 1)}
-      label={({ x, y, dx, dy, dataEntry, dataIndex }) => (
-        <StyledText
-          x={x}
-          y={y}
-          dx={dx}
-          dy={dy}
-          dominantBaseline="central"
-          textAnchor="middle"
-        >
-          {dataIndex === hovered
-            ? `${dataEntry.value} · ${
-                dataEntry.title
-              } · ${dataEntry.percentage.toFixed()}%`
-            : typeof hovered === 'number'
-              ? ''
-              : dataEntry.title}
-        </StyledText>
-      )}
-      labelPosition={85}
-      onMouseOver={(_, index) => {
-        setHovered(index);
-      }}
-      onMouseOut={() => {
-        setHovered(undefined);
-      }}
-      onClick={(_, index) => {
-        navigate(data[index].link);
-      }}
-    />
-  );
-});
 
 const initialData = [
   { bucket: 11, label: '10', count: 0 },
@@ -111,22 +27,19 @@ export const UserRatingsChart: React.FC<{
     api.getUserRatingBuckets(userId),
   );
 
-  const getColor = useChartColor();
-
   const ChartData = data
-    ? initialData
-        .map((d) => ({
-          title: d.label,
-          value: data.find((mr) => mr.bucket === d.bucket)?.count || 0,
-          color: getColor((d.bucket - 1) * 10),
-          link: `/${username}/music?bucket=${d.bucket}`,
-        }))
-        .filter((v) => v.value > 0)
+    ? initialData.map((d) => ({
+        title: d.label,
+        value: data.find((mr) => mr.bucket === d.bucket)?.count || 0,
+        link: `/${username}/music?bucket=${d.bucket}`,
+      }))
     : null;
 
   return (
     <Group justify="center">
-      <div>{ChartData && <Chart data={ChartData} />}</div>
+      <div css={{ width: '100%' }}>
+        {ChartData && <Chart data={ChartData} yAxisWidth={40} />}
+      </div>
     </Group>
   );
 };
@@ -138,23 +51,19 @@ export const UserGenresChart: React.FC<{
     api.getUserGenres(userId),
   );
 
-  const getColor = useChartColor();
-
   const numberOfGenres = 20;
 
   return (
     <Group justify="center">
-      <div>
+      <div css={{ width: '100%' }}>
         {data && (
           <Chart
             data={data.slice(0, numberOfGenres).map((g, i) => ({
               title: g.name,
               value: g.count,
-              color: getColor(
-                ((numberOfGenres - 1 - i) / numberOfGenres) * 100,
-              ),
               link: `/${username}/music?genres=${g.id}`,
             }))}
+            yAxisWidth={150}
           />
         )}
       </div>

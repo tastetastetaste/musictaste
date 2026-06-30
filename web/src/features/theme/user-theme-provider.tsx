@@ -1,6 +1,7 @@
 import { ThemeProvider, useTheme } from '@emotion/react';
 import { useLocation } from 'react-router-dom';
 import { IUserSummary } from 'shared';
+import { useAuth } from '../account/useAuth';
 
 export const UserThemeProvider = ({
   children,
@@ -12,6 +13,7 @@ export const UserThemeProvider = ({
   const theme = useTheme();
   // use location state to avoid flashing while loading
   const location = useLocation();
+  const { me } = useAuth();
 
   return (
     <ThemeProvider
@@ -19,7 +21,7 @@ export const UserThemeProvider = ({
         ...theme,
         colors:
           // user theme
-          user && user.supporter && user.theme
+          user && user.supporter && user.theme && user.id !== me.id
             ? user.theme
             : // user theme from location state
               location.state?.user &&

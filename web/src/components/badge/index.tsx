@@ -23,7 +23,7 @@ const StyledBadge = styled.span<{ $colorValue: string; $size: string }>`
   font-weight: 600;
   border-radius: 4px;
   color: ${(props) => props.$colorValue};
-  background-color: ${(props) => props.$colorValue}20;
+  background-color: none;
   border: 1px solid ${(props) => props.$colorValue}80;
   box-shadow: 0 0 5px currentColor;
 
