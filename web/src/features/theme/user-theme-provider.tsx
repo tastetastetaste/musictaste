@@ -21,7 +21,7 @@ export const UserThemeProvider = ({
         ...theme,
         colors:
           // user theme
-          user && user.supporter && user.theme && user.id !== me.id
+          user && user.supporter && user.theme && user.id !== me?.id
             ? user.theme
             : // user theme from location state
               location.state?.user &&
