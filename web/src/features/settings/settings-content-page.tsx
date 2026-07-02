@@ -95,10 +95,7 @@ const SettingsContentPage = () => {
   }, [user]);
 
   const submit = async (data: UpdateUserPreferencesDto) => {
-    await updateContentPreferences({
-      id: user.id,
-      ...data,
-    });
+    await updateContentPreferences(data);
 
     snackbar('Content preferences updated');
   };

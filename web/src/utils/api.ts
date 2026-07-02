@@ -729,39 +729,7 @@ const getUserFollowers = (id: string) =>
   client.get('users/' + id + '/followers/').json<IUserFollowsResponse>();
 const getUserFollowing = (id: string) =>
   client.get('users/' + id + '/following/').json<IUserFollowsResponse>();
-const updateProfile = ({
-  id,
-  ...data
-}: {
-  id: string;
-} & UpdateUserProfileDto) =>
-  client
-    .patch('users/' + id + '/update-profile', { json: data })
-    .json<boolean>();
-const updatePreferences = ({
-  id,
-  ...data
-}: {
-  id: string;
-} & UpdateUserPreferencesDto) =>
-  client
-    .patch('users/' + id + '/update-preferences', { json: data })
-    .json<boolean>();
-const updateImage = ({ id, image }: { id: string; image: File }) => {
-  return client
-    .patch('users/' + id + '/update-image', { body: buildFormData({ image }) })
-    .json<boolean>();
-};
-const updateTheme = ({
-  id,
-  theme,
-}: {
-  id: string;
-  theme: UpdateUserThemeDto;
-}) =>
-  client
-    .patch('users/' + id + '/update-theme', { json: theme })
-    .json<boolean>();
+
 const follow = ({ id }: { id: string }) =>
   client.post('users/' + id + '/following').json<boolean>();
 const unFollow = ({ id }: { id: string }) =>
@@ -769,6 +737,19 @@ const unFollow = ({ id }: { id: string }) =>
 
 const report = (report: CreateReportDto) =>
   client.post('reports', { json: report }).json<IReportResponse>();
+
+// Update current user
+const updateProfile = (data: UpdateUserProfileDto) =>
+  client.patch('users/me/update-profile', { json: data }).json<boolean>();
+const updatePreferences = (data: UpdateUserPreferencesDto) =>
+  client.patch('users/me/update-preferences', { json: data }).json<boolean>();
+const updateImage = ({ image }: { image: File }) => {
+  return client
+    .patch('users/me/update-image', { body: buildFormData({ image }) })
+    .json<boolean>();
+};
+const updateTheme = ({ theme }: { theme: UpdateUserThemeDto }) =>
+  client.patch('users/me/update-theme', { json: theme }).json<boolean>();
 
 // ----------------
 //     ADMIN

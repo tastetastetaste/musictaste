@@ -98,52 +98,46 @@ export class UsersController {
     return this.usersService.unFollow(id, currentUserId);
   }
 
-  @Patch(':id/update-profile')
+  @Patch('me/update-profile')
   @UseGuards(AuthenticatedGuard)
   updateProfile(
-    @Param('id') id: string,
     @Body() updateUserProfileDto: UpdateUserProfileDto,
     @CurUser() currentUser: CurrentUserPayload,
   ) {
-    if (id !== currentUser.id) throw new UnauthorizedException();
     return this.usersService.updateProfile(currentUser, updateUserProfileDto);
   }
 
-  @Patch(':id/update-preferences')
+  @Patch('me/update-preferences')
   @UseGuards(AuthenticatedGuard)
   updatePreferences(
-    @Param('id') id: string,
     @Body() updateUserPreferencesDto: UpdateUserPreferencesDto,
     @CurUser('id') currentUserId: string,
   ) {
-    if (id !== currentUserId) throw new UnauthorizedException();
-    return this.usersService.updatePreferences(id, updateUserPreferencesDto);
+    return this.usersService.updatePreferences(
+      currentUserId,
+      updateUserPreferencesDto,
+    );
   }
 
-  @Patch(':id/update-image')
+  @Patch('me/update-image')
   @UseGuards(AuthenticatedGuard)
   @UseInterceptors(FileInterceptor('image'))
   updateImage(
-    @Param('id') id: string,
     @UploadedFile() image: Express.Multer.File,
     @CurUser('id') currentUserId: string,
   ) {
-    if (id !== currentUserId) throw new UnauthorizedException();
-    return this.usersService.updateImage(id, {
+    return this.usersService.updateImage(currentUserId, {
       buffer: image.buffer,
       mimetype: image.mimetype,
     });
   }
 
-  @Patch(':id/update-theme')
+  @Patch('me/update-theme')
   @UseGuards(AuthenticatedGuard)
   updateTheme(
-    @Param('id') id: string,
     @Body() updateUserThemeDto: UpdateUserThemeDto,
     @CurUser() user: CurrentUserPayload,
   ) {
-    if (id !== user.id) throw new UnauthorizedException();
-
-    return this.usersService.updateTheme(id, updateUserThemeDto);
+    return this.usersService.updateTheme(user.id, updateUserThemeDto);
   }
 }

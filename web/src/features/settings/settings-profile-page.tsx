@@ -57,10 +57,7 @@ const SettingsProfilePage = () => {
   }, [user]);
 
   const submit = async (data: UpdateUserProfileDto) => {
-    await updateProfile({
-      id: user.id,
-      ...data,
-    });
+    await updateProfile(data);
     snackbar('Profile updated');
   };
 

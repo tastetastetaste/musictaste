@@ -34,7 +34,6 @@ const SettingsImagePage = () => {
 
   const submit = async (data: any) => {
     await updateImage({
-      id: user.id,
       image: data.image,
     });
     snackbar(IMAGE_UPLOADED_SUCCESS);

@@ -35,7 +35,7 @@ const SettingsThemePage = () => {
   };
 
   const handleSaveTheme = async () => {
-    await updateTheme({ id: me.id, theme: themeColors });
+    await updateTheme({ theme: themeColors });
   };
 
   const colorFields = [
