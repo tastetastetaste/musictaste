@@ -22,6 +22,8 @@ import {
   UpdateUserProfileDto,
   UpdateUserPreferencesDto,
   UpdateUserThemeDto,
+  UserCollectionViewDto,
+  ReorderUserCollectionViewsDto,
 } from 'shared';
 import { AuthenticatedGuard } from '../auth/Authenticated.guard';
 import { CurrentUserPayload } from '../auth/session.serializer';
@@ -54,10 +56,14 @@ export class UsersController {
   ): Promise<IUserProfileResponse> {
     const user = await this.usersService.getUserByUsername(username);
 
-    const [stats, following, followedBy] = await Promise.all([
+    const [stats, following, followedBy, collectionViews] = await Promise.all([
       await this.usersService.getUserStats(user.id),
       await this.usersService.isFollowing(user.id, currentUserId),
       await this.usersService.isFollowedBy(user.id, currentUserId),
+      await this.usersService.getCollectionViews({
+        userId: user.id,
+        supporter: user.supporter,
+      }),
     ]);
 
     return {
@@ -65,6 +71,7 @@ export class UsersController {
       stats,
       following,
       followedBy,
+      collectionViews,
     };
   }
 
@@ -139,5 +146,58 @@ export class UsersController {
     @CurUser() user: CurrentUserPayload,
   ) {
     return this.usersService.updateTheme(user.id, updateUserThemeDto);
+  }
+
+  @Post('me/collection-views')
+  @UseGuards(AuthenticatedGuard)
+  createCollectionView(
+    @CurUser('id') currentUserId: string,
+    @Body() userCollectionDto: UserCollectionViewDto,
+  ) {
+    return this.usersService.createCollectionView(
+      currentUserId,
+      userCollectionDto,
+    );
+  }
+
+  @Get('me/collection-views')
+  @UseGuards(AuthenticatedGuard)
+  getCollectionViews(@CurUser('id') currentUserId: string) {
+    return this.usersService.getCollectionViews({ userId: currentUserId });
+  }
+
+  @Patch('me/collection-views/order')
+  @UseGuards(AuthenticatedGuard)
+  reorderCollectionViews(
+    @CurUser('id') currentUserId: string,
+    @Body() reorderUserCollectionDto: ReorderUserCollectionViewsDto,
+  ) {
+    return this.usersService.reorderCollectionViews(
+      currentUserId,
+      reorderUserCollectionDto,
+    );
+  }
+
+  @Patch('me/collection-views/:id')
+  @UseGuards(AuthenticatedGuard)
+  updateCollectionView(
+    @Param('id') id: string,
+    @CurUser('id') currentUserId: string,
+    @Body() userCollectionViewDto: UserCollectionViewDto,
+  ) {
+    return this.usersService.updateCollectionView(
+      currentUserId,
+      id,
+      userCollectionViewDto,
+    );
+  }
+
+  @Delete('me/collection-views/:id')
+  @UseGuards(AuthenticatedGuard)
+  deleteCollectionView(
+    @Param('id') id: string,
+    @CurUser('id') currentUserId: string,
+  ) {
+    return this.usersService.deleteCollectionView(currentUserId, id);
   }
 }

@@ -18,6 +18,7 @@ const SettingsPageWrapper: React.FC = () => {
 
   const arr = [
     { to: `/settings/profile`, label: 'Profile' },
+    { to: `/settings/collection`, label: 'Collection' },
     { to: `/settings/image`, label: 'Image' },
     { to: `/settings/theme`, label: 'Theme' },
     { to: `/settings/content`, label: 'Content' },

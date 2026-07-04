@@ -108,29 +108,45 @@ export class EntriesController {
     );
   }
 
+  // Stats
   @Get('/user/:userId/artists')
-  getUserArtists(@Param('userId') userId: string) {
-    return this.entriesService.userEntriesArtists(userId);
+  getUserArtists(
+    @Param('userId') userId: string,
+    @Query('collectionViewId') collectionViewId?: string,
+  ) {
+    return this.entriesService.userEntriesArtists(userId, collectionViewId);
   }
 
   @Get('/user/:userId/ratings')
-  getUserRatings(@Param('userId') userId: string) {
-    return this.entriesService.userEntriesRatings(userId);
+  getUserRatings(
+    @Param('userId') userId: string,
+    @Query('collectionViewId') collectionViewId?: string,
+  ) {
+    return this.entriesService.userEntriesRatings(userId, collectionViewId);
   }
 
   @Get('/user/:userId/genres')
-  getUserGenres(@Param('userId') userId: string) {
-    return this.entriesService.userEntriesGenres(userId);
+  getUserGenres(
+    @Param('userId') userId: string,
+    @Query('collectionViewId') collectionViewId?: string,
+  ) {
+    return this.entriesService.userEntriesGenres(userId, collectionViewId);
   }
 
   @Get('/user/:userId/labels')
-  getUserLabels(@Param('userId') userId: string) {
-    return this.entriesService.userEntriesLabels(userId);
+  getUserLabels(
+    @Param('userId') userId: string,
+    @Query('collectionViewId') collectionViewId?: string,
+  ) {
+    return this.entriesService.userEntriesLabels(userId, collectionViewId);
   }
 
   @Get('/user/:userId/release-date')
-  getUserDates(@Param('userId') userId: string) {
-    return this.entriesService.userEntriesReleaseDate(userId);
+  getUserDates(
+    @Param('userId') userId: string,
+    @Query('collectionViewId') collectionViewId?: string,
+  ) {
+    return this.entriesService.userEntriesReleaseDate(userId, collectionViewId);
   }
 
   @Get('/user/:userId/tags')

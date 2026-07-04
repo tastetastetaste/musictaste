@@ -1,5 +1,5 @@
 import { useOutletContext } from 'react-router-dom';
-import { Fragment, useState } from 'react';
+import { useState } from 'react';
 import { Button } from '../../components/button';
 import { Group } from '../../components/flex/group';
 import { CreateListDialog } from '../lists/create-list-dialog';
@@ -14,9 +14,9 @@ const UserListsPage = () => {
   return (
     <div>
       {isUserMyself && (
-        <Group>
+        <Group justify="end">
           <Button onClick={() => setOpenCreateListDialog(true)}>
-            Create List
+            + Create List
           </Button>
         </Group>
       )}

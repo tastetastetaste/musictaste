@@ -13,6 +13,9 @@ import {
   IEntryResonse,
   UpdateEntryDto,
   VoteType,
+  RatingFilterEnum,
+  YearFilterEnum,
+  MultiValueFilterEnum,
 } from 'shared';
 import { In, Repository, SelectQueryBuilder } from 'typeorm';
 import { Rating } from '../../db/entities/rating.entity';
@@ -28,58 +31,10 @@ import { UsersService } from '../users/users.service';
 import { mapEntries } from './entries.utils';
 import { ReviewsService } from './reviews.service';
 import dayjs from 'dayjs';
-
-enum RatingFilterEnum {
-  is = 'is',
-  isnot = 'is not',
-  isgreaterthan = 'is greater than',
-  islessthan = 'is less than',
-  inrange = 'in range',
-  hasavalue = 'has a value',
-  hasnovalue = 'has no value',
-}
-
-enum YearFilterEnum {
-  is = 'is',
-  isafter = 'is after',
-  isbefore = 'is before',
-  inrange = 'in range',
-}
-
-enum MultiValueFilterEnum {
-  isanyof = 'is any of',
-  isnotanyof = 'is not any of',
-}
-
-class UserCollectionViewFilters {
-  rating?: RatingFilterEnum;
-  ratingIs?: number; // is, isnot
-  ratingStart?: number; // isgreaterthan, inrange
-  ratingEnd?: number; // islessthan, inrange
-
-  year?: YearFilterEnum;
-  yearIs?: string;
-  yearStart?: string; // isafter, inrange
-  yearEnd?: string; // isbefore, in range
-
-  type?: MultiValueFilterEnum;
-  typeValues?: number[]; // isanyof, isnotanyof
-
-  artist?: MultiValueFilterEnum;
-  artistValues?: string[];
-
-  genre?: MultiValueFilterEnum;
-  genreValues?: string[];
-
-  label?: MultiValueFilterEnum;
-  labelValues?: string[];
-
-  country?: MultiValueFilterEnum;
-  countryValues?: string[];
-
-  tag?: MultiValueFilterEnum;
-  tagValues?: string[];
-}
+import {
+  UserCollectionViewFilters,
+  UserCollectionView,
+} from '../../db/entities/user-collection-view';
 
 @Injectable()
 export class EntriesService {
@@ -97,6 +52,8 @@ export class EntriesService {
     private releaseLabelRepository: Repository<ReleaseLabel>,
     @InjectRepository(UserReleaseTag)
     private userReleaseTagRepository: Repository<UserReleaseTag>,
+    @InjectRepository(UserCollectionView)
+    private userCollectionViewRepository: Repository<UserCollectionView>,
     private releasesService: ReleasesService,
     private usersService: UsersService,
     private reviewsService: ReviewsService,
@@ -294,7 +251,6 @@ export class EntriesService {
       if (
         [
           RatingFilterEnum.is,
-          RatingFilterEnum.isnot,
           RatingFilterEnum.isgreaterthan,
           RatingFilterEnum.islessthan,
           RatingFilterEnum.inrange,
@@ -311,11 +267,6 @@ export class EntriesService {
         typeof filters.ratingIs === 'number'
       )
         urQB.andWhere('rating.rating = :rating', { rating: filters.ratingIs });
-      else if (
-        filters.rating === RatingFilterEnum.isnot &&
-        typeof filters.ratingIs === 'number'
-      )
-        urQB.andWhere('rating.rating <> :rating', { rating: filters.ratingIs });
       else if (
         filters.rating === RatingFilterEnum.isgreaterthan &&
         typeof filters.ratingStart === 'number'
@@ -500,7 +451,7 @@ export class EntriesService {
             const subQuery = qb
               .subQuery()
               .select('1')
-              .from('user_release_user_tag', 'suburt')
+              .from('user_release_user_tag', 'sub_urt')
               .where('sub_urt.user_release_id = ur.id')
               .andWhere('sub_urt.user_release_tag_id IN (:...tagValues)')
               .getQuery();
@@ -560,6 +511,7 @@ export class EntriesService {
     const {
       releaseId,
       userId,
+      collectionViewId,
       sortBy,
       year,
       decade,
@@ -573,6 +525,15 @@ export class EntriesService {
       pageSize,
     } = params;
 
+    const emptyResponse = {
+      entries: [],
+      totalItems: 0,
+      currentPage: page,
+      currentItems: (page - 1) * pageSize,
+      itemsPerPage: pageSize,
+      totalPages: Math.ceil(0 / pageSize),
+    };
+
     const urQB = this.userReleaseRepository
       .createQueryBuilder('ur')
       .leftJoinAndSelect('ur.rating', 'rating');
@@ -583,53 +544,189 @@ export class EntriesService {
       urQB.where('ur.releaseId = :releaseId', { releaseId });
     }
 
+    let filters: UserCollectionViewFilters = {};
+
+    if (collectionViewId && userId) {
+      const cv = await this.userCollectionViewRepository.findOne({
+        where: { id: collectionViewId, userId },
+      });
+      if (cv) {
+        filters = cv.filters;
+      }
+    }
+
+    let yearFilters = {};
+
+    if (year || filters.year === YearFilterEnum.is) {
+      yearFilters = {
+        year: YearFilterEnum.is,
+        yearIs: year || filters.yearIs,
+      };
+    } else if (decade || filters.year) {
+      const yearRangeMin =
+        filters.year === YearFilterEnum.isafter
+          ? decade
+            ? (+filters.yearStart + 1).toString() // using decade (range) add 1 to exclude the yearStart
+            : filters.yearStart
+          : filters.year === YearFilterEnum.inrange
+            ? filters.yearStart
+            : undefined;
+      const yearRangeMax =
+        filters.year === YearFilterEnum.isbefore
+          ? decade
+            ? (+filters.yearEnd - 1).toString() // using decade (range) subtract 1 to exclude the yearEnd
+            : filters.yearEnd
+          : filters.year === YearFilterEnum.inrange
+            ? filters.yearEnd
+            : undefined;
+
+      const decadeYearStart = decade
+        ? dayjs(decade, 'YYYY').format('YYYY')
+        : undefined;
+      const decadeYearEnd = decade
+        ? dayjs(decade, 'YYYY').add(9, 'year').format('YYYY')
+        : undefined;
+
+      let yearStart;
+      if (decadeYearStart && yearRangeMin) {
+        yearStart = Math.max(...[+decadeYearStart, +yearRangeMin]).toString();
+      } else {
+        yearStart = decadeYearStart || yearRangeMin;
+      }
+
+      let yearEnd;
+      if (decadeYearEnd && yearRangeMax) {
+        yearEnd = Math.min(...[+decadeYearEnd, +yearRangeMax]).toString();
+      } else {
+        yearEnd = decadeYearEnd || yearRangeMax;
+      }
+
+      yearFilters = {
+        year: decade ? YearFilterEnum.inrange : filters.year,
+        yearStart,
+        yearEnd,
+      };
+    }
+
+    let ratingFilter: any = {};
+    const viewRatingHasNoValue = filters.rating === RatingFilterEnum.hasnovalue;
+    const bucketRatingHasNoValue = bucket === '-1';
+    // Handle no ratings filter
+    if (
+      filters.rating &&
+      bucket &&
+      viewRatingHasNoValue !== bucketRatingHasNoValue
+    ) {
+      return emptyResponse; // disjoint
+    }
+    if (viewRatingHasNoValue || bucketRatingHasNoValue) {
+      ratingFilter = { rating: RatingFilterEnum.hasnovalue };
+    } else if (filters.rating || bucket) {
+      // View rating filter
+      let vMin = 0;
+      let vMax = 100;
+      if (filters.rating === RatingFilterEnum.is) {
+        vMin = filters.ratingIs;
+        vMax = filters.ratingIs;
+      } else if (filters.rating === RatingFilterEnum.isgreaterthan) {
+        vMin = filters.ratingStart + 1;
+      } else if (filters.rating === RatingFilterEnum.islessthan) {
+        vMax = filters.ratingEnd - 1;
+      } else if (filters.rating === RatingFilterEnum.inrange) {
+        vMin = filters.ratingStart;
+        vMax = filters.ratingEnd;
+      }
+      // Bucket rating filter
+      let bMin = 0;
+      let bMax = 100;
+      if (bucket === '11') {
+        bMin = 100;
+        bMax = 100;
+      } else if (bucket) {
+        const b = Number(bucket);
+        bMin = b * 10 - 10;
+        bMax = b * 10 - 1;
+      }
+
+      // Intersection range
+      const min = Math.max(vMin, bMin);
+      const max = Math.min(vMax, bMax);
+      if (Number.isNaN(min) || Number.isNaN(max)) {
+        return emptyResponse;
+      }
+      if (min > max) {
+        return emptyResponse; // disjoint
+      }
+
+      ratingFilter = {
+        rating: min === max ? RatingFilterEnum.is : RatingFilterEnum.inrange,
+        ratingIs: min === max ? min : undefined,
+        ratingStart: min === max ? undefined : min,
+        ratingEnd: min === max ? undefined : max,
+      };
+    }
+
+    const intersect = <T>(
+      params: T[] | undefined,
+      viewOp: MultiValueFilterEnum | undefined,
+      viewValues: T[] | undefined,
+    ) => {
+      if (!params?.length) return { op: viewOp, values: viewValues };
+      if (!viewValues?.length)
+        return { op: MultiValueFilterEnum.isanyof, values: params };
+      const values =
+        viewOp === MultiValueFilterEnum.isnotanyof
+          ? params.filter((v) => !viewValues.includes(v))
+          : params.filter((v) => viewValues.includes(v));
+      return {
+        op: MultiValueFilterEnum.isanyof,
+        values,
+        isDisjoint: values.length === 0,
+      };
+    };
+
+    const typeFilter = intersect(types, filters.type, filters.typeValues);
+    const genreFilter = intersect(genres, filters.genre, filters.genreValues);
+    const artistFilter = intersect(
+      artists,
+      filters.artist,
+      filters.artistValues,
+    );
+    const labelFilter = intersect(labels, filters.label, filters.labelValues);
+    const tagFilter = intersect(tags, filters.tag, filters.tagValues);
+
+    if (
+      typeFilter.isDisjoint ||
+      genreFilter.isDisjoint ||
+      artistFilter.isDisjoint ||
+      labelFilter.isDisjoint ||
+      tagFilter.isDisjoint
+    )
+      return emptyResponse;
+
     this.applyFilters(
       urQB,
       {
-        year: year
-          ? YearFilterEnum.is
-          : decade
-            ? YearFilterEnum.inrange
-            : undefined,
-        yearIs: year,
-        yearStart: decade ? dayjs(decade, 'YYYY').format('YYYY') : undefined,
-        yearEnd: decade
-          ? dayjs(decade, 'YYYY').add(9, 'year').format('YYYY')
-          : undefined,
-        type: types?.length ? MultiValueFilterEnum.isanyof : undefined,
-        typeValues: types,
-        genre: genres?.length ? MultiValueFilterEnum.isanyof : undefined,
-        genreValues: genres,
-        artist: artists?.length ? MultiValueFilterEnum.isanyof : undefined,
-        artistValues: artists,
-        label: labels?.length ? MultiValueFilterEnum.isanyof : undefined,
-        labelValues: labels,
-        tag: tags?.length ? MultiValueFilterEnum.isanyof : undefined,
-        tagValues: tags,
+        ...yearFilters,
+        ...ratingFilter,
 
-        rating:
-          bucket === '-1'
-            ? RatingFilterEnum.hasnovalue
-            : bucket === '11'
-              ? RatingFilterEnum.is
-              : bucket
-                ? RatingFilterEnum.inrange
-                : undefined,
-        ratingIs: bucket === '11' ? 100 : undefined,
-        /*
-        { bucket: '1', start: 0, end: 9 },
-        { bucket: '2', start: 10, end: 19 },
-        { bucket: '3', start: 20, end: 29 },
-        { bucket: '4', start: 30, end: 39 },
-        { bucket: '5', start: 40, end: 49 },
-        { bucket: '6', start: 50, end: 59 },
-        { bucket: '7', start: 60, end: 69 },
-        { bucket: '8', start: 70, end: 79 },
-        { bucket: '9', start: 80, end: 89 },
-        { bucket: '10', start: 90, end: 99 },
-      */
-        ratingStart: bucket ? Number(`${bucket}0`) - 10 : undefined,
-        ratingEnd: bucket ? Number(`${bucket}0`) - 1 : undefined,
+        type: typeFilter.op,
+        typeValues: typeFilter.values,
+
+        genre: genreFilter.op,
+        genreValues: genreFilter.values,
+
+        artist: artistFilter.op,
+        artistValues: artistFilter.values,
+
+        label: labelFilter.op,
+        labelValues: labelFilter.values,
+
+        tag: tagFilter.op,
+        tagValues: tagFilter.values,
+
+        country: filters.country,
+        countryValues: filters.countryValues,
       },
       sortBy,
       { skipRatingJoin: true },
@@ -852,23 +949,29 @@ export class EntriesService {
     return true;
   }
 
-  async userEntriesArtists(userId: string) {
-    const artists = await this.releaseArtistRepository
-      .createQueryBuilder('ra')
-      .select('artist.id', 'artistId')
-      .addSelect('artist.name', 'artistName')
-      .addSelect('artist.nameLatin', 'artistNameLatin')
-      .addSelect('COUNT(artist.id)::int', 'artistCount')
+  async userEntriesArtists(userId: string, collectionViewId?: string) {
+    const urQB = this.userReleaseRepository
+      .createQueryBuilder('ur')
+      .where('ur.userId = :userId', { userId });
 
-      .innerJoin(
-        UserRelease,
-        'ur',
-        'ur.userId = :userId AND ur.releaseId = ra.releaseId',
-        { userId },
-      )
-      .leftJoin('ra.artist', 'artist')
-      .orderBy('COUNT(artist.id)', 'DESC')
-      .groupBy('artist.id')
+    if (collectionViewId) {
+      const cv = await this.userCollectionViewRepository.findOne({
+        where: { id: collectionViewId, userId },
+      });
+      if (cv) {
+        await this.applyFilters(urQB, cv.filters);
+      }
+    }
+
+    const artists = await urQB
+      .innerJoin(ReleaseArtist, 'stats_ra', 'stats_ra.releaseId = ur.releaseId')
+      .leftJoin('stats_ra.artist', 'stats_artist')
+      .select('stats_artist.id', 'artistId')
+      .addSelect('stats_artist.name', 'artistName')
+      .addSelect('stats_artist.nameLatin', 'artistNameLatin')
+      .addSelect('COUNT(stats_artist.id)::int', 'artistCount')
+      .orderBy('COUNT(stats_artist.id)', 'DESC')
+      .groupBy('stats_artist.id')
       .getRawMany();
 
     const result = artists.map((ua) => ({
@@ -880,48 +983,73 @@ export class EntriesService {
 
     return result;
   }
-  async userEntriesRatings(userId) {
-    const result = await this.userReleaseRepository.query(
-      `
-      SELECT
-        COUNT(*)::int as "count",
+  async userEntriesRatings(userId: string, collectionViewId?: string) {
+    const urQB = this.userReleaseRepository
+      .createQueryBuilder('ur')
+      .where('ur.userId = :userId', { userId });
+
+    if (collectionViewId) {
+      const cv = await this.userCollectionViewRepository.findOne({
+        where: { id: collectionViewId, userId },
+      });
+      if (cv) {
+        await this.applyFilters(urQB, cv.filters);
+      }
+    }
+
+    const result = await urQB
+      .leftJoin('ur.rating', 'stats_rating')
+      .select('COUNT(*)::int', 'count')
+      .addSelect(
+        `
         CASE
-          WHEN rating.rating BETWEEN 0 AND 9 THEN 1
-          WHEN rating.rating BETWEEN 10 AND 19 THEN 2
-          WHEN rating.rating BETWEEN 20 AND 29 THEN 3
-          WHEN rating.rating BETWEEN 30 AND 39 THEN 4
-          WHEN rating.rating BETWEEN 40 AND 49 THEN 5
-          WHEN rating.rating BETWEEN 50 AND 59 THEN 6
-          WHEN rating.rating BETWEEN 60 AND 69 THEN 7
-          WHEN rating.rating BETWEEN 70 AND 79 THEN 8
-          WHEN rating.rating BETWEEN 80 AND 89 THEN 9
-          WHEN rating.rating BETWEEN 90 AND 99 THEN 10
-          WHEN rating.rating BETWEEN 100 AND 100 THEN 11
+          WHEN stats_rating.rating BETWEEN 0 AND 9 THEN 1
+          WHEN stats_rating.rating BETWEEN 10 AND 19 THEN 2
+          WHEN stats_rating.rating BETWEEN 20 AND 29 THEN 3
+          WHEN stats_rating.rating BETWEEN 30 AND 39 THEN 4
+          WHEN stats_rating.rating BETWEEN 40 AND 49 THEN 5
+          WHEN stats_rating.rating BETWEEN 50 AND 59 THEN 6
+          WHEN stats_rating.rating BETWEEN 60 AND 69 THEN 7
+          WHEN stats_rating.rating BETWEEN 70 AND 79 THEN 8
+          WHEN stats_rating.rating BETWEEN 80 AND 89 THEN 9
+          WHEN stats_rating.rating BETWEEN 90 AND 99 THEN 10
+          WHEN stats_rating.rating BETWEEN 100 AND 100 THEN 11
           ELSE -1
-        END AS "bucket"
-        FROM "user_release" "ur" LEFT JOIN "rating" "rating" ON "rating"."id"="ur"."ratingId" WHERE "ur"."userId" = $1 GROUP BY bucket;
+        END
       `,
-      [userId],
-    );
+        'bucket',
+      )
+      .groupBy('bucket')
+      .getRawMany();
 
     return result;
   }
-  async userEntriesGenres(userId) {
-    const genres = await this.releaseGenreRepository
-      .createQueryBuilder('rg')
-      .select('genre.id', 'genreId')
-      .addSelect('genre.name', 'genreName')
-      .addSelect('COUNT(genre.id)::int', 'genreCount')
-      .where('rg.votesAvg > 0.5')
+  async userEntriesGenres(userId: string, collectionViewId?: string) {
+    const urQB = this.userReleaseRepository
+      .createQueryBuilder('ur')
+      .where('ur.userId = :userId', { userId });
+
+    if (collectionViewId) {
+      const cv = await this.userCollectionViewRepository.findOne({
+        where: { id: collectionViewId, userId },
+      });
+      if (cv) {
+        await this.applyFilters(urQB, cv.filters);
+      }
+    }
+
+    const genres = await urQB
       .innerJoin(
-        UserRelease,
-        'ur',
-        'ur.userId = :userId AND ur.releaseId = rg.releaseId',
-        { userId },
+        ReleaseGenre,
+        'stats_rg',
+        'stats_rg.releaseId = ur.releaseId AND stats_rg.votesAvg > 0.5',
       )
-      .leftJoin('rg.genre', 'genre')
-      .orderBy('COUNT(genre.id)', 'DESC')
-      .groupBy('genre.id')
+      .leftJoin('stats_rg.genre', 'stats_genre')
+      .select('stats_genre.id', 'genreId')
+      .addSelect('stats_genre.name', 'genreName')
+      .addSelect('COUNT(stats_genre.id)::int', 'genreCount')
+      .orderBy('COUNT(stats_genre.id)', 'DESC')
+      .groupBy('stats_genre.id')
       .getRawMany();
 
     const result = genres.map((ug) => ({
@@ -932,21 +1060,28 @@ export class EntriesService {
 
     return result;
   }
-  async userEntriesLabels(userId) {
-    const labels = await this.releaseLabelRepository
-      .createQueryBuilder('rl')
-      .select('label.id', 'labelId')
-      .addSelect('label.name', 'labelName')
-      .addSelect('COUNT(label.id)::int', 'labelCount')
-      .innerJoin(
-        UserRelease,
-        'ur',
-        'ur.userId = :userId AND ur.releaseId = rl.releaseId',
-        { userId },
-      )
-      .leftJoin('rl.label', 'label')
-      .orderBy('COUNT(label.id)', 'DESC')
-      .groupBy('label.id')
+  async userEntriesLabels(userId: string, collectionViewId?: string) {
+    const urQB = this.userReleaseRepository
+      .createQueryBuilder('ur')
+      .where('ur.userId = :userId', { userId });
+
+    if (collectionViewId) {
+      const cv = await this.userCollectionViewRepository.findOne({
+        where: { id: collectionViewId, userId },
+      });
+      if (cv) {
+        await this.applyFilters(urQB, cv.filters);
+      }
+    }
+
+    const labels = await urQB
+      .innerJoin(ReleaseLabel, 'stats_rl', 'stats_rl.releaseId = ur.releaseId')
+      .leftJoin('stats_rl.label', 'stats_label')
+      .select('stats_label.id', 'labelId')
+      .addSelect('stats_label.name', 'labelName')
+      .addSelect('COUNT(stats_label.id)::int', 'labelCount')
+      .orderBy('COUNT(stats_label.id)', 'DESC')
+      .groupBy('stats_label.id')
       .getRawMany();
 
     const result = labels.map((ul) => ({
@@ -957,14 +1092,29 @@ export class EntriesService {
 
     return result;
   }
-  async userEntriesReleaseDate(userId) {
-    const result = await this.userReleaseRepository
+  async userEntriesReleaseDate(userId: string, collectionViewId?: string) {
+    const urQB = this.userReleaseRepository
       .createQueryBuilder('ur')
-      .where('ur.userId = :userId', { userId })
-      .select('EXTRACT(DECADE FROM release.date)', 'decade')
-      .addSelect('EXTRACT(YEAR FROM release.date)', 'year')
+      .where('ur.userId = :userId', { userId });
+
+    if (collectionViewId) {
+      const cv = await this.userCollectionViewRepository.findOne({
+        where: { id: collectionViewId, userId },
+      });
+      if (cv) {
+        await this.applyFilters(urQB, cv.filters);
+      }
+    }
+
+    const result = await urQB
+      .innerJoin(
+        'ur.release',
+        'stats_release',
+        'stats_release.date is not null',
+      )
+      .select('EXTRACT(DECADE FROM stats_release.date)', 'decade')
+      .addSelect('EXTRACT(YEAR FROM stats_release.date)', 'year')
       .addSelect('COUNT(*)::int')
-      .innerJoin('ur.release', 'release', 'release.date is not null')
       .groupBy('decade')
       .addGroupBy('year')
       .orderBy('year', 'DESC')

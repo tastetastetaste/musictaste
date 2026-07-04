@@ -17,6 +17,7 @@ As a supporter, you will get the following:
 - Personalize your public profile with your theme colors
 - Use animated GIF images for your profile picture
 - Filter charts by number of ratings
+- Unlock up to 10 collection views to better organize your collection
 - More supporter only features as they are added
 
 **One time donation = 1 year of supporter features**

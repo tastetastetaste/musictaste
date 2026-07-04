@@ -170,3 +170,25 @@ export enum NotificationType {
   MENTION = 30,
   LIKE = 40,
 }
+
+// Collection View Filters
+export enum RatingFilterEnum {
+  is = 'is',
+  isgreaterthan = 'is greater than',
+  islessthan = 'is less than',
+  inrange = 'in range',
+  hasavalue = 'has a value',
+  hasnovalue = 'has no value',
+}
+
+export enum YearFilterEnum {
+  is = 'is',
+  isafter = 'is after',
+  isbefore = 'is before',
+  inrange = 'in range',
+}
+
+export enum MultiValueFilterEnum {
+  isanyof = 'is any of',
+  isnotanyof = 'is not any of',
+}

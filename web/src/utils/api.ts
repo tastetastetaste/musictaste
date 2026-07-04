@@ -87,6 +87,8 @@ import {
   IReviewsResponse,
   IReviewVote,
   ILabelSummary,
+  UserCollectionViewDto,
+  IUserCollectionView,
 } from 'shared';
 import { buildFormData } from './build-form-data';
 
@@ -194,6 +196,7 @@ const updatePassword = (data: {
 const getEntries = ({
   releaseId,
   userId,
+  collectionViewId,
 
   sortBy,
 
@@ -216,6 +219,8 @@ const getEntries = ({
   });
   if (releaseId) queryParams.append('releaseId', releaseId);
   if (userId) queryParams.append('userId', userId);
+  if (collectionViewId)
+    queryParams.append('collectionViewId', collectionViewId);
   if (year) queryParams.append('year', year);
   if (decade) queryParams.append('decade', decade);
   if (bucket) queryParams.append('bucket', bucket);
@@ -319,18 +324,51 @@ const getUnreadNotificationsCount = () =>
 const markAllAsRead = () =>
   client.post('notifications/mark-all-read').json<boolean>();
 
-const getUserArtists = (userId: string) =>
-  client.get('entries/user/' + userId + '/artists').json<IUserArtist[]>();
-const getUserRatingBuckets = (userId: string) =>
-  client.get('entries/user/' + userId + '/ratings').json<IUserRatingBucket[]>();
-const getUserLabels = (userId: string) =>
-  client.get('entries/user/' + userId + '/labels').json<IUserLabel[]>();
-
-const getUserGenres = (userId: string) =>
-  client.get('entries/user/' + userId + '/genres').json<IUserGenre[]>();
-const getUserReleaseDates = (userId: string) =>
+const getUserArtists = (userId: string, collectionViewId?: string) =>
   client
-    .get('entries/user/' + userId + '/release-date')
+    .get(
+      'entries/user/' +
+        userId +
+        '/artists' +
+        (collectionViewId ? `?collectionViewId=${collectionViewId}` : ''),
+    )
+    .json<IUserArtist[]>();
+const getUserRatingBuckets = (userId: string, collectionViewId?: string) =>
+  client
+    .get(
+      'entries/user/' +
+        userId +
+        '/ratings' +
+        (collectionViewId ? `?collectionViewId=${collectionViewId}` : ''),
+    )
+    .json<IUserRatingBucket[]>();
+const getUserLabels = (userId: string, collectionViewId?: string) =>
+  client
+    .get(
+      'entries/user/' +
+        userId +
+        '/labels' +
+        (collectionViewId ? `?collectionViewId=${collectionViewId}` : ''),
+    )
+    .json<IUserLabel[]>();
+
+const getUserGenres = (userId: string, collectionViewId?: string) =>
+  client
+    .get(
+      'entries/user/' +
+        userId +
+        '/genres' +
+        (collectionViewId ? `?collectionViewId=${collectionViewId}` : ''),
+    )
+    .json<IUserGenre[]>();
+const getUserReleaseDates = (userId: string, collectionViewId?: string) =>
+  client
+    .get(
+      'entries/user/' +
+        userId +
+        '/release-date' +
+        (collectionViewId ? `?collectionViewId=${collectionViewId}` : ''),
+    )
     .json<IUserReleaseDate[]>();
 const getUserTags = (userId: string) =>
   client.get('entries/user/' + userId + '/tags').json<IUserTag[]>();
@@ -751,6 +789,30 @@ const updateImage = ({ image }: { image: File }) => {
 const updateTheme = ({ theme }: { theme: UpdateUserThemeDto }) =>
   client.patch('users/me/update-theme', { json: theme }).json<boolean>();
 
+const getUserCollectionViews = () =>
+  client.get('users/me/collection-views').json<IUserCollectionView[]>();
+
+const createUserCollectionView = (data: UserCollectionViewDto) =>
+  client
+    .post('users/me/collection-views', { json: data })
+    .json<IUserCollectionView>();
+
+const updateUserCollectionView = ({
+  id,
+  ...data
+}: { id: string } & UserCollectionViewDto) =>
+  client
+    .patch('users/me/collection-views/' + id, { json: data })
+    .json<IUserCollectionView>();
+
+const deleteUserCollectionView = (id: string) =>
+  client.delete('users/me/collection-views/' + id).json<boolean>();
+
+const reorderUserCollectionViews = (ids: string[]) =>
+  client
+    .patch('users/me/collection-views/order', { json: { ids } })
+    .json<boolean>();
+
 // ----------------
 //     ADMIN
 // ----------------
@@ -902,4 +964,9 @@ export const api = {
   findUsers,
   mergeEntities,
   parseLinks,
+  getUserCollectionViews,
+  createUserCollectionView,
+  updateUserCollectionView,
+  deleteUserCollectionView,
+  reorderUserCollectionViews,
 };

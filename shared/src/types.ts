@@ -10,6 +10,9 @@ import {
   ReleaseType,
   SupporterStatus,
   VoteType,
+  RatingFilterEnum,
+  YearFilterEnum,
+  MultiValueFilterEnum,
 } from './enums';
 
 export interface IArtistSummary {
@@ -381,6 +384,7 @@ export interface IUserProfileResponse {
   stats: IUserStats;
   following: boolean;
   followedBy: boolean;
+  collectionViews?: IUserCollectionView[];
 }
 
 export interface IUserFollowsResponse {
@@ -767,4 +771,42 @@ export interface IUpdateLabelSubmissionResponse {
 
 export interface IReportResponse {
   message: string;
+}
+
+export interface IUserCollectionViewFilters {
+  rating?: RatingFilterEnum;
+  ratingIs?: number;
+  ratingStart?: number;
+  ratingEnd?: number;
+
+  year?: YearFilterEnum;
+  yearIs?: string;
+  yearStart?: string;
+  yearEnd?: string;
+
+  type?: MultiValueFilterEnum;
+  typeValues?: number[];
+
+  artist?: MultiValueFilterEnum;
+  artistValues?: string[];
+
+  genre?: MultiValueFilterEnum;
+  genreValues?: string[];
+
+  tag?: MultiValueFilterEnum;
+  tagValues?: string[];
+
+  label?: MultiValueFilterEnum;
+  labelValues?: string[];
+
+  country?: MultiValueFilterEnum;
+  countryValues?: string[];
+}
+
+export interface IUserCollectionView {
+  id: string;
+  userId: string;
+  title: string;
+  order: number;
+  filters: IUserCollectionViewFilters;
 }

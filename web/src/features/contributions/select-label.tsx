@@ -24,6 +24,7 @@ interface SelectLabelProps {
   isMulti: boolean;
   icon?: React.ReactNode;
   availableLabels?: ILabelSummary[];
+  filterCondition?: (label: ILabelSummary) => boolean;
 }
 
 export const SelectLabel = forwardRef<any, SelectLabelProps>(
@@ -34,6 +35,7 @@ export const SelectLabel = forwardRef<any, SelectLabelProps>(
       isMulti,
       value,
       availableLabels,
+      filterCondition,
       ...rest
     },
     ref,
@@ -141,6 +143,10 @@ export const SelectLabel = forwardRef<any, SelectLabelProps>(
         queryClient
           .fetchQuery(cacheKeys.labelKey(labelId), () => api.getLabel(labelId))
           .then(({ label }) => {
+            if (filterCondition && !filterCondition(label)) {
+              snackbar('Failed to select label');
+              return;
+            }
             const newOption = {
               value: label.id,
               label: formatLabelLabel(label),
@@ -179,7 +185,10 @@ export const SelectLabel = forwardRef<any, SelectLabelProps>(
         isMulti={isMulti}
         options={
           data?.labels &&
-          data.labels.map((label) => ({
+          (filterCondition
+            ? data.labels.filter(filterCondition)
+            : data.labels
+          ).map((label) => ({
             value: label.id,
             label: formatLabelLabel(label),
           }))

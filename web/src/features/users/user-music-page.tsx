@@ -1,6 +1,6 @@
 import { IconAdjustmentsHorizontal } from '@tabler/icons-react';
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useOutletContext, useSearchParams } from 'react-router-dom';
 import { EntriesSortByEnum } from 'shared';
 import { Button } from '../../components/button';
@@ -40,10 +40,10 @@ export const useSortBy = () => {
 
 const Ratings = ({
   userId,
-  isUserMyself,
+  collectionViewId,
 }: {
   userId: string;
-  isUserMyself: boolean;
+  collectionViewId: string;
 }) => {
   const { sortBy } = useSortBy();
   const [query] = useSearchParams();
@@ -72,6 +72,7 @@ const Ratings = ({
         pageSize: 48,
         ...filters,
         sortBy,
+        collectionViewId,
       }),
       async ({ pageParam = 1 }) =>
         api.getEntries({
@@ -80,6 +81,7 @@ const Ratings = ({
           pageSize: 48,
           ...filters,
           sortBy,
+          collectionViewId,
         }),
       {
         getNextPageParam: (lastPage) =>
@@ -107,16 +109,54 @@ const Ratings = ({
 };
 
 const UserMusicPage = () => {
-  const { user, stats, isUserMyself } =
+  const { user, stats, collectionViews } =
     useOutletContext<UserPageOutletContext>();
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const isMobile = useMediaQuery({ down: 'md' });
 
+  const [query, setQuery] = useSearchParams();
+
+  const [componentReady, setComponentReady] = useState(false);
+
+  const selectedViewId = query.get('view');
+
+  useEffect(() => {
+    if (collectionViews && collectionViews.length > 0 && !selectedViewId) {
+      const params = new URLSearchParams();
+      params.set('view', collectionViews[0].id);
+      setQuery(params, { replace: true, preventScrollReset: true });
+    }
+    setComponentReady(true);
+  }, [collectionViews]);
+
+  const handleViewClick = (id: string) => {
+    const params = new URLSearchParams(); // clear all filters on view change
+    if (selectedViewId !== id) {
+      params.set('view', id);
+    }
+    setQuery(params, { replace: true, preventScrollReset: true });
+  };
+
+  if (!componentReady) return <></>;
+
   return (
     <Stack gap="md">
-      <Group justify="end">
+      <Group justify="apart">
+        <Group gap="sm" wrap>
+          {collectionViews && collectionViews.length > 0
+            ? collectionViews.map((cv) => (
+                <Button
+                  key={cv.id}
+                  variant={selectedViewId === cv.id ? 'highlight' : undefined}
+                  onClick={() => handleViewClick(cv.id)}
+                >
+                  {cv.title}
+                </Button>
+              ))
+            : null}
+        </Group>
         {isMobile && (
           <Button onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
             <IconAdjustmentsHorizontal />
@@ -128,16 +168,29 @@ const UserMusicPage = () => {
         onClose={() => setIsSidebarOpen(false)}
         position="right"
       >
-        <UserMusicFilters userId={user.id} ratingsCount={stats.ratingsCount} />
+        <UserMusicFilters
+          userId={user.id}
+          ratingsCount={stats.ratingsCount}
+          collectionView={
+            selectedViewId
+              ? collectionViews.find((v) => v.id === selectedViewId)
+              : null
+          }
+        />
       </Sidebar>
       <Group align="start" gap="xl">
         <div style={{ flex: 1 }}>
-          <Ratings userId={user.id} isUserMyself={isUserMyself} />
+          <Ratings userId={user.id} collectionViewId={selectedViewId} />
         </div>
         {!isMobile && (
           <UserMusicFilters
             userId={user.id}
             ratingsCount={stats.ratingsCount}
+            collectionView={
+              selectedViewId
+                ? collectionViews.find((v) => v.id === selectedViewId)
+                : null
+            }
           />
         )}
       </Group>

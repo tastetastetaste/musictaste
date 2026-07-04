@@ -1,31 +1,38 @@
 import { useTheme } from '@emotion/react';
 import {
   IconBuilding,
+  IconCalendarTime,
   IconDisc,
   IconMusic,
   IconSortDescending,
   IconTags,
   IconUser,
-  IconCalendarTime,
 } from '@tabler/icons-react';
 import { useQuery } from '@tanstack/react-query';
+import dayjs from 'dayjs';
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { EntriesSortByEnum, ReleaseType } from 'shared';
+import {
+  EntriesSortByEnum,
+  IUserCollectionView,
+  IUserCollectionViewFilters,
+  MultiValueFilterEnum,
+  RatingFilterEnum,
+  YearFilterEnum,
+} from 'shared';
 import { StickyContainer } from '../../components/containers/sticky-container';
-import { Select, SelectOption } from '../../components/inputs/select';
 import { Stack } from '../../components/flex/stack';
+import { Select, SelectOption } from '../../components/inputs/select';
 import { Typography } from '../../components/typography';
 import { SM_SIDECONTENT_WIDTH } from '../../static/spacing';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
-import { ReleaseTypeOptions } from '../contributions/shared';
-import { useRatingColor } from '../ratings/useRatingColor';
-import { useSortBy } from './user-music-page';
 import { SelectArtist } from '../contributions/select-artist';
 import { SelectLabel } from '../contributions/select-label';
+import { ReleaseTypeOptions2 } from '../contributions/shared';
 import { SelectGenres } from '../genres/select-genres';
-import dayjs from 'dayjs';
+import { useRatingColor } from '../ratings/useRatingColor';
+import { useSortBy } from './user-music-page';
 
 const FilterButton: React.FC<{
   selected: boolean;
@@ -165,15 +172,93 @@ const initialBuckets = [
 ];
 type RatingBucket = { bucket: number; label: string; count: number };
 
+const isYearAllowed = (year: number, filters?: IUserCollectionViewFilters) => {
+  if (!filters?.year) return true;
+  if (filters.year === YearFilterEnum.is) {
+    return filters.yearIs ? year === Number(filters.yearIs) : true;
+  }
+  if (filters.year === YearFilterEnum.isafter) {
+    return filters.yearStart ? year > Number(filters.yearStart) : true;
+  }
+  if (filters.year === YearFilterEnum.isbefore) {
+    return filters.yearEnd ? year < Number(filters.yearEnd) : true;
+  }
+  if (filters.year === YearFilterEnum.inrange) {
+    const startOk = filters.yearStart
+      ? year >= Number(filters.yearStart)
+      : true;
+    const endOk = filters.yearEnd ? year <= Number(filters.yearEnd) : true;
+    return startOk && endOk;
+  }
+  return true;
+};
+
+const isRatingAllowed = (
+  rating: number | null,
+  filters?: IUserCollectionViewFilters,
+) => {
+  if (!filters?.rating) return true;
+  if (filters.rating === RatingFilterEnum.hasavalue) {
+    return rating !== null;
+  }
+  if (filters.rating === RatingFilterEnum.hasnovalue) {
+    return rating === null;
+  }
+  if (rating === null) return false;
+  if (filters.rating === RatingFilterEnum.is) {
+    return filters.ratingIs !== undefined ? rating === filters.ratingIs : true;
+  }
+  if (filters.rating === RatingFilterEnum.isgreaterthan) {
+    return filters.ratingStart !== undefined
+      ? rating > filters.ratingStart
+      : true;
+  }
+  if (filters.rating === RatingFilterEnum.islessthan) {
+    return filters.ratingEnd !== undefined ? rating < filters.ratingEnd : true;
+  }
+  if (filters.rating === RatingFilterEnum.inrange) {
+    const startOk =
+      filters.ratingStart !== undefined ? rating >= filters.ratingStart : true;
+    const endOk =
+      filters.ratingEnd !== undefined ? rating <= filters.ratingEnd : true;
+    return startOk && endOk;
+  }
+  return true;
+};
+
+const isRatingBucketAllowed = (
+  bucket: number,
+  filters?: IUserCollectionViewFilters,
+) => {
+  if (!filters?.rating) return true;
+  if (bucket === -1) {
+    return isRatingAllowed(null, filters);
+  }
+  if (bucket === 11) {
+    return isRatingAllowed(100, filters);
+  }
+  const start = (bucket - 1) * 10;
+  const end = start + 9;
+  for (let r = start; r <= end; r++) {
+    if (isRatingAllowed(r, filters)) {
+      return true;
+    }
+  }
+  return false;
+};
+
 const MusicByRating = ({
   userId,
   ratingsCount,
+  collectionView,
 }: {
   userId: string;
   ratingsCount: number;
+  collectionView?: IUserCollectionView;
 }) => {
-  const { data } = useQuery(cacheKeys.userRatingBucketsKey(userId), () =>
-    api.getUserRatingBuckets(userId),
+  const { data } = useQuery(
+    cacheKeys.userRatingBucketsKey(userId, collectionView?.id),
+    () => api.getUserRatingBuckets(userId, collectionView?.id),
   );
   const [buckets, setBuckets] = useState<RatingBucket[]>(initialBuckets);
 
@@ -188,11 +273,24 @@ const MusicByRating = ({
     }
   }, [data]);
 
+  const filteredBuckets = useMemo(() => {
+    return buckets.filter((b) =>
+      isRatingBucketAllowed(b.bucket, collectionView?.filters),
+    );
+  }, [buckets, collectionView]);
+
+  const totalCount = useMemo(() => {
+    if (collectionView) {
+      return filteredBuckets.reduce((acc, curr) => acc + curr.count, 0);
+    }
+    return ratingsCount;
+  }, [filteredBuckets, collectionView, ratingsCount]);
+
   return (
     <FilterByRating
-      buckets={buckets}
+      buckets={filteredBuckets}
       name="bucket"
-      allRatingsCount={ratingsCount}
+      allRatingsCount={totalCount}
     />
   );
 };
@@ -211,17 +309,14 @@ const SORT_BY_OPTIONS = [
   },
 ];
 
-const RELEASE_TYPE_OPTIONS = ReleaseTypeOptions.map((option) => ({
-  label: option.label,
-  value: ReleaseType[option.value],
-}));
-
 const UserMusicFilters = ({
   userId,
   ratingsCount,
+  collectionView,
 }: {
   userId: string;
   ratingsCount: number;
+  collectionView?: IUserCollectionView;
 }) => {
   const { sortBy, handleChange } = useSortBy();
   const [query, setQuery] = useSearchParams();
@@ -236,12 +331,47 @@ const UserMusicFilters = ({
     { enabled: hasTagsFilter || tagsOpened },
   );
 
-  const tagsOptions = tagsData
-    ? tagsData.map((t) => ({
-        label: `${t.tag} (${t.count})`,
-        value: t.id,
-      }))
-    : [];
+  const tagsOptions = useMemo(() => {
+    if (!tagsData) return [];
+
+    let result = tagsData;
+    if (
+      collectionView?.filters.tag &&
+      collectionView.filters.tagValues?.length
+    ) {
+      if (collectionView.filters.tag === MultiValueFilterEnum.isanyof) {
+        result = tagsData.filter((t) =>
+          collectionView.filters.tagValues!.includes(t.id),
+        );
+      } else {
+        result = tagsData.filter(
+          (t) => !collectionView.filters.tagValues!.includes(t.id),
+        );
+      }
+    }
+
+    return result.map((t) => ({
+      label: `${t.tag} (${t.count})`,
+      value: t.id,
+    }));
+  }, [tagsData, collectionView]);
+
+  const releaseTypeOptions = useMemo(() => {
+    if (
+      collectionView?.filters.type &&
+      collectionView.filters.typeValues?.length
+    ) {
+      if (collectionView.filters.type === MultiValueFilterEnum.isanyof)
+        return ReleaseTypeOptions2.filter((o) =>
+          collectionView.filters.typeValues.includes(o.value),
+        );
+      else
+        return ReleaseTypeOptions2.filter(
+          (o) => !collectionView.filters.typeValues.includes(o.value),
+        );
+    }
+    return ReleaseTypeOptions2;
+  }, [collectionView]);
 
   const currentYear = dayjs().year();
 
@@ -255,14 +385,34 @@ const UserMusicFilters = ({
     const options = [];
 
     for (let decade = startingDecade; decade <= currentDecade; decade += 10) {
-      options.push({
-        value: decade.toString(),
-        label: `${decade}s`,
-      });
+      let isDecadeAllowed = false;
+      for (let y = decade; y < decade + 10; y++) {
+        if (
+          y >= startingYear &&
+          y <= currentYear &&
+          isYearAllowed(y, collectionView?.filters)
+        ) {
+          isDecadeAllowed = true;
+          break;
+        }
+      }
+
+      if (isDecadeAllowed) {
+        options.push({
+          value: decade.toString(),
+          label: `${decade}s`,
+        });
+      }
     }
 
     return options.reverse();
-  }, [currentDecade, startingDecade]);
+  }, [
+    currentDecade,
+    startingDecade,
+    currentYear,
+    startingYear,
+    collectionView,
+  ]);
 
   const yearOptions = useMemo(() => {
     const selectedDecade = query.get('decade');
@@ -277,24 +427,31 @@ const UserMusicFilters = ({
 
       if (year > currentYear) break;
 
-      if (year < 1877) continue;
+      if (year < startingYear) continue;
 
-      options.push({
-        value: year.toString(),
-        label: year.toString(),
-      });
+      if (isYearAllowed(year, collectionView?.filters)) {
+        options.push({
+          value: year.toString(),
+          label: year.toString(),
+        });
+      }
     }
 
     return options.reverse();
-  }, [query.get('decade')]);
+  }, [query.get('decade'), collectionView, currentYear, startingYear]);
 
   return (
     <StickyContainer width={SM_SIDECONTENT_WIDTH}>
       <Stack gap="md">
-        {query.toString() && (
+        {Array.from(query.keys()).filter((key) => key !== 'view').length ? (
           <button
             onClick={() => {
-              setQuery([], { replace: true, preventScrollReset: true });
+              const params = new URLSearchParams(query);
+              // clear out all params except 'view' param
+              Array.from(query.keys())
+                .filter((key) => key !== 'view')
+                .forEach((key) => params.delete(key));
+              setQuery(params, { replace: true, preventScrollReset: true });
             }}
             css={(theme) => ({
               padding: '8px 12px',
@@ -316,7 +473,7 @@ const UserMusicFilters = ({
           >
             Reset
           </button>
-        )}
+        ) : null}
         <Select
           onChange={(selected: SelectOption) => {
             if (selected) {
@@ -330,7 +487,7 @@ const UserMusicFilters = ({
         />
         <Select
           isMulti
-          options={RELEASE_TYPE_OPTIONS}
+          options={releaseTypeOptions}
           onChange={(selected) => {
             const params = new URLSearchParams(query);
             params.delete('types');
@@ -345,7 +502,7 @@ const UserMusicFilters = ({
           }}
           name="types"
           placeholder="Type"
-          value={RELEASE_TYPE_OPTIONS.filter((option) =>
+          value={releaseTypeOptions.filter((option) =>
             query.getAll('types').map(Number).includes(option.value),
           )}
           icon={<IconDisc size={20} />}
@@ -409,6 +566,19 @@ const UserMusicFilters = ({
           }}
           placeholder="Genre"
           icon={<IconMusic size={20} />}
+          filter={
+            collectionView?.filters.genre &&
+            collectionView.filters.genreValues?.length
+              ? (genreId) => {
+                  const isIncluded =
+                    collectionView.filters.genreValues!.includes(genreId);
+                  return collectionView.filters.genre ===
+                    MultiValueFilterEnum.isanyof
+                    ? isIncluded
+                    : !isIncluded;
+                }
+              : undefined
+          }
         />
         <SelectArtist
           isMulti
@@ -425,6 +595,19 @@ const UserMusicFilters = ({
           name="artists"
           placeholder="Artist"
           icon={<IconUser size={20} />}
+          filterCondition={
+            collectionView?.filters.artist &&
+            collectionView.filters.artistValues?.length
+              ? (artist) => {
+                  const isIncluded =
+                    collectionView.filters.artistValues!.includes(artist.id);
+                  return collectionView.filters.artist ===
+                    MultiValueFilterEnum.isanyof
+                    ? isIncluded
+                    : !isIncluded;
+                }
+              : undefined
+          }
         />
         <SelectLabel
           isMulti
@@ -441,6 +624,19 @@ const UserMusicFilters = ({
           name="labels"
           placeholder="Label"
           icon={<IconBuilding size={20} />}
+          filterCondition={
+            collectionView?.filters.label &&
+            collectionView.filters.labelValues?.length
+              ? (label) => {
+                  const isIncluded =
+                    collectionView.filters.labelValues!.includes(label.id);
+                  return collectionView.filters.label ===
+                    MultiValueFilterEnum.isanyof
+                    ? isIncluded
+                    : !isIncluded;
+                }
+              : undefined
+          }
         />
         <Select
           isMulti
@@ -467,7 +663,11 @@ const UserMusicFilters = ({
           icon={<IconTags size={20} />}
         />
         <div>
-          <MusicByRating userId={userId} ratingsCount={ratingsCount} />
+          <MusicByRating
+            userId={userId}
+            ratingsCount={ratingsCount}
+            collectionView={collectionView}
+          />
         </div>
       </Stack>
     </StickyContainer>

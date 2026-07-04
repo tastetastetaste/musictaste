@@ -14,21 +14,18 @@ interface BadgeProps {
 const StyledBadge = styled.span<{ $colorValue: string; $size: string }>`
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: ${(props) => (props.$size === 'md' ? '0.25em 0.75em' : '0.5em 1em')};
+  gap: 8px;
+  padding: ${(props) =>
+    props.$size === 'md' ? '0.25em 0.75em' : '0.5em 0.5em'};
   font-size: ${(props) =>
     props.$size === 'md'
       ? props.theme.font.size.small
       : props.theme.font.size.body};
   font-weight: 600;
-  border-radius: 4px;
   color: ${(props) => props.$colorValue};
-  background-color: none;
-  border: 1px solid ${(props) => props.$colorValue}80;
-  box-shadow: 0 0 5px currentColor;
 
   svg {
-    width: 22px;
+    width: 26px;
   }
 `;
 
@@ -78,8 +75,8 @@ export const Badge: React.FC<BadgeProps> = ({
 
   return (
     <StyledBadge $colorValue={colorValue} $size={size}>
-      {icon}
       {label}
+      {icon}
     </StyledBadge>
   );
 };

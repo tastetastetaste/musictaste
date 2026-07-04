@@ -38,6 +38,7 @@ import { ReleaseSubmissionVote } from './entities/release-submission-vote.entity
 import { Notification } from './entities/notification.entity';
 import { GroupArtist } from './entities/group-artist.entity';
 import { RelatedArtist } from './entities/related-artist.entity';
+import { UserCollectionView } from './entities/user-collection-view';
 
 config();
 const configService = new ConfigService();
@@ -91,6 +92,7 @@ export const dataSourceOptions: DataSourceOptions = {
     User,
     Comment,
     Notification,
+    UserCollectionView,
   ],
   migrations: ['dist/db/migration/*.js'],
   // subscribers: [],

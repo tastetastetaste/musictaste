@@ -19,6 +19,7 @@ import {
   ValidateIf,
   ValidateNested,
   ValidationOptions,
+  IsObject,
 } from 'class-validator';
 import dayjs from 'dayjs';
 import {
@@ -39,6 +40,9 @@ import {
   ArtistVisibility,
   SubmissionType,
   ReviewsSortByEnum,
+  RatingFilterEnum,
+  YearFilterEnum,
+  MultiValueFilterEnum,
 } from './enums';
 
 export function IsDayjsDateString(validationOptions?: ValidationOptions) {
@@ -693,6 +697,9 @@ export class FindEntriesDto {
   @IsOptional()
   @IsString()
   userId?: string;
+  @IsOptional()
+  @IsString()
+  collectionViewId?: string;
 
   @IsEnum(EntriesSortByEnum)
   sortBy: EntriesSortByEnum;
@@ -950,4 +957,139 @@ export class FindCommentsDto {
   @Type(() => Number)
   @IsInt()
   page: number;
+}
+
+export class UserCollectionViewFiltersDto {
+  @IsOptional()
+  @IsEnum(RatingFilterEnum)
+  rating?: RatingFilterEnum;
+
+  @ValidateIf((o) => o.rating === RatingFilterEnum.is)
+  @IsInt()
+  @Min(0)
+  @Max(100)
+  ratingIs?: number;
+
+  @ValidateIf(
+    (o) =>
+      o.rating === RatingFilterEnum.isgreaterthan ||
+      o.rating === RatingFilterEnum.inrange,
+  )
+  @IsInt()
+  @Min(0)
+  @Max(100)
+  ratingStart?: number;
+
+  @ValidateIf(
+    (o) =>
+      o.rating === RatingFilterEnum.islessthan ||
+      o.rating === RatingFilterEnum.inrange,
+  )
+  @IsInt()
+  @Min(0)
+  @Max(100)
+  ratingEnd?: number;
+
+  @IsOptional()
+  @IsEnum(YearFilterEnum)
+  year?: YearFilterEnum;
+
+  @ValidateIf((o) => o.year === YearFilterEnum.is)
+  @IsString()
+  @Matches(/^\d{4}$/, {
+    message: 'Invalid year format',
+  })
+  yearIs?: string;
+
+  @ValidateIf(
+    (o) =>
+      o.year === YearFilterEnum.isafter || o.year === YearFilterEnum.inrange,
+  )
+  @IsString()
+  @Matches(/^\d{4}$/, {
+    message: 'Invalid year format',
+  })
+  yearStart?: string;
+
+  @ValidateIf(
+    (o) =>
+      o.year === YearFilterEnum.isbefore || o.year === YearFilterEnum.inrange,
+  )
+  @IsString()
+  @Matches(/^\d{4}$/, {
+    message: 'Invalid year format',
+  })
+  yearEnd?: string;
+
+  @IsOptional()
+  @IsEnum(MultiValueFilterEnum)
+  type?: MultiValueFilterEnum;
+
+  @ValidateIf((o) => !!o.type)
+  @IsArray()
+  @IsInt({ each: true })
+  typeValues?: number[];
+
+  @IsOptional()
+  @IsEnum(MultiValueFilterEnum)
+  artist?: MultiValueFilterEnum;
+
+  @ValidateIf((o) => !!o.artist)
+  @IsArray()
+  @IsString({ each: true })
+  artistValues?: string[];
+
+  @IsOptional()
+  @IsEnum(MultiValueFilterEnum)
+  genre?: MultiValueFilterEnum;
+
+  @ValidateIf((o) => !!o.genre)
+  @IsArray()
+  @IsString({ each: true })
+  genreValues?: string[];
+
+  @IsOptional()
+  @IsEnum(MultiValueFilterEnum)
+  tag?: MultiValueFilterEnum;
+
+  @ValidateIf((o) => !!o.tag)
+  @IsArray()
+  @IsString({ each: true })
+  tagValues?: string[];
+
+  @IsOptional()
+  @IsEnum(MultiValueFilterEnum)
+  label?: MultiValueFilterEnum;
+
+  @ValidateIf((o) => !!o.label)
+  @IsArray()
+  @IsString({ each: true })
+  labelValues?: string[];
+
+  @IsOptional()
+  @IsEnum(MultiValueFilterEnum)
+  country?: MultiValueFilterEnum;
+
+  @ValidateIf((o) => !!o.country)
+  @IsArray()
+  @IsString({ each: true })
+  countryValues?: string[];
+}
+
+export class UserCollectionViewDto {
+  @IsString()
+  @MinLength(1)
+  @MaxLength(30)
+  title: string;
+
+  @IsObject()
+  @ValidateNested()
+  @Type(() => UserCollectionViewFiltersDto)
+  filters: UserCollectionViewFiltersDto;
+}
+
+export class ReorderUserCollectionViewsDto {
+  @IsArray()
+  @IsString({ each: true })
+  ids: string[];
 }

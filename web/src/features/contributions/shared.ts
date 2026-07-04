@@ -1,4 +1,4 @@
-import { ArtistType, ArtistVisibility } from 'shared';
+import { ArtistType, ReleaseType } from 'shared';
 
 export const ReleaseTypeOptions = [
   { value: 'LP', label: 'LP' },
@@ -18,6 +18,11 @@ export const ReleaseTypeOptions = [
   { value: 'Reissue', label: 'Reissue' },
   { value: 'Other', label: 'Other' },
 ];
+
+export const ReleaseTypeOptions2 = ReleaseTypeOptions.map((option) => ({
+  label: option.label,
+  value: ReleaseType[option.value],
+}));
 
 export const ArtistTypeOptions = [
   { value: ArtistType.Person, label: 'Person' },

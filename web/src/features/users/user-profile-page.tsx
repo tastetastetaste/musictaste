@@ -30,7 +30,7 @@ import { Review } from '../reviews/review';
 import { updateReviewAfterVote_2 } from '../reviews/update-review-after-vote';
 import { useUserReviewVotes } from '../reviews/useUserReviewVotes';
 import { UserPageOutletContext } from './user-page-wrapper';
-import { UserGenresChart, UserRatingsChart } from './user-profile-charts';
+import { UserProfileCharts } from './user-profile-charts';
 
 const BioSection = ({ bio }: { bio?: string | null }) =>
   bio ? <Markdown>{bio}</Markdown> : <div></div>;
@@ -193,22 +193,7 @@ const Lists: React.FC<{ username: string; userId: string }> = ({
 };
 
 const UserProfilePage = () => {
-  const { user } = useOutletContext<UserPageOutletContext>();
-  const { data: ratingBuckets, isLoading: isLoadingRatingBuckets } = useQuery(
-    cacheKeys.userRatingBucketsKey(user.id),
-    () => api.getUserRatingBuckets(user.id),
-  );
-  const hasRatings = !!ratingBuckets && ratingBuckets.some((b) => b.count > 0);
-
-  const { data: genres, isLoading: isLoadingGenres } = useQuery(
-    cacheKeys.userGenresKey(user.id),
-    () => api.getUserGenres(user.id),
-  );
-  const hasGenres = !!genres && genres.length > 0;
-
-  if (isLoadingRatingBuckets || isLoadingGenres) {
-    return <Loading />;
-  }
+  const { user, stats } = useOutletContext<UserPageOutletContext>();
 
   return (
     <Fragment>
@@ -217,26 +202,11 @@ const UserProfilePage = () => {
           <Typography size="title-lg">About Me</Typography>
           <BioSection bio={user.bio} />
         </FlexChild>
-        {hasRatings || hasGenres ? (
-          <FlexChild grow shrink>
-            <ResponsiveRow breakpoint="sm">
-              <FlexChild grow shrink>
-                {hasRatings && <Typography size="title-lg">Ratings</Typography>}
-                <UserRatingsChart userId={user.id} username={user.username} />
-              </FlexChild>
-              <FlexChild grow shrink>
-                {hasGenres && (
-                  <Typography size="title-lg">Top Genres</Typography>
-                )}
-                <UserGenresChart userId={user.id} username={user.username} />
-              </FlexChild>
-            </ResponsiveRow>
-          </FlexChild>
-        ) : null}
+        <UserProfileCharts />
       </ResponsiveRow>
       <Stack gap="xl">
         <ResponsiveRow breakpoint="md" gap="xl">
-          {hasRatings ? (
+          {stats.entriesCount ? (
             <FlexChild grow shrink>
               <Stack gap="lg">
                 <RecentlyAddedReleases

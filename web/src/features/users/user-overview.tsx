@@ -117,104 +117,106 @@ export const UserOverview: React.FC<OverviewSectionProps> = ({
 }) => {
   const { isLoggedIn } = useAuth();
   return (
-    <Stack align="center" justify="center" gap="xl">
-      <Group wrap gap="lg">
-        {image ? (
-          <img
-            width={ImageSize}
-            height={ImageSize}
-            src={image.md}
-            alt={username}
-            style={{
-              borderRadius: '50%',
-              height: ImageSize,
-              width: ImageSize,
-            }}
-          />
-        ) : (
-          <img
-            width={ImageSize}
-            height={ImageSize}
-            src="/placeholder/md.jpeg"
-            alt={username}
-            style={{
-              borderRadius: '50%',
-
-              height: ImageSize,
-              width: ImageSize,
-            }}
-          />
-        )}
-        <Stack gap="lg" align="start">
-          <Stack>
-            <Typography size="title-xl">{name}</Typography>
-            <Typography>@{username}</Typography>
-          </Stack>
-          <Group gap="md" wrap>
-            {supporter >= SupporterStatus.SUPPORTER ? (
-              <SupporterBadge size="lg" />
-            ) : null}
-            {contributorStatus === ContributorStatus.TRUSTED_CONTRIBUTOR ? (
-              <TrustedContributorBadge size="lg" />
-            ) : null}
-          </Group>
-          {accountStatus !== AccountStatus.DELETED &&
-          accountStatus !== AccountStatus.BANNED &&
-          isLoggedIn &&
-          !isUserMyself ? (
-            <Group align="center">
-              <FollowAction
-                userId={id}
-                username={username}
-                following={following}
-              />
-            </Group>
-          ) : null}
-          {followedBy && <Typography>Follows you</Typography>}
-        </Stack>
+    <div>
+      <Group gap="md" wrap justify="end">
+        {supporter >= SupporterStatus.SUPPORTER ? (
+          <SupporterBadge size="lg" />
+        ) : null}
+        {contributorStatus === ContributorStatus.TRUSTED_CONTRIBUTOR ? (
+          <TrustedContributorBadge size="lg" />
+        ) : null}
       </Group>
-      {accountStatus !== AccountStatus.DELETED &&
-        accountStatus !== AccountStatus.BANNED && (
-          <Navigation
-            links={[
-              {
-                to: `${getUserPath({ username })}`,
-                asPath: '/[username]',
-                label: 'Profile',
-              },
-              {
-                to: `${getUserPath({ username })}/music`,
-                asPath: '/[username]/music',
-                label: 'Music',
-                count: entriesCount || undefined,
-              },
-              {
-                to: `${getUserPath({ username })}/reviews`,
-                asPath: '/[username]/reviews',
-                label: 'Reviews',
-                count: reviewsCount || undefined,
-              },
-              {
-                to: `${getUserPath({ username })}/lists`,
-                asPath: '/[username]/lists',
-                label: 'Lists',
-                count: listsCount || undefined,
-              },
-              {
-                to: `${getUserPath({ username })}/followers`,
-                asPath: '/[username]/followers',
-                label: 'Followers',
-                count: followersCount || undefined,
-              },
-              {
-                to: `${getUserPath({ username })}/following`,
-                asPath: '/[username]/following',
-                label: 'Following',
-                count: followingCount || undefined,
-              },
-            ]}
-          />
-        )}
-    </Stack>
+      <Stack align="center" justify="center" gap="xl">
+        <Group wrap gap="lg">
+          {image ? (
+            <img
+              width={ImageSize}
+              height={ImageSize}
+              src={image.md}
+              alt={username}
+              style={{
+                borderRadius: '50%',
+                height: ImageSize,
+                width: ImageSize,
+              }}
+            />
+          ) : (
+            <img
+              width={ImageSize}
+              height={ImageSize}
+              src="/placeholder/md.jpeg"
+              alt={username}
+              style={{
+                borderRadius: '50%',
+
+                height: ImageSize,
+                width: ImageSize,
+              }}
+            />
+          )}
+          <Stack gap="lg" align="start">
+            <Stack>
+              <Typography size="title-xl">{name}</Typography>
+              <Typography>@{username}</Typography>
+            </Stack>
+            {accountStatus !== AccountStatus.DELETED &&
+            accountStatus !== AccountStatus.BANNED &&
+            isLoggedIn &&
+            !isUserMyself ? (
+              <Group align="center">
+                <FollowAction
+                  userId={id}
+                  username={username}
+                  following={following}
+                />
+              </Group>
+            ) : null}
+            {followedBy && <Typography>Follows you</Typography>}
+          </Stack>
+        </Group>
+        {accountStatus !== AccountStatus.DELETED &&
+          accountStatus !== AccountStatus.BANNED && (
+            <Navigation
+              links={[
+                {
+                  to: `${getUserPath({ username })}`,
+                  asPath: '/[username]',
+                  label: 'Profile',
+                },
+                {
+                  to: `${getUserPath({ username })}/music`,
+                  asPath: '/[username]/music',
+                  label: 'Music',
+                  count: entriesCount || undefined,
+                },
+                {
+                  to: `${getUserPath({ username })}/reviews`,
+                  asPath: '/[username]/reviews',
+                  label: 'Reviews',
+                  count: reviewsCount || undefined,
+                },
+                {
+                  to: `${getUserPath({ username })}/lists`,
+                  asPath: '/[username]/lists',
+                  label: 'Lists',
+                  count: listsCount || undefined,
+                },
+                {
+                  to: `${getUserPath({ username })}/followers`,
+                  asPath: '/[username]/followers',
+                  label: 'Followers',
+                  count: followersCount || undefined,
+                },
+                {
+                  to: `${getUserPath({ username })}/following`,
+                  asPath: '/[username]/following',
+                  label: 'Following',
+                  count: followingCount || undefined,
+                },
+              ]}
+            />
+          )}
+      </Stack>
+    </div>
   );
 };

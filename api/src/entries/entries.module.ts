@@ -14,6 +14,7 @@ import { Review } from '../../db/entities/review.entity';
 import { TrackVote } from '../../db/entities/track-vote.entity';
 import { UserReleaseTag } from '../../db/entities/user-release-tag.entity';
 import { UserRelease } from '../../db/entities/user-release.entity';
+import { UserCollectionView } from '../../db/entities/user-collection-view';
 import { CommentsModule } from '../comments/comments.module';
 import { ReviewsController } from './reviews.controller';
 import { ReviewsService } from './reviews.service';
@@ -30,6 +31,7 @@ import { ReviewsService } from './reviews.service';
       ReleaseLabel,
       UserReleaseTag,
       TrackVote,
+      UserCollectionView,
     ]),
     ReleasesModule,
     UsersModule,

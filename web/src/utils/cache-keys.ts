@@ -30,6 +30,7 @@ const entriesKey = (
         : []),
     ...(filters.sortBy
       ? [
+          filters.collectionViewId,
           filters.sortBy,
           filters.year,
           filters.decade,
@@ -292,20 +293,17 @@ const findUsersKey = (type?: FindUsersType) => ['users', type];
 const userProfileKey = (username: string) => ['userProfile', username];
 const userFollowersKey = (id: string) => ['user', id, 'followers'];
 const userFollowingKey = (id: string) => ['user', id, 'following'];
-const userArtistsKey = (userId: string) => ['user', userId, 'artists'];
-const userRatingBucketsKey = (userId: string) => [
-  'user',
-  userId,
-  'ratingBuckets',
-];
-const userGenresKey = (userId: string) => ['user', userId, 'genres'];
-const userLabelsKey = (userId: string) => ['user', userId, 'labels'];
+const userArtistsKey = (userId: string, collectionViewId?: string) =>
+  ['user', userId, 'artists', collectionViewId].filter(Boolean);
+const userRatingBucketsKey = (userId: string, collectionViewId?: string) =>
+  ['user', userId, 'ratingBuckets', collectionViewId].filter(Boolean);
+const userGenresKey = (userId: string, collectionViewId?: string) =>
+  ['user', userId, 'genres', collectionViewId].filter(Boolean);
+const userLabelsKey = (userId: string, collectionViewId?: string) =>
+  ['user', userId, 'labels', collectionViewId].filter(Boolean);
 
-const userReleaseDatesKey = (userId: string) => [
-  'user',
-  userId,
-  'releaseDates',
-];
+const userReleaseDatesKey = (userId: string, collectionViewId?: string) =>
+  ['user', userId, 'releaseDates', collectionViewId].filter(Boolean);
 const userTagsKey = (userId: string) => ['user', userId, 'tags'];
 
 // GENRES
@@ -335,6 +333,8 @@ const searchKey = (filters: {
     ? [filters.q, filters.page, filters.pageSize]
     : []),
 ];
+
+const userCollectionViewsKey = () => ['user-collection-views'];
 
 export const cacheKeys = {
   artistKey,
@@ -388,4 +388,5 @@ export const cacheKeys = {
   commentsKey,
   notificationsKey,
   unreadNotificationsCountKey,
+  userCollectionViewsKey,
 };

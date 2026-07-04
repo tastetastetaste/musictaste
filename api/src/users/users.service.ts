@@ -21,7 +21,10 @@ import {
   UpdateUserPreferencesDto,
   UpdateUserProfileDto,
   UpdateUserThemeDto,
+  UserCollectionViewDto,
+  ReorderUserCollectionViewsDto,
 } from 'shared';
+import { UserCollectionView } from '../../db/entities/user-collection-view';
 import { In, Repository } from 'typeorm';
 import { List } from '../../db/entities/list.entity';
 import { UserFollowing } from '../../db/entities/user-following.entity';
@@ -47,6 +50,8 @@ export class UsersService {
     @InjectRepository(User) private usersRepository: Repository<User>,
     @InjectRepository(UserFollowing)
     private userFollowingRepository: Repository<UserFollowing>,
+    @InjectRepository(UserCollectionView)
+    private userCollectionViewRepository: Repository<UserCollectionView>,
     private imagesService: ImagesService,
     @Inject(forwardRef(() => NotificationsService))
     private notificationsService: NotificationsService,
@@ -459,6 +464,118 @@ export class UsersService {
       }
     }
 
+    return true;
+  }
+
+  async getCollectionViewsLimit({
+    userId,
+    supporter,
+  }: {
+    userId: string;
+    supporter?: SupporterStatus;
+  }): Promise<number> {
+    let supporterValue = supporter;
+    if (!supporterValue) {
+      const user = await this.usersRepository.findOne({
+        select: ['supporter'],
+        where: { id: userId },
+      });
+      supporterValue = user.supporter;
+    }
+    return supporterValue >= SupporterStatus.SUPPORTER ? 10 : 2;
+  }
+
+  async getCollectionViews({
+    userId,
+    supporter,
+  }: {
+    userId: string;
+    supporter?: SupporterStatus;
+  }): Promise<UserCollectionView[]> {
+    const limit = await this.getCollectionViewsLimit({ userId, supporter });
+    const views = await this.userCollectionViewRepository.find({
+      where: { userId },
+      order: { order: 'ASC' },
+    });
+    return views.slice(0, limit);
+  }
+
+  async createCollectionView(
+    userId: string,
+    data: UserCollectionViewDto,
+  ): Promise<UserCollectionView> {
+    const limit = await this.getCollectionViewsLimit({ userId });
+    const count = await this.userCollectionViewRepository.count({
+      where: { userId },
+    });
+    if (count >= limit) {
+      throw new BadRequestException(
+        `You have reached the maximum limit of collection views`,
+      );
+    }
+    const view = this.userCollectionViewRepository.create({
+      userId,
+      title: data.title,
+      filters: data.filters,
+      order: count,
+    });
+    return this.userCollectionViewRepository.save(view);
+  }
+
+  async updateCollectionView(
+    userId: string,
+    id: string,
+    data: UserCollectionViewDto,
+  ): Promise<UserCollectionView> {
+    const view = await this.userCollectionViewRepository.findOne({
+      where: { id, userId },
+    });
+    if (!view) {
+      throw new NotFoundException('Collection view not found');
+    }
+    view.title = data.title;
+    view.filters = data.filters;
+    return this.userCollectionViewRepository.save(view);
+  }
+
+  async deleteCollectionView(userId: string, id: string): Promise<boolean> {
+    const view = await this.userCollectionViewRepository.findOne({
+      where: { id, userId },
+    });
+    if (!view) {
+      throw new NotFoundException('Collection view not found');
+    }
+    await this.userCollectionViewRepository.remove(view);
+
+    // Update order for other views
+    const views = await this.userCollectionViewRepository.find({
+      where: { userId },
+      order: { order: 'ASC' },
+    });
+    for (let i = 0; i < views.length; i++) {
+      if (views[i].order !== i) {
+        views[i].order = i;
+        await this.userCollectionViewRepository.save(views[i]);
+      }
+    }
+    return true;
+  }
+
+  async reorderCollectionViews(
+    userId: string,
+    data: ReorderUserCollectionViewsDto,
+  ): Promise<boolean> {
+    const views = await this.userCollectionViewRepository.find({
+      where: { userId },
+    });
+
+    for (const view of views) {
+      const index = data.ids.indexOf(view.id);
+      if (index !== -1 && view.order !== index) {
+        view.order = index;
+        await this.userCollectionViewRepository.save(view);
+      }
+    }
     return true;
   }
 }
