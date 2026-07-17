@@ -65,6 +65,9 @@ export const SelectArtist = forwardRef<any, SelectArtistProps>(
     }, [availableArtists]);
 
     const selectedArtists = useMemo(() => {
+      if (value === null) {
+        return null;
+      }
       return Array.isArray(value)
         ? value.map((v) => availableOptionsRegistry.current.get(v))
         : availableOptionsRegistry.current.get(value);
