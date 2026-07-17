@@ -105,9 +105,14 @@ const SettingsContentPage = () => {
       <form onSubmit={handleSubmit(submit)}>
         <Stack gap="sm">
           <Typography size="title-lg">Content Preferences</Typography>
-          <Stack>
-            <label>Hide explicit cover art</label>
+          <Stack gap="md">
+            <Typography size="body">Hide explicit cover art</Typography>
             <ExplicitCoverArtField control={control} />
+            <Typography size="small" color="sub">
+              By enabling explicit content, you confirm that you are 18 years or
+              older and understand that the content may include graphic or
+              disturbing material.
+            </Typography>
           </Stack>
           <Button variant="main" type="submit" disabled={isLoading}>
             Save

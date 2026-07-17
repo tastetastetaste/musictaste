@@ -1,5 +1,5 @@
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
-import { Fragment } from 'react';
+import { Fragment, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import {
   getReleasePath,
@@ -22,6 +22,10 @@ import {
   SubmissionItemWrapper,
   TracksComparisonField,
 } from './submission-item';
+import { useHideExplicitCoverArt } from '../releases/release/shared';
+import { IconButton } from '../../components/icon-button';
+import { IconEye, IconEyeClosed } from '@tabler/icons-react';
+import { useAuth } from '../account/useAuth';
 
 interface ReleaseSubmissionItemProps {
   submission: IReleaseSubmission;
@@ -38,6 +42,18 @@ export const ReleaseSubmissionItem = ({
 }: ReleaseSubmissionItemProps) => {
   const { original, changes } = submission;
   const hasOriginal = !!original;
+
+  const { isLoggedIn } = useAuth();
+
+  const hideExplicitCoverArt = useHideExplicitCoverArt([
+    ...(original?.explicitCoverArt || []),
+    ...(changes?.explicitCoverArt || []),
+  ]);
+
+  const [revealCover, setRevealCover] = useState(false);
+  const showCover = !hideExplicitCoverArt || revealCover;
+
+  const explicitPlaceholder = '/placeholder/explicit-lg.jpeg';
 
   return (
     <SubmissionItemWrapper
@@ -121,13 +137,40 @@ export const ReleaseSubmissionItem = ({
         originalValue={original?.imageUrl}
         changedValue={changes?.imageUrl}
         showOriginal={hasOriginal}
-        renderValue={(value) =>
-          value ? (
-            <div>
-              <ImagePreview src={value} alt="cover" />
+        renderValue={(value) => {
+          return value ? (
+            <div
+              css={{
+                position: 'relative',
+                display: 'flex',
+                width: 'fit-content',
+              }}
+            >
+              <ImagePreview
+                src={showCover ? value : explicitPlaceholder}
+                alt="cover"
+              />
+              {isLoggedIn && hideExplicitCoverArt ? (
+                <div
+                  css={{
+                    position: 'absolute',
+                    bottom: '10px',
+                    right: '10px',
+                    zIndex: 2,
+                  }}
+                >
+                  <IconButton
+                    title="show"
+                    onClick={() => setRevealCover(!revealCover)}
+                    variant="solid"
+                  >
+                    {showCover ? <IconEye /> : <IconEyeClosed />}
+                  </IconButton>
+                </div>
+              ) : null}
             </div>
-          ) : null
-        }
+          ) : null;
+        }}
       />
       <SubmissionField
         label="Explicit Cover Art"

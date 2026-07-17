@@ -12,13 +12,16 @@ import ReleaseGenreVote from './release-genre-vote';
 import {
   ArtistsLinks,
   GenresLinks,
-  hideExplicitCoverArtFn,
+  useHideExplicitCoverArt,
   LabelsLinks,
 } from './release/shared';
 import { useTheme } from '@emotion/react';
 import { Group } from '../../components/flex/group';
 import { ReleaseActionsFullPage } from './release-actions/release-actions-full-page';
 import { useAuth } from '../account/useAuth';
+import { IconButton } from '../../components/icon-button';
+import { IconEye, IconEyeClosed } from '@tabler/icons-react';
+import { useState } from 'react';
 
 const ReleaseInfo: React.FC<{
   release: any;
@@ -75,29 +78,53 @@ const ReleaseCover: React.FC<{
   const { border_radius, colors } = useTheme();
   const size = 600;
 
-  const hideExplicitCoverArt = hideExplicitCoverArtFn(explicitCoverArt);
+  const { isLoggedIn } = useAuth();
+  const hideExplicitCoverArt = useHideExplicitCoverArt(explicitCoverArt);
+
+  const [revealCover, setRevealCover] = useState(false);
+  const showCover = !hideExplicitCoverArt || revealCover;
 
   return (
-    <img
-      id="cover"
-      src={
-        hideExplicitCoverArt
-          ? `/placeholder/explicit-lg.jpeg`
-          : src
-            ? src.lg
-            : '/placeholder/lg.jpeg'
-      }
-      width={size}
-      height={size}
-      css={{
-        maxWidth: '100%',
-        width: size,
-        borderRadius: border_radius.base,
-        height: 'auto',
-        boxShadow: `${colors.background} 0px 2px 3px`,
-      }}
-      alt={alt}
-    />
+    <div css={{ position: 'relative', display: 'flex' }}>
+      <img
+        id="cover"
+        src={
+          !showCover
+            ? `/placeholder/explicit-lg.jpeg`
+            : src
+              ? src.lg
+              : '/placeholder/lg.jpeg'
+        }
+        width={size}
+        height={size}
+        css={{
+          maxWidth: '100%',
+          width: size,
+          borderRadius: border_radius.base,
+          height: 'auto',
+          boxShadow: `${colors.background} 0px 2px 3px`,
+        }}
+        alt={alt}
+      />
+      {isLoggedIn && hideExplicitCoverArt ? (
+        <div
+          css={{
+            position: 'absolute',
+            bottom: '30px',
+            right: '30px',
+            zIndex: 2,
+          }}
+        >
+          <IconButton
+            title="show"
+            onClick={() => setRevealCover(!revealCover)}
+            variant="solid"
+          >
+            {showCover ? <IconEye /> : <IconEyeClosed />}
+          </IconButton>
+        </div>
+      ) : null}
+    </div>
   );
 };
 

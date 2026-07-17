@@ -54,11 +54,11 @@ interface ReleaseImageLinkProps {
   size?: ReleaseImageSizeT;
 }
 
-export const hideExplicitCoverArtFn = (
+export const checkHideExplicitCoverArt = (
   releaseExplicitCoverArt?: ExplicitCoverArt[],
+  me?: { allowExplicitCoverArt?: ExplicitCoverArt[] | null } | null,
 ) => {
-  const { me } = useAuth();
-  return (
+  return !!(
     releaseExplicitCoverArt &&
     releaseExplicitCoverArt.length > 0 &&
     (!me ||
@@ -69,6 +69,13 @@ export const hideExplicitCoverArtFn = (
   );
 };
 
+export const useHideExplicitCoverArt = (
+  releaseExplicitCoverArt?: ExplicitCoverArt[],
+) => {
+  const { me } = useAuth();
+  return checkHideExplicitCoverArt(releaseExplicitCoverArt, me);
+};
+
 export const ReleaseImageLink: React.FC<ReleaseImageLinkProps> = ({
   release: { id, cover, artists, title, explicitCoverArt },
   size = 'md',
@@ -76,7 +83,7 @@ export const ReleaseImageLink: React.FC<ReleaseImageLinkProps> = ({
   const sizeKey =
     size === 'xs' || size === 'sm' ? 'sm' : size === 'md' ? 'md' : 'lg';
 
-  const hideExplicitCoverArt = hideExplicitCoverArtFn(explicitCoverArt);
+  const hideExplicitCoverArt = useHideExplicitCoverArt(explicitCoverArt);
 
   return (
     <CardLink to={getReleasePath({ releaseId: id })}>
