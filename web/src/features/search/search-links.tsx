@@ -17,7 +17,7 @@ import { Stack } from '../../components/flex/stack';
 import { Typography } from '../../components/typography';
 
 export const ArtistSearchLink = ({ artist }: { artist: IArtistSummary }) => (
-  <Link to={getArtistPath({ artistId: artist.id })}>
+  <Link to={getArtistPath({ artistId: artist.id })} maxLines={1}>
     {artist.name}{' '}
     {artist.nameLatin ? (
       <span css={{ fontStyle: 'italic' }}>[{artist.nameLatin}] </span>
@@ -35,7 +35,7 @@ export const ArtistSearchLink = ({ artist }: { artist: IArtistSummary }) => (
 );
 
 export const LabelSearchLink = ({ label }: { label: ILabelSummary }) => (
-  <Link to={getLabelPath({ labelId: label.id })}>
+  <Link to={getLabelPath({ labelId: label.id })} maxLines={1}>
     {label.name}{' '}
     {label.nameLatin ? (
       <span css={{ fontStyle: 'italic' }}>[{label.nameLatin}]</span>
@@ -65,7 +65,7 @@ export const ReleaseSearchLink = ({
     </div>
     <Stack gap="sm">
       <ArtistsLinks artists={release.artists} truncate />
-      <Typography inline whiteSpace="nowrap" maxLines={2}>
+      <Typography inline whiteSpace="nowrap" maxLines={1}>
         <Link to={getReleasePath({ releaseId: release.id })}>
           {release.title}
           <span css={{ fontStyle: 'italic' }}>

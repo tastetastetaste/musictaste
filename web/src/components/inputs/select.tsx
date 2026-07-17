@@ -47,6 +47,9 @@ const customStyles: (theme: Theme) => StylesConfig = (theme) => ({
       : theme.colors.background_sub,
     color: state.isFocused ? theme.colors.background_sub : theme.colors.text,
     padding: '6px 10px',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
   }),
   placeholder: (provided) => ({
     ...provided,
