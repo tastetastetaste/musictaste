@@ -118,7 +118,8 @@ const CreateCommentForm = ({
 export const Comments = ({
   entityType,
   entityId,
-}: Omit<FindCommentsDto, 'page'>) => {
+  isEntityOwner = false,
+}: Omit<FindCommentsDto, 'page'> & { isEntityOwner?: boolean }) => {
   const { socket, isConnected, joinRoom, leaveRoom } = useSocket();
 
   const { isLoggedIn, me } = useAuth();
@@ -237,7 +238,7 @@ export const Comments = ({
                     : null
                 }
                 onDelete={
-                  isLoggedIn && me?.id === comment.user.id
+                  isLoggedIn && (me?.id === comment.user.id || isEntityOwner)
                     ? () => setOpenDeleteComment(comment.id)
                     : null
                 }

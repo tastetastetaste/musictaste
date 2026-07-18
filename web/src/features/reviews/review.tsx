@@ -144,6 +144,7 @@ export const Review: React.FC<ReviewProps> = ({
 
   const { review, rating, user, release } = entry;
   const smallScreen = useMediaQuery({ down: 'md' });
+  const { me } = useAuth();
 
   const {
     id,
@@ -217,7 +218,11 @@ export const Review: React.FC<ReviewProps> = ({
             </Typography>
           </Group>
           {fullPage && (
-            <Comments entityType={CommentEntityType.REVIEW} entityId={id} />
+            <Comments
+              entityType={CommentEntityType.REVIEW}
+              entityId={id}
+              isEntityOwner={me?.id === (user?.id || userFromUserPage?.id)}
+            />
           )}
         </Stack>
       </FlexChild>

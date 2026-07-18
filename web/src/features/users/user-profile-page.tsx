@@ -24,6 +24,7 @@ import {
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
 import { Comments } from '../comments/comments';
+import { useAuth } from '../account/useAuth';
 import { List } from '../lists/list';
 import { Release } from '../releases/release';
 import { Review } from '../reviews/review';
@@ -194,6 +195,7 @@ const Lists: React.FC<{ username: string; userId: string }> = ({
 
 const UserProfilePage = () => {
   const { user, stats } = useOutletContext<UserPageOutletContext>();
+  const { me } = useAuth();
 
   return (
     <Fragment>
@@ -222,6 +224,7 @@ const UserProfilePage = () => {
               <Comments
                 entityType={CommentEntityType.SHOUTBOX}
                 entityId={user.id}
+                isEntityOwner={me?.id === user.id}
               />
             </Stack>
           </FlexChild>

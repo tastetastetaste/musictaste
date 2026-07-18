@@ -82,18 +82,21 @@ export function Comment({
             <Markdown variant="compact">{body}</Markdown>
           </Stack>
         </FlexChild>
-        <Typography size="small">
-          {formatRelativeTimeShort(createdAt)}
-        </Typography>
-        {onDelete ? (
-          <IconButton onClick={onDelete} title="Remove">
-            <IconTrash size={16} />
-          </IconButton>
-        ) : onReport ? (
-          <IconButton onClick={onReport} title="Report">
-            <IconFlagFilled size={16} />
-          </IconButton>
-        ) : null}
+        <Group align="center">
+          <Typography size="small">
+            {formatRelativeTimeShort(createdAt)}
+          </Typography>
+          {onDelete ? (
+            <IconButton onClick={onDelete} title="Remove">
+              <IconTrash size={16} />
+            </IconButton>
+          ) : null}
+          {onReport ? (
+            <IconButton onClick={onReport} title="Report">
+              <IconFlagFilled size={16} />
+            </IconButton>
+          ) : null}
+        </Group>
       </Group>
     </Container>
   );

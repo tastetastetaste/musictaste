@@ -201,7 +201,12 @@ export class CommentsService {
       throw new BadRequestException();
     }
 
-    if (comment.userId !== userId) {
+    const ownerId = await this.entitiesService.getEntityOwnerId(
+      comment.entityType as unknown as EntityType,
+      comment.entityId,
+    );
+
+    if (comment.userId !== userId && ownerId !== userId) {
       throw new UnauthorizedException();
     }
 

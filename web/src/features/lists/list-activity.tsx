@@ -6,6 +6,7 @@ import { Typography } from '../../components/typography';
 import { IconButton } from '../../components/icon-button';
 import { IconHeart, IconHeartFilled, IconMessage } from '@tabler/icons-react';
 import { Comments } from '../comments/comments';
+import { useAuth } from '../account/useAuth';
 import Dialog from '../../components/dialog';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api } from '../../utils/api';
@@ -67,9 +68,11 @@ const ListActivityOnDesktop = ({
 }: {
   list: Pick<
     IListResponse['list'],
-    'id' | 'likesCount' | 'likedByMe' | 'commentsCount'
+    'id' | 'likesCount' | 'likedByMe' | 'commentsCount' | 'userId'
   >;
 }) => {
+  const { me } = useAuth();
+
   return (
     <Stack gap="lg">
       <Stack gap="md">
@@ -85,7 +88,11 @@ const ListActivityOnDesktop = ({
       </Stack>
       <Stack gap="md">
         <Typography size="title">Comments</Typography>
-        <Comments entityType={CommentEntityType.LIST} entityId={list.id} />
+        <Comments
+          entityType={CommentEntityType.LIST}
+          entityId={list.id}
+          isEntityOwner={me?.id === list.userId}
+        />
       </Stack>
     </Stack>
   );
@@ -96,9 +103,10 @@ const ListActivityOnMobile = ({
 }: {
   list: Pick<
     IListResponse['list'],
-    'id' | 'likesCount' | 'likedByMe' | 'commentsCount'
+    'id' | 'likesCount' | 'likedByMe' | 'commentsCount' | 'userId'
   >;
 }) => {
+  const { me } = useAuth();
   const [showLikes, setShowLikes] = useState(false);
   const [showComments, setShowComments] = useState(false);
 
@@ -132,7 +140,11 @@ const ListActivityOnMobile = ({
       </Group>
 
       {showComments && (
-        <Comments entityType={CommentEntityType.LIST} entityId={list.id} />
+        <Comments
+          entityType={CommentEntityType.LIST}
+          entityId={list.id}
+          isEntityOwner={me?.id === list.userId}
+        />
       )}
 
       <Dialog
