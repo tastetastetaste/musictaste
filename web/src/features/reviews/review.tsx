@@ -69,7 +69,8 @@ const ReviewActions = ({
     return (
       <Group gap="sm">
         <Group gap="sm">
-          <IconArrowUp />+{netVotes}
+          <IconArrowUp />
+          <Typography>{netVotes > 0 ? `+${netVotes}` : netVotes}</Typography>
         </Group>
         <IconButton
           title="Comments"
@@ -78,17 +79,6 @@ const ReviewActions = ({
         >
           <IconMessage />
         </IconButton>
-        {/* {netVotes > 0 ? (
-          <Group gap="sm">
-            <IconArrowUp />
-        +{netVotes}
-          </Group>
-        ) : (
-          <Group gap="sm">
-            <IconArrowDown />
-            {netVotes}
-          </Group>
-        )} */}
       </Group>
     );
 
