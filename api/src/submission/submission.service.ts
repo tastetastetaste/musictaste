@@ -56,7 +56,6 @@ import { GenresService } from '../genres/genres.service';
 import { SubmissionSortByEnum } from 'shared';
 import { Genre } from '../../db/entities/genre.entity';
 import { CommentsService } from '../comments/comments.service';
-import { EntitiesReferenceService } from '../entities/entitiesReference.service';
 import { formatReleaseDateInput, normalizeDate } from '../common/normalizeDate';
 import { Country } from '../../db/entities/country.entity';
 import { ReleaseGenreVote } from '../../db/entities/release-genre-vote.entity';
@@ -103,7 +102,6 @@ export class SubmissionService {
     private artistsService: ArtistsService,
     private genresService: GenresService,
     private commentsService: CommentsService,
-    private entitiesReferenceService: EntitiesReferenceService,
   ) {}
 
   // --- ARTISTS
@@ -816,12 +814,9 @@ export class SubmissionService {
       );
     const genreSubmission = new GenreSubmission();
 
-    const bio = await this.entitiesReferenceService.parseLinks(rest.bio);
-
     genreSubmission.changes = {
       name,
-      bio: bio,
-      bioSource: rest.bio,
+      bio: rest.bio,
       parentIds: rest.parentIds,
     };
     genreSubmission.submissionType = SubmissionType.CREATE;
@@ -870,13 +865,10 @@ export class SubmissionService {
     const gs = new GenreSubmission();
     gs.genreId = genreId;
 
-    const bio = await this.entitiesReferenceService.parseLinks(rest.bio);
-
-    gs.changes = { name, bio, bioSource: rest.bio, parentIds: rest.parentIds };
+    gs.changes = { name, bio: rest.bio, parentIds: rest.parentIds };
     gs.original = {
       name: genre.name,
       bio: genre.bio,
-      bioSource: genre.bioSource,
       parentIds: (genre as any).__parentsConnection__?.map((gp) => gp.parentId),
     };
     gs.submissionType = SubmissionType.UPDATE;

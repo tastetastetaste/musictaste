@@ -234,6 +234,7 @@ const ArtistPage = () => {
   return (
     <AppPageWrapper
       title={artist ? artist.name : ''}
+      referenceTitle={artist ? artist.name : ''}
       quickActions={[
         {
           label: 'Edit',

@@ -3,7 +3,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
-import { getListPath, UpdateListDto } from 'shared';
+import { getListPath, IList, UpdateListDto } from 'shared';
 import { Button } from '../../components/button';
 import { Dialog } from '../../components/dialog';
 import { Stack } from '../../components/flex/stack';
@@ -14,7 +14,7 @@ import { TextareaWithPreview } from '../../components/inputs/textarea-with-previ
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
 
-type ListToUpdate = any;
+type ListToUpdate = IList;
 
 const UpdateListForm: React.FC<{
   list: ListToUpdate;
@@ -61,7 +61,7 @@ const UpdateListForm: React.FC<{
   useEffect(() => {
     reset({
       title: list.title,
-      description: list.descriptionSource || '',
+      description: list.description || '',
       grid: list.grid,
       ranked: list.ranked,
     });

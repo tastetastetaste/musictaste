@@ -15,7 +15,6 @@ import {
 import { Repository } from 'typeorm';
 import { Comment } from '../../db/entities/comment.entity';
 import { EntitiesService } from '../entities/entities.service';
-import { EntitiesReferenceService } from '../entities/entitiesReference.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { UsersService } from '../users/users.service';
 import { CommentsGateway } from './comments.gateway';
@@ -29,7 +28,6 @@ export class CommentsService {
     private commentsGateway: CommentsGateway,
     private notificationsService: NotificationsService,
     private entitiesService: EntitiesService,
-    private entitiesReferenceService: EntitiesReferenceService,
   ) {}
 
   async create(
@@ -41,12 +39,9 @@ export class CommentsService {
         createCommentDto.body.trim(),
       );
 
-    const parsedBody =
-      await this.entitiesReferenceService.parseLinks(updatedText);
-
     const comment = this.commentsRepository.create({
       ...createCommentDto,
-      body: parsedBody,
+      body: updatedText,
       user: { id: userId },
     });
 

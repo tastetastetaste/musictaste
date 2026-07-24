@@ -18,6 +18,7 @@ export class GenreChanges {
   name: string;
   @IsString()
   bio: string;
+  // @deprecated
   @IsString()
   @IsOptional()
   bioSource?: string;

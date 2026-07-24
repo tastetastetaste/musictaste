@@ -88,27 +88,9 @@ You can edit releases, artists, and genres using a similar process:
 
 ## References
 
-References are used to link to specific pages in some text fields, and can be used in dropdown fields to select artists, labels, and genres.
+References are markdown links with relative paths used to link to resources in your text. They are supported in all markdown-enabled fields, as well as in dropdowns to help you select artists, labels, and genres.
 
-To copy the reference: go to the page you want to link to, click the link icon in the top right corner, and select "Copy Reference"
-
-You can link to:
-- Releases
-- Artists
-- Labels
-- Genres
-
-You can use them in your text in any of these fields:
-- Profile bios
-- Reviews
-- Genre bios
-- List descriptions
-- Comments
-
-You can also use them in the following dropdowns:
-- Select Artists: Release Artists, Related Artists, Main Artist, Group Members
-- Select Labels: Release Labels
-- Select Genres: Release Genres
+You can easily copy a reference using the link icon in the top right corner of the page you want to link to.
 
 ## Discarding Data Submissions
 

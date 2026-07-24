@@ -13,7 +13,6 @@ import { ReviewVote } from '../../db/entities/review-vote.entity';
 import { Review } from '../../db/entities/review.entity';
 import { UserRelease } from '../../db/entities/user-release.entity';
 import { CommentsService } from '../comments/comments.service';
-import { EntitiesReferenceService } from '../entities/entitiesReference.service';
 import { ReleasesService } from '../releases/releases.service';
 import { UsersService } from '../users/users.service';
 import { mapEntries } from './entries.utils';
@@ -28,7 +27,6 @@ export class ReviewsService {
     private releasesService: ReleasesService,
     private usersService: UsersService,
     private commentsService: CommentsService,
-    private entitiesReferenceService: EntitiesReferenceService,
   ) {}
 
   async findOne(entryId: string): Promise<IReviewResponse> {
@@ -159,7 +157,6 @@ export class ReviewsService {
       .createQueryBuilder('r')
       .select('r.id', 'id')
       .addSelect('r.body', 'body')
-      .addSelect('r.bodySource', 'bodySource')
       .addSelect('r.createdAt', 'createdAt')
       .addSelect('r.updatedAt', 'updatedAt')
       .where('r.id = :reviewId', { reviewId: id })
@@ -173,7 +170,6 @@ export class ReviewsService {
       .createQueryBuilder('r')
       .select('r.id', 'id')
       .addSelect('r.body', 'body')
-      .addSelect('r.bodySource', 'bodySource')
       .addSelect('r.createdAt', 'createdAt')
       .addSelect('r.updatedAt', 'updatedAt')
       .addSelect(
@@ -242,16 +238,14 @@ export class ReviewsService {
     return true;
   }
 
-  async create(bodySource: string): Promise<Review> {
+  async create(body: string): Promise<Review> {
     const review = new Review();
-    review.bodySource = bodySource;
-    review.body = await this.entitiesReferenceService.parseLinks(bodySource);
+    review.body = body;
     return review;
   }
 
-  async update(review: Review, bodySource: string): Promise<Review> {
-    review.bodySource = bodySource;
-    review.body = await this.entitiesReferenceService.parseLinks(bodySource);
+  async update(review: Review, body: string): Promise<Review> {
+    review.body = body;
     return review;
   }
 

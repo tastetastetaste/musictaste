@@ -34,6 +34,7 @@ export type QuickActionType = {
 
 interface PageHeaderProps {
   title?: string;
+  referenceTitle?: string;
   navigation: NavigationLinkType[];
   quickActions?: QuickActionType[];
   menu?: MenuItemType[];
@@ -50,6 +51,7 @@ const PageHeader = ({
   canCopyReference,
   canCopyLink,
   title,
+  referenceTitle,
 }: PageHeaderProps) => {
   const navigate = useNavigate();
   const { snackbar } = useSnackbar();
@@ -69,9 +71,9 @@ const PageHeader = ({
       path.length >= 3 &&
       ['genre', 'artist', 'label', 'release'].includes(path[1])
     ) {
-      reference = `[[${path[1]}/${path[2]}]]`;
+      reference = `[${referenceTitle || title || location.pathname}](${path[1]}/${path[2]})`;
     } else {
-      reference = `[${title || location.pathname}](${location.pathname})`;
+      reference = `[${referenceTitle || title || location.pathname}](${location.pathname})`;
     }
 
     navigator.clipboard.writeText(reference);

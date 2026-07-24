@@ -69,7 +69,6 @@ const ListItem = memo(function ListItem({
         release={item.release}
         index={index}
         note={item.note}
-        noteSource={item.noteSource}
         handleRemove={handleRemove}
         listId={listId}
       />

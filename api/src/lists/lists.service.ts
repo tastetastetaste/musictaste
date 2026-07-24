@@ -23,7 +23,6 @@ import { ListLike } from '../../db/entities/list-like.entity';
 import { List } from '../../db/entities/list.entity';
 import { ImagesService } from '../images/images.service';
 import { CommentsService } from '../comments/comments.service';
-import { EntitiesReferenceService } from '../entities/entitiesReference.service';
 import { NotificationsService } from '../notifications/notifications.service';
 
 @Injectable()
@@ -39,7 +38,6 @@ export class ListsService {
     private usersService: UsersService,
     private imagesService: ImagesService,
     private commentsService: CommentsService,
-    private entitiesReferenceService: EntitiesReferenceService,
     private notificationsService: NotificationsService,
   ) {}
 
@@ -96,7 +94,6 @@ export class ListsService {
       .addSelect('l.userId', 'userId')
       .addSelect('l.title', 'title')
       .addSelect('l.description', 'description')
-      .addSelect('l.descriptionSource', 'descriptionSource')
       .addSelect('l.ranked', 'ranked')
       .addSelect('l.grid', 'grid')
       .addSelect('l.published', 'published')
@@ -332,9 +329,7 @@ export class ListsService {
     newList.userId = currentUserId;
 
     if (description !== undefined) {
-      newList.descriptionSource = description;
-      newList.description =
-        await this.entitiesReferenceService.parseLinks(description);
+      newList.description = description;
     }
 
     newList.grid = grid;
@@ -367,9 +362,7 @@ export class ListsService {
     const updateData: any = { title, grid, ranked };
 
     if (description !== undefined) {
-      updateData.descriptionSource = description;
-      updateData.description =
-        await this.entitiesReferenceService.parseLinks(description);
+      updateData.description = description;
     }
 
     await this.listsRepository
@@ -549,11 +542,9 @@ export class ListsService {
 
     const updateData: any = {};
     if (note) {
-      updateData.noteSource = note;
-      updateData.note = await this.entitiesReferenceService.parseLinks(note);
+      updateData.note = note;
     } else {
       updateData.note = null;
-      updateData.noteSource = null;
     }
 
     const {

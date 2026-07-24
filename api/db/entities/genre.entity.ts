@@ -12,6 +12,7 @@ export class Genre extends SharedBaseEntity {
   @Column('text', { nullable: true })
   bio: string;
 
+  // @deprecated
   @Column('text', { nullable: true })
   bioSource: string;
 

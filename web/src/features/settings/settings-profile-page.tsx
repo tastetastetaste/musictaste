@@ -52,7 +52,7 @@ const SettingsProfilePage = () => {
     reset({
       name: user.name,
       username: user.username,
-      bio: user.bioSource || '',
+      bio: user.bio || '',
     });
   }, [user]);
 

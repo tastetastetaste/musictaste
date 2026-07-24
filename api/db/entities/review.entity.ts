@@ -20,6 +20,7 @@ export class Review extends SharedBaseEntity {
   @Column('text')
   body: string;
 
+  // @deprecated
   @Column('text', { nullable: true })
   bodySource: string;
 

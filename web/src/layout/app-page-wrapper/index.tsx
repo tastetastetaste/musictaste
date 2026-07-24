@@ -14,6 +14,7 @@ import { CONTENT_MAX_WIDTH, CONTENT_PADDING } from '../../static/spacing';
 
 interface props {
   title?: string;
+  referenceTitle?: string;
   navigation?: NavigationLinkType[];
   menu?: MenuItemType[];
   quickActions?: QuickActionType[];
@@ -27,6 +28,7 @@ interface props {
 
 const AppPageWrapper: React.FC<props> = ({
   title,
+  referenceTitle,
   navigation,
   children,
   menu,
@@ -86,6 +88,7 @@ const AppPageWrapper: React.FC<props> = ({
         <AppHeader />
         <PageHeader
           title={title}
+          referenceTitle={referenceTitle}
           navigation={navigation}
           menu={menu}
           quickActions={quickActions}

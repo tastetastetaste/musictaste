@@ -56,6 +56,7 @@ const GenrePage = () => {
   return (
     <AppPageWrapper
       title={genre ? genre.name : ''}
+      referenceTitle={genre ? genre.name : ''}
       quickActions={[
         {
           label: 'Edit',

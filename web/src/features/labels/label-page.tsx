@@ -33,6 +33,7 @@ const LabelPage = () => {
   return (
     <AppPageWrapper
       title={label ? label.name : ''}
+      referenceTitle={label ? label.name : ''}
       quickActions={[
         {
           label: 'Edit',

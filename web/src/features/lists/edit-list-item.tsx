@@ -67,9 +67,9 @@ const EditNoteForm = ({
   );
 };
 
-export const Note = ({ id, note, noteSource, listId }: any) => {
+export const Note = ({ id, note, listId }: any) => {
   const [openNoteEditer, setOpenNoteEditer] = useState(false);
-  const [listItemNote, setListItemNote] = useState(noteSource || '');
+  const [listItemNote, setListItemNote] = useState(note || '');
 
   const onUpdate = async (note: string) => {
     setListItemNote(note);
@@ -104,12 +104,12 @@ export const Note = ({ id, note, noteSource, listId }: any) => {
 };
 
 export const EditListItem: React.FC<
-  Pick<IListItem, 'id' | 'index' | 'note' | 'noteSource'> & {
+  Pick<IListItem, 'id' | 'index' | 'note'> & {
     release: IRelease;
     handleRemove: () => void;
     listId: string;
   }
-> = ({ id, release, index, handleRemove, note, noteSource, listId }) => {
+> = ({ id, release, index, handleRemove, note, listId }) => {
   return (
     <CardContainer>
       <Group gap="md" justify="apart">
@@ -129,7 +129,7 @@ export const EditListItem: React.FC<
               title={release.title}
               latinTitle={release.titleLatin}
             />
-            <Note note={note} noteSource={noteSource} id={id} listId={listId} />
+            <Note note={note} id={id} listId={listId} />
           </Stack>
         </FlexChild>
         <IconButton title="Remove" onClick={handleRemove}>

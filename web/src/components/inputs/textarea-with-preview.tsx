@@ -29,23 +29,9 @@ export const TextareaWithPreview = forwardRef<
 
   useImperativeHandle(ref, () => textareaRef.current);
 
-  const { mutateAsync: parseLinks, isLoading: isParsing } = useMutation(
-    api.parseLinks,
-    {
-      onSuccess: (data) => {
-        setPreviewContent(data.text);
-      },
-    },
-  );
-
   const updatePreview = async (value: string) => {
     if (value) {
-      try {
-        await parseLinks(value);
-      } catch (error) {
-        console.error('Failed to parse links:', error);
-        setPreviewContent(value);
-      }
+      setPreviewContent(value);
     } else {
       setPreviewContent('');
     }
@@ -69,13 +55,9 @@ export const TextareaWithPreview = forwardRef<
       />
       {showPreview ? (
         <PreviewContainer>
-          {isParsing ? (
-            <div>Loading preview...</div>
-          ) : (
-            <Markdown>
-              {previewContent || textareaRef.current?.value || ''}
-            </Markdown>
-          )}
+          <Markdown>
+            {previewContent || textareaRef.current?.value || ''}
+          </Markdown>
         </PreviewContainer>
       ) : (
         <Textarea

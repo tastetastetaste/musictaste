@@ -25,7 +25,7 @@ const ReviewForm = ({
 
   useEffect(() => {
     reset({
-      body: entry?.review?.bodySource || '',
+      body: entry?.review?.body || '',
     });
   }, [entry?.review, reset]);
 

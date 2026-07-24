@@ -70,7 +70,6 @@ export interface IList {
   id: string;
   title: string;
   description?: string;
-  descriptionSource?: string;
   ranked: boolean;
   grid: boolean;
   published: boolean;
@@ -89,7 +88,6 @@ export interface IListItem {
   id: string;
   index: number;
   note: string;
-  noteSource?: string;
   release: IRelease;
 }
 
@@ -144,7 +142,6 @@ export interface IGenre {
   id: string;
   name: string;
   bio?: string;
-  bioSource?: string;
   parentIds?: string[];
   subgenreIds?: string[];
 }
@@ -361,7 +358,6 @@ export interface ICurrentUserResponse {
   user:
     | (IUser & {
         allowExplicitCoverArt?: ExplicitCoverArt[];
-        bioSource?: string;
       })
     | null;
 }
@@ -430,7 +426,6 @@ export interface IUserTag {
 export interface IReviewSummary {
   id: string;
   body: string;
-  bodySource?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -626,7 +621,6 @@ export interface ILabelSubmission {
 export interface IGenreChanges {
   name: string;
   bio: string;
-  bioSource?: string;
   parentIds?: string[];
 }
 

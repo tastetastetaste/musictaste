@@ -23,6 +23,7 @@ export class List extends SharedBaseEntity {
   @Column('text', { nullable: true })
   description: string;
 
+  // @deprecated
   @Column('text', { nullable: true })
   descriptionSource: string;
 

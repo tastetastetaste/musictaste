@@ -75,7 +75,6 @@ export class GenresService {
         id: genre.id,
         name: genre.name,
         bio: genre.bio,
-        bioSource: genre.bioSource,
         parentIds: genre.__parentsConnection__?.map((p) => p.parentId) || [],
         subgenreIds: genre.__childrenConnection__?.map((p) => p.genreId) || [],
       },
@@ -235,12 +234,11 @@ export class GenresService {
   }
 
   async createGenre({
-    changes: { name, bio, bioSource, parentIds },
+    changes: { name, bio, parentIds },
   }: GenreSubmission): Promise<Genre> {
     const genre = new Genre();
     genre.name = name;
     genre.bio = bio;
-    genre.bioSource = bioSource;
 
     const savedGenre = await this.genreRepository.save(genre);
 
@@ -261,7 +259,7 @@ export class GenresService {
 
   async updateGenre({
     genreId,
-    changes: { name, bio, bioSource, parentIds },
+    changes: { name, bio, parentIds },
   }: GenreSubmission): Promise<Genre> {
     const genre = (await this.genreRepository.findOne({
       where: { id: genreId },
@@ -272,7 +270,6 @@ export class GenresService {
 
     genre.name = name;
     genre.bio = bio;
-    genre.bioSource = bioSource;
 
     const savedGenre = await this.genreRepository.save(genre);
 

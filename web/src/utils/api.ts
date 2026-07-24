@@ -843,11 +843,6 @@ const mergeEntities = (data: {
     .post('admin/merge', { json: data })
     .json<{ mergedFrom: string; mergedInto: string }>();
 
-const parseLinks = (text: string) =>
-  client
-    .post('entities/parse-links', { json: { text } })
-    .json<{ text: string }>();
-
 export const api = {
   getArtist,
   getArtists,
@@ -963,7 +958,6 @@ export const api = {
   sendNotification,
   findUsers,
   mergeEntities,
-  parseLinks,
   getUserCollectionViews,
   createUserCollectionView,
   updateUserCollectionView,

@@ -9,7 +9,7 @@ import { Stack } from '../../components/flex/stack';
 import { Checkbox } from '../../components/inputs/checkbox';
 import { FormInputError } from '../../components/inputs/form-input-error';
 import { Input } from '../../components/inputs/input';
-import { Textarea } from '../../components/inputs/textarea';
+import { TextareaWithPreview } from '../../components/inputs/textarea-with-preview';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
 import { useAuth } from '../account/useAuth';
@@ -53,9 +53,10 @@ const CreateListForm = ({ redirect = false, closeDialog }: any) => {
       <Stack gap="sm">
         <Input placeholder="Title" {...register('title')} />
         <FormInputError error={errors.title} />
-        <Textarea
+        <TextareaWithPreview
           placeholder="Description"
           {...register('description', { required: false })}
+          rows={8}
         />
         <FormInputError error={errors.description} />
         <Controller

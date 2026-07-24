@@ -34,7 +34,6 @@ import { CurrentUserPayload } from '../auth/session.serializer';
 import { ImagesService } from '../images/images.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { RedisService } from '../redis/redis.service';
-import { EntitiesReferenceService } from '../entities/entitiesReference.service';
 
 export type UserCountType =
   | 'entries'
@@ -56,7 +55,6 @@ export class UsersService {
     @Inject(forwardRef(() => NotificationsService))
     private notificationsService: NotificationsService,
     private redisService: RedisService,
-    private entitiesReferenceService: EntitiesReferenceService,
   ) {}
 
   async getUserStats(id: string): Promise<IUserStats> {
@@ -126,7 +124,6 @@ export class UsersService {
         'name',
         'username',
         'bio',
-        'bioSource',
         'theme',
         'imagePath',
         'contributorStatus',
@@ -297,10 +294,7 @@ export class UsersService {
     };
 
     if (updateUserProfileInput.bio !== undefined) {
-      updateData.bioSource = updateUserProfileInput.bio;
-      updateData.bio = await this.entitiesReferenceService.parseLinks(
-        updateUserProfileInput.bio,
-      );
+      updateData.bio = updateUserProfileInput.bio;
     }
 
     await this.usersRepository.update({ id: currentUser.id }, updateData);

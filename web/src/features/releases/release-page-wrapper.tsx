@@ -100,6 +100,7 @@ export const ReleasePageContainer: React.FC<{
       title={`${release.title} By ${release.artists
         .map((a) => a.name)
         .join(' & ')}`}
+      referenceTitle={release.title}
       quickActions={[
         {
           label: 'Edit',

@@ -23,6 +23,7 @@ export class ListItem extends SharedBaseEntity {
   @Column('text', { nullable: true })
   note: string;
 
+  // @deprecated
   @Column('text', { nullable: true })
   noteSource: string;
 
