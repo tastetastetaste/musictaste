@@ -1,15 +1,23 @@
 import { IconMessage, IconTrash } from '@tabler/icons-react';
-import { useMutation } from '@tanstack/react-query';
+import {
+  InfiniteData,
+  useMutation,
+  useQueryClient,
+} from '@tanstack/react-query';
 import { Fragment, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { getReleasePath, IListItem, IRelease } from 'shared';
+import {
+  getReleasePath,
+  IListItem,
+  IListItemsResponse,
+  IRelease,
+} from 'shared';
 import { Button } from '../../components/button';
 import { CardContainer } from '../../components/containers/card-container';
 import { FlexChild } from '../../components/flex/flex-child';
 import { Group } from '../../components/flex/group';
 import { Stack } from '../../components/flex/stack';
 import { IconButton } from '../../components/icon-button';
-import { TextareaWithPreview } from '../../components/inputs/textarea-with-preview';
 import { Typography } from '../../components/typography';
 import { api } from '../../utils/api';
 import {
@@ -17,23 +25,44 @@ import {
   ReleaseImageLink,
   ReleaseTitleLink,
 } from '../releases/release/shared';
+import { Markdown } from '../../components/markdown';
+import { Textarea } from '../../components/inputs/textarea';
 
 const EditNoteForm = ({
   listId,
   itemId,
   note,
-  onUpdate,
   onClose,
 }: {
   listId: string;
   itemId: string;
   note: string;
-  onUpdate: (note: string) => void;
   onClose: () => void;
 }) => {
   const { handleSubmit, register } = useForm();
+  const qc = useQueryClient();
 
-  const { mutateAsync, isLoading } = useMutation(api.editListItem);
+  const { mutateAsync, isLoading } = useMutation(api.editListItem, {
+    onSuccess: (_, variables) => {
+      qc.setQueriesData<InfiniteData<IListItemsResponse>>(
+        ['list', listId, 'items'],
+        (oldData) => {
+          if (!oldData || !oldData.pages) return oldData;
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page) => ({
+              ...page,
+              items: page.items.map((item) =>
+                item.id === variables.itemId
+                  ? { ...item, note: variables.note }
+                  : item,
+              ),
+            })),
+          };
+        },
+      );
+    },
+  });
 
   const submit = async (data: { note: string }) => {
     await mutateAsync({
@@ -41,14 +70,13 @@ const EditNoteForm = ({
       itemId,
       note: data.note,
     });
-    onUpdate(data.note);
     onClose();
   };
 
   return (
     <form onSubmit={handleSubmit(submit)}>
       <Stack gap="sm">
-        <TextareaWithPreview
+        <Textarea
           defaultValue={note}
           placeholder="Description..."
           {...register('note')}
@@ -67,13 +95,16 @@ const EditNoteForm = ({
   );
 };
 
-export const Note = ({ id, note, listId }: any) => {
+export const Note = ({
+  id,
+  note,
+  listId,
+}: {
+  id: string;
+  note?: string;
+  listId: string;
+}) => {
   const [openNoteEditer, setOpenNoteEditer] = useState(false);
-  const [listItemNote, setListItemNote] = useState(note || '');
-
-  const onUpdate = async (note: string) => {
-    setListItemNote(note);
-  };
 
   return (
     <Fragment>
@@ -81,12 +112,11 @@ export const Note = ({ id, note, listId }: any) => {
         <EditNoteForm
           itemId={id}
           listId={listId}
-          note={listItemNote}
-          onUpdate={onUpdate}
+          note={note || ''}
           onClose={() => setOpenNoteEditer(false)}
         />
       ) : (
-        <span>{listItemNote}</span>
+        <Markdown>{note}</Markdown>
       )}
 
       {!openNoteEditer ? (
