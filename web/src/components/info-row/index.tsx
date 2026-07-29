@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
 import { Group } from '../flex/group';
 import { Typography } from '../typography';
+import { useMediaQuery } from '../../hooks/useMediaQuery';
 
 interface InfoRowProps {
   label: string;
@@ -8,20 +9,21 @@ interface InfoRowProps {
 }
 
 export const InfoRow: React.FC<InfoRowProps> = ({ label, children }) => {
+  const smallScreen = useMediaQuery({ down: 'sm' });
   return (
     <div
       css={{
-        minHeight: '36px',
+        margin: '8px 0',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
       }}
     >
-      <Group gap={5} align="center">
+      <Group gap={5} align="start">
         <Typography
           color="sub"
           css={{
-            flex: '120px 0 0',
+            flex: smallScreen ? '110px 0 0' : '120px 0 0',
           }}
         >
           {label}

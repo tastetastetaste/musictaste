@@ -15,11 +15,11 @@ export const baseTheme: Omit<Theme, 'colors'> = {
       bolder: 900,
     },
     size: {
-      title_xl: '50px',
-      title_lg: '24px',
-      title: '18px',
-      body: '14px',
-      small: '11px',
+      title_xl: 'clamp(32px, 6vw, 50px)',
+      title_lg: 'clamp(18px, 4vw, 24px)',
+      title: 'clamp(15px, 2.5vw, 18px)',
+      body: 'clamp(13px, 1.5vw, 14px)',
+      small: 'clamp(10px, 1.2vw, 11px)',
     },
   },
 };

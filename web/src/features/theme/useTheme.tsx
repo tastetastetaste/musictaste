@@ -85,7 +85,7 @@ const GlobalStyles = () => {
 
           body {
             font-family: ${theme.font.family.base};
-            font-size: 14px;
+            font-size: ${theme.font.size.body};
             font-weight: ${theme.font.weight.normal};
             font-optical-sizing: auto;
             font-style: normal;
