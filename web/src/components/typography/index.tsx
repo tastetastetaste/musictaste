@@ -6,6 +6,7 @@ interface TypographyProps {
   whiteSpace?: 'normal' | 'pre-wrap' | 'nowrap';
   inline?: boolean;
   maxLines?: number;
+  align?: 'left' | 'center' | 'right';
 }
 
 export const Typography = styled.span<TypographyProps>`
@@ -39,6 +40,7 @@ export const Typography = styled.span<TypographyProps>`
       : size === 'title-lg' || size === 'title' || size === 'body-bold'
         ? theme.font.weight.bold
         : theme.font.weight.normal};
+  text-align: ${({ align }) => align || 'left'};
   display: ${({ inline }) => (inline ? 'inline' : 'block')};
   white-space: ${({ whiteSpace }) => whiteSpace || 'normal'};
   word-break: break-word;

@@ -238,17 +238,20 @@ const HomePage = () => {
         {!isLoadingNewPopularReleases ? (
           <Fragment>
             <NewReleasesSection />
-            <Support />
             <Group gap="xl" align="start">
               <FlexChild grow>
                 <Stack gap="xl">
+                  {isMobile ? <Support /> : null}
                   <TopReviewsSection />
                   {isMobile ? <LatestListsSection /> : null}
                 </Stack>
               </FlexChild>
               {!isMobile ? (
                 <StickyContainer width={SIDECONTENT_WIDTH}>
-                  <LatestListsSection />
+                  <Stack gap="xl">
+                    <Support />
+                    <LatestListsSection />
+                  </Stack>
                 </StickyContainer>
               ) : null}
             </Group>

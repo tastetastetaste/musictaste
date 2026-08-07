@@ -5,24 +5,22 @@ import { SupporterStatus } from 'shared';
 import { Group } from '../../components/flex/group';
 import { Typography } from '../../components/typography';
 import { useAuth } from '../account/useAuth';
+import { Stack } from '../../components/flex/stack';
+
+const Card = styled.div`
+  background: ${({ theme }) => theme.colors.background_sub};
+  border-radius: ${({ theme }) => theme.border_radius.base};
+  padding: 18px;
+`;
 
 const StyledButton = styled.button`
   background: ${({ theme }) => theme.colors.highlight};
-  background: ${({ theme }) =>
-    `linear-gradient(135deg, ${theme.colors.primary} 0%, ${theme.colors.highlight} 100%)`};
   color: ${({ theme }) => theme.colors.background};
   border-radius: ${({ theme }) => theme.border_radius.base};
-  padding: 12px;
+  padding: 6px 12px;
   border: none;
   cursor: pointer;
-  &:hover {
-    background: ${({ theme }) =>
-      `linear-gradient(135deg, ${theme.colors.highlight} 0%, ${theme.colors.primary} 100%)`};
-  }
-  &:active {
-    background: ${({ theme }) =>
-      `linear-gradient(135deg, ${theme.colors.highlight} 0%, ${theme.colors.primary} 100%)`};
-  }
+  margin-top: 6px;
 `;
 
 function Support() {
@@ -30,17 +28,29 @@ function Support() {
 
   const { isLoading, me } = useAuth();
 
-  if (isLoading || me?.supporter >= SupporterStatus.SUPPORTER) return null;
+  if (isLoading || !me || me.supporter >= SupporterStatus.SUPPORTER)
+    return null;
 
   return (
-    <StyledButton onClick={() => navigate('/support-us')}>
-      <Group gap="md" align="center" justify="center">
-        <IconRosetteDiscountCheckFilled />
-        <Typography size="title-lg" color="bg">
-          Become a Supporter
+    <Card>
+      <Stack gap="sm" align="center">
+        <Typography size="body" align="center">
+          Unlock exclusive supporter perks for a full year and help keep the
+          website alive and ad-free.
         </Typography>
-      </Group>
-    </StyledButton>
+        <Typography size="body" align="center">
+          One-time donation, easy & secure payment.
+        </Typography>
+        <StyledButton onClick={() => navigate('/support-us')}>
+          <Group gap="md" align="center" justify="center">
+            <IconRosetteDiscountCheckFilled size={22} />
+            <Typography size="body-bold" color="bg">
+              Become a Supporter
+            </Typography>
+          </Group>
+        </StyledButton>
+      </Stack>
+    </Card>
   );
 }
 

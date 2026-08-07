@@ -3,7 +3,7 @@ import { GAP_LG, GAP_MD, GAP_SM, GAP_XL } from '../../static/spacing';
 
 interface GroupProps {
   children: React.ReactNode;
-  align?: 'start' | 'end' | 'center';
+  align?: 'start' | 'end' | 'center' | 'stretch';
   justify?: 'start' | 'end' | 'center' | 'apart';
   gap?: number | 'sm' | 'md' | 'lg' | 'xl';
   wrap?: boolean;
@@ -23,7 +23,9 @@ export const Group = forwardRef(
               ? 'flex-start'
               : align === 'end'
                 ? 'flex-end'
-                : 'center',
+                : align === 'stretch'
+                  ? 'stretch'
+                  : 'center',
           justifyContent:
             justify === 'end'
               ? 'flex-end'

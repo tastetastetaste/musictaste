@@ -1,6 +1,7 @@
 import styled from '@emotion/styled';
 import {
   IconBrandOpenSource,
+  IconChevronRight,
   IconDatabasePlus,
   IconNote,
   IconPalette,
@@ -14,6 +15,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/button';
 import { Grid } from '../components/flex/grid';
+import { Group } from '../components/flex/group';
 import { Stack } from '../components/flex/stack';
 import { Typography } from '../components/typography';
 
@@ -48,10 +50,6 @@ const IconBubble = styled.div`
     width: 20px;
     height: 20px;
   }
-`;
-
-const Cta = styled.div`
-  margin-top: 6px;
 `;
 
 function FeaturesOverview() {
@@ -132,11 +130,13 @@ function FeaturesOverview() {
           ))}
         </Grid>
 
-        <Cta>
+        <Group justify="end">
           <Button onClick={() => navigate('/login')} variant="highlight">
-            Sign up / Login
+            <Group align="center">
+              <span>Sign up / Login</span> <IconChevronRight />
+            </Group>
           </Button>
-        </Cta>
+        </Group>
       </Stack>
     </Section>
   );
