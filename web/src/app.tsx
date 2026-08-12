@@ -218,6 +218,15 @@ const QueryProvider = ({ children }: { children: any }) => {
       new QueryClient({
         queryCache: new QueryCache({
           onError: (error: any) => {
+            const status = error?.response?.status || error?.status;
+            if (
+              status === 401 ||
+              status === 404 ||
+              error?.name === 'CanceledError' ||
+              error?.code === 'ERR_CANCELED'
+            ) {
+              return;
+            }
             let message =
               error?.response?.data?.message || SOMETHING_WENT_WRONG;
             if (Array.isArray(message)) {
