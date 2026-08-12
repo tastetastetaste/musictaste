@@ -23,6 +23,7 @@ export const SocketProvider = ({ children }) => {
         ? 'https://api.musictaste.xyz'
         : 'http://localhost:4000/',
       {
+        transports: ['websocket'],
         withCredentials: true,
         autoConnect: true,
       },
