@@ -1,3 +1,8 @@
+import * as crypto from 'crypto';
+if (!globalThis.crypto) {
+  (globalThis as any).crypto = crypto;
+}
+
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
@@ -12,6 +17,8 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     cors: getCorsConfig(),
   });
+
+  app.enableShutdownHooks();
 
   isProduction && app.set('trust proxy', 1);
 
@@ -36,6 +43,11 @@ async function bootstrap() {
 
   const port = process.env.API_PORT || 4000;
   await app.listen(port);
+
+  if (process.send) {
+    process.send('ready');
+  }
+
   Logger.log(`🚀 Application is running on: http://localhost:${port}/`);
 }
 

@@ -1,3 +1,8 @@
+import * as crypto from 'crypto';
+if (!globalThis.crypto) {
+  (globalThis as any).crypto = crypto;
+}
+
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
@@ -36,9 +41,12 @@ import KeyvRedis from '@keyv/redis';
 import { ScheduleModule } from '@nestjs/schedule';
 import { CountriesModule } from './countries/countries.module';
 
+const isPrimaryInstance =
+  !process.env.NODE_APP_INSTANCE || process.env.NODE_APP_INSTANCE === '0';
+
 @Module({
   imports: [
-    ScheduleModule.forRoot(),
+    ...(isPrimaryInstance ? [ScheduleModule.forRoot()] : []),
     ConfigModule.forRoot({
       envFilePath: '.env',
       isGlobal: true,
@@ -121,7 +129,7 @@ import { CountriesModule } from './countries/countries.module';
     CommentsModule,
     NotificationsModule,
     EntitiesModule,
-    TasksModule,
+    ...(isPrimaryInstance ? [TasksModule] : []),
     CountriesModule,
   ],
   controllers: [],
