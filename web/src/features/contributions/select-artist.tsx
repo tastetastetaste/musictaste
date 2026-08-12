@@ -7,6 +7,7 @@ import {
   SelectType,
 } from '../../components/inputs/select';
 import { useSnackbar } from '../../hooks/useSnackbar';
+import { useDebounce } from '../../hooks/useDebounce';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
 import { IArtistSummary, ARTIST_REFERENCE_PATTERN } from 'shared';
@@ -43,6 +44,7 @@ export const SelectArtist = forwardRef<any, SelectArtistProps>(
     ref,
   ) => {
     const [query, setQuery] = useState('');
+    const debouncedQuery = useDebounce(query, 300);
     const { snackbar } = useSnackbar();
     const queryClient = useQueryClient();
 
@@ -101,19 +103,19 @@ export const SelectArtist = forwardRef<any, SelectArtistProps>(
 
     const { data } = useQuery(
       cacheKeys.searchKey({
-        q: query!,
+        q: debouncedQuery!,
         type: ['artists'],
         page: 1,
         pageSize: 12,
       }),
       () =>
         api.search({
-          q: query!,
+          q: debouncedQuery!,
           type: ['artists'],
           page: 1,
           pageSize: 12,
         }),
-      { enabled: !!query },
+      { enabled: !!debouncedQuery },
     );
 
     const handleOnChange = (selected: SelectType | null) => {

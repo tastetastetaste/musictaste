@@ -2,9 +2,11 @@ import {
   QueryClient,
   QueryClientProvider,
   QueryErrorResetBoundary,
+  QueryCache,
+  MutationCache,
 } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { Fragment, lazy, Suspense, useEffect } from 'react';
+import { Fragment, lazy, Suspense, useEffect, useState } from 'react';
 import {
   createBrowserRouter,
   Navigate,
@@ -205,34 +207,49 @@ const UserGenreVotesPage = lazy(
 const QueryProvider = ({ children }: { children: any }) => {
   const { snackbar } = useSnackbar();
 
-  const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: {
-        staleTime: 1000 * 60 * 30,
-        retry: (failureCount, error) => {
-          if (
-            // @ts-expect-error ...
-            error?.response?.status === 404 ||
-            // @ts-expect-error ...
-            error?.response?.status === 401
-          )
-            return false;
-          return failureCount < 3;
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        queryCache: new QueryCache({
+          onError: (error: any) => {
+            let message =
+              error?.response?.data?.message || SOMETHING_WENT_WRONG;
+            if (Array.isArray(message)) {
+              message = message[0];
+            }
+            snackbar(message, {
+              isError: true,
+            });
+          },
+        }),
+        mutationCache: new MutationCache({
+          onError: (error: any) => {
+            let message =
+              error?.response?.data?.message || SOMETHING_WENT_WRONG;
+            if (Array.isArray(message)) {
+              message = message[0];
+            }
+            snackbar(message, {
+              isError: true,
+            });
+          },
+        }),
+        defaultOptions: {
+          queries: {
+            staleTime: 1000 * 60 * 30,
+            retry: (failureCount, error: any) => {
+              if (
+                error?.response?.status === 404 ||
+                error?.response?.status === 401 ||
+                error?.response?.status === 429
+              )
+                return false;
+              return failureCount < 3;
+            },
+          },
         },
-      },
-      mutations: {
-        onError: (error: any) => {
-          let message = error?.response?.data?.message || SOMETHING_WENT_WRONG;
-          if (Array.isArray(message)) {
-            message = message[0];
-          }
-          snackbar(message, {
-            isError: true,
-          });
-        },
-      },
-    },
-  });
+      }),
+  );
 
   return (
     <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>

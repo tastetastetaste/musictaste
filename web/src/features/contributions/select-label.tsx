@@ -7,6 +7,7 @@ import {
   SelectType,
 } from '../../components/inputs/select';
 import { useSnackbar } from '../../hooks/useSnackbar';
+import { useDebounce } from '../../hooks/useDebounce';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
 import { ILabelSummary, LABEL_REFERENCE_PATTERN } from 'shared';
@@ -41,6 +42,7 @@ export const SelectLabel = forwardRef<any, SelectLabelProps>(
     ref,
   ) => {
     const [query, setQuery] = useState('');
+    const debouncedQuery = useDebounce(query, 300);
     const { snackbar } = useSnackbar();
     const queryClient = useQueryClient();
 
@@ -96,19 +98,19 @@ export const SelectLabel = forwardRef<any, SelectLabelProps>(
 
     const { data } = useQuery(
       cacheKeys.searchKey({
-        q: query!,
+        q: debouncedQuery!,
         type: ['labels'],
         page: 1,
         pageSize: 12,
       }),
       () =>
         api.search({
-          q: query!,
+          q: debouncedQuery!,
           type: ['labels'],
           page: 1,
           pageSize: 12,
         }),
-      { enabled: !!query },
+      { enabled: !!debouncedQuery },
     );
 
     const handleOnChange = (selected: SelectType | null) => {
