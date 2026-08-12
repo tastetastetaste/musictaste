@@ -1,16 +1,16 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { SubmissionStatus } from 'shared';
 import { Button } from '../../components/button';
+import { Container } from '../../components/containers/container';
 import { Group } from '../../components/flex/group';
 import { Stack } from '../../components/flex/stack';
 import { Loading } from '../../components/loading';
 import { Typography } from '../../components/typography';
-import AppPageWrapper from '../../layout/app-page-wrapper';
 import { api } from '../../utils/api';
 import { useAuth } from '../account/useAuth';
-import { ArtistSubmissionItem } from './artist-submission-list';
-import { LabelSubmissionItem } from './label-submission-list';
-import { ReleaseSubmissionItem } from './release-submission-list';
+import { ArtistSubmissionItem } from '../contributions/artist-submission-list';
+import { LabelSubmissionItem } from '../contributions/label-submission-list';
+import { ReleaseSubmissionItem } from '../contributions/release-submission-list';
 
 const PendingDeletionsPage = () => {
   const { isLoading, isAdmin } = useAuth();
@@ -61,8 +61,9 @@ const PendingDeletionsPage = () => {
   if (isLoading || isLoading2 || isLoading3 || isLoading4) {
     return <Loading />;
   }
+
   return (
-    <AppPageWrapper>
+    <Container>
       <Stack gap={10}>
         <Typography size="title-lg">Pending Deletions</Typography>
       </Stack>
@@ -100,6 +101,7 @@ const PendingDeletionsPage = () => {
         {artistsData?.artists.map((s) => (
           <ArtistSubmissionItem key={s.id} submission={s} />
         ))}
+
         <Group justify="apart" align="center">
           <Typography size="title">Labels</Typography>
           <Button
@@ -117,7 +119,7 @@ const PendingDeletionsPage = () => {
           <LabelSubmissionItem key={s.id} submission={s} />
         ))}
       </div>
-    </AppPageWrapper>
+    </Container>
   );
 };
 

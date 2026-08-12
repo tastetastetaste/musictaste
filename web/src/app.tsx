@@ -181,11 +181,17 @@ const HistoryPageWrapper = lazy(
   () => import('./features/contributions/history-page-wrapper'),
 );
 
-const PendingDeletionsPage = lazy(
-  () => import('./features/contributions/pending-deletions-page'),
+const AdminPageWrapper = lazy(
+  () => import('./features/admin/admin-page-wrapper'),
 );
 
-const MergePage = lazy(() => import('./features/contributions/merge-page'));
+const PendingDeletionsPage = lazy(
+  () => import('./features/admin/pending-deletions-page'),
+);
+
+const MergePage = lazy(
+  () => import('./features/admin/merge-duplicates-page'),
+);
 
 const ReleaseSubmissionPage = lazy(
   () => import('./features/contributions/release-submission-page'),
@@ -845,24 +851,44 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: 'contributions/pending-deletions',
+        path: 'admin',
         element: (
           <AdminRequiredPage>
             <Suspense fallback={<Fallback />}>
-              <PendingDeletionsPage />
+              <AdminPageWrapper />
             </Suspense>
           </AdminRequiredPage>
         ),
+        children: [
+          {
+            index: true,
+            element: <Navigate to="/admin/pending-deletions" replace />,
+          },
+          {
+            path: 'pending-deletions',
+            element: (
+              <Suspense fallback={<Fallback />}>
+                <PendingDeletionsPage />
+              </Suspense>
+            ),
+          },
+          {
+            path: 'merge-duplicates',
+            element: (
+              <Suspense fallback={<Fallback />}>
+                <MergePage />
+              </Suspense>
+            ),
+          },
+        ],
+      },
+      {
+        path: 'contributions/pending-deletions',
+        element: <Navigate to="/admin/pending-deletions" replace />,
       },
       {
         path: 'contributions/merge',
-        element: (
-          <AdminRequiredPage>
-            <Suspense fallback={<Fallback />}>
-              <MergePage />
-            </Suspense>
-          </AdminRequiredPage>
-        ),
+        element: <Navigate to="/admin/merge-duplicates" replace />,
       },
       {
         path: 'contributions/release/:submissionId',

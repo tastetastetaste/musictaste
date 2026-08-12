@@ -1,5 +1,6 @@
 import styled from '@emotion/styled';
 import { memo, useState } from 'react';
+import { IconShieldFilled } from '@tabler/icons-react';
 import { Group } from '../../components/flex/group';
 import AppSidebar from '../app-sidebar';
 import UserMenu from './user-menu';
@@ -72,8 +73,9 @@ const HomeLink = () => {
 };
 
 const AppHeader = memo(function AppHeaderFu() {
-  const { isLoading, me } = useAuth();
+  const { isLoading, me, isAdmin } = useAuth();
   const [searchActive, setSearchActive] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <div
@@ -100,7 +102,19 @@ const AppHeader = memo(function AppHeaderFu() {
           <QuickSearch onActiveChange={(active) => setSearchActive(active)} />
           <HeaderSection hideOnMobile={searchActive}>
             <Group>
-              {isLoading ? null : me ? <Notifications /> : null}
+              {isLoading ? null : me ? (
+                <>
+                  {isAdmin && (
+                    <IconButton
+                      title="Admin"
+                      onClick={() => navigate('/admin/pending-deletions')}
+                    >
+                      <IconShieldFilled />
+                    </IconButton>
+                  )}
+                  <Notifications />
+                </>
+              ) : null}
               <UserMenu />
             </Group>
           </HeaderSection>
