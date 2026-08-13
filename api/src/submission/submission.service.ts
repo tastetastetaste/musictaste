@@ -572,18 +572,13 @@ export class SubmissionService {
         "You can't submit contributions at this time",
       );
 
-    try {
-      if (rest.image) {
-        imageUrl = (await this.imagesService.storeUpload(rest.image, 'release'))
-          .path;
-      } else if (rest.imageUrl) {
-        imageUrl = (
-          await this.imagesService.storeUploadFromUrl(rest.imageUrl, 'release')
-        ).path;
-      }
-    } catch (error) {
-      console.error('Image upload error:', error);
-      throw new BadRequestException('Image upload error');
+    if (rest.image) {
+      imageUrl = (await this.imagesService.storeUpload(rest.image, 'release'))
+        .path;
+    } else if (rest.imageUrl) {
+      imageUrl = (
+        await this.imagesService.storeUploadFromUrl(rest.imageUrl, 'release')
+      ).path;
     }
 
     const releaseSubmission = new ReleaseSubmission();
@@ -694,18 +689,20 @@ export class SubmissionService {
       );
     }
 
-    const imageUrl: string = rest.image
-      ? (await this.imagesService.storeUpload(rest.image, 'release')).path
-      : rest.imageUrl &&
-          rest.imageUrl !==
-            this.imagesService.getReleaseCover(release.imagePath)?.original
-        ? (
-            await this.imagesService.storeUploadFromUrl(
-              rest.imageUrl,
-              'release',
-            )
-          ).path
-        : release.imagePath;
+    let imageUrl: string = release.imagePath;
+
+    if (rest.image) {
+      imageUrl = (await this.imagesService.storeUpload(rest.image, 'release'))
+        .path;
+    } else if (
+      rest.imageUrl &&
+      rest.imageUrl !==
+        this.imagesService.getReleaseCover(release.imagePath)?.original
+    ) {
+      imageUrl = (
+        await this.imagesService.storeUploadFromUrl(rest.imageUrl, 'release')
+      ).path;
+    }
 
     const rs = new ReleaseSubmission();
     rs.userId = user.id;

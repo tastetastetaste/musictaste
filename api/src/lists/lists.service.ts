@@ -108,6 +108,8 @@ export class ListsService {
       .where('l.id = :id', { id })
       .getRawOne();
 
+    if (!list) return null;
+
     const [user, commentsCounts] = await Promise.all([
       this.usersService.getUserById(list.userId),
       this.commentsService.findCommentsCount(CommentEntityType.LIST, id),

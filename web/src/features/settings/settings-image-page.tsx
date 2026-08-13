@@ -11,6 +11,7 @@ import { IMAGE_UPLOADED_SUCCESS } from '../../static/feedback';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
 import { SettingsPageOutletContext } from './settings-page-wrapper';
+import { FormInputError } from '../../components/inputs/form-input-error';
 
 const SettingsImagePage = () => {
   const { user } = useOutletContext<SettingsPageOutletContext>();
@@ -24,7 +25,7 @@ const SettingsImagePage = () => {
     },
   });
 
-  const { register, handleSubmit, control, reset } = useForm({
+  const { register, handleSubmit, control, reset, formState } = useForm({
     defaultValues: {
       image: null,
     },
@@ -48,6 +49,7 @@ const SettingsImagePage = () => {
           <Controller
             name="image"
             control={control}
+            rules={{ required: 'No image selected' }}
             defaultValue={null}
             render={({ field }) => (
               <Dropzone
@@ -61,6 +63,9 @@ const SettingsImagePage = () => {
               />
             )}
           />
+          {formState.errors.image && (
+            <FormInputError error={formState.errors.image} />
+          )}
           <Button type="submit" disabled={isLoading}>
             Save
           </Button>

@@ -3,7 +3,7 @@ import {
   DeleteObjectCommand,
   S3Client,
 } from '@aws-sdk/client-s3';
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { nanoid } from 'nanoid';
 import { IReleaseCover, IUserImage } from 'shared';
@@ -91,31 +91,43 @@ export class ImagesService {
           ? 'u-dev'
           : 'r-dev';
 
+    let response: Response;
     try {
-      const response = await fetch(url);
-      const arrayBuffer = await response.arrayBuffer();
-      const buffer = Buffer.from(arrayBuffer);
+      response = await fetch(url);
+    } catch (error) {
+      console.error('Failed to fetch image from URL:', url, error);
+      throw new BadRequestException('Failed to fetch image');
+    }
 
-      const id = nanoid(11);
-      const sizes = imageFor === 'user' ? this.userSizes : this.releaseSizes;
+    if (!response.ok) {
+      console.error('Image fetch URL returned status:', response.status, url);
+      throw new BadRequestException('Failed to fetch image');
+    }
 
-      const { resizedImages, isAnimated } = await this.resizeImages(
+    const arrayBuffer = await response.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
+    const id = nanoid(11);
+    const sizes = imageFor === 'user' ? this.userSizes : this.releaseSizes;
+
+    let resizedImages: ResizedImage[];
+    let isAnimated: boolean;
+    try {
+      ({ resizedImages, isAnimated } = await this.resizeImages(
         buffer,
         sizes,
         false,
-      );
-
-      await this.uploadImagesToS3(resizedImages, container, id);
-
-      return {
-        path: `${container}/${id}.${isAnimated ? 'animated.webp' : 'webp'}`,
-      };
+      ));
     } catch (error) {
-      console.error('Image upload error:', error);
-      console.error('url', url);
-      console.error('imageFor', imageFor);
-      return null;
+      console.error('Image resize error for URL:', url, error);
+      throw new BadRequestException('Failed to process image');
     }
+
+    await this.uploadImagesToS3(resizedImages, container, id);
+
+    return {
+      path: `${container}/${id}.${isAnimated ? 'animated.webp' : 'webp'}`,
+    };
   }
 
   private async resizeImages(
