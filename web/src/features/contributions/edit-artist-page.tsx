@@ -1,6 +1,6 @@
 import { classValidatorResolver } from '@hookform/resolvers/class-validator';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
@@ -108,7 +108,7 @@ const EditArtistPage = () => {
     );
 
   useEffect(() => {
-    if (artistData) {
+    if (artistData?.artist) {
       reset({
         ...defaultValues,
         name: artistData.artist.name,
@@ -134,9 +134,14 @@ const EditArtistPage = () => {
   const artistType = watch('type');
 
   return (
-    <AppPageWrapper title="Edit Artist">
-      <Container>
-        <form
+    <AppPageWrapper
+      title="Edit Artist"
+      isLoading={isArtistLoading}
+      isNotFound={!artistData?.artist}
+    >
+      {artistData?.artist && (
+        <Container>
+          <form
           onSubmit={handleSubmit((data) =>
             updateArtist({ id: artistId, data }),
           )}
@@ -174,13 +179,13 @@ const EditArtistPage = () => {
                     setValue(
                       'mainArtistId',
                       Number(val?.value) === ArtistType.Alias
-                        ? artistData?.artist.mainArtistId || ''
+                        ? artistData?.artist?.mainArtistId || ''
                         : '',
                     );
                     setValue(
                       'relatedArtistsIds',
                       Number(val?.value) !== ArtistType.Alias
-                        ? artistData?.artist.relatedArtists.map((a) => a.id) ||
+                        ? artistData?.artist?.relatedArtists?.map((a) => a.id) ||
                             []
                         : [],
                     );
@@ -261,7 +266,7 @@ const EditArtistPage = () => {
                       isMulti={false}
                       filterCondition={(a) => a.type !== ArtistType.Alias}
                       availableArtists={
-                        artistData?.artist.mainArtist
+                        artistData?.artist?.mainArtist
                           ? [artistData.artist.mainArtist]
                           : []
                       }
@@ -282,7 +287,7 @@ const EditArtistPage = () => {
                       placeholder="Related Artists"
                       filterCondition={(a) => a.type !== ArtistType.Alias}
                       {...field}
-                      availableArtists={artistData?.artist.relatedArtists}
+                      availableArtists={artistData?.artist?.relatedArtists}
                     />
                   )}
                 />
@@ -307,7 +312,8 @@ const EditArtistPage = () => {
           </Stack>
         </form>
         <div>{data?.message && <Typography>{data.message}</Typography>}</div>
-      </Container>
+        </Container>
+      )}
 
       <CreateArtistDialog
         isOpen={openCreateArtistDialog}

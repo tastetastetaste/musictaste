@@ -87,7 +87,7 @@ const EditGenrePage = () => {
     );
 
   useEffect(() => {
-    if (genreData) {
+    if (genreData?.genre) {
       reset({
         ...defaultValues,
         name: genreData.genre.name,
@@ -100,64 +100,70 @@ const EditGenrePage = () => {
   const openSubmission = openSubmissionData?.genres?.[0] || null;
 
   return (
-    <AppPageWrapper title="Edit Genre">
-      <Container>
-        <form
-          onSubmit={handleSubmit((data) => updateGenre({ id: genreId, data }))}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-              e.preventDefault();
-            }
-          }}
-        >
-          <Stack gap="sm">
-            <Group justify="apart" align="center" wrap>
-              <Typography size="title-lg">Edit Genre</Typography>
-              <Link to="/contributing">
-                Need help? Read the Contributing Guide.
-              </Link>
-            </Group>
-            <Input placeholder="Name" {...register('name')} />
-            <FormInputError error={errors.name} />
-            <Controller
-              name="parentIds"
-              control={control}
-              render={({ field }) => (
-                <SelectGenres
-                  value={field.value}
-                  onChange={(v) => field.onChange(v)}
-                  filter={(id) => id !== genreId}
-                  isMulti
-                  placeholder="Parent genres"
-                />
-              )}
-            />
-            <FormInputError error={errors.parentIds} />
-            <TextareaWithPreview
-              {...register('bio')}
-              placeholder="Bio"
-              rows={5}
-            />
-            <FormInputError error={errors.bio} />
-            <Textarea
-              {...register('note')}
-              placeholder="Note/source"
-              rows={5}
-            />
-            <FormInputError error={errors.note} />
-            <Button
-              variant="main"
-              type="submit"
-              disabled={
-                isLoading || isOpenSubmissionLoading || !!openSubmission
+    <AppPageWrapper
+      title="Edit Genre"
+      isLoading={isGenreLoading}
+      isNotFound={!genreData?.genre}
+    >
+      {genreData?.genre && (
+        <Container>
+          <form
+            onSubmit={handleSubmit((data) => updateGenre({ id: genreId, data }))}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
               }
-            >
-              Submit
-            </Button>
-          </Stack>
-        </form>
-        <div>{data?.message && <Typography>{data.message}</Typography>}</div>
-      </Container>
+            }}
+          >
+            <Stack gap="sm">
+              <Group justify="apart" align="center" wrap>
+                <Typography size="title-lg">Edit Genre</Typography>
+                <Link to="/contributing">
+                  Need help? Read the Contributing Guide.
+                </Link>
+              </Group>
+              <Input placeholder="Name" {...register('name')} />
+              <FormInputError error={errors.name} />
+              <Controller
+                name="parentIds"
+                control={control}
+                render={({ field }) => (
+                  <SelectGenres
+                    value={field.value}
+                    onChange={(v) => field.onChange(v)}
+                    filter={(id) => id !== genreId}
+                    isMulti
+                    placeholder="Parent genres"
+                  />
+                )}
+              />
+              <FormInputError error={errors.parentIds} />
+              <TextareaWithPreview
+                {...register('bio')}
+                placeholder="Bio"
+                rows={5}
+              />
+              <FormInputError error={errors.bio} />
+              <Textarea
+                {...register('note')}
+                placeholder="Note/source"
+                rows={5}
+              />
+              <FormInputError error={errors.note} />
+              <Button
+                variant="main"
+                type="submit"
+                disabled={
+                  isLoading || isOpenSubmissionLoading || !!openSubmission
+                }
+              >
+                Submit
+              </Button>
+            </Stack>
+          </form>
+          <div>{data?.message && <Typography>{data.message}</Typography>}</div>
+        </Container>
+      )}
     </AppPageWrapper>
   );
 };

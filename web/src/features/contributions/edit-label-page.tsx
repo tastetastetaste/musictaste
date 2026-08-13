@@ -86,7 +86,7 @@ const EditLabelPage = () => {
     );
 
   useEffect(() => {
-    if (labelData) {
+    if (labelData?.label) {
       reset({
         ...defaultValues,
         name: labelData.label.name,
@@ -100,61 +100,69 @@ const EditLabelPage = () => {
   const openSubmission = openSubmissionData?.labels?.[0] || null;
 
   return (
-    <AppPageWrapper title="Edit Label">
-      <Container>
-        <form
-          onSubmit={handleSubmit((data) => updateLabel({ id: labelId, data }))}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-              e.preventDefault();
-            }
-          }}
-        >
-          <Stack gap="sm">
-            <Group justify="apart" align="center" wrap>
-              <Typography size="title-lg">Edit Label</Typography>
-              <Link to="/contributing">
-                Need help? Read the Contributing Guide.
-              </Link>
-            </Group>
-            {openSubmission && (
-              <Feedback
-                message={`There is already an open edit submission for this label. Please wait for it to be reviewed before submitting another edit.`}
-              />
+    <AppPageWrapper
+      title="Edit Label"
+      isLoading={isLabelLoading}
+      isNotFound={!labelData?.label}
+    >
+      {labelData?.label && (
+        <Container>
+          <form
+            onSubmit={handleSubmit((data) =>
+              updateLabel({ id: labelId, data }),
             )}
-            <Input placeholder="Full Name" {...register('name')} />
-            <FormInputError error={errors.name} />
-            <Input placeholder="Short Name" {...register('shortName')} />
-            <FormInputError error={errors.shortName} />
-            <Input
-              placeholder="English / Latin-script name (if applicable)"
-              {...register('nameLatin')}
-            />
-            <FormInputError error={errors.nameLatin} />
-            <Input
-              placeholder="Disambiguation"
-              {...register('disambiguation')}
-            />
-            <FormInputError error={errors.disambiguation} />
-            <Textarea
-              {...register('note')}
-              placeholder="Note/source"
-              rows={5}
-            />
-            <FormInputError error={errors.note} />
-            <Button
-              variant="main"
-              type="submit"
-              disabled={
-                isLoading || isOpenSubmissionLoading || !!openSubmission
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
               }
-            >
-              Submit
-            </Button>
-          </Stack>
-        </form>
-        <div>{data?.message && <Typography>{data.message}</Typography>}</div>
-      </Container>
+            }}
+          >
+            <Stack gap="sm">
+              <Group justify="apart" align="center" wrap>
+                <Typography size="title-lg">Edit Label</Typography>
+                <Link to="/contributing">
+                  Need help? Read the Contributing Guide.
+                </Link>
+              </Group>
+              {openSubmission && (
+                <Feedback
+                  message={`There is already an open edit submission for this label. Please wait for it to be reviewed before submitting another edit.`}
+                />
+              )}
+              <Input placeholder="Full Name" {...register('name')} />
+              <FormInputError error={errors.name} />
+              <Input placeholder="Short Name" {...register('shortName')} />
+              <FormInputError error={errors.shortName} />
+              <Input
+                placeholder="English / Latin-script name (if applicable)"
+                {...register('nameLatin')}
+              />
+              <FormInputError error={errors.nameLatin} />
+              <Input
+                placeholder="Disambiguation"
+                {...register('disambiguation')}
+              />
+              <FormInputError error={errors.disambiguation} />
+              <Textarea
+                {...register('note')}
+                placeholder="Note/source"
+                rows={5}
+              />
+              <FormInputError error={errors.note} />
+              <Button
+                variant="main"
+                type="submit"
+                disabled={
+                  isLoading || isOpenSubmissionLoading || !!openSubmission
+                }
+              >
+                Submit
+              </Button>
+            </Stack>
+          </form>
+          <div>{data?.message && <Typography>{data.message}</Typography>}</div>
+        </Container>
+      )}
     </AppPageWrapper>
   );
 };

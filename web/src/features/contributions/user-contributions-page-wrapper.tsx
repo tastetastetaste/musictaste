@@ -2,7 +2,6 @@ import { useQuery } from '@tanstack/react-query';
 import { Outlet, useParams } from 'react-router-dom';
 import { SubmissionSortByEnum, SubmissionType } from 'shared';
 import { Stack } from '../../components/flex/stack';
-import { Loading } from '../../components/loading';
 import { Navigation } from '../../components/nav';
 import { Typography } from '../../components/typography';
 import AppPageWrapper from '../../layout/app-page-wrapper';
@@ -41,13 +40,10 @@ const UserContributionsPageWrapper = () => {
     }
   }, [location]);
 
-  if (isLoading || !data) {
-    return <Loading />;
-  }
-
   return (
-    <AppPageWrapper>
-      <Stack gap="lg">
+    <AppPageWrapper isLoading={isLoading} isNotFound={!data}>
+      {data && (
+        <Stack gap="lg">
         <Typography>{`@${username}'s contributions`}</Typography>
         <Stack gap="md" align="start">
           <Navigation
@@ -150,6 +146,7 @@ const UserContributionsPageWrapper = () => {
           }
         />
       </Stack>
+      )}
     </AppPageWrapper>
   );
 };

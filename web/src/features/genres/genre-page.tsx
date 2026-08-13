@@ -2,7 +2,6 @@ import { useQuery } from '@tanstack/react-query';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { FindReleasesType } from 'shared';
 import { Stack } from '../../components/flex/stack';
-import { Loading } from '../../components/loading';
 import { Typography } from '../../components/typography';
 import { useSnackbar } from '../../hooks/useSnackbar';
 import AppPageWrapper from '../../layout/app-page-wrapper';
@@ -55,26 +54,30 @@ const GenrePage = () => {
 
   return (
     <AppPageWrapper
-      title={genre ? genre.name : ''}
-      referenceTitle={genre ? genre.name : ''}
-      quickActions={[
-        {
-          label: 'Edit',
-          to: '/contributions/genres/' + genre?.id,
-          icon: IconPencil,
-        },
-        {
-          label: 'History',
-          to: '/history/genre/' + genre?.id,
-          icon: IconHistory,
-        },
-      ]}
+      title={genre?.name}
+      referenceTitle={genre?.name}
+      isLoading={isLoading}
+      isNotFound={!genre}
+      quickActions={
+        genre
+          ? [
+              {
+                label: 'Edit',
+                to: '/contributions/genres/' + genre.id,
+                icon: IconPencil,
+              },
+              {
+                label: 'History',
+                to: '/history/genre/' + genre.id,
+                icon: IconHistory,
+              },
+            ]
+          : undefined
+      }
       canCopyReference
       canCopyLink
     >
-      {isLoading ? <Loading /> : <div></div>}
-
-      {genre ? (
+      {genre && (
         <Stack>
           <div
             css={{
@@ -117,8 +120,6 @@ const GenrePage = () => {
             includeCommunity={includeCommunity}
           />
         </Stack>
-      ) : (
-        <div></div>
       )}
     </AppPageWrapper>
   );

@@ -2,7 +2,6 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
 import { CommentEntityType, IArtistSubmission } from 'shared';
 import { Feedback } from '../../components/feedback';
-import { Loading } from '../../components/loading';
 import AppPageWrapper from '../../layout/app-page-wrapper';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
@@ -35,25 +34,21 @@ const ArtistSubmissionPage = () => {
     );
   };
 
-  if (isLoading) {
-    return <Loading />;
-  }
-
-  if (!submission) {
-    return <Feedback message="Not found" />;
-  }
-
   return (
-    <AppPageWrapper>
-      <ArtistSubmissionItem
-        submission={submission}
-        fullPage
-        onUpdate={handleUpdateAfterVote}
-      />
-      <Comments
-        entityType={CommentEntityType.ARTIST_SUBMISSION}
-        entityId={submission.id}
-      />
+    <AppPageWrapper isLoading={isLoading} isNotFound={!submission}>
+      {submission && (
+        <>
+          <ArtistSubmissionItem
+            submission={submission}
+            fullPage
+            onUpdate={handleUpdateAfterVote}
+          />
+          <Comments
+            entityType={CommentEntityType.ARTIST_SUBMISSION}
+            entityId={submission.id}
+          />
+        </>
+      )}
     </AppPageWrapper>
   );
 };

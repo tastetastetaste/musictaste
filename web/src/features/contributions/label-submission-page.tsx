@@ -1,8 +1,6 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
 import { CommentEntityType, ILabelSubmission } from 'shared';
-import { Feedback } from '../../components/feedback';
-import { Loading } from '../../components/loading';
 import AppPageWrapper from '../../layout/app-page-wrapper';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
@@ -35,24 +33,21 @@ const LabelSubmissionPage = () => {
     );
   };
 
-  if (isLoading) {
-    return <Loading />;
-  }
-
-  if (!submission) {
-    return <Feedback message="Not found" />;
-  }
   return (
-    <AppPageWrapper>
-      <LabelSubmissionItem
-        submission={submission}
-        fullPage
-        onUpdate={handleUpdateAfterVote}
-      />
-      <Comments
-        entityType={CommentEntityType.LABEL_SUBMISSION}
-        entityId={submission.id}
-      />
+    <AppPageWrapper isLoading={isLoading} isNotFound={!submission}>
+      {submission && (
+        <>
+          <LabelSubmissionItem
+            submission={submission}
+            fullPage
+            onUpdate={handleUpdateAfterVote}
+          />
+          <Comments
+            entityType={CommentEntityType.LABEL_SUBMISSION}
+            entityId={submission.id}
+          />
+        </>
+      )}
     </AppPageWrapper>
   );
 };

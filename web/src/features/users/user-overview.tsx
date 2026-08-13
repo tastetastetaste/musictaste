@@ -95,14 +95,21 @@ const ImageSize = 230;
 interface OverviewSectionProps {
   user: IUserProfileResponse;
   isUserMyself: boolean;
-  accountStatus: AccountStatus;
 }
 
 export const UserOverview: React.FC<OverviewSectionProps> = ({
   user: {
     following,
     followedBy,
-    user: { id, username, name, image, supporter, contributorStatus },
+    user: {
+      id,
+      username,
+      name,
+      image,
+      supporter,
+      contributorStatus,
+      accountStatus,
+    },
     stats: {
       entriesCount,
       followersCount,
@@ -113,7 +120,6 @@ export const UserOverview: React.FC<OverviewSectionProps> = ({
     },
   },
   isUserMyself,
-  accountStatus,
 }) => {
   const { isLoggedIn } = useAuth();
   return (

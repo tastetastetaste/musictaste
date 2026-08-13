@@ -164,9 +164,14 @@ const EditReleasePage = () => {
   };
 
   return (
-    <AppPageWrapper title={title}>
-      <Container>
-        <form
+    <AppPageWrapper
+      title={title}
+      isLoading={isReleaseLoading}
+      isNotFound={!releaseData?.release}
+    >
+      {releaseData?.release && (
+        <Container>
+          <form
           onSubmit={handleSubmit((data) => {
             editRelease({ id: releaseId, data });
           })}
@@ -340,7 +345,8 @@ const EditReleasePage = () => {
           isOpen={openCreateLabelDialog}
           onClose={() => setOpenCreateLabelDialog(false)}
         />
-      </Container>
+        </Container>
+      )}
     </AppPageWrapper>
   );
 };

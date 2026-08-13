@@ -2,12 +2,9 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { Outlet, useLocation, useParams } from 'react-router-dom';
 import { AccountStatus, IUserProfileResponse, ReportType } from 'shared';
-import { Feedback } from '../../components/feedback';
 import { Stack } from '../../components/flex/stack';
-import { Loading } from '../../components/loading';
 import { Typography } from '../../components/typography';
 import AppPageWrapper from '../../layout/app-page-wrapper';
-import { SOMETHING_WENT_WRONG } from '../../static/feedback';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
 import { useAuth } from '../account/useAuth';
@@ -126,86 +123,87 @@ const UserPageWrapper: React.FC = () => {
     }
   };
 
-  if (isLoading) {
-    return <Loading />;
-  }
-
-  if (!isLoading && !data) {
-    return <Feedback message={SOMETHING_WENT_WRONG} />;
-  }
-
-  const isUserMyself = (me?.id && me.id === data.user.id) || false;
+  const user = data?.user;
+  const isUserMyself = (me?.id && user?.id && me.id === user.id) || false;
 
   return (
-    <UserThemeProvider user={data.user}>
+    <UserThemeProvider user={user}>
       <AppPageWrapper
         title={
-          data.user.name +
-          ' (@' +
-          data.user.username +
-          ')' +
-          (location.pathname.split('/').length >= 3
-            ? ` ${location.pathname.split('/')[2]}`
-            : '')
+          user
+            ? user.name +
+              ' (@' +
+              user.username +
+              ')' +
+              (location.pathname.split('/').length >= 3
+                ? ` ${location.pathname.split('/')[2]}`
+                : '')
+            : undefined
         }
-        menu={[
-          {
-            label: 'Contributions',
-            to: `/${data.user.username}/contributions/release-add`,
-          },
-          ...(!isUserMyself
+        isLoading={isLoading}
+        isNotFound={!user}
+        menu={
+          user
             ? [
                 {
-                  label: 'Report',
-                  action: () => setOpenReport(true),
+                  label: 'Contributions',
+                  to: `/${user.username}/contributions/release-add`,
                 },
+                ...(!isUserMyself
+                  ? [
+                      {
+                        label: 'Report',
+                        action: () => setOpenReport(true),
+                      },
+                    ]
+                  : []),
+                ...(isAdmin
+                  ? [
+                      {
+                        label: 'Contributor Status',
+                        action: updateContributorStatus,
+                      },
+                      {
+                        label: 'Supporter Status',
+                        action: updateSupporterStatus,
+                      },
+                      {
+                        label: 'Account Status',
+                        action: updateAccountStatus,
+                      },
+                      {
+                        label: 'Send Notification',
+                        action: sendNotification,
+                      },
+                    ]
+                  : []),
               ]
-            : []),
-          ...(isAdmin
-            ? [
-                {
-                  label: 'Contributor Status',
-                  action: updateContributorStatus,
-                },
-                {
-                  label: 'Supporter Status',
-                  action: updateSupporterStatus,
-                },
-                {
-                  label: 'Account Status',
-                  action: updateAccountStatus,
-                },
-                {
-                  label: 'Send Notification',
-                  action: sendNotification,
-                },
-              ]
-            : []),
-        ]}
-        image={data.user.image?.md}
+            : undefined
+        }
+        image={user?.image?.md}
         canCopyLink
         canCopyReference
       >
-        <Stack gap="lg">
-          <UserOverview
-            user={data}
-            isUserMyself={isUserMyself}
-            accountStatus={data.user.accountStatus}
-          />
-          {data.user.accountStatus === AccountStatus.DELETED ? (
-            <Typography>This account has been deleted.</Typography>
-          ) : data.user.accountStatus === AccountStatus.BANNED ? (
-            <Typography>This account has been banned.</Typography>
-          ) : (
-            <Outlet context={{ ...data, isUserMyself }} />
-          )}
-        </Stack>
-        <ReportDialog
-          isOpen={openReport}
-          onClose={() => setOpenReport(false)}
-          id={data.user.id}
-          type={ReportType.USER}
-        />
+        {user && (
+          <>
+            <Stack gap="lg">
+              <UserOverview user={data} isUserMyself={isUserMyself} />
+              {user.accountStatus === AccountStatus.DELETED ? (
+                <Typography>This account has been deleted.</Typography>
+              ) : user.accountStatus === AccountStatus.BANNED ? (
+                <Typography>This account has been banned.</Typography>
+              ) : (
+                <Outlet context={{ ...data, isUserMyself }} />
+              )}
+            </Stack>
+            <ReportDialog
+              isOpen={openReport}
+              onClose={() => setOpenReport(false)}
+              id={user.id}
+              type={ReportType.USER}
+            />
+          </>
+        )}
       </AppPageWrapper>
     </UserThemeProvider>
   );

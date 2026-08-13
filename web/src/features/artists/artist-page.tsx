@@ -19,7 +19,6 @@ import { Button } from '../../components/button';
 import { Group } from '../../components/flex/group';
 import { Stack } from '../../components/flex/stack';
 import { InfoRow } from '../../components/info-row';
-import { Loading } from '../../components/loading';
 import { Tooltip } from '../../components/popover/tooltip';
 import { Typography } from '../../components/typography';
 import { useSnackbar } from '../../hooks/useSnackbar';
@@ -233,20 +232,26 @@ const ArtistPage = () => {
 
   return (
     <AppPageWrapper
-      title={artist ? artist.name : ''}
-      referenceTitle={artist ? artist.name : ''}
-      quickActions={[
-        {
-          label: 'Edit',
-          to: '/contributions/artists/' + artist?.id,
-          icon: IconPencil,
-        },
-        {
-          label: 'History',
-          to: '/history/artist/' + artist?.id,
-          icon: IconHistory,
-        },
-      ]}
+      title={artist?.name}
+      referenceTitle={artist?.name}
+      isLoading={isLoading}
+      isNotFound={!artist}
+      quickActions={
+        artist
+          ? [
+              {
+                label: 'Edit',
+                to: '/contributions/artists/' + artist.id,
+                icon: IconPencil,
+              },
+              {
+                label: 'History',
+                to: '/history/artist/' + artist.id,
+                icon: IconHistory,
+              },
+            ]
+          : undefined
+      }
       canCopyLink
       canCopyReference
       menu={[
@@ -256,9 +261,7 @@ const ArtistPage = () => {
         },
       ]}
     >
-      {isLoading ? <Loading /> : <div></div>}
-
-      {artist ? (
+      {artist && (
         <Stack gap="lg">
           <div
             css={{
@@ -415,8 +418,6 @@ const ArtistPage = () => {
             releaseCountsWithAliases={data.releaseCountsWithAliases}
           />
         </Stack>
-      ) : (
-        <div></div>
       )}
       <ReportDialog
         id={(data && data.artist && data.artist.id) || ''}

@@ -2,7 +2,6 @@ import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
 import { Feedback } from '../../components/feedback';
 import { FetchMore } from '../../components/fetch-more';
-import { Loading } from '../../components/loading';
 import AppPageWrapper from '../../layout/app-page-wrapper';
 import { SOMETHING_WENT_WRONG } from '../../static/feedback';
 import { api } from '../../utils/api';
@@ -45,17 +44,11 @@ const EditListPage = () => {
     },
   );
 
-  if (isLoading) {
-    return <Loading />;
-  }
-
-  if (!isLoading && !list) {
-    return <Feedback message={SOMETHING_WENT_WRONG} />;
-  }
-
   return (
     <AppPageWrapper
       title={`${(data && data.list && data.list.title) || ''} | Edit List`}
+      isLoading={isLoading}
+      isNotFound={!list}
     >
       {isMyList && data2 ? (
         <div>

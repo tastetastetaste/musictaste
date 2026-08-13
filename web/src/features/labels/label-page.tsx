@@ -3,7 +3,6 @@ import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { FindReleasesType, ReportType } from 'shared';
 import { Stack } from '../../components/flex/stack';
-import { Loading } from '../../components/loading';
 import { Typography } from '../../components/typography';
 import { useSnackbar } from '../../hooks/useSnackbar';
 import AppPageWrapper from '../../layout/app-page-wrapper';
@@ -32,20 +31,26 @@ const LabelPage = () => {
 
   return (
     <AppPageWrapper
-      title={label ? label.name : ''}
-      referenceTitle={label ? label.name : ''}
-      quickActions={[
-        {
-          label: 'Edit',
-          to: '/contributions/labels/' + label?.id,
-          icon: IconPencil,
-        },
-        {
-          label: 'History',
-          to: '/history/label/' + label?.id,
-          icon: IconHistory,
-        },
-      ]}
+      title={label?.name}
+      referenceTitle={label?.name}
+      isLoading={isLoading}
+      isNotFound={!label}
+      quickActions={
+        label
+          ? [
+              {
+                label: 'Edit',
+                to: '/contributions/labels/' + label.id,
+                icon: IconPencil,
+              },
+              {
+                label: 'History',
+                to: '/history/label/' + label.id,
+                icon: IconHistory,
+              },
+            ]
+          : undefined
+      }
       menu={[
         {
           label: 'Report',
@@ -55,9 +60,7 @@ const LabelPage = () => {
       canCopyLink
       canCopyReference
     >
-      {isLoading ? <Loading /> : <div></div>}
-
-      {label ? (
+      {label && (
         <Stack>
           <div
             css={{
@@ -77,8 +80,6 @@ const LabelPage = () => {
           </div>
           <ReleasesListRenderer type={FindReleasesType.New} labelId={id} />
         </Stack>
-      ) : (
-        <div></div>
       )}
       <ReportDialog
         id={(data && data.label && data.label.id) || ''}

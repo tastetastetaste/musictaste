@@ -4,7 +4,6 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { ReportType } from 'shared';
 import { useUserReviewVotes } from './useUserReviewVotes';
 import { Feedback } from '../../components/feedback';
-import { Loading } from '../../components/loading';
 import AppPageWrapper from '../../layout/app-page-wrapper';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
@@ -36,8 +35,8 @@ const ReviewPage = () => {
   const removeReviewAction = async () => {
     await mutateAsync({
       id,
-      rating: data.entry.rating?.rating,
-      tags: data.entry.tags?.map((t) => t.id),
+      rating: data?.entry?.rating?.rating,
+      tags: data?.entry?.tags?.map((t) => t.id),
       review: undefined,
     }).then(() => {
       navigate(-1);
@@ -74,6 +73,8 @@ const ReviewPage = () => {
         }
         canCopyLink
         canCopyReference
+        isLoading={isFetching}
+        isNotFound={!entry}
         menu={
           isMyReview
             ? [{ label: 'Remove', action: removeReviewAction }]
@@ -85,11 +86,7 @@ const ReviewPage = () => {
               ]
         }
       >
-        {isFetching ? (
-          <Loading />
-        ) : !entry ? (
-          <Feedback message="Review is not found" />
-        ) : (
+        {entry && (
           <Review
             entry={entry}
             updateAfterVote={(vote) => {

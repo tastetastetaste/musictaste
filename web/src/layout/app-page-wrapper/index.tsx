@@ -1,3 +1,4 @@
+import React from 'react';
 import { Helmet } from 'react-helmet';
 import { useLocation } from 'react-router-dom';
 import { Stack } from '../../components/flex/stack';
@@ -10,6 +11,8 @@ import {
 } from '../../static/site-info';
 import AppHeader from './app-header';
 import PageHeader, { QuickActionType } from './page-header';
+import { Loading } from '../../components/loading';
+import { NotFound } from '../not-found-page';
 import { CONTENT_MAX_WIDTH, CONTENT_PADDING } from '../../static/spacing';
 
 interface props {
@@ -20,7 +23,9 @@ interface props {
   quickActions?: QuickActionType[];
   image?: string;
   description?: string;
-  children: JSX.Element | JSX.Element[];
+  isLoading?: boolean;
+  isNotFound?: boolean;
+  children: React.ReactNode;
   hideBackButton?: boolean;
   canCopyReference?: boolean;
   canCopyLink?: boolean;
@@ -35,6 +40,8 @@ const AppPageWrapper: React.FC<props> = ({
   quickActions,
   description,
   image,
+  isLoading,
+  isNotFound,
   hideBackButton,
   canCopyReference,
   canCopyLink,
@@ -105,7 +112,13 @@ const AppPageWrapper: React.FC<props> = ({
             margin: '0 auto',
           }}
         >
-          {children}
+          {isLoading ? (
+            <Loading />
+          ) : isNotFound ? (
+            <NotFound />
+          ) : (
+            children
+          )}
         </div>
       </Stack>
     </div>

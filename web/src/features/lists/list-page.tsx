@@ -13,11 +13,9 @@ import { IListResponse, ReportType } from 'shared';
 import { Button } from '../../components/button';
 import { StickyContainer } from '../../components/containers/sticky-container';
 import { ConfirmDialog } from '../../components/dialog/confirm-dialog';
-import { Feedback } from '../../components/feedback';
 import { FlexChild } from '../../components/flex/flex-child';
 import { Group } from '../../components/flex/group';
 import { Stack } from '../../components/flex/stack';
-import { Loading } from '../../components/loading';
 import { Markdown } from '../../components/markdown';
 import { Typography } from '../../components/typography';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
@@ -174,21 +172,18 @@ const ListPage = () => {
       ]
     : [];
 
-  if (!isLoading && !list) {
-    return <Feedback message={SOMETHING_WENT_WRONG} />;
-  }
   return (
     <UserThemeProvider user={list?.user}>
       <AppPageWrapper
         title={list ? `${list.title} list by ${list.user.name}` : undefined}
+        isLoading={isLoading}
+        isNotFound={!list}
         menu={menu}
         quickActions={quickActions}
         canCopyLink
         canCopyReference
       >
-        {isLoading ? (
-          <Loading />
-        ) : list ? (
+        {list && (
           <Group align="start" gap="xl">
             <FlexChild grow>
               <ListItems
@@ -207,8 +202,6 @@ const ListPage = () => {
               </StickyContainer>
             ) : null}
           </Group>
-        ) : (
-          <div></div>
         )}
         {isMyList && list ? (
           <Fragment>
