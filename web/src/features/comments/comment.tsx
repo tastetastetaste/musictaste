@@ -5,7 +5,7 @@ import {
   IconTrash,
   IconArrowBackUp,
 } from '@tabler/icons-react';
-import { ContributorStatus, IComment, SupporterStatus } from 'shared';
+import { IComment, SupporterStatus } from 'shared';
 import { FlexChild } from '../../components/flex/flex-child';
 import { Group } from '../../components/flex/group';
 import { Stack } from '../../components/flex/stack';
@@ -16,9 +16,8 @@ import { Typography } from '../../components/typography';
 import { formatRelativeTimeShort } from '../../utils/date-format';
 import { getUserPath } from 'shared';
 import { Avatar } from '../users/avatar';
-import { SupporterBadge } from '../../components/badge/supporter-badge';
 import { Markdown } from '../../components/markdown';
-import { TrustedContributorBadge } from '../../components/badge/trusted-contributor-badge';
+import { UserBadges } from '../users/user-badges';
 
 const Fade = keyframes`
     from {
@@ -66,13 +65,7 @@ export function Comment({
               <Typography color="sub" size="small">
                 @{user.username}
               </Typography>
-              {user.contributorStatus ===
-              ContributorStatus.TRUSTED_CONTRIBUTOR ? (
-                <TrustedContributorBadge size="sm" />
-              ) : null}
-              {user.supporter >= SupporterStatus.SUPPORTER ? (
-                <SupporterBadge size="sm" />
-              ) : null}
+              <UserBadges user={user} size="sm" />
               {onReply && (
                 <IconButton onClick={onReply} title="Reply">
                   <IconArrowBackUp size={16} />
