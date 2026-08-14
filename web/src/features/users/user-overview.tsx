@@ -4,14 +4,7 @@ import {
   IconUserPlus,
 } from '@tabler/icons-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import {
-  AccountStatus,
-  ContributorStatus,
-  getUserPath,
-  IUserProfileResponse,
-  SupporterStatus,
-} from 'shared';
-import { SupporterBadge } from '../../components/badge/supporter-badge';
+import { AccountStatus, getUserPath, IUserProfileResponse } from 'shared';
 import { Group } from '../../components/flex/group';
 import { Stack } from '../../components/flex/stack';
 import { IconButton } from '../../components/icon-button';
@@ -21,7 +14,7 @@ import { useHover } from '../../hooks/useHover';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
 import { useAuth } from '../account/useAuth';
-import { TrustedContributorBadge } from '../../components/badge/trusted-contributor-badge';
+import { UserBadges } from './user-badges';
 
 const FollowAction = ({
   userId,
@@ -125,12 +118,7 @@ export const UserOverview: React.FC<OverviewSectionProps> = ({
   return (
     <div>
       <Group gap="md" wrap justify="end">
-        {supporter >= SupporterStatus.SUPPORTER ? (
-          <SupporterBadge size="lg" />
-        ) : null}
-        {contributorStatus === ContributorStatus.TRUSTED_CONTRIBUTOR ? (
-          <TrustedContributorBadge size="lg" />
-        ) : null}
+        <UserBadges user={{ contributorStatus, supporter }} size="lg" />
       </Group>
       <Stack align="center" justify="center" gap="xl">
         <Group wrap gap="lg">
