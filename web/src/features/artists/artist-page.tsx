@@ -328,15 +328,9 @@ const ArtistPage = () => {
                       artist.type === ArtistType.Alias
                         ? artist.groups
                             ?.filter((g) => g.current)
-                            .sort((a, b) =>
-                              a.group.name.localeCompare(b.group.name),
-                            )
                             .map((g) => g.group)
                         : artist.groupArtists
                             ?.filter((g) => g.current)
-                            .sort((a, b) =>
-                              a.artist.name.localeCompare(b.artist.name),
-                            )
                             .map((g) => g.artist)
                     }
                   />
@@ -361,15 +355,9 @@ const ArtistPage = () => {
                       artist.type === ArtistType.Alias
                         ? artist.groups
                             ?.filter((g) => !g.current)
-                            .sort((a, b) =>
-                              a.group.name.localeCompare(b.group.name),
-                            )
                             .map((g) => g.group)
                         : artist.groupArtists
                             ?.filter((g) => !g.current)
-                            .sort((a, b) =>
-                              a.artist.name.localeCompare(b.artist.name),
-                            )
                             .map((g) => g.artist)
                     }
                   />
@@ -378,11 +366,7 @@ const ArtistPage = () => {
 
               {artist.relatedArtists?.length > 0 ? (
                 <InfoRow label="Related Artists">
-                  <ArtistsLinks
-                    artists={artist.relatedArtists.sort((a, b) =>
-                      a.name.localeCompare(b.name),
-                    )}
-                  />
+                  <ArtistsLinks artists={artist.relatedArtists} />
                 </InfoRow>
               ) : null}
               {artist.mainArtist ? (
@@ -392,11 +376,7 @@ const ArtistPage = () => {
               ) : null}
               {artist.aliases?.length > 0 ? (
                 <InfoRow label="Aliases">
-                  <ArtistsLinks
-                    artists={artist.aliases.sort((a, b) =>
-                      a.name.localeCompare(b.name),
-                    )}
-                  />
+                  <ArtistsLinks artists={artist.aliases} />
                 </InfoRow>
               ) : null}
               {artist.aliases?.length > 0 ? (
