@@ -21,11 +21,9 @@ import { Stack } from '../../components/flex/stack';
 import { InfoRow } from '../../components/info-row';
 import { Tooltip } from '../../components/popover/tooltip';
 import { Typography } from '../../components/typography';
-import { useSnackbar } from '../../hooks/useSnackbar';
 import AppPageWrapper from '../../layout/app-page-wrapper';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
-import { useAuth } from '../account/useAuth';
 import { ArtistsLinks } from '../releases/release/shared';
 import ReleasesListRenderer from '../releases/releases-list-renderer';
 import { ReportDialog } from '../reports/report-dialog';
@@ -189,10 +187,6 @@ const ArtistReleases: React.FC<ArtistReleasesProps> = ({
 const ArtistPage = () => {
   const { id } = useParams();
 
-  const { isAdmin } = useAuth();
-
-  const { snackbar } = useSnackbar();
-
   const [openReport, setOpenReport] = useState(false);
 
   const { data, isLoading } = useQuery(
@@ -278,20 +272,15 @@ const ArtistPage = () => {
                   <Typography size="title-xl" as="h1">
                     {artist.name}
                   </Typography>
-                  {artist.nameLatin ? (
+                  {artist.nameLatin && (
                     <Typography size="title-lg">{artist.nameLatin}</Typography>
-                  ) : (
-                    ''
                   )}
                 </Stack>
                 {artist.visibility === ArtistVisibility.COMMUNITY && (
                   <Tooltip
                     content={
                       'Emerging ' +
-                      (artist.type === ArtistType.Person ||
-                      artist.type === ArtistType.Alias
-                        ? 'Artist'
-                        : 'Group')
+                      (artist.type === ArtistType.Group ? 'Group' : 'Artist')
                     }
                   >
                     <div
@@ -306,80 +295,72 @@ const ArtistPage = () => {
                   </Tooltip>
                 )}
               </Group>
-              {artist.country ? (
+              {artist.country && (
                 <InfoRow label="Country">{artist.country.name}</InfoRow>
-              ) : null}
-              {((artist.type === ArtistType.Person ||
-                artist.type === ArtistType.Alias) &&
-                artist.groups?.filter((g) => g.current)?.length) ||
-              (artist.type === ArtistType.Group &&
-                artist.groupArtists?.filter((g) => g.current)?.length) ? (
+              )}
+              {(artist.type === ArtistType.Group
+                ? artist.groupArtists
+                : artist.groups
+              )?.filter((g) => g.current)?.length > 0 && (
                 <InfoRow
                   label={
-                    artist.type === ArtistType.Person ||
-                    artist.type === ArtistType.Alias
-                      ? 'Groups'
-                      : 'Members'
+                    artist.type === ArtistType.Group ? 'Members' : 'Groups'
                   }
                 >
                   <ArtistsLinks
                     artists={
-                      artist.type === ArtistType.Person ||
-                      artist.type === ArtistType.Alias
-                        ? artist.groups
-                            ?.filter((g) => g.current)
-                            .map((g) => g.group)
-                        : artist.groupArtists
+                      artist.type === ArtistType.Group
+                        ? artist.groupArtists
                             ?.filter((g) => g.current)
                             .map((g) => g.artist)
+                        : artist.groups
+                            ?.filter((g) => g.current)
+                            .map((g) => g.group)
                     }
                   />
                 </InfoRow>
-              ) : null}
-              {((artist.type === ArtistType.Person ||
-                artist.type === ArtistType.Alias) &&
-                artist.groups?.filter((g) => !g.current)?.length) ||
-              (artist.type === ArtistType.Group &&
-                artist.groupArtists?.filter((g) => !g.current)?.length) ? (
+              )}
+              {(artist.type === ArtistType.Group
+                ? artist.groupArtists
+                : artist.groups
+              )?.filter((g) => !g.current)?.length > 0 && (
                 <InfoRow
                   label={
-                    artist.type === ArtistType.Person ||
-                    artist.type === ArtistType.Alias
-                      ? 'Former Groups'
-                      : 'Former Members'
+                    artist.type === ArtistType.Group
+                      ? 'Former Members'
+                      : 'Former Groups'
                   }
                 >
                   <ArtistsLinks
                     artists={
-                      artist.type === ArtistType.Person ||
-                      artist.type === ArtistType.Alias
-                        ? artist.groups
-                            ?.filter((g) => !g.current)
-                            .map((g) => g.group)
-                        : artist.groupArtists
+                      artist.type === ArtistType.Group
+                        ? artist.groupArtists
                             ?.filter((g) => !g.current)
                             .map((g) => g.artist)
+                        : artist.groups
+                            ?.filter((g) => !g.current)
+                            .map((g) => g.group)
                     }
                   />
                 </InfoRow>
-              ) : null}
+              )}
 
-              {artist.relatedArtists?.length > 0 ? (
+              {artist.relatedArtists?.length > 0 && (
                 <InfoRow label="Related Artists">
                   <ArtistsLinks artists={artist.relatedArtists} />
                 </InfoRow>
-              ) : null}
-              {artist.mainArtist ? (
+              )}
+              {artist.mainArtist && (
                 <InfoRow label="Main Artist">
                   <ArtistsLinks artists={[artist.mainArtist]} />
                 </InfoRow>
-              ) : null}
-              {artist.aliases?.length > 0 ? (
+              )}
+              {artist.aliases?.length > 0 && (
                 <InfoRow label="Aliases">
                   <ArtistsLinks artists={artist.aliases} />
                 </InfoRow>
-              ) : null}
-              {artist.aliases?.length > 0 ? (
+              )}
+              {artist.aliases?.length > 0 && (
                 <Group justify="end">
                   <Button variant="main" onClick={toggleIncludeAliases}>
                     {includeAliases
@@ -387,7 +368,7 @@ const ArtistPage = () => {
                       : 'Show Alias Releases'}
                   </Button>
                 </Group>
-              ) : null}
+              )}
             </Stack>
           </div>
 
@@ -400,7 +381,7 @@ const ArtistPage = () => {
         </Stack>
       )}
       <ReportDialog
-        id={(data && data.artist && data.artist.id) || ''}
+        id={data?.artist?.id || ''}
         type={ReportType.ARTIST}
         isOpen={openReport}
         onClose={() => setOpenReport(false)}
