@@ -113,7 +113,7 @@ const SupportUsPage = () => {
                   onClick={() => window.open(BUY_ME_A_COFFEE_LINK, '_blank')}
                   variant="highlight"
                 >
-                  Continue to BMAC
+                  Continue to BMC
                 </Button>
               </Card>
             </Group>
