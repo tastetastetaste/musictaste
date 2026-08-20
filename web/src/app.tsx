@@ -189,9 +189,7 @@ const PendingDeletionsPage = lazy(
   () => import('./features/admin/pending-deletions-page'),
 );
 
-const MergePage = lazy(
-  () => import('./features/admin/merge-duplicates-page'),
-);
+const MergePage = lazy(() => import('./features/admin/merge-duplicates-page'));
 
 const ReleaseSubmissionPage = lazy(
   () => import('./features/contributions/release-submission-page'),
@@ -219,22 +217,17 @@ const QueryProvider = ({ children }: { children: any }) => {
         queryCache: new QueryCache({
           onError: (error: any) => {
             const status = error?.response?.status || error?.status;
-            if (
-              status === 401 ||
-              status === 404 ||
-              error?.name === 'CanceledError' ||
-              error?.code === 'ERR_CANCELED'
-            ) {
-              return;
+            // Display error notification for 429 errors
+            if (status === 429) {
+              let message =
+                error?.response?.data?.message || SOMETHING_WENT_WRONG;
+              if (Array.isArray(message)) {
+                message = message[0];
+              }
+              snackbar(message, {
+                isError: true,
+              });
             }
-            let message =
-              error?.response?.data?.message || SOMETHING_WENT_WRONG;
-            if (Array.isArray(message)) {
-              message = message[0];
-            }
-            snackbar(message, {
-              isError: true,
-            });
           },
         }),
         mutationCache: new MutationCache({
