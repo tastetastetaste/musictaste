@@ -52,7 +52,7 @@ const ReleaseGenreItem: React.FC<ReleaseGenreItemProps> = ({
       : false;
 
   return (
-    <Fragment>
+    <Stack gap="md">
       <Stack gap="sm">
         <span
           css={(theme) =>
@@ -72,7 +72,7 @@ const ReleaseGenreItem: React.FC<ReleaseGenreItemProps> = ({
         <Typography size="small">{removeMarkdown(genre.bio)}</Typography>
       </Stack>
       <Group justify="apart">
-        <Group wrap gap="sm">
+        <Group wrap>
           {genreVotes &&
             genreVotes
               .filter((gv) => gv.type === VoteType.UP)
@@ -98,13 +98,13 @@ const ReleaseGenreItem: React.FC<ReleaseGenreItemProps> = ({
         </Group>
       </Group>
       <Group justify="apart">
-        <Group wrap gap={10}>
+        <Group wrap>
           {genreVotes &&
             genreVotes
               .filter((gv) => gv.type === VoteType.DOWN)
               .map((gv) => <User key={gv.userId} user={gv.user} avatarOnly />)}
         </Group>
-        <Group gap={5}>
+        <Group gap="sm">
           <IconButton
             title="Downvote"
             active={Boolean(myVote && myVote.type === VoteType.DOWN)}
@@ -123,7 +123,7 @@ const ReleaseGenreItem: React.FC<ReleaseGenreItemProps> = ({
           <span>{votesDownCount}</span>
         </Group>
       </Group>
-    </Fragment>
+    </Stack>
   );
 };
 
@@ -165,16 +165,18 @@ const DialogContent = ({ releaseId }: { releaseId: string }) => {
             />
           </div>
           <div css={{ maxHeight: '300px', overflowY: 'auto' }}>
-            {data.map((rg) => (
-              <ReleaseGenreItem
-                key={rg.id}
-                releaseGenre={rg}
-                releaseId={releaseId}
-                me={me}
-                vote={vote}
-                removeVote={removeVote}
-              />
-            ))}
+            <Stack gap="xl">
+              {data.map((rg) => (
+                <ReleaseGenreItem
+                  key={rg.id}
+                  releaseGenre={rg}
+                  releaseId={releaseId}
+                  me={me}
+                  vote={vote}
+                  removeVote={removeVote}
+                />
+              ))}
+            </Stack>
           </div>
         </Fragment>
       )}
