@@ -62,7 +62,7 @@ export const RatingValue: React.FC<{ value?: number }> = ({ value }) => {
   const rating = rated ? formatRatingNumber(value) : null;
 
   return (
-    <FlexChild align="flex-start" grow>
+    <FlexChild align="flex-start">
       <div
         css={{
           width: '24px',

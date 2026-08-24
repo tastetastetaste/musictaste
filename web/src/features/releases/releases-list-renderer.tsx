@@ -10,6 +10,7 @@ import { Loading } from '../../components/loading';
 import { api } from '../../utils/api';
 import { cacheKeys } from '../../utils/cache-keys';
 import { ReleasesVirtualGrid } from './releases-virtual-grid';
+import { ReleasesVirtualList } from './releases-virtual-list';
 import { useEffect, useState } from 'react';
 import { useAuth } from '../account/useAuth';
 import { Sidebar } from '../../components/sidebar';
@@ -33,6 +34,7 @@ export interface ReleasesListRendererProps {
   includeAliases?: boolean; // used for artist
   includeCommunity?: boolean; // used for genre
   manualLoad?: boolean;
+  ranked?: boolean;
 }
 
 export function ReleasesListRenderer({
@@ -44,6 +46,7 @@ export function ReleasesListRenderer({
   includeAliases,
   includeCommunity,
   manualLoad,
+  ranked,
 }: ReleasesListRendererProps) {
   const { isSupporter } = useAuth();
 
@@ -269,12 +272,22 @@ export function ReleasesListRenderer({
       ) : null}
 
       {data && data.pages[0].totalItems > 0 ? (
-        <ReleasesVirtualGrid
-          releases={data}
-          loadMore={fetchNextPage}
-          hasMore={hasNextPage || false}
-          manualLoad={manualLoad}
-        />
+        ranked ? (
+          <ReleasesVirtualList
+            releases={data}
+            loadMore={fetchNextPage}
+            hasMore={hasNextPage || false}
+            manualLoad={manualLoad}
+            ranked={ranked}
+          />
+        ) : (
+          <ReleasesVirtualGrid
+            releases={data}
+            loadMore={fetchNextPage}
+            hasMore={hasNextPage || false}
+            manualLoad={manualLoad}
+          />
+        )
       ) : null}
     </Stack>
   );

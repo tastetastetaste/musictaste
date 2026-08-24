@@ -1,28 +1,34 @@
-import { getReleasePath, IListItem } from 'shared';
+import { getReleasePath, IRelease, IReleaseWithStats } from 'shared';
 import { CardContainer } from '../../components/containers/card-container';
 import { FlexChild } from '../../components/flex/flex-child';
 import { Group } from '../../components/flex/group';
 import { Stack } from '../../components/flex/stack';
-import { Markdown } from '../../components/markdown';
 import { Typography } from '../../components/typography';
 import { getYearFromDate } from '../../utils/date-format';
-import { formatReleaseType } from '../releases/format-release-type';
-import { ReleaseActions } from '../releases/release-actions/release-actions';
+import { formatReleaseType } from './format-release-type';
+import { ReleaseActions } from './release-actions/release-actions';
 import {
   ArtistsLinks,
   ReleaseImageLink,
+  ReleaseRatingsLink,
   ReleaseTitleLink,
-} from '../releases/release/shared';
+} from './release/shared';
 
-interface IListItemProps {
-  item: Pick<IListItem, 'id' | 'release' | 'note'>;
+interface IReleaseListItemProps {
+  release: IRelease | IReleaseWithStats;
   index: number;
   ranked?: boolean;
   size: 'sm' | 'md' | 'lg';
 }
 
-export const ListItem: React.FC<IListItemProps> = ({
-  item: { release, note },
+const isReleaseWithStats = (
+  release: IRelease | IReleaseWithStats,
+): release is IReleaseWithStats => {
+  return 'stats' in release && !!release.stats;
+};
+
+export const ReleaseListItem: React.FC<IReleaseListItemProps> = ({
+  release,
   index,
   ranked,
   size,
@@ -63,19 +69,22 @@ export const ListItem: React.FC<IListItemProps> = ({
               title={release.title}
               latinTitle={release.titleLatin}
             />
-            {note ? <Markdown>{note}</Markdown> : null}
-            <Typography size="small">
-              {`${getYearFromDate(release.date)} · ${formatReleaseType(release.type)}`}
-            </Typography>
+            {isReleaseWithStats(release) && release.stats?.ratingsCount > 0 ? (
+              <ReleaseRatingsLink
+                releaseId={release.id}
+                rating={release.stats.ratingsAvg}
+                count={release.stats.ratingsCount}
+              />
+            ) : null}
+
+            <Group justify="apart">
+              <Typography size="small" color="sub">
+                {`${getYearFromDate(release.date)} · ${formatReleaseType(release.type)}`}
+              </Typography>
+              <ReleaseActions id={release.id} date={release.date} />
+            </Group>
           </Stack>
         </FlexChild>
-        <div
-          style={{
-            alignSelf: 'flex-end',
-          }}
-        >
-          <ReleaseActions id={release.id} date={release.date} />
-        </div>
       </Group>
     </CardContainer>
   );

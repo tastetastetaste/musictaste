@@ -736,7 +736,7 @@ const router = createBrowserRouter([
             path: 'top',
             element: (
               <Suspense fallback={<Fallback />}>
-                <ReleasesListRenderer type={FindReleasesType.Top} />
+                <ReleasesListRenderer type={FindReleasesType.Top} ranked />
               </Suspense>
             ),
           },
@@ -744,7 +744,7 @@ const router = createBrowserRouter([
             path: 'top-oty',
             element: (
               <Suspense fallback={<Fallback />}>
-                <ReleasesListRenderer type={FindReleasesType.TopOTY} />
+                <ReleasesListRenderer type={FindReleasesType.TopOTY} ranked />
               </Suspense>
             ),
           },

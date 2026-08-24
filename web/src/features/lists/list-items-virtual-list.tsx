@@ -5,7 +5,7 @@ import { IListItemsResponse } from 'shared';
 import { ListItem } from './list-item';
 
 const Header = ({ context: { children } }: any) => {
-  return <div css={{ marginBottom: '18px' }}>{children}</div>;
+  return children ? <div css={{ marginBottom: '18px' }}>{children}</div> : null;
 };
 
 export const ListItemsVirtualList: React.FC<{
@@ -15,15 +15,13 @@ export const ListItemsVirtualList: React.FC<{
   ranked?: boolean;
   children?: JSX.Element | JSX.Element[];
 }> = ({ data, loadMore, hasMore, ranked, children }) => {
-  const { currentItems, totalItems, itemsPerPage, totalPages } =
-    data.pages[data.pages.length - 1];
+  const { currentItems, itemsPerPage } = data.pages[data.pages.length - 1];
 
   return (
     <ReactVirtualizedAutoSizer disableHeight>
       {({ width }) => {
         const size = width < 580 ? 'sm' : width < 940 ? 'md' : 'lg';
-
-        const defaultHeight = size === 'sm' ? 90 : 220;
+        const defaultHeight = size === 'sm' ? 110 : 220;
 
         return (
           <Virtuoso
@@ -32,7 +30,7 @@ export const ListItemsVirtualList: React.FC<{
               display: 'flex',
               flexDirection: 'column',
               width,
-              minHeight: currentItems * defaultHeight,
+              minHeight: '100vh',
             }}
             totalCount={currentItems}
             components={{
@@ -40,7 +38,6 @@ export const ListItemsVirtualList: React.FC<{
             }}
             itemContent={(index) => {
               const page = Math.floor(index / itemsPerPage);
-
               const indexInPage =
                 itemsPerPage - ((page + 1) * itemsPerPage - index);
 
