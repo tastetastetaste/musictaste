@@ -30,7 +30,7 @@ export const ListItemsVirtualList: React.FC<{
               display: 'flex',
               flexDirection: 'column',
               width,
-              minHeight: '100vh',
+              minHeight: currentItems * defaultHeight,
             }}
             totalCount={currentItems}
             components={{
