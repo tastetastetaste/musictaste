@@ -25,7 +25,7 @@ import {
   ReorderUserCollectionViewsDto,
 } from 'shared';
 import { UserCollectionView } from '../../db/entities/user-collection-view';
-import { In, Repository } from 'typeorm';
+import { In, Raw, Repository } from 'typeorm';
 import { List } from '../../db/entities/list.entity';
 import { UserFollowing } from '../../db/entities/user-following.entity';
 import { UserRelease } from '../../db/entities/user-release.entity';
@@ -456,6 +456,42 @@ export class UsersService {
           ContributorStatus.TRUSTED_CONTRIBUTOR,
         );
       }
+    }
+
+    return true;
+  }
+
+  async updateSupporterStatuses() {
+    // Expire supporter status after 365 days
+    const expiredSupporters = await this.usersRepository.find({
+      select: ['id'],
+      where: {
+        supporter: SupporterStatus.SUPPORTER,
+        supporterStartDate: Raw(
+          (alias) => `${alias} < now() - INTERVAL '365 days'`,
+        ),
+      },
+    });
+
+    if (expiredSupporters.length === 0) {
+      return true;
+    }
+
+    await this.usersRepository.update(
+      expiredSupporters.map((u) => u.id),
+      {
+        supporter: SupporterStatus.NOT_A_SUPPORTER,
+        supporterStartDate: null,
+      },
+    );
+
+    for (const { id } of expiredSupporters) {
+      await this.notificationsService.sendSystemNotification({
+        notifyId: id,
+        message:
+          'Supporter features expired. Thanks for supporting us this past year. Click to support us for another year.',
+        link: '/support-us',
+      });
     }
 
     return true;
