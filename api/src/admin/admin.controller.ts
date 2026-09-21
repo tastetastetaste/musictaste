@@ -76,7 +76,7 @@ export class AdminController {
       throw new UnauthorizedException();
     }
 
-    return this.adminService.sendNotification(sendNotificationDto, user.id);
+    return this.adminService.sendNotification(sendNotificationDto);
   }
 
   @Post('merge')

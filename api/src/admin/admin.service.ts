@@ -86,16 +86,11 @@ export class AdminService {
     return true;
   }
 
-  async sendNotification(
-    sendNotificationDto: SendNotificationDto,
-    senderId: string,
-  ) {
+  async sendNotification(sendNotificationDto: SendNotificationDto) {
     const { userId, message, link } = sendNotificationDto;
 
-    await this.notificationsService.createNotification({
-      userId: senderId,
+    await this.notificationsService.sendSystemNotification({
       notifyId: userId,
-      notificationType: NotificationType.OTHER,
       message,
       link,
     });

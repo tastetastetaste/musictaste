@@ -1,5 +1,6 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { ConfigService } from '@nestjs/config';
 import { Repository } from 'typeorm';
 import { Notification } from '../../db/entities/notification.entity';
 import { getUserPath, INotificationsResponse, NotificationType } from 'shared';
@@ -14,6 +15,7 @@ export class NotificationsService {
     private notificationsGateway: NotificationsGateway,
     @Inject(forwardRef(() => UsersService))
     private usersService: UsersService,
+    private configService: ConfigService,
   ) {}
 
   async createNotification({
@@ -42,6 +44,26 @@ export class NotificationsService {
     });
 
     return await this.notificationsRepository.save(notification);
+  }
+
+  async sendSystemNotification({
+    notifyId,
+    message,
+    link,
+  }: {
+    notifyId: string;
+    message: string;
+    link: string;
+  }) {
+    const systemUserId = this.configService.get<string>('SYSTEM_USER_ID');
+
+    await this.createNotification({
+      userId: systemUserId,
+      notifyId,
+      message,
+      link,
+      notificationType: NotificationType.OTHER,
+    });
   }
 
   async deleteNotification(params: {
