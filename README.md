@@ -1,6 +1,6 @@
 ## About
 
-Music Taste is a social music platform that lets you review, rate, and make lists of music releases.
+MusicTaste is a social music platform that lets you review, rate, and make lists of music releases.
 
 ## Features
 

@@ -48,7 +48,7 @@ const HomeLink = () => {
   const { colors } = useTheme();
   const navigate = useNavigate();
   return (
-    <IconButton title="Music Taste" onClick={() => navigate('/')}>
+    <IconButton title="MusicTaste" onClick={() => navigate('/')}>
       <svg
         width="36"
         height="36"

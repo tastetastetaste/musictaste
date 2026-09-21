@@ -10,8 +10,8 @@ export class AutofillService {
   private musicBrainzApi: MusicBrainzApi;
   constructor(private configService: ConfigService) {
     this.musicBrainzApi = new MusicBrainzApi({
-      appName: 'music taste',
-      appVersion: '1.0.0',
+      appName: 'MusicTaste',
+      appVersion: '1.2.0',
       appContactInfo: this.configService.get('FRONTEND_URL'),
     });
   }
