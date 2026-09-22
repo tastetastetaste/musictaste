@@ -71,7 +71,7 @@ const AppPageWrapper: React.FC<props> = ({
           <meta
             name="twitter:image"
             content={
-              image ? image : `${SITE_FULL_URL}/android-chrome-192x192.png`
+              image ? image : `${SITE_FULL_URL}/web-app-manifest-512x512.png`
             }
           />
           <meta property="twitter:image:alt" content={title} />
@@ -87,7 +87,7 @@ const AppPageWrapper: React.FC<props> = ({
           <meta
             property="og:image"
             content={
-              image ? image : `${SITE_FULL_URL}/android-chrome-192x192.png`
+              image ? image : `${SITE_FULL_URL}/web-app-manifest-512x512.png`
             }
           />
           <meta property="og:site_name" content={SITE_NAME} />
@@ -112,13 +112,7 @@ const AppPageWrapper: React.FC<props> = ({
             margin: '0 auto',
           }}
         >
-          {isLoading ? (
-            <Loading />
-          ) : isNotFound ? (
-            <NotFound />
-          ) : (
-            children
-          )}
+          {isLoading ? <Loading /> : isNotFound ? <NotFound /> : children}
         </div>
       </Stack>
     </div>

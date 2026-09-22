@@ -10,7 +10,7 @@ import {
 import { Helmet } from 'react-helmet';
 import { baseTheme, THEME_COLOR_PRESETS } from './theme-constants';
 
-export const DEFAULT_THEME_PRESET = 'gray 1';
+export const DEFAULT_THEME_PRESET = 'Default';
 
 export function useThemeColors() {
   const [themeColors, setThemeColors] = useLocalStorage<Theme['colors']>(

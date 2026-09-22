@@ -1,4 +1,13 @@
 {
+  "Default": {
+    "background": "#ffffff",
+    "background_sub": "#eff6f7",
+    "primary": "#61a0af",
+    "highlight": "#f06c9b",
+    "text": "#3b3b3b",
+    "text_sub": "#636363",
+    "error": "#f5d491"
+  },
   "gray 1": {
     "background": "#f5f5f5",
     "background_sub": "#e0e0e0",
