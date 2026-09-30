@@ -295,7 +295,7 @@ const ArtistPage = () => {
                   </Tooltip>
                 )}
               </Group>
-              {artist.country && (
+              {artist.type !== ArtistType.Alias && artist.country && (
                 <InfoRow label="Country">{artist.country.name}</InfoRow>
               )}
               {(artist.type === ArtistType.Group

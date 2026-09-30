@@ -127,14 +127,16 @@ export class ArtistsService {
     const id = genId();
 
     let newVisibility = visibility;
+    let newCountryId = countryId || null;
 
-    // Alias visibility should be the same as main artist
+    // Alias visibility and country should be the same as main artist
     if (type === ArtistType.Alias && mainArtistId) {
       const mainArtist = await this.artistsRepository.findOne({
         where: { id: mainArtistId },
       });
       if (mainArtist) {
         newVisibility = mainArtist.visibility;
+        newCountryId = mainArtist.countryId;
       }
     }
 
@@ -147,7 +149,7 @@ export class ArtistsService {
       visibility: newVisibility,
       disambiguation,
       mainArtistId,
-      countryId: countryId || null,
+      countryId: newCountryId,
     });
 
     const artist = await this.artistsRepository.findOne({ where: { id } });
@@ -219,24 +221,33 @@ export class ArtistsService {
     }
 
     let newVisibility = visibility;
+    let newCountryId = countryId || null;
 
-    // Alias visibility should be the same as main artist
+    // Alias visibility and country should be the same as main artist
     if (type === ArtistType.Alias && mainArtistId) {
       const mainArtist = await this.artistsRepository.findOne({
         where: { id: mainArtistId },
       });
       if (mainArtist) {
         newVisibility = mainArtist.visibility;
+        newCountryId = mainArtist.countryId;
       }
     } else if (artist.aliases.length > 0) {
       // Check if aliases need to be updated
-      const aliasVisibility = artist.aliases.every(
-        (alias) => alias.visibility === newVisibility,
+      const allSynced = artist.aliases.every(
+        (alias) =>
+          alias.visibility === newVisibility &&
+          alias.countryId === newCountryId,
       );
-      if (!aliasVisibility) {
+      if (!allSynced) {
         await this.artistsRepository.update(
           artist.aliases.map((alias) => alias.id),
-          { visibility: newVisibility },
+          { visibility: newVisibility, countryId: newCountryId },
+        );
+        await Promise.all(
+          artist.aliases.map((alias) =>
+            this.redisService.invalidateArtistCache(alias.id),
+          ),
         );
       }
     }
@@ -247,7 +258,7 @@ export class ArtistsService {
     artist.visibility = newVisibility;
     artist.disambiguation = disambiguation;
     artist.mainArtistId = type === ArtistType.Alias ? mainArtistId : null;
-    artist.countryId = type !== ArtistType.Alias ? countryId || null : null;
+    artist.countryId = newCountryId;
 
     // Update related artists
     const currentRelatedIds = [

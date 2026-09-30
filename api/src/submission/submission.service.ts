@@ -132,6 +132,8 @@ export class SubmissionService {
         "You can't submit contributions at this time",
       );
 
+    let aliasCountryId: string | null = null;
+
     if (type === ArtistType.Alias) {
       const mainArtist = await this.artistsRepository.findOne({
         where: { id: mainArtistId },
@@ -141,6 +143,8 @@ export class SubmissionService {
       } else if (mainArtist.type === ArtistType.Alias) {
         throw new BadRequestException('Main artist should not be an alias');
       }
+      // Alias country is inherited from main artist
+      aliasCountryId = mainArtist.countryId;
     } else {
       const nameExists = await this.artistsService.artistNameExists(name);
       if (nameExists && !disambiguation) {
@@ -171,7 +175,7 @@ export class SubmissionService {
       visibility,
       disambiguation,
       mainArtistId: type === ArtistType.Alias ? mainArtistId : null,
-      countryId: type !== ArtistType.Alias ? countryId : null,
+      countryId: type !== ArtistType.Alias ? countryId : aliasCountryId,
       relatedArtistsIds: relatedArtistsIds,
       groupArtists: groupArtists,
     };
@@ -277,6 +281,8 @@ export class SubmissionService {
       disambiguation = rest.disambiguation?.trim();
     }
 
+    let aliasCountryId: string | null = null;
+
     if (type === ArtistType.Alias) {
       if (mainArtistId === artistId) {
         throw new BadRequestException('Cannot link an artist to itself');
@@ -289,6 +295,8 @@ export class SubmissionService {
       } else if (mainArtist.type === ArtistType.Alias) {
         throw new BadRequestException('Main artist should not be an alias');
       }
+      // Alias country is inherited from main artist
+      aliasCountryId = mainArtist.countryId;
     }
 
     const as = new ArtistSubmission();
@@ -300,7 +308,7 @@ export class SubmissionService {
       visibility,
       disambiguation,
       mainArtistId: type === ArtistType.Alias ? mainArtistId : null,
-      countryId: type !== ArtistType.Alias ? countryId : null,
+      countryId: type !== ArtistType.Alias ? countryId : aliasCountryId,
       relatedArtistsIds: relatedArtistsIds,
       groupArtists: groupArtists?.map((ga) => ({
         artistId: ga.artistId,
