@@ -371,7 +371,7 @@ export class EntriesService {
       if (filters.genre === MultiValueFilterEnum.isanyof)
         urQB
           .innerJoin(ReleaseGenre, 'rg', 'rg.releaseId = ur.releaseId')
-          .andWhere('rg.votesAvg > 0.5')
+          .andWhere('rg.votesAvg > 0')
           .andWhere('rg.genreId IN (:...genreValues)', {
             genreValues: filters.genreValues,
           });
@@ -383,7 +383,7 @@ export class EntriesService {
               .select('1')
               .from(ReleaseGenre, 'subrg')
               .where('subrg.releaseId = ur.releaseId')
-              .andWhere('subrg.votesAvg > 0.5')
+              .andWhere('subrg.votesAvg > 0')
               .andWhere('subrg.genreId IN (:...genreValues)')
               .getQuery();
 
@@ -1042,7 +1042,7 @@ export class EntriesService {
       .innerJoin(
         ReleaseGenre,
         'stats_rg',
-        'stats_rg.releaseId = ur.releaseId AND stats_rg.votesAvg > 0.5',
+        'stats_rg.releaseId = ur.releaseId AND stats_rg.votesAvg > 0',
       )
       .leftJoin('stats_rg.genre', 'stats_genre')
       .select('stats_genre.id', 'genreId')
